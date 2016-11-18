@@ -1,2 +1,3 @@
-# dr-js
-A collection of strange functions
+# Dr.js
+
+a collection of strange functions

@@ -1,0 +1,11 @@
+example
+source
+
+# WebStorm configuration
+.idea
+
+# config files
+.npmignore
+.babelrc
+.eslintrc
+webpack.config.js
