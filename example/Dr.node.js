@@ -1,4 +1,4 @@
-require('../distribute/Dr.node.js')
+require('../Dr.node.js')
 
 console.log(Dr)
 
