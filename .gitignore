@@ -32,9 +32,10 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# webstorm configuration
+# WebStorm configuration
 .idea
 
-# generated file
-distribute
-source/_not_yet
+# distribute file
+/Dr.js
+/Dr.node.js
+/Dr.browser.js

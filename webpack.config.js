@@ -1,11 +1,11 @@
 module.exports = {
-  entry: {
-    'Dr.js': './Dr.js',
-    // 'Dr.browser.js': './Dr.browser.js',
-    'Dr.node.js': './Dr.node.js'
+  entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
+    'Dr.js': [ './source/Dr.js' ],
+    // 'Dr.browser.js': [ './source/Dr.browser.js' ],
+    'Dr.node.js': [ './source/Dr.node.js' ]
   },
   output: {
-    path: './distribute',
+    path: '.',
     filename: '[name]'
   },
   module: {
@@ -15,5 +15,5 @@ module.exports = {
       loader: 'babel-loader'
     } ]
   },
-  target: 'node' // support node main mudules like 'fs'
+  target: 'node' // support node main modules like 'fs'
 }
