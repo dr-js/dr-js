@@ -4,8 +4,9 @@
   "description": "a collection of strange functions",
   "main": "distribute/Dr.js",
   "scripts": {
-    "compile": "cross-env NODE_ENV=production webpack",
-    "prepublish": "npm run compile"
+    "buildDevelopment": "cross-env NODE_ENV=development webpack",
+    "buildProduction": "cross-env NODE_ENV=production webpack -p",
+    "prepublish": "npm run buildProduction"
   },
   "repository": {
     "type": "git",

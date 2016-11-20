@@ -1,8 +1,7 @@
 import Dr from './Dr'
-import Node from './node'
+import { Extend, Module } from './node'
 
-Object.assign(Dr, Node)
-
-Dr.GLOBAL.Dr = Dr
+Object.assign(Dr, Extend)
+Object.assign(Dr.Module, Module)
 
 export default Dr

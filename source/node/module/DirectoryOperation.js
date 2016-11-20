@@ -1,4 +1,4 @@
-import Dr from '../Dr'
+import Dr from 'Dr'
 import FileOperation, { FILE_TYPE, MODIFY_OPERATION_TYPE } from './FileOperation'
 
 import nodeModuleFs from 'fs'
@@ -24,8 +24,8 @@ class Directory {
       [ FILE_TYPE.SymbolicLink ]: [],
       [ FILE_TYPE.Other ]: []
     }
-    nodeModuleFs.readdirSync(this.path).forEach((name) => {
-      const subPath = nodeModulePath.join(this.path, name)
+    nodeModuleFs.readdirSync(path).forEach((name) => {
+      const subPath = nodeModulePath.join(path, name)
       const subPathType = FileOperation.getPathTypeSync(subPath)
       switch (subPathType) {
         case FILE_TYPE.Directory:

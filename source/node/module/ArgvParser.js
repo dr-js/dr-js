@@ -1,4 +1,4 @@
-import Dr from '../Dr'
+import Dr from 'Dr'
 
 export default class ArgvParser {
   constructor (formatListList) {

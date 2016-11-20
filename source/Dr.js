@@ -1,26 +1,39 @@
-import Config from './config'
-import Common from './common'
+import { Extend, Module } from './common'
 
-let Dr = Config.GLOBAL.Dr = {
-  ...Config,
-  ...Common,
+let Dr = {
+  ...Extend,
+  Module,
 
   // the lower level the fewer & important message is printed
   // normally: 5 - ALL, 10 - WARN, 15+ - CUSTOM DEBUG LEVEL
   debugLevel: 0,
-  log: (...args) => Common.logList(args),
-  debug: (debugLevel, ...args) => Dr.debugLevel && (Dr.debugLevel <= debugLevel) && Common.logList(args),
-  assert: (...args) => {
-    (Dr.debugLevel > 15) && Common.logList(([ '[' + Dr.now().toFixed(4) + 'sec]', '[assert]' ]).concat(args))
-    Common.assertList(args)
-  },
-  logError: (error, ...args) => {
-    Common.logList([ 'Error', error ])
-    Common.logList([ ...args ])
-    error.stack && Common.logList([ error.stack ])
-  },
+  debug: (debugLevel, ...args) => Dr.debugLevel && (Dr.debugLevel <= debugLevel) && Extend.logList(args),
 
-  toggle: new Common.Toggle()
+  Event: new Module.Event(),
+  Toggle: new Module.Toggle(),
+
+  initModuleManager: () => {
+    // old fashioned way
+    const moduleManager = new Module.ModuleManager()
+    Object.assign(Dr, {
+      Declare: moduleManager.declare.bind(moduleManager),
+      Require: moduleManager.require.bind(moduleManager),
+      Implement: moduleManager.implement.bind(moduleManager),
+      LoadAll: moduleManager.loadAll.bind(moduleManager),
+      Get: moduleManager.get.bind(moduleManager),
+      GetNew: (name, ...args) => {
+        const Module = moduleManager.get(name)
+        return Module ? new Module(...args) : null
+      }
+    })
+    for (const name in Dr.Module) {
+      moduleManager.declare(name)
+      moduleManager.setModule(name, Dr.Module[ name ])
+    }
+    return moduleManager
+  }
 }
 
+Extend.GLOBAL.Dr = Dr
+export { Dr }
 export default Dr

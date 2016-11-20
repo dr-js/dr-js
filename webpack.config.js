@@ -1,3 +1,5 @@
+const nodeModulePath = require('path')
+
 module.exports = {
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
     'Dr.js': [ './source/Dr.js' ],
@@ -14,6 +16,9 @@ module.exports = {
       exclude: /node_modules/,
       loader: 'babel-loader'
     } ]
+  },
+  resolve: {
+    root: nodeModulePath.join(__dirname, 'source')
   },
   target: 'node' // support node main modules like 'fs'
 }
