@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "a collection of strange functions",
   "main": "distribute/Dr.js",
   "scripts": {

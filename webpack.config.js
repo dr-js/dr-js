@@ -3,7 +3,7 @@ const nodeModulePath = require('path')
 module.exports = {
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
     'Dr.js': [ './source/Dr.js' ],
-    // 'Dr.browser.js': [ './source/Dr.browser.js' ],
+    'Dr.browser.js': [ './source/Dr.browser.js' ],
     'Dr.node.js': [ './source/Dr.node.js' ]
   },
   output: {

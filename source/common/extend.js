@@ -8,6 +8,22 @@ export const ENVIRONMENT = (() => {
     : isBrowser ? 'browser'
     : 'unknown'
 })()
+export const SYSTEM_ENDIANNESS = (() => {
+  try {
+    const buffer = new ArrayBuffer(4)
+    const viewUint8 = new Uint8Array(buffer)
+    const viewUint32 = new Uint32Array(buffer)
+    viewUint8[ 0 ] = 0xa1
+    viewUint8[ 1 ] = 0xb2
+    viewUint8[ 2 ] = 0xc3
+    viewUint8[ 3 ] = 0xd4
+    if (viewUint32[ 0 ] === 0xd4c3b2a1) return 'little'
+    if (viewUint32[ 0 ] === 0xa1b2c3d4) return 'big'
+  } catch (error) {
+    // mute error
+  }
+  return 'unknown'
+})()
 
 // ENVIRONMENT dependent
 const { loadScript, nodeExePath, nodeStartScriptPath, getLocalPath, startREPL } = (() => {
