@@ -1,5 +1,5 @@
 import * as Extend from './extend'
-import Module from './module'
+import Module from './Module'
 
 export {
   Extend,

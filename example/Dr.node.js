@@ -1,5 +1,4 @@
 require('../Dr.node.js')
-
-console.log(Dr)
-
+const { Dr } = global
+Dr.log(Dr)
 Dr.startREPL()

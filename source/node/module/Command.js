@@ -1,4 +1,4 @@
-import Dr from '../Dr'
+import Dr from 'Dr'
 
 import nodeModuleOs from 'os'
 import nodeModuleChildProcess from 'child_process'
