@@ -1,4 +1,4 @@
-import Dr from '../Dr'
+import Dr from 'Dr'
 
 import nodeModuleVm from 'vm'
 import nodeModuleFs from 'fs'
