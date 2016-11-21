@@ -1,0 +1,71 @@
+div { padding: 0; margin: 0; border: 0; }
+
+html { padding: 0; margin: 0; border: 0; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; }
+
+body { padding: 0; margin: 0; border: 0; width: 100%; overflow-x: hidden; }
+
+.font-smallest { font-size: 0.4em; COLOR: #666; }
+
+.font-smaller { font-size: 0.6em; COLOR: #777; }
+
+.font-small { font-size: 0.8em; COLOR: #888; }
+
+* { font-family: dr_coder, monaco, consolas, monospace; font-size: 1.0em; COLOR: #999; box-sizing: border-box; }
+
+.font-big { font-size: 1.3em; COLOR: #aaa; }
+
+.font-bigger { font-size: 1.7em; COLOR: #aaa; }
+
+.font-biggest { font-size: 2em; COLOR: #bbb; }
+
+button, .button { display: inline-block; border: 2px solid #444; background: #555; white-space: nowrap; text-align: center; padding: 0.2em 0.5em; text-decoration: none; }
+
+button:hover, .button:hover { border: 2px solid #666; background: #777; }
+
+button:active, .button:active { border: 2px solid #333; background: #222; }
+
+.align-center { margin-left: auto; margin-right: auto; }
+
+.align-left { margin-left: 0; margin-right: auto; }
+
+.text-center { text-align: center; }
+
+.text-left { text-align: left; }
+
+/* for canvas scaling */
+.pixelated {
+  image-rendering: optimizeSpeed; /* Legal fallback */
+  image-rendering: optimize-contrast; /* CSS3 Proposed */
+  image-rendering: crisp-edges; /* CSS4 Proposed */
+  image-rendering: pixelated; /* CSS4 Proposed */
+  image-rendering: -moz-crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* webkit style */
+::-webkit-scrollbar { -webkit-appearance: none; width: 0.5em; min-width: 12px; }
+
+::-webkit-scrollbar-button { display: none; }
+
+::-webkit-scrollbar-track { background: #fff; }
+
+::-webkit-scrollbar-thumb { min-height: 3.0em; background: #d2d2d2; background-clip: padding-box; border: 3px solid #fff; border-radius: 5px; }
+
+::-webkit-scrollbar-thumb:active { background: #888; border-width: 2px; }
+
+.fixed-placeholder { position: static; left: 0; width: 100%; height: 0; min-height: 0; max-height: 0; }
+
+.fixed-top, .fixed-bottom { position: fixed; left: 0; width: 100%; }
+
+.fixed-top { top: 0; }
+
+.fixed-bottom { bottom: 0; }
+
+/* FIX: fixed positioned elements jump when scrolling in Chrome */
+.fixed-top, .fixed-bottom { transform: translate3d(0, 0, 0); -webkit-transform: translate3d(0, 0, 0); }
+
+/* menu button like: [ Ξ ] */
+.menu_button { width: 3.5em; min-width: 50px; height: 2.5em; min-height: 24px; background: #666; }
+
+.menu_button .bar { display: block; width: 70%; height: 0.15em; min-height: 2px; padding: 0; margin: 0.3em auto; border: none; background: #ccc; }

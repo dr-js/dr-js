@@ -1,9 +1,25 @@
 {
   "presets": [
-    "es2015"
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
   ],
   "plugins": [
     "transform-object-rest-spread",
-    "transform-class-properties"
+    "transform-class-properties",
+    [
+      "transform-runtime",
+      {
+        "helpers": true,
+        "polyfill": false,
+        "regenerator": false,
+        "moduleName": "babel-runtime"
+      }
+    ]
   ]
 }

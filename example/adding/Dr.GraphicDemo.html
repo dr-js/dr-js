@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    <link href="favicon.ico" rel="shortcut icon">
+    <link href="index.css" rel="stylesheet" type="text/css">
+    <style>
+        canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; }
+
+        #FPS { font-size: 0.9em; color: #900; }
+
+        #Log { font-size: 0.6em; color: #666; }
+    </style>
+    <title>Dr.Graphic Demo Page</title>
+</head>
+<body>
+<div id="page-content" class="align-center text-center">
+    <div><p>This page is for <b>Dr.Graphic develop</b> use</p></div>
+
+    <div>
+        <button onclick="Toggle('DRAW_IMAGE_ELEMENT')">DRAW_IMAGE_ELEMENT</button>
+        <button onclick="Toggle('DRAW_CANVAS_ELEMENT')">DRAW_CANVAS_ELEMENT</button>
+        <button onclick="Toggle('DRAW_CANVAS_IMAGE_DATA')">DRAW_CANVAS_IMAGE_DATA</button>
+        <br />
+        <br />
+        <button onclick="Toggle('DRAW_COUNT', 10)">DRAW_COUNT 10</button>
+        <button onclick="Toggle('DRAW_COUNT', 100)">DRAW_COUNT 100</button>
+        <button onclick="Toggle('DRAW_COUNT', 500)">DRAW_COUNT 500</button>
+        <button onclick="Toggle('DRAW_COUNT', 1000)">DRAW_COUNT 1000</button>
+        <button onclick="Toggle('DRAW_COUNT', 5000)">DRAW_COUNT 5000</button>
+        <button onclick="Toggle('DRAW_COUNT', 10000)">DRAW_COUNT 10000</button>
+    </div>
+
+    <br />
+    <canvas id="Dr.Canvas" class="pixelated" width="300" height="600"></canvas>
+    <br />
+    <img id="testImageElement" />
+    <canvas id="testCanvasElement" class="pixelated" width="300" height="50"></canvas>
+    <canvas id="testCanvasImageData" class="pixelated" width="300" height="50"></canvas>
+    <br />
+
+    <br />
+    <input id="textSoftKeyboardInput" type="text" style="position: absolute; z-index: -2; width: 400px; height: 1px;" />
+    <textarea id="textSoftKeyboardTextarea" style="position: absolute; z-index: -1; width: 1px; height: 1px;"></textarea>
+    <canvas id="testFont" class="pixelated" width="400" height="200"></canvas>
+    <br />
+    <canvas id="testFontBitmap" class="pixelated" width="400" height="200"></canvas>
+    <br />
+</div>
+
+<div class="fixed-placeholder">
+    <div class="fixed-top text-left" style="z-index: -1;">
+        <p id="FPS">FPS</p>
+        <p id="Log" class="text-left">Log</p>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+  function fitCanvas (canvas, devicePixelRatio) {
+    if (devicePixelRatio === undefined) devicePixelRatio = window.devicePixelRatio || 1
+    const width = canvas.width || parseInt(canvas.style.width)
+    const height = canvas.height || parseInt(canvas.style.height)
+    const scale = Math.min(document.body.offsetWidth * 0.9, width) / width
+    canvas.width = parseInt(devicePixelRatio * scale * width)
+    canvas.height = parseInt(devicePixelRatio * scale * height)
+    canvas.style.width = parseInt(scale * width) + 'px'
+    canvas.style.height = parseInt(scale * height) + 'px'
+  }
+
+  window.addEventListener('load', () => {
+    fitCanvas(document.getElementById('Dr.Canvas'), 1)
+
+    const fontSize = 50
+
+    const setContext = (context, fontSize, fillStyle) => Object.assign(context, {
+      font: `bold ${fontSize}px monospace`,
+      textAlign: 'left',
+      textBaseline: 'middle',
+      fillStyle
+    })
+
+    const testCanvasElement = document.getElementById('testCanvasElement')
+    const testCanvasElementContext2d = testCanvasElement.getContext('2d')
+    testCanvasElement.width += 0
+    setContext(testCanvasElementContext2d, fontSize, '#500')
+    testCanvasElementContext2d.fillText('ImageElement', 0, fontSize * 0.5)
+
+    const testImageElement = document.getElementById('testImageElement')
+    testImageElement.src = testCanvasElement.toDataURL()
+    testCanvasElement.width += 0
+    setContext(testCanvasElementContext2d, fontSize, '#050')
+    testCanvasElementContext2d.fillText('CanvasElement', 0, fontSize * 0.5)
+
+    const testCanvasImageData = document.getElementById('testCanvasImageData')
+    const testCanvasImageDataContext2d = testCanvasImageData.getContext('2d')
+    testCanvasImageData.width += 0
+    setContext(testCanvasImageDataContext2d, fontSize, '#005')
+    testCanvasImageDataContext2d.fillText('CanvasImageData', 0, testCanvasImageData.height * 0.5)
+  })
+</script>
+
+<script src="../Dr.browser.js"></script>
+<script src="index.js"></script>
+
+</html>

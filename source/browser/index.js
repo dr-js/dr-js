@@ -1,12 +1,15 @@
-import * as Extend from './extend'
-import Module from './Module'
+import * as Input from './input'
+import * as Graphic from './graphic'
+import * as Resource from './resource'
+import * as Font from './font'
+import * as DOM from './DOM'
+import * as FileReader from './fileReader'
 
 export {
-  Extend,
-  Module
-}
-
-export default {
-  Extend,
-  Module
+  Input,
+  Graphic,
+  Resource,
+  Font,
+  DOM,
+  FileReader
 }

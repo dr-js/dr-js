@@ -1,12 +1,14 @@
-import { onNextProperUpdate, now } from '../extend'
+import { now, onNextProperUpdate } from 'source/common/time'
 
-export default class UpdateLoop {
+// TODO: check if not needed
+
+export class UpdateLoop {
   constructor () {
     this.lastUpdateTime = now()
     this.isActive = false
     this.clear()
     // bind first
-    this.update = this.update().bind(this)
+    this.update = this.update.bind(this)
   }
 
   start () {
@@ -33,11 +35,11 @@ export default class UpdateLoop {
     this.lastUpdateTime = currentUpdateTime
 
     const nextUpdateFuncList = []
-    this.updateFuncList.forEach((index, updateFunc) => updateFunc(deltaTime) && nextUpdateFuncList.push(updateFunc))
+    this.updateFuncList.forEach((updateFunc) => updateFunc(deltaTime) && nextUpdateFuncList.push(updateFunc))
     this.updateFuncList = nextUpdateFuncList
 
     const nextUpdateFuncMap = new Map()
-    this.updateFuncMap.forEach((key, updateFunc) => updateFunc(deltaTime) && nextUpdateFuncMap.set(key, updateFunc))
+    this.updateFuncMap.forEach((updateFunc, key) => updateFunc(deltaTime) && nextUpdateFuncMap.set(key, updateFunc))
     this.updateFuncMap = nextUpdateFuncMap
 
     this.isActive && onNextProperUpdate(this.update)

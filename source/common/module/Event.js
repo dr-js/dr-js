@@ -1,42 +1,71 @@
-export default class Event {
+// DOM 'EventTarget' style
+// addEventListener(type, callback)
+// removeEventListener(type, callback)
+// dispatchEvent(event)
+
+export class EventTarget {
   constructor () {
-    this.eventMap = new Map()
+    this.listenerSetMap = new Map()
   }
 
-  emit (key) {
-    const callbackList = this.getListenerList(key)
-    if (callbackList) for (const i in callbackList) callbackList[ i ].apply(null, arguments)
+  addEventListener (type, listener) {
+    if (!this.listenerSetMap.has(type)) this.listenerSetMap.set(type, new Set([ listener ]))
+    else this.listenerSetMap.get(type).add(listener)
   }
 
-  addEventListener (key, callback) {
-    if (!callback || typeof (callback) !== 'function') throw new Error('invalid callback')
-    const callbackList = this.getListenerList(key)
-    for (const i in callbackList) if (callbackList[ i ] === callback) throw new Error('callback already exist')
-    callbackList.push(callback)
-    return key
+  removeEventListener (type, listener) {
+    if (!this.listenerSetMap.has(type)) return
+    const listenerSet = this.listenerSetMap.get(type)
+    if (!listenerSet.has(listener)) return
+    listenerSet.delete(listener)
+    if (listenerSet.size === 0) this.listenerSetMap.delete(type)
   }
 
-  removeEventListener (key, callback) {
-    const callbackList = this.getListenerList(key)
-    for (const i in callbackList) {
-      if (callbackList[ i ] === callback) {
-        callbackList.splice(i, 1)
-        return callback
-      }
+  dispatchEvent (event) {
+    if (!this.listenerSetMap.has(event.type)) return
+    const listenerSet = this.listenerSetMap.get(event.type)
+    listenerSet.forEach((listener) => listener(event))
+  }
+}
+
+// node 'EventEmitter' style
+// emitter.addListener(eventName, listener)
+// emitter.removeListener(eventName, listener)
+// emitter.removeAllListeners([eventName])
+// emitter.emit(eventName[, ...args])
+// emitter.on(eventName, listener)
+
+export class EventEmitter {
+  constructor () {
+    this.listenerSetMap = new Map()
+
+    this.on = this.addListener // alias
+  }
+
+  addListener (eventName, listener) {
+    if (!this.listenerSetMap.has(eventName)) this.listenerSetMap.set(eventName, new Set([ listener ]))
+    else this.listenerSetMap.get(eventName).add(listener)
+  }
+
+  removeListener (eventName, listener) {
+    if (!this.listenerSetMap.has(eventName)) return
+    const listenerSet = this.listenerSetMap.get(eventName)
+    if (!listenerSet.has(listener)) return
+    listenerSet.delete(listener)
+    if (listenerSet.size === 0) this.listenerSetMap.delete(eventName)
+  }
+
+  removeAllListeners (eventName) {
+    if (eventName === undefined) this.listenerSetMap.clear()
+    else {
+      if (!this.listenerSetMap.has(eventName)) return
+      this.listenerSetMap.delete(eventName)
     }
-    return null
   }
 
-  removeEventKey (key) {
-    this.eventMap.delete(key)
-  }
-
-  removeAll () {
-    this.eventMap.clear()
-  }
-
-  getListenerList (key) {
-    if (!this.eventMap.has(key)) this.eventMap.set(key, [])
-    return this.eventMap.get(key)
+  emit (eventName, ...args) {
+    if (!this.listenerSetMap.has(eventName)) return
+    const listenerSet = this.listenerSetMap.get(eventName)
+    listenerSet.forEach((listener) => listener(...args))
   }
 }
