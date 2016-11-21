@@ -77,7 +77,12 @@ const { loadScript, nodeExePath, nodeStartScriptPath, getLocalPath, startREPL } 
 export { loadScript, nodeExePath, nodeStartScriptPath, getLocalPath, startREPL }
 
 export function loadScriptByList (srcList) {
-  const loopLoad = () => new Promise((resolve) => (srcList.length <= 0) ? resolve() : loadScript(srcList.shift()).then(loopLoad))
+  const dataList = []
+  const loopLoad = () => Promise.resolve(
+    srcList.length
+      ? loadScript(srcList.shift()).then((data) => dataList.push(dataList)).then(loopLoad)
+      : dataList
+  )
   return loopLoad() // start loop
 }
 
