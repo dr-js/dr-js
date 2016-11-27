@@ -4,7 +4,7 @@
   "description": "a collection of strange functions",
   "main": "distribute/Dr.js",
   "scripts": {
-    "buildDevelopment": "cross-env NODE_ENV=development webpack",
+    "buildDevelopment": "cross-env NODE_ENV=development webpack -w",
     "buildProduction": "cross-env NODE_ENV=production webpack -p",
     "prepublish": "npm run buildProduction",
     "testMocha": "mocha --compilers js:babel-register --recursive test",

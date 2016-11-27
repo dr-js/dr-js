@@ -67,13 +67,12 @@ export const createRequest = Dr.window.XMLHttpRequest ? ({ url, method, headers,
     const request = new Dr.window.XMLHttpRequest()
     request.addEventListener('readystatechange', () => {
       if (request.readyState !== 4) return stateCallback && stateCallback(request)
-      const { status, statusText, response, responseText, responseXML } = request
+      const { status, response, responseText, responseXML } = request
       resolve({
         request,
         status,
-        statusText,
         ok: (status >= 200 && status < 300),
-        response: response || responseText || responseXML
+        body: response || responseText || responseXML
       })
     })
     request.addEventListener('error', reject)
@@ -86,8 +85,8 @@ export const createRequest = Dr.window.XMLHttpRequest ? ({ url, method, headers,
 
 export const fetch = Dr.window.fetch ? Dr.window.fetch : (url, config) => createRequest({ url, ...config }) // super simple simulate
   .then((result) => {
-    result.text = () => Promise.resolve(result.response.toString())
-    result.json = () => Promise.resolve(JSON.parse(result.response))
+    result.text = () => Promise.resolve(result.body.toString())
+    result.json = () => Promise.resolve(JSON.parse(result.body))
     return result
   })
 
