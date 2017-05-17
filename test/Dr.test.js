@@ -1,63 +1,66 @@
 import nodeModuleAssert from 'assert'
 import nodeModulePath from 'path'
-import '../Dr.js'
 
-const { Dr } = global
+import * as Dr from '../library/Dr.node' // '../library/Dr'
 
-describe('Dr.js', () => {
-  describe('Extend', () => {
-    it('GLOBAL should be global', () => {
-      nodeModuleAssert.equal(Dr.GLOBAL, global)
-    })
+const { describe, it } = global
 
-    it('ENVIRONMENT should be node', () => {
-      nodeModuleAssert.equal(Dr.ENVIRONMENT, 'node')
-    })
-
-    // console.log(Dr.nodeExePath)
-    // console.log(Dr.nodeStartScriptPath)
-    // console.log(nodeModulePath.join(__dirname, '../example/script.js'))
-    const scriptPath = nodeModulePath.join(__dirname, '../example/script.js')
-
-    it('loadScript()', (done) => {
-      Dr.loadScript(scriptPath)
-        .then(() => { done() })
-        .catch((error) => { done(error) })
-    })
-
-    it('loadScriptByList()', (done) => {
-      Dr.loadScriptByList([ scriptPath, scriptPath, scriptPath ])
-        .then((dataList) => {
-          nodeModuleAssert.equal(dataList.length, 3)
-          done()
-        })
-        .catch((error) => { done(error) })
-    })
-
-    it('onNextProperUpdate()', (done) => {
-      Dr.onNextProperUpdate(() => done())
-      setTimeout(() => done('timeout'), 500)
-    })
-
-    it('assert()', () => {
-      nodeModuleAssert.doesNotThrow(() => Dr.assert(true, 'safe'))
-      nodeModuleAssert.throws(() => Dr.assert(false, 'danger'))
-    })
-
-    it('pick()', () => {
-      const source = { a: 1, b: 2 }
-      nodeModuleAssert.equal(Dr.pick(source, 'a'), 1)
-      nodeModuleAssert.notEqual(source.a, 1)
-    })
-  })
-  // describe('Module', () => {
-  // })
-})
+console.log('Test import', Object.keys(Dr))
 
 describe('Array', () => {
   describe('#indexOf()', () => {
     it('should return -1 when the value is not present', () => {
       nodeModuleAssert.equal(-1, [ 1, 2, 3 ].indexOf(4))
+    })
+  })
+})
+
+describe('Dr', () => {
+  describe('Env', () => {
+    const { Env } = Dr
+    it('Env.global equal global in node', () => nodeModuleAssert.equal(Env.global, global))
+    it('Env.environmentName should be node', () => nodeModuleAssert.equal(Env.environmentName, 'node'))
+    it('Env.assert', () => {
+      nodeModuleAssert.doesNotThrow(() => Env.assert(true, 'safe'))
+      nodeModuleAssert.throws(() => Env.assert(false, 'danger'))
+    })
+  })
+
+  describe('Common', () => {
+    const { Common } = Dr
+    describe('Time', () => {
+      const { Time } = Common
+      it('Time.onNextProperUpdate()', (done) => {
+        Time.onNextProperUpdate(() => done())
+        setTimeout(() => done('timeout'), 500)
+      })
+    })
+  })
+
+  describe('Node', () => {
+    const { Node } = Dr
+    describe('Resource', () => {
+      const { Resource } = Node
+
+      // console.log(Dr.PATH_NODE_EXE)
+      // console.log(Dr.PATH_NODE_START_SCRIPT)
+      // console.log(nodeModulePath.join(__dirname, '../example/script.js'))
+      const scriptPath = nodeModulePath.join(__dirname, '../example/script.js')
+
+      it('loadScript()', (done) => {
+        Resource.loadScript(scriptPath)
+          .then(() => done())
+          .catch((error) => done(error))
+      })
+
+      // it('loadScriptByList()', (done) => {
+      //   Resource.loadScriptByList([ scriptPath, scriptPath, scriptPath ])
+      //     .then((dataList) => {
+      //       nodeModuleAssert.equal(dataList.length, 3)
+      //       done()
+      //     })
+      //     .catch((error) => { done(error) })
+      // })
     })
   })
 })

@@ -1,6 +1,8 @@
-import { GLOBAL, assert, log, warn } from '../extend'
+import { global, log, warn, assert } from 'source/env'
 
-export default class ModuleManager {
+// TODO: check if no longer needed
+
+export class ModuleManager {
   constructor () {
     this.moduleDataMap = new Map()
 
@@ -44,7 +46,7 @@ export default class ModuleManager {
     if (moduleData.module) return true
     if (!moduleData.require.every(this.getModule)) return false// missing require
     try {
-      this.setModule(name, moduleData.loadFunction(GLOBAL, this.getModule))
+      this.setModule(name, moduleData.loadFunction(global, this.getModule))
       return true
     } catch (error) {
       warn('[load] error', error)
@@ -69,3 +71,21 @@ export default class ModuleManager {
     return module
   }
 }
+
+//   const moduleManager = new Module.ModuleManager()
+//   Object.assign(Dr, {
+//     Declare: moduleManager.declare.bind(moduleManager),
+//     Require: moduleManager.require.bind(moduleManager),
+//     Implement: moduleManager.implement.bind(moduleManager),
+//     LoadAll: moduleManager.loadAll.bind(moduleManager),
+//     Get: moduleManager.get.bind(moduleManager),
+//     GetNew: (name, ...args) => {
+//       const Module = moduleManager.get(name)
+//       return Module ? new Module(...args) : null
+//     }
+//   })
+//   for (const name in Dr.Module) {
+//     moduleManager.declare(name)
+//     moduleManager.setModule(name, Dr.Module[ name ])
+//   }
+//   return moduleManager

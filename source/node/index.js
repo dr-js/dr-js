@@ -1,12 +1,11 @@
-import * as Extend from './extend'
-import Module from './module'
+import * as File from './file'
+import * as System from './system'
+import * as Resource from './resource'
+import * as Module from './module'
 
 export {
-  Extend,
-  Module
-}
-
-export default {
-  Extend,
+  File,
+  System,
+  Resource,
   Module
 }

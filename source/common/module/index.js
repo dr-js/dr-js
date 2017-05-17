@@ -1,11 +1,3 @@
-import ModuleManager from './ModuleManager'
-import Event from './Event'
-import UpdateLoop from './UpdateLoop'
-import Toggle from './Toggle'
-
-export default {
-  ModuleManager,
-  Event,
-  UpdateLoop,
-  Toggle
-}
+export { EventTarget, EventEmitter } from './Event'
+export { UpdateLoop } from './UpdateLoop'
+export { ModuleManager } from './ModuleManager'
