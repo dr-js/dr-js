@@ -4,6 +4,7 @@
   "description": "a collection of strange functions",
   "main": "distribute/Dr.js",
   "scripts": {
+    "prof-example-server": "cross-env NODE_ENV=production node --prof example/example-server.js",
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
     "example-dev": "cross-env NODE_ENV=development webpack --watch --config config/example.conf.js",
     "library": "cross-env NODE_ENV=production webpack --config config/library.conf.js",
@@ -37,7 +38,7 @@
     "babel-plugin-transform-class-properties": "*",
     "babel-plugin-transform-object-rest-spread": "*",
     "babel-plugin-transform-runtime": "*",
-    "babel-preset-es2015": "*",
+    "babel-preset-env": "*",
     "babel-require": "*",
     "babel-runtime": "*",
     "cross-env": "*",
