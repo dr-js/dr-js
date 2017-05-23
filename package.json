@@ -1,8 +1,8 @@
 {
   "name": "dr-js",
-  "version": "0.0.3",
-  "description": "a collection of strange functions",
-  "main": "distribute/Dr.js",
+  "version": "0.0.4",
+  "description": "A collection of strange functions",
+  "main": "library/Dr.js",
   "scripts": {
     "prof-example-server": "cross-env NODE_ENV=production node --prof example/example-server.js",
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
