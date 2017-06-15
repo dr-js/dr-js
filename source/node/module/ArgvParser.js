@@ -1,6 +1,12 @@
-import Dr from 'Dr'
+import { global } from 'source/env'
 
-export default class ArgvParser {
+const ARG_TYPE = {
+  OPTIONAL: 'OPTIONAL',
+  MULTI: 'MULTI',
+  DEFAULT: 'DEFAULT'
+}
+
+class ArgvParser {
   constructor (formatListList) {
     this.keyList = [
       'nodeExecutable',
@@ -13,9 +19,9 @@ export default class ArgvParser {
 
     formatListList.forEach((formatList) => {
       const key = formatList.shift()
-      if (this.formatMap[ key ]) return Dr.assert(false, '[ArgvParser] duplicate argv_key:' + key)
+      if (this.formatMap[ key ]) throw new Error(`[ArgvParser] duplicate argvKey: ${key}`)
       this.keyList.push(key)
-      this.formatMap[ key ] = ArgvParser.parseFormatList(formatList)
+      this.formatMap[ key ] = parseFormatList(formatList)
     })
   }
 
@@ -31,10 +37,10 @@ export default class ArgvParser {
       } else if (argvList.length > 0) {
         argvMap[ key ] = argvList.shift()
       } else {
-        Dr.log(`[Usage] ${this.getUsage()}`)
-        Dr.log(`[Get] ${this.getResultArgvUsage(argvMap)}`)
-        Dr.log(`[Error]\n -- missing arg:<${key}> left input argv: [${argvList.join(', ')}]`)
-        return Dr.global.process.exit(-1)
+        console.log(`[Usage] ${this.getUsage()}`)
+        console.log(`[Get] ${this.getResultArgvUsage(argvMap)}`)
+        console.log(`[Error]\n -- missing arg:<${key}> left input argv: [${argvList.join(', ')}]`)
+        return global.process.exit(-1)
       }
     })
     return argvMap
@@ -54,31 +60,30 @@ export default class ArgvParser {
   getResultArgvUsage (argumentMap) {
     return ' - ' + this.keyList.map((v, i) => `[${i}] ${argumentMap[ v ] || `! <${v}>`}`).join('\n - ')
   }
+}
 
-  static TYPE = {
-    OPTIONAL: 'OPTIONAL',
-    MULTI: 'MULTI',
-    DEFAULT: 'DEFAULT'
-  }
-
-  static parseFormatList (formatList) {
-    const format = {}
-    for (let index = 0, indexMax = formatList.length; index < indexMax; index++) {
-      switch (formatList[ index ]) {
-        case ArgvParser.TYPE.OPTIONAL:
-          format.isOptional = true
-          break
-        case ArgvParser.TYPE.MULTI:
-          format.isMulti = true
-          break
-        case ArgvParser.TYPE.DEFAULT:
-          index++
-          Dr.assert(index >= indexMax, '[ArgvParser][parseFormatList] Missing value for DEFAULT')
-          format.isDefaultValue = true
-          format.defaultValue = formatList[ index ] // pick defaultValue from next index
-          break
-      }
+function parseFormatList (formatList) {
+  const format = {}
+  for (let index = 0, indexMax = formatList.length; index < indexMax; index++) {
+    switch (formatList[ index ]) {
+      case ARG_TYPE.OPTIONAL:
+        format.isOptional = true
+        break
+      case ARG_TYPE.MULTI:
+        format.isMulti = true
+        break
+      case ARG_TYPE.DEFAULT:
+        index++
+        if (index < indexMax) throw new Error('[ArgvParser][parseFormatList] Missing value for DEFAULT')
+        format.isDefaultValue = true
+        format.defaultValue = formatList[ index ] // pick defaultValue from next index
+        break
     }
-    return format
   }
+  return format
+}
+
+export {
+  ARG_TYPE,
+  ArgvParser
 }
