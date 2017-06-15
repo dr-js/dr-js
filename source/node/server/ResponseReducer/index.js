@@ -6,7 +6,8 @@ export {
 } from './Common'
 
 export {
-  createResponseReducerServeStatic
+  createResponseReducerServeStatic,
+  createResponseReducerServeStaticSingleCached
 } from './ServeStatic'
 
 export {

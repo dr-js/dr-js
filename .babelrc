@@ -20,6 +20,14 @@
         "regenerator": false,
         "moduleName": "babel-runtime"
       }
+    ],
+    [
+      "resolver",
+      {
+        "resolveDirs": [
+          "./"
+        ]
+      }
     ]
   ]
 }

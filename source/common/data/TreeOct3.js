@@ -1,4 +1,4 @@
-import { Vector3, Box3 } from '../math'
+import { Vector3, Box3 } from '../graphic'
 
 // P for Positive, N for Negative, each for X, Y, Z
 const OCTANT_INDEX_TYPE = {
@@ -22,7 +22,7 @@ function removeInArray (array, data) {
   return false
 }
 
-// direction_invert = 1 / ray.direction
+// directionInvert = 1 / ray.direction
 function intersectsRay (box, origin, directionInvert) {
   let tmin, tmax, tymin, tymax, tzmin, tzmax
   if (directionInvert.x >= 0) {
@@ -458,7 +458,7 @@ class TreeOct3Node {
     }
   }
 
-  // will check hit_callback(data) for is proceed, hit data is depth-first
+  // will check hitCallback(data) for is proceed, hit data is depth-first
   queryBox (onHit, box) {
     // first check stuck data
     const stuckDataList = this.stuckDataList
@@ -502,7 +502,7 @@ class TreeOct3Node {
     }
   }
 
-  // will check hit_callback(data) for is proceed, hit data is depth-first
+  // will check hitCallback(data) for is proceed, hit data is depth-first
   queryRay (onHit, origin, directionInvert) {
     // first check stuck data
     const stuckDataList = this.stuckDataList

@@ -1,4 +1,4 @@
-const Dr = require('./Dr.node.js')
+const Dr = require('../Dr.node.js')
 const nodeModulePath = require('path')
 
 console.log(Object.keys(Dr))
@@ -26,7 +26,7 @@ routerMapBuilder.addRoute('/static/*', 'GET', (store, { paramMap }) => responseR
 // console.log(__dirname)
 // console.log(JSON.stringify(routerMap))
 
-const { server, start } = createServer()
+const { server, start } = createServer({ port: 80 }, 'HTTP')
 applyResponseReducerList(server, [
   createResponseReducerParseURL(),
   createResponseReducerRouter(routerMapBuilder.getRouterMap())

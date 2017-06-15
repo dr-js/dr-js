@@ -61,13 +61,6 @@ function parseEvent (event) {
   }
 }
 
-// event_ext_data = {
-//   eventExtType: null,
-//   isActive: false,
-//   startTime: 0, // in second
-//   positionStart: null, positionCurrent: null, positionPrev: null // relative to listener_element
-// }
-
 const DRAG_DISTANCE_THRESHOLD = (window.devicePixelRatio || 1) * 3
 const HOLD_TIME_THRESHOLD = 0.5 // sec
 

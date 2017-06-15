@@ -1,11 +1,12 @@
-example
-source
-
 # WebStorm configuration
 .idea
 
-# config files
-.npmignore
-.babelrc
-.eslintrc
-webpack.config.js
+# source files
+/.npmignore
+/.babelrc
+/.eslintrc.js
+/.travis.yml
+/config
+/source
+/example
+/test

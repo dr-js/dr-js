@@ -42,12 +42,12 @@ const fetch = (url, config = {}) => new Promise((resolve, reject) => {
 })
 
 function loadScript (src) {
-  if (src.search('://') !== -1) return loadRemoteScript(src)
+  if (src.search(':// ') !== -1) return loadRemoteScript(src)
   else return loadLocalScript(src)
 }
 
 function loadJSON (src) {
-  if (src.search('://') !== -1) return loadRemoteJSON(src)
+  if (src.search(':// ') !== -1) return loadRemoteJSON(src)
   else return loadLocalJSON(src)
 }
 
@@ -55,7 +55,7 @@ const loadRemoteScript = (src) => {
   return fetch(src)
     .then((result) => result.text())
     .then((fileString) => {
-      const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '//...'
+      const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '// ...'
       return JSON.parse(stringList.join('\n'))
     })
 }
@@ -79,7 +79,7 @@ const loadLocalJSON = (src) => new Promise((resolve, reject) => {
   const filePath = getLocalPath(src)
   nodeModuleFs.readFile(filePath, { encoding: 'utf8' }, (error, fileString) => {
     if (error) return reject(error)
-    const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '//...'
+    const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '// ...'
     resolve(JSON.parse(stringList.join('\n')))
   })
 })

@@ -19,7 +19,7 @@ class ArgvParser {
 
     formatListList.forEach((formatList) => {
       const key = formatList.shift()
-      if (this.formatMap[ key ]) throw new Error(`[ArgvParser] duplicate argv_key: ${key}`)
+      if (this.formatMap[ key ]) throw new Error(`[ArgvParser] duplicate argvKey: ${key}`)
       this.keyList.push(key)
       this.formatMap[ key ] = parseFormatList(formatList)
     })
