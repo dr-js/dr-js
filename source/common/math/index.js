@@ -1,6 +1,7 @@
 export {
   getRandomInt,
-  getRandomIntList
+  getRandomIntList,
+  getRandomId
 } from './random'
 
 export {

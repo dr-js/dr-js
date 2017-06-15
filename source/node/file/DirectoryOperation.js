@@ -58,16 +58,16 @@ class Directory {
       const nameList = this.content[ type ]
       for (let name of nameList) {
         const walkControl = callback(this.path, name, type)
-        if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue // skip current (should be sub Directory + is_call_before_walk == false)
-        if (walkControl === WALK_CONTROL_TYPE.BREAK) break // skip current content type
+        if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue
+        if (walkControl === WALK_CONTROL_TYPE.BREAK) break
       }
     })
     const subDirectoryMap = this.content[ FILE_TYPE.Directory ]
     for (let [ name, subDirectory ] of subDirectoryMap) {
       !isCallbackFirst && subDirectory.walk(callback, isCallbackFirst)
       const walkControl = callback(this.path, name, FILE_TYPE.Directory)
-      if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue // skip current (should be sub Directory + is_call_before_walk == false)
-      if (walkControl === WALK_CONTROL_TYPE.BREAK) break // skip current content type
+      if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue
+      if (walkControl === WALK_CONTROL_TYPE.BREAK) break
       isCallbackFirst && subDirectory.walk(callback, isCallbackFirst)
     }
   }
@@ -77,15 +77,15 @@ class Directory {
       const nameList = this.content[ type ]
       for (let name of nameList) {
         const walkControl = callback(this.path, name, type)
-        if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue // skip current (should be sub Directory + is_call_before_walk == false)
-        if (walkControl === WALK_CONTROL_TYPE.BREAK) break // skip current content type
+        if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue
+        if (walkControl === WALK_CONTROL_TYPE.BREAK) break
       }
     })
     const subDirectoryMap = this.content[ FILE_TYPE.Directory ]
     for (let name of subDirectoryMap) {
       const walkControl = callback(this.path, name, FILE_TYPE.Directory)
-      if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue // skip current (should be sub Directory + is_call_before_walk == false)
-      if (walkControl === WALK_CONTROL_TYPE.BREAK) break // skip current content type
+      if (walkControl === WALK_CONTROL_TYPE.CONTINUE) continue
+      if (walkControl === WALK_CONTROL_TYPE.BREAK) break
     }
   }
 

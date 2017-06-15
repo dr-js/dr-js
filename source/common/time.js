@@ -2,29 +2,24 @@ import { global } from 'source/env'
 
 function getClock () {
   const { performance, process } = global
-  if (performance) {
-    try {
-      const clock = performance.now // milliseconds
-      const time = clock()
-      if (time <= clock()) return clock
-    } catch (error) { }
-    try {
-      const clock = performance.now.bind(performance)
-      const time = clock()
-      if (time <= clock()) return clock
-    } catch (error) { }
-  }
-  if (process) {
-    try {
-      const clock = () => {
-        const [ seconds, nanoseconds ] = process.hrtime()
-        return seconds * 1000000 + nanoseconds * 0.000001
-      }
-      const time = clock()
-      if (time <= clock()) return clock
-    } catch (error) { }
-    return
-  }
+  try {
+    const clock = performance.now // milliseconds
+    const time = clock()
+    if (time <= clock()) return clock
+  } catch (error) { }
+  try {
+    const clock = performance.now.bind(performance)
+    const time = clock()
+    if (time <= clock()) return clock
+  } catch (error) { }
+  try {
+    const clock = () => {
+      const [ seconds, nanoseconds ] = process.hrtime()
+      return seconds * 1000 + nanoseconds * 0.000001
+    }
+    const time = clock()
+    if (time <= clock()) return clock
+  } catch (error) { }
   try {
     const clock = global.performance.now
     const time = clock()

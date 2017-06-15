@@ -1,14 +1,32 @@
+const {
+  Common: {
+    Time: { now },
+    Data: { createToggle },
+    Module: { UpdateLoop, EventEmitter }
+  },
+  Browser: {
+    DOM: { bindLogElement, bindFPSElement },
+    Font: { FontRender, FontRenderBitmap },
+    Input: { POINTER_EVENT_TYPE, KEYBOARD_EVENT_TYPE, applyKeyboardEventListener },
+    Graphic: {
+      applyImageElementExt,
+      applyCanvasElementExt,
+      applyCanvasImageDataExt,
+      createCanvasExt,
+      createCanvasElement,
+      canvasElementToCanvasImageData,
+      CANVAS_IMAGE_DATA_OPERATION
+    }
+  }
+} = window.Dr
+
 window.addEventListener('load', () => {
-  const { Dr } = window
-
-  // =========================================================================================
-
-  const LOG = Dr.Browser.DOM.bindLogElement(document.getElementById('Log'))
-  const FPS = Dr.Browser.DOM.bindFPSElement(document.getElementById('FPS'))
+  const LOG = bindLogElement(document.getElementById('Log'))
+  const FPS = bindFPSElement(document.getElementById('FPS'))
 
   const log = (...args) => LOG.log(args.join(' '))
 
-  const updateLoop = new Dr.Common.Module.UpdateLoop()
+  const updateLoop = new UpdateLoop()
   updateLoop.start()
   updateLoop.add(() => {
     FPS.step()
@@ -16,7 +34,6 @@ window.addEventListener('load', () => {
     return true
   })
 
-  const { now } = Dr.Common.Time
   log(`init at: ${now()}`)
 
   // =========================================================================================
@@ -28,7 +45,6 @@ window.addEventListener('load', () => {
   const testCanvasElement = document.getElementById('testCanvasElement')
   const testCanvasImageData = document.getElementById('testCanvasImageData').getContext('2d').getImageData(0, 0, testCanvasElement.width, testCanvasElement.height)
 
-  const { applyImageElementExt, applyCanvasElementExt, applyCanvasImageDataExt } = Dr.Browser.Graphic
   const imageElementExt = applyImageElementExt(testImageElement)
   const canvasElementExt = applyCanvasElementExt(testCanvasElement)
   const canvasImageDataExt = applyCanvasImageDataExt(testCanvasImageData)
@@ -66,7 +82,7 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const Toggle = Dr.Common.Data.createToggle()
+  const Toggle = createToggle()
   window.Toggle = Toggle
 
   Toggle('DRAW_COUNT', 1)
@@ -94,9 +110,6 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const { createCanvasExt } = Dr.Browser.Graphic
-  const { POINTER_EVENT_TYPE } = Dr.Browser.Input
-
   const testCanvasExt = createCanvasExt(mainCanvas)
   const eventExtListener = ({ eventExtType }, { positionRelative, event }) => {
     const MARKER_HALF_SIZE = 2
@@ -121,9 +134,6 @@ window.addEventListener('load', () => {
   // =========================================================================================
 
   // test font
-  const { createCanvasElement, canvasElementToCanvasImageData, CANVAS_IMAGE_DATA_OPERATION } = Dr.Browser.Graphic
-  const { FontRender, FontRenderBitmap } = Dr.Browser.Font
-
   const testFontCanvas = document.getElementById('testFont')
   const testFontCanvasContext2d = testFontCanvas.getContext('2d')
 
@@ -170,8 +180,6 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const { KEYBOARD_EVENT_TYPE, applyKeyboardEventListener } = Dr.Browser.Input
-
   const keyEventListener = (keyboardEvent) => {
     switch (keyboardEvent.type) {
       case KEYBOARD_EVENT_TYPE.DOWN: // check if filter special key
@@ -191,8 +199,6 @@ window.addEventListener('load', () => {
   applyKeyboardEventListener(document, keyEventListener)
 
   // =========================================================================================
-
-  const { EventEmitter } = Dr.Common.Module
 
   const testEventEmitter = new EventEmitter()
 

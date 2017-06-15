@@ -90,7 +90,7 @@ export class Quaternion {
     const s1 = Math.sin(x / 2)
     const s2 = Math.sin(y / 2)
     const s3 = Math.sin(z / 2)
-    // order: XYZ
+    // order: xyz
     this._x = s1 * c2 * c3 + c1 * s2 * s3
     this._y = c1 * s2 * c3 - s1 * c2 * s3
     this._z = c1 * c2 * s3 + s1 * s2 * c3

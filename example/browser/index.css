@@ -38,9 +38,6 @@ button:active, .button:active { border: 2px solid #333; background: #222; }
   image-rendering: optimize-contrast; /* CSS3 Proposed */
   image-rendering: crisp-edges; /* CSS4 Proposed */
   image-rendering: pixelated; /* CSS4 Proposed */
-  image-rendering: -moz-crisp-edges;
-  -ms-interpolation-mode: nearest-neighbor;
-  image-rendering: -webkit-optimize-contrast;
 }
 
 /* webkit style */

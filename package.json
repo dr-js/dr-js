@@ -4,17 +4,17 @@
   "description": "A collection of strange functions",
   "main": "library/Dr.js",
   "scripts": {
-    "prof-example-server": "cross-env NODE_ENV=production node --prof example/example-server.js",
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
     "example-dev": "cross-env NODE_ENV=development webpack --watch --config config/example.conf.js",
     "library": "cross-env NODE_ENV=production webpack --config config/library.conf.js",
     "library-dev": "cross-env NODE_ENV=development webpack --watch --config config/library.conf.js",
-    "webpack-stats": "cross-env NODE_ENV=production webpack -p --config config/library.conf.js --json > stats.json",
-    "webpack-profile": "cross-env NODE_ENV=production webpack -p --config config/library.conf.js --profile",
-    "test-mocha": "mocha --compilers js:babel-register --recursive test",
+    "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
+    "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config config/library.conf.js --json > stats.json",
+    "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config config/library.conf.js --profile",
+    "test-mocha": "mocha --compilers js:babel-register \"source/**/*.test.js\"",
     "test": "npm run build && npm run test-mocha",
     "build": "npm run library",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "start": "npm run example-dev"
   },
   "repository": {
@@ -23,6 +23,7 @@
   },
   "keywords": [
     "Dr",
+    "Dr-js",
     "JavaScript"
   ],
   "author": "dr-js",
@@ -39,7 +40,9 @@
     "babel-plugin-transform-object-rest-spread": "*",
     "babel-plugin-transform-runtime": "*",
     "babel-preset-env": "*",
-    "babel-require": "*",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "*",
     "babel-runtime": "*",
     "cross-env": "*",
     "eslint": "*",
@@ -51,5 +54,8 @@
     "mocha": "*",
     "uglifyjs-webpack-plugin": "*",
     "webpack": "*"
+  },
+  "dependencies": {
+    "babel-plugin-resolver": "^1.1.0"
   }
 }
