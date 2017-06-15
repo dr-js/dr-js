@@ -5,9 +5,9 @@ function getGlobal () {
 }
 
 function getEnvironment () {
-  const GLOBAL = getGlobal()
-  const isNode = (typeof (GLOBAL.process) !== 'undefined' && typeof (GLOBAL.process.versions) !== 'undefined' && GLOBAL.process.versions.node)
-  const isBrowser = (typeof (GLOBAL.window) !== 'undefined' && typeof (GLOBAL.document) !== 'undefined')
+  const { process, window, document } = getGlobal()
+  const isNode = (typeof (process) !== 'undefined' && typeof (process.versions) !== 'undefined' && process.versions.node)
+  const isBrowser = (typeof (window) !== 'undefined' && typeof (document) !== 'undefined')
   return {
     isNode,
     isBrowser,
@@ -38,7 +38,7 @@ function getConsoleMethod (name) {
       : (...args) => console[ name ](args)
 }
 
-const global = getGlobal()
+const GLOBAL = getGlobal()
 const { isNode, isBrowser, environmentName } = getEnvironment()
 const systemEndianness = getSystemEndianness()
 
@@ -56,11 +56,13 @@ export {
   getEnvironment,
   getSystemEndianness,
   getConsoleMethod,
-  global,
+
+  GLOBAL as global,
   isNode,
   isBrowser,
   environmentName,
   systemEndianness,
+
   log,
   warn,
   error,
