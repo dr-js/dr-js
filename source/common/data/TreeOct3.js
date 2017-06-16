@@ -1,4 +1,4 @@
-import { Vector3, Box3 } from '../math'
+import { Vector3, Box3 } from '../graphic'
 
 // P for Positive, N for Negative, each for X, Y, Z
 const OCTANT_INDEX_TYPE = {

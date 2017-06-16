@@ -1,5 +1,5 @@
-import * as Dr from 'source/Dr'
+import * as Env from 'source/env'
+import * as Common from 'source/common'
 import * as Node from 'source/node'
-Dr.Node = Node
-Dr.global.Dr = Dr // add to global
-module.exports = Dr // support node require
+const { global, log, warn, error, assert } = Env
+export { global, log, warn, error, assert, Env, Common, Node }

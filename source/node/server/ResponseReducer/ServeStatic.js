@@ -4,7 +4,7 @@ import nodeModulePath from 'path'
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
 
-import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from './basicMIME'
+import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from './__utils__'
 
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
 const CACHE_FILE_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
