@@ -66,7 +66,6 @@ function createRouterMapBuilder () {
     ROUTE_ANY,
     ROUTE_PARAM,
     addRoute: (route, method, routeProcessor) => addRouteToRouterMap(routerMap, route, method, routeProcessor),
-    setRouterMap: (addRouterMap) => { routerMap = addRouterMap || {} },
     getRouterMap: () => {
       const resultRouterMap = routerMap
       routerMap = {}
@@ -76,8 +75,8 @@ function createRouterMapBuilder () {
 }
 
 const createResponseReducerRouter = (routerMap) => (store) => {
-  const { url } = store.getState()
-  if (!url) return store
+  const { url, method } = store.getState()
+  if (!url || !method) return store
 
   let paramValueList = []
   let currentNode = routerMap
@@ -98,18 +97,15 @@ const createResponseReducerRouter = (routerMap) => (store) => {
     } else throw new Error(`[Router] stuck at <${frag}> for route: ${routeString}`)
   })
 
-  // method
-  const { method } = store.request
+  // node info
   const { route, paramNameList, routeProcessor } = (currentNode && currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) || {}
-
-  if (!routeProcessor) throw new Error(`[Router] missing method <${method}> for route: ${routeString}`)
-
+  if (__DEV__ && (!route || !paramNameList || !routeProcessor)) throw new Error(`[Router] invalid node info for :<${method}> ${routeString}`)
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]
     return o
   }, {})
-
-  return routeProcessor(store, { route, method, paramMap })
+  store.setState({ route, paramMap })
+  return routeProcessor(store)
 }
 
 export {

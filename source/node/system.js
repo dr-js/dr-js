@@ -9,17 +9,30 @@ const PATH_NODE_START_SCRIPT = nodeModulePath.resolve(global.process.cwd(), node
 
 const getLocalPath = (relativePath) => nodeModulePath.resolve(PATH_NODE_START_SCRIPT, relativePath)
 
+const PROCESS_EXIT_SIGNAL_EVENT_TYPE_LIST = [ 'SIGINT', 'SIGHUP', 'SIGQUIT', 'SIGTERM' ]
+
+function addProcessExitListener (listener) {
+  const wrappedListenerList = [
+    { eventType: 'exit', wrappedListener: (code) => listener({ eventType: 'exit', code }) },
+    { eventType: 'uncaughtException', wrappedListener: (error) => listener({ eventType: 'uncaughtException', error }) },
+    ...PROCESS_EXIT_SIGNAL_EVENT_TYPE_LIST.map((eventType) => ({
+      eventType,
+      wrappedListener: () => {
+        listener({ eventType, signalEventType: eventType })
+        process.exit()
+      }
+    }))
+  ]
+  wrappedListenerList.forEach(({ eventType, wrappedListener }) => process.on(eventType, wrappedListener))
+  return () => wrappedListenerList.forEach(({ eventType, wrappedListener }) => process.removeListener(eventType, wrappedListener))
+}
+
 const startREPL = () => {
   const replServer = nodeModuleREPL.start({
     prompt: '> ',
     input: global.process.stdin,
     output: global.process.stdout,
     useGlobal: true
-  })
-  global.Dr && Object.defineProperty(replServer.context, 'Dr', {
-    configurable: false,
-    enumerable: true,
-    value: global.Dr
   })
   return replServer
 }
@@ -29,5 +42,6 @@ export {
   PATH_NODE_START_SCRIPT,
 
   getLocalPath,
+  addProcessExitListener,
   startREPL
 }

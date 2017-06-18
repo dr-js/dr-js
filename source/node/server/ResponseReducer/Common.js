@@ -1,38 +1,63 @@
 import nodeModuleUrl from 'url'
-
-const responseReducerLogState = (store) => {
-  __DEV__ && console.log(store.getState())
-  return store
-}
+import nodeModuleStream from 'stream'
 
 const responseReducerEnd = (store) => {
   if (store.response.finished) return store
-  const { error } = store.getState()
-  if (error) store.response.statusCode = 500
-  __DEV__ && error && console.log(`[ERROR] ${store.request.method}: ${store.request.url}\n`, error)
-  __DEV__ && error && store.response.write(`[ERROR] ${store.request.method}: ${store.request.url}\n${error.message}\n${error.stack}`)
+  if (!store.response.headersSent && store.getState().error) store.response.statusCode = 500
+  if (__DEV__) {
+    const { error } = store.getState()
+    error && store.response.write(`[ERROR] ${store.request.method}: ${store.request.url}\n${error.message}\n${error.stack}`)
+    error && console.error(`[ERROR] ${store.request.method}: ${store.request.url}\n`, error)
+  }
   store.response.end() // force end the response to prevent pending
   return store
 }
 
-const createResponseReducerParseURL = (parseQueryString = true) => (store) => {
-  store.setState({ url: nodeModuleUrl.parse(store.request.url, parseQueryString) })
+const responseReducerLogState = (store) => {
+  console.log(store.getState())
   return store
 }
 
-const createResponseReducerReceiveBuffer = () => (store) => new Promise((resolve, reject) => {
+const createResponseReducerSendStream = (getStream) => (store) => Promise.resolve(getStream(store))
+  .then(({ stream, length, type }) => new Promise((resolve, reject) => {
+    store.response.setHeader('content-type', type)
+    store.response.setHeader('content-length', length)
+    stream.on('error', reject)
+    stream.on('end', () => resolve(store))
+    stream.pipe(store.response)
+  }))
+
+const createResponseReducerSendBuffer = (getBuffer) => (store) => Promise.resolve(getBuffer(store))
+  .then(({ buffer, length, type }) => new Promise((resolve, reject) => {
+    store.response.setHeader('content-type', type)
+    store.response.setHeader('content-length', length)
+    const bufferStream = new nodeModuleStream.PassThrough()
+    bufferStream.on('error', reject)
+    bufferStream.on('end', () => resolve(store))
+    bufferStream.end(buffer)
+    bufferStream.pipe(store.response)
+  }))
+
+const createResponseReducerReceiveBuffer = (setBuffer) => (store) => new Promise((resolve, reject) => {
   const data = []
-  store.request.addListener('error', reject)
-  store.request.addListener('data', (chunk) => data.push(chunk))
-  store.request.addListener('end', () => {
-    store.setState({ buffer: Buffer.concat(data) })
-    resolve(store)
-  })
+  store.request.on('error', reject)
+  store.request.on('data', (chunk) => data.push(chunk))
+  store.request.on('end', () => resolve(Buffer.concat(data)))
 })
+  .then((buffer) => setBuffer(store, buffer))
+  .then(() => store)
+
+const createResponseReducerParseURL = (parseQueryString = true) => (store) => {
+  const { url, method } = store.request
+  store.setState({ url: nodeModuleUrl.parse(url, parseQueryString), method })
+  return store
+}
 
 export {
-  responseReducerLogState,
   responseReducerEnd,
+  responseReducerLogState,
   createResponseReducerParseURL,
+  createResponseReducerSendStream,
+  createResponseReducerSendBuffer,
   createResponseReducerReceiveBuffer
 }

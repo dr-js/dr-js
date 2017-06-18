@@ -60,7 +60,13 @@ function createServer (option, type = 'HTTPS') {
   return { server, start, stop }
 }
 
-const createStateStore = (state) => ({
+const INITIAL_STORE_STATE = {
+  time: -1, // set by clock()
+  url: null, // from createResponseReducerParseURL
+  error: null // from failed responseReducer
+}
+
+const createStateStore = (state = INITIAL_STORE_STATE) => ({
   getState: () => state,
   setState: (nextState) => (state = { ...state, ...nextState })
 })
@@ -68,32 +74,28 @@ const createStateStore = (state) => ({
 const applyResponseReducerList = (server, responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST) => {
   let totalResponseCount = 0
   let currentResponseCount = 0
-  return server.on(
-    'request',
-    (request, response) => {
-      __DEV__ && totalResponseCount++
-      __DEV__ && currentResponseCount++
-      __DEV__ && console.log(`START ==== ${request.method}: ${request.url} ${totalResponseCount}/${currentResponseCount}`)
-      const startTime = clock()
-      const stateStore = Object.assign(createStateStore(), { request, response })
-      responseReducerList.reduce(
-        (promiseTail, responseReducer) => {
-          // __DEV__ && console.log(`REDUCE +${(clock() - startTime).toFixed(3)}ms`)
-          return promiseTail.then(responseReducer)
-        },
-        Promise.resolve(stateStore)
-      )
-        .catch((error) => {
-          stateStore.setState({ error })
-          return stateStore
-        })
-        .then(responseReducerEnd)
-        .then(() => {
-          __DEV__ && currentResponseCount--
-          __DEV__ && console.log(`END ====== +${(clock() - startTime).toFixed(3)}ms ${response.statusCode}`)
-        })
-    }
-  )
+
+  return server.on('request', (request, response) => {
+    __DEV__ && totalResponseCount++
+    __DEV__ && currentResponseCount++
+    __DEV__ && console.log(`START ==== ${request.method}: ${request.url} ${totalResponseCount}/${currentResponseCount}`)
+
+    const stateStore = createStateStore({ time: clock(), url: null, error: null })
+    stateStore.request = request
+    stateStore.response = response
+
+    let promiseTail = responseReducerList.reduce((promiseTail, responseReducer) => promiseTail.then(responseReducer), Promise.resolve(stateStore))
+      .catch((error) => {
+        stateStore.setState({ error })
+        return stateStore
+      })
+      .then(responseReducerEnd)
+
+    __DEV__ && promiseTail.then(() => {
+      currentResponseCount--
+      console.log(`END ====== +${(clock() - stateStore.getState().time).toFixed(3)}ms ${stateStore.response.statusCode}`)
+    })
+  })
 }
 
 export {

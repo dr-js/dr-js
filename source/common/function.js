@@ -44,8 +44,28 @@ function repeat (count, func) {
   }
 }
 
+async function promiseQueue ({ taskList, shouldContinueOnError = false }) {
+  const resultList = []
+  const errorList = []
+  const endList = []
+  const pendingList = [ ...taskList ]
+  while (pendingList.length) {
+    const index = endList.length
+    const task = pendingList.shift()
+    endList.push(task)
+    try {
+      resultList[ index ] = await task()
+    } catch (error) {
+      errorList[ index ] = error
+      if (!shouldContinueOnError) break
+    }
+  }
+  return { resultList, errorList, endList, pendingList }
+}
+
 export {
   debounce,
   throttle,
-  repeat
+  repeat,
+  promiseQueue
 }

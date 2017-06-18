@@ -3,6 +3,7 @@ export {
   ArgvParser
 } from './ArgvParser'
 export {
+  spawn,
   run,
-  spawn
+  runCommand
 } from './Command'
