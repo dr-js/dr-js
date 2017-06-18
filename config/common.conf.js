@@ -1,6 +1,6 @@
 const nodeModulePath = require('path')
 const webpack = require('webpack')
-const { DefinePlugin, BannerPlugin } = webpack
+const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = webpack
 
 const NODE_ENV = process.env.NODE_ENV
 const PRODUCTION = NODE_ENV === 'production'
@@ -26,7 +26,7 @@ module.exports = {
             plugins: [
               'transform-object-rest-spread',
               'transform-class-properties',
-              [ 'transform-runtime', { helpers: true, polyfill: false, regenerator: false, moduleName: 'babel-runtime' } ]
+              // [ 'transform-runtime', { helpers: true, polyfill: false, regenerator: false, moduleName: 'babel-runtime' } ]
             ]
           }
         }
@@ -38,6 +38,9 @@ module.exports = {
   },
   plugins: [].concat(
     new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(NODE_ENV), '__DEV__': !PRODUCTION }),
-    PRODUCTION ? [ new BannerPlugin({ banner: '/* eslint-disable */', raw: true, test: /\.js$/, entryOnly: false }) ] : []
+    PRODUCTION ? [
+      new ModuleConcatenationPlugin(),
+      new BannerPlugin({ banner: '/* eslint-disable */', raw: true, test: /\.js$/, entryOnly: false })
+    ] : []
   )
 }

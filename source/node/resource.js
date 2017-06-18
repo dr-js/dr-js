@@ -70,8 +70,7 @@ const loadLocalScript = (src) => new Promise((resolve, reject) => {
   const filePath = getLocalPath(src)
   nodeModuleFs.readFile(filePath, { encoding: 'utf8' }, (error, fileString) => {
     if (error) return reject(error)
-    nodeModuleVm.runInThisContext(fileString, { filename: filePath })
-    resolve()
+    resolve(nodeModuleVm.runInThisContext(fileString, { filename: filePath }))
   })
 })
 
