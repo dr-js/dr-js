@@ -13,7 +13,7 @@ const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 const createResponseReducerBufferCache = ({
   getKey,
-  getBuffer,
+  getBufferData, // { buffer, length, type }
   sizeSumMax = CACHE_BUFFER_SIZE_SUM_MAX,
   expireTime = CACHE_EXPIRE_TIME,
   onCacheAdd = __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
@@ -26,7 +26,7 @@ const createResponseReducerBufferCache = ({
       const bufferData = serveCacheMap.get(cacheKey)
       __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
       if (bufferData) return bufferData
-      return getBuffer(store, cacheKey).then((bufferData) => {
+      return getBufferData(store, cacheKey).then((bufferData) => {
         __DEV__ && bufferData.length <= CACHE_FILE_SIZE_MAX && console.log(`[SET] CACHE: ${cacheKey}`)
         bufferData.length <= CACHE_FILE_SIZE_MAX && serveCacheMap.set(cacheKey, bufferData, bufferData.length, clock() + expireTime)
         return bufferData
