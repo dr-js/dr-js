@@ -13,15 +13,6 @@
     "transform-object-rest-spread",
     "transform-class-properties",
     [
-      "transform-runtime",
-      {
-        "helpers": true,
-        "polyfill": false,
-        "regenerator": false,
-        "moduleName": "babel-runtime"
-      }
-    ],
-    [
       "resolver",
       {
         "resolveDirs": [
