@@ -1,24 +1,10 @@
 {
   "presets": [
-    [
-      "env",
-      {
-        "targets": {
-          "node": "current"
-        }
-      }
-    ]
+    [ "env", { "targets": { "node": "current" } } ]
   ],
   "plugins": [
     "transform-object-rest-spread",
     "transform-class-properties",
-    [
-      "resolver",
-      {
-        "resolveDirs": [
-          "./"
-        ]
-      }
-    ]
+    [ "resolver", { "resolveDirs": [ "./" ] } ]
   ]
 }

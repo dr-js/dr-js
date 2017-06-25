@@ -5,8 +5,15 @@ const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = 
 const NODE_ENV = process.env.NODE_ENV
 const PRODUCTION = NODE_ENV === 'production'
 
+const BABEL_OPRTIONS = {
+  babelrc: false,
+  presets: PRODUCTION
+    ? [ 'stage-0' ]
+    : [ [ 'env', { targets: { node: 'current' } } ] ],
+  plugins: [ 'transform-object-rest-spread', 'transform-class-properties' ]
+}
+
 module.exports = {
-  // output: {},
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
     'Dr': [ nodeModulePath.join(__dirname, '../source/Dr') ],
     'Dr.node': [ nodeModulePath.join(__dirname, '../source/Dr.node') ],
@@ -18,18 +25,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            babelrc: false,
-            presets: PRODUCTION ? [ 'stage-0' ] : [ [ 'env', { targets: { node: 'current' } } ] ],
-            plugins: [
-              'transform-object-rest-spread',
-              'transform-class-properties',
-              // [ 'transform-runtime', { helpers: true, polyfill: false, regenerator: false, moduleName: 'babel-runtime' } ]
-            ]
-          }
-        }
+        use: { loader: 'babel-loader', options: BABEL_OPRTIONS }
       }
     ]
   },
