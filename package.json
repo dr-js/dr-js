@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A collection of strange functions",
   "main": "library/Dr.js",
   "scripts": {
@@ -43,9 +43,9 @@
     "babel-preset-stage-0": "*",
     "babel-register": "*",
     "cross-env": "*",
-    "eslint": "*",
+    "eslint": "^4.1.0",
     "eslint-config-standard": "*",
-    "eslint-plugin-import": "^2.5.0",
+    "eslint-plugin-import": "^2.6.0",
     "eslint-plugin-node": "*",
     "eslint-plugin-promise": "*",
     "eslint-plugin-standard": "*",
