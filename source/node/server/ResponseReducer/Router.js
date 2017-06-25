@@ -38,7 +38,7 @@ const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeProces
   // route
   route.split('/').forEach((frag) => {
     if (frag === '*') {
-      if (currentNode[ ROUTE_ANY ]) throw new Error(`[Router] duplicate <*> for route: ${route}`)
+      if (currentNode[ ROUTE_ANY ]) throw new Error(`[Router] duplicate [*] for route: ${route}`)
       currentNode[ ROUTE_ANY ] = {}
       currentNode = currentNode[ ROUTE_ANY ]
       paramNameList.push(ROUTE_ANY) // as paramName
@@ -53,8 +53,8 @@ const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeProces
   })
 
   // method
-  if (!HTTP_REQUEST_METHOD_MAP[ method ]) throw new Error(`[Router] error method <${method}> for route: ${route}`)
-  if (currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) throw new Error(`[Router] duplicate method <${method}> for route: ${route}`)
+  if (!HTTP_REQUEST_METHOD_MAP[ method ]) throw new Error(`[Router] error method [${method}] for route: ${route}`)
+  if (currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) throw new Error(`[Router] duplicate method [${method}] for route: ${route}`)
   currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ] = { route, paramNameList, routeProcessor }
 
   return routerMap
@@ -94,12 +94,12 @@ const createResponseReducerRouter = (routerMap) => (store) => {
       currentNode = currentNode[ ROUTE_ANY ]
       paramValueList.push(routeFragList.slice(index).join('/'))
       return true
-    } else throw new Error(`[Router] stuck at <${frag}> for route: ${routeString}`)
+    } else throw new Error(`[Router] stuck at [${frag}] for route: ${routeString}`)
   })
 
   // node info
   const { route, paramNameList, routeProcessor } = (currentNode && currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) || {}
-  if (__DEV__ && (!route || !paramNameList || !routeProcessor)) throw new Error(`[Router] invalid node info for :<${method}> ${routeString}`)
+  if (__DEV__ && (!route || !paramNameList || !routeProcessor)) throw new Error(`[Router] invalid node info for: [${method}] ${routeString}`)
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]
     return o

@@ -1,10 +1,7 @@
-import nodeModuleOs from 'os'
 import nodeModuleChildProcess from 'child_process'
 
-const PLATFORM = nodeModuleOs.platform()
-
 function spawn (command, argList = [], { cwd = process.cwd(), env = process.env, shell = true, detached = false, stdio = 'inherit' }) {
-  const childProcess = nodeModuleChildProcess.spawn(command, argList, { cwd, env, shell, detached, stdio }) // Added in: v0.7.10
+  const childProcess = nodeModuleChildProcess.spawn(command, argList, { cwd, env, shell, detached, stdio })
   return {
     childProcess,
     childProcessPromise: new Promise((resolve, reject) => {
@@ -20,11 +17,9 @@ function spawn (command, argList = [], { cwd = process.cwd(), env = process.env,
   }
 }
 
-function run (command, options) {
-  if (~PLATFORM.search('win')) return spawn('cmd', [ '/s', '/c', command ], options)
-  if (~PLATFORM.search('nux') || ~PLATFORM.search('darwin')) return spawn('sh', [ '-c', command ], options)
-  throw new Error('[Command][run] unrecognized PLATFORM:' + PLATFORM)
-}
+const run = process.platform.includes('win') ? (command, options) => spawn('cmd', [ '/s', '/c', command ], options)
+  : (process.platform.includes('nux') || process.platform.includes('darwin')) ? (command, options) => spawn('sh', [ '-c', command ], options)
+    : () => { throw new Error(`[run] unrecognized platform: ${process.platform}`) }
 
 function runCommand (command) {
   const { childProcess, childProcessPromise } = run(command, { stdio: [ 'ignore', 'pipe', 'pipe' ] })

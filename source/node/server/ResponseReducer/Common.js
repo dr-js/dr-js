@@ -3,7 +3,7 @@ import nodeModuleStream from 'stream'
 
 const responseReducerEnd = (store) => {
   if (store.response.finished) return store
-  if (!store.response.headersSent && store.getState().error) store.response.statusCode = 500
+  !store.response.headersSent && store.response.writeHead(store.getState().error ? 500 : 400)
   if (__DEV__) {
     const { error } = store.getState()
     error && store.response.write(`[ERROR] ${store.request.method}: ${store.request.url}\n${error.message}\n${error.stack}`)
@@ -20,8 +20,7 @@ const responseReducerLogState = (store) => {
 
 const createResponseReducerSendStream = (getStream) => (store) => Promise.resolve(getStream(store))
   .then(({ stream, length, type }) => new Promise((resolve, reject) => {
-    store.response.setHeader('content-type', type)
-    store.response.setHeader('content-length', length)
+    store.response.writeHead(200, { 'content-type': type, 'content-length': length })
     stream.on('error', reject)
     stream.on('end', () => resolve(store))
     stream.pipe(store.response)
@@ -29,8 +28,7 @@ const createResponseReducerSendStream = (getStream) => (store) => Promise.resolv
 
 const createResponseReducerSendBuffer = (getBuffer) => (store) => Promise.resolve(getBuffer(store))
   .then(({ buffer, length, type }) => new Promise((resolve, reject) => {
-    store.response.setHeader('content-type', type)
-    store.response.setHeader('content-length', length)
+    store.response.writeHead(200, { 'content-type': type, 'content-length': length })
     const bufferStream = new nodeModuleStream.PassThrough()
     bufferStream.on('error', reject)
     bufferStream.on('end', () => resolve(store))
