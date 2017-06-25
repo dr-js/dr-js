@@ -21,8 +21,8 @@ class ZOrderIndex {
     while ((x !== 0 || y !== 0) && zOrder !== 0) {
       zOrder--
       quadList[ zOrder ] = ((y & 1) << 1) + (x & 1)
-      x >>= 1
-      y >>= 1
+      x >>>= 1
+      y >>>= 1
     }
 
     while (zOrder !== 0) {
@@ -39,15 +39,15 @@ class ZOrderIndex {
     let y = 0
 
     while (zIndex !== 0) {
-      y = (y << 1) + ((zIndex & 2) >> 1)
+      y = (y << 1) + ((zIndex & 2) >>> 1)
       // y = (y << 1) + (zIndex & 2); // faster, but bit limit -1
       x = (x << 1) + (zIndex & 1)
-      zIndex >>= 2
+      zIndex >>>= 2
     }
 
     xyData.x = x
     xyData.y = y
-    // xyData.y = y >> 1; // faster, but bit limit -1
+    // xyData.y = y >>> 1; // faster, but bit limit -1
     return xyData
   }
 
@@ -79,7 +79,7 @@ class ZOrderIndex {
 
     while (zIndex !== 0) {
       quadList.unshift(zIndex & 3)
-      zIndex >>= 2
+      zIndex >>>= 2
     }
 
     return quadList

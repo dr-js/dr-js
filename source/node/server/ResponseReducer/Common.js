@@ -1,5 +1,5 @@
 import nodeModuleUrl from 'url'
-import nodeModuleStream from 'stream'
+// import nodeModuleStream from 'stream'
 
 const responseReducerEnd = (store) => {
   if (store.response.finished) return store
@@ -22,28 +22,38 @@ const createResponseReducerSendStream = (getStream) => (store) => Promise.resolv
   .then(({ stream, length, type }) => new Promise((resolve, reject) => {
     store.response.writeHead(200, { 'content-type': type, 'content-length': length })
     stream.on('error', reject)
-    stream.on('end', () => resolve(store))
+    stream.on('end', () => {
+      store.response.removeListener('error', reject)
+      resolve(store)
+    })
     stream.pipe(store.response)
   }))
 
 const createResponseReducerSendBuffer = (getBuffer) => (store) => Promise.resolve(getBuffer(store))
   .then(({ buffer, length, type }) => new Promise((resolve, reject) => {
     store.response.writeHead(200, { 'content-type': type, 'content-length': length })
-    const bufferStream = new nodeModuleStream.PassThrough()
-    bufferStream.on('error', reject)
-    bufferStream.on('end', () => resolve(store))
-    bufferStream.end(buffer)
-    bufferStream.pipe(store.response)
+    // const bufferStream = new nodeModuleStream.PassThrough()
+    // bufferStream.on('error', reject)
+    // bufferStream.on('end', () => resolve(store))
+    // bufferStream.end(buffer)
+    // bufferStream.pipe(store.response)
+    store.response.on('error', reject)
+    store.response.write(buffer, () => {
+      store.response.removeListener('error', reject)
+      resolve(store)
+    })
   }))
 
 const createResponseReducerReceiveBuffer = (setBuffer) => (store) => new Promise((resolve, reject) => {
   const data = []
   store.request.on('error', reject)
   store.request.on('data', (chunk) => data.push(chunk))
-  store.request.on('end', () => resolve(Buffer.concat(data)))
+  store.request.on('end', () => {
+    store.response.removeListener('error', reject)
+    setBuffer(store, Buffer.concat(data))
+    resolve(store)
+  })
 })
-  .then((buffer) => setBuffer(store, buffer))
-  .then(() => store)
 
 const createResponseReducerParseURL = (parseQueryString = true) => (store) => {
   const { url, method } = store.request

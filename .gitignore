@@ -28,3 +28,4 @@ node_modules
 /example/Dr.node.js
 /example/Dr.browser.js
 /library
+/dr-js*

@@ -12,7 +12,7 @@ const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 const fetch = (url, config = {}) => new Promise((resolve, reject) => {
   const { method = 'GET', headers, body = null, timeout = DEFAULT_TIMEOUT } = config
   const urlObject = nodeModuleUrl.parse(url)
-  const options = {
+  const option = {
     hostname: urlObject.hostname,
     port: urlObject.port || '',
     path: (urlObject.pathname || '') + (urlObject.search || '') + (urlObject.hash || ''),
@@ -21,7 +21,7 @@ const fetch = (url, config = {}) => new Promise((resolve, reject) => {
     timeout // will result in error
   }
 
-  const request = (urlObject.protocol === 'https:' ? nodeModuleHttps : nodeModuleHttp).request(options, (response) => {
+  const request = (urlObject.protocol === 'https:' ? nodeModuleHttps : nodeModuleHttp).request(option, (response) => {
     const data = []
     response.on('data', (chunk) => { data.push(chunk) })
     response.on('end', () => {

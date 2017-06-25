@@ -1,5 +1,3 @@
-import { global } from 'source/env'
-
 const ARG_TYPE = {
   OPTIONAL: 'OPTIONAL',
   MULTI: 'MULTI',

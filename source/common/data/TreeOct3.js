@@ -126,7 +126,7 @@ class TreeOct3 {
     const changeDataListRootAdd = [] // root add
     const changeDataListLocalUnstuck = [] // local operation: unstuck, move down to child
 
-    let debugDataDum = dataListRoot.length + dataListOutOfBound.length
+    let debugDataSum = dataListRoot.length + dataListOutOfBound.length
 
     // picking from dataListRoot, no node operation yet(except local pending -> stuck)
     for (let index = 0, indexMax = dataListRoot.length; index < indexMax; index++) {
@@ -174,7 +174,7 @@ class TreeOct3 {
       dataListRoot.splice(dataListIndex, 1)
     }
 
-    if (debugDataDum !== dataListRoot.length + dataListOutOfBound.length + changeDataListRootRemove.length) {
+    if (debugDataSum !== dataListRoot.length + dataListOutOfBound.length + changeDataListRootRemove.length) {
       throw new Error('[update] data sum mismatch!')
     }
 
@@ -266,7 +266,7 @@ class TreeOct3 {
       data.__DEBUG_NOTE = '[update] local unstuck'
     }
 
-    if (debugDataDum !== dataListRoot.length + dataListOutOfBound.length) {
+    if (debugDataSum !== dataListRoot.length + dataListOutOfBound.length) {
       throw new Error('[update] data sum mismatch!')
     }
   }
