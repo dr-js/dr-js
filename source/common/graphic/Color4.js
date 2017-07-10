@@ -24,9 +24,9 @@ export class Color4 {
 
   setHex (hex) {
     hex = Math.floor(hex)
-    this.r = ((hex >> 24) & 255) / 255
-    this.g = ((hex >> 16) & 255) / 255
-    this.b = ((hex >> 8) & 255) / 255
+    this.r = ((hex >>> 24) & 255) / 255
+    this.g = ((hex >>> 16) & 255) / 255
+    this.b = ((hex >>> 8) & 255) / 255
     this.a = (hex & 255) / 255
     return this
   }

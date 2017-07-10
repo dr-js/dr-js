@@ -2,6 +2,21 @@
   "name": "dr-js",
   "version": "0.0.8",
   "description": "A collection of strange functions",
+  "author": "dr-js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dr-js/dr-js.git"
+  },
+  "homepage": "https://github.com/dr-js/dr-js#readme",
+  "bugs": {
+    "url": "https://github.com/dr-js/dr-js/issues"
+  },
+  "keywords": [
+    "Dr",
+    "Dr-js",
+    "JavaScript"
+  ],
   "main": "library/Dr.js",
   "scripts": {
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
@@ -11,27 +26,13 @@
     "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
     "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config config/library.conf.js --json > stats.json",
     "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config config/library.conf.js --profile",
+    "test-mocha-node": "mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
     "test-mocha": "mocha --compilers js:babel-register \"source/**/*.test.js\"",
     "test": "npm run test-mocha",
     "build": "npm run library",
     "prepare": "npm run build",
     "start": "npm run example-dev"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dr-js/dr-js.git"
-  },
-  "keywords": [
-    "Dr",
-    "Dr-js",
-    "JavaScript"
-  ],
-  "author": "dr-js",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dr-js/dr-js/issues"
-  },
-  "homepage": "https://github.com/dr-js/dr-js#readme",
   "devDependencies": {
     "babel-core": "latest",
     "babel-eslint": "latest",
@@ -50,6 +51,6 @@
     "eslint-plugin-promise": "latest",
     "eslint-plugin-standard": "latest",
     "mocha": "latest",
-    "webpack": "^3.1.0"
+    "webpack": "latest"
   }
 }

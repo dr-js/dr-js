@@ -28,8 +28,8 @@ const parseFile = (file, fileType) => new Promise((resolve, reject) => {
       fileReader.readAsArrayBuffer(file) // [ArrayBuffer: typed array objects]
       break
     default:
-      __DEV__ && console.warn(false, `[FileOperation][parseFile] error fileType: ${fileType}`)
-      reject(new Error(`[FileOperation][parseFile] error fileType: ${fileType}`))
+      __DEV__ && console.warn(false, `[parseFile] error fileType: ${fileType}`)
+      reject(new Error(`[parseFile] error fileType: ${fileType}`))
       break
   }
 })
