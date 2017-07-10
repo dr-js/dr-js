@@ -36,7 +36,7 @@
     "babel-core": "latest",
     "babel-eslint": "latest",
     "babel-loader": "latest",
-    "babel-plugin-resolver": "latest",
+    "babel-plugin-module-resolver": "latest",
     "babel-plugin-transform-class-properties": "latest",
     "babel-plugin-transform-object-rest-spread": "latest",
     "babel-preset-env": "latest",
@@ -50,6 +50,6 @@
     "eslint-plugin-promise": "latest",
     "eslint-plugin-standard": "latest",
     "mocha": "latest",
-    "webpack": "latest"
+    "webpack": "^3.1.0"
   }
 }

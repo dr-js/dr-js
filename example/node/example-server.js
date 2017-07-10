@@ -13,6 +13,11 @@ const {
     createResponseReducerRouter,
     createResponseReducerServeStatic,
     createResponseReducerServeStaticSingleCached
+  },
+  WebSocket: {
+    WEB_SOCKET_EVENT_MAP,
+    DATA_TYPE_MAP,
+    enableWebSocketServer
   }
 } = Dr.Node.Server
 
@@ -35,5 +40,30 @@ applyResponseReducerList(server, [
   createResponseReducerParseURL(),
   createResponseReducerRouter(routerMapBuilder.getRouterMap())
 ])
+
+enableWebSocketServer({
+  server,
+  onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
+    console.log('[ON_UPGRADE_REQUEST]', request.headers, bodyHeadBuffer.length)
+    const { key, version, origin, protocolList, isSecure } = webSocket
+    webSocket.protocol = protocolList[ 0 ]
+    console.log({ key, version, origin, protocolList, isSecure, bodyHeadBuffer })
+  }
+})
+
+server.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
+  console.log(`WEB_SOCKET_EVENT_MAP.OPEN`)
+})
+
+server.on(WEB_SOCKET_EVENT_MAP.FRAME, (websocket, { dataType, dataBuffer }) => {
+  console.log(`WEB_SOCKET_EVENT_MAP.FRAME`, dataType, dataBuffer.length)
+  // send back
+  dataType === DATA_TYPE_MAP.OPCODE_TEXT && websocket.sendText(dataBuffer.toString())
+  dataType === DATA_TYPE_MAP.OPCODE_BINARY && websocket.sendBuffer(dataBuffer)
+})
+
+server.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
+  console.log(`WEB_SOCKET_EVENT_MAP.CLOSE`)
+})
 
 start()
