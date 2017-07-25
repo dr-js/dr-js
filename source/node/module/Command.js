@@ -17,8 +17,8 @@ function spawn (command, argList = [], { cwd = process.cwd(), env = process.env,
   }
 }
 
-const run = process.platform.includes('win') ? (command, options) => spawn('cmd', [ '/s', '/c', command ], options)
-  : (process.platform.includes('nux') || process.platform.includes('darwin')) ? (command, options) => spawn('sh', [ '-c', command ], options)
+const run = process.platform.includes('win') ? (command, option) => spawn('cmd', [ '/s', '/c', command ], option)
+  : (process.platform.includes('nux') || process.platform.includes('darwin')) ? (command, option) => spawn('sh', [ '-c', command ], option)
     : () => { throw new Error(`[run] unrecognized platform: ${process.platform}`) }
 
 function runCommand (command) {

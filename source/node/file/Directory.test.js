@@ -171,7 +171,7 @@ describe('Node.File.Directory', () => {
 
     let callbackCount = 0
     await walkDirectoryContent(await getDirectoryContent(directoryPath7), (path, name, fileType) => {
-      console.log({ path, name, fileType })
+      // console.log({ path, name, fileType })
       callbackCount++
     })
     nodeModuleAssert.equal(callbackCount, 0)

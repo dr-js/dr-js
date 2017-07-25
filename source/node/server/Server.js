@@ -93,7 +93,7 @@ const applyResponseReducerList = (server, responseReducerList = DEFAULT_RESPONSE
 
     __DEV__ && promiseTail.then(() => {
       currentResponseCount--
-      console.log(`END ====== +${(clock() - stateStore.getState().time).toFixed(3)}ms ${stateStore.response.statusCode}`)
+      __DEV__ && console.log(`END ====== +${(clock() - stateStore.getState().time).toFixed(3)}ms ${stateStore.response.statusCode}`)
     })
   })
 }

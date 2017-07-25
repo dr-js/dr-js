@@ -1,8 +1,9 @@
 const nodeModulePath = require('path')
+const nodeModuleFs = require('fs')
 const Dr = require('../Dr.node')
 
-console.log(Object.keys(Dr))
-console.log(Object.keys(Dr.Node))
+// console.log(Object.keys(Dr))
+// console.log(Object.keys(Dr.Node))
 
 const {
   createServer,
@@ -24,9 +25,11 @@ const {
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
 
 const responseReducerServeStatic = createResponseReducerServeStatic({ staticRoot: fromPath('../') })
+const responseReducerServeIndex = createResponseReducerServeStaticSingleCached({ staticFilePath: fromPath('./example-server.html') })
 const responseReducerServeFavicon = createResponseReducerServeStaticSingleCached({ staticFilePath: fromPath('../browser/favicon.ico') })
 
 const routerMapBuilder = createRouterMapBuilder()
+routerMapBuilder.addRoute('/', 'GET', responseReducerServeIndex)
 routerMapBuilder.addRoute('/favicon', 'GET', responseReducerServeFavicon)
 routerMapBuilder.addRoute('/favicon.ico', 'GET', responseReducerServeFavicon)
 routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
@@ -41,29 +44,45 @@ applyResponseReducerList(server, [
   createResponseReducerRouter(routerMapBuilder.getRouterMap())
 ])
 
-enableWebSocketServer({
+const webSocketSet = enableWebSocketServer({
   server,
   onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
-    console.log('[ON_UPGRADE_REQUEST]', request.headers, bodyHeadBuffer.length)
-    const { key, version, origin, protocolList, isSecure } = webSocket
+    // return webSocket.doCloseSocket() // can just close here
+
+    const { origin, protocolList, isSecure } = webSocket
     webSocket.protocol = protocolList[ 0 ]
-    console.log({ key, version, origin, protocolList, isSecure, bodyHeadBuffer })
+    console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
+
+    webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
+      console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
+    })
+    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, (webSocket, { dataType, dataBuffer }) => {
+      console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
+
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') {
+        return nodeModuleFs.readFile('../Dr.node.js', 'utf8', (error, dataString) => {
+          if (error) throw error
+          webSocket.sendText(dataString)
+        })
+      }
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') {
+        return nodeModuleFs.readFile('../Dr.node.js', (error, dataBuffer) => {
+          if (error) throw error
+          webSocket.sendBuffer(dataBuffer)
+        })
+      }
+
+      // echo back
+      dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())
+      dataType === DATA_TYPE_MAP.OPCODE_BINARY && webSocket.sendBuffer(dataBuffer)
+    })
+    webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
+      console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`)
+    })
+
+    return protocolList[ 0 ]
   }
-})
-
-server.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
-  console.log(`WEB_SOCKET_EVENT_MAP.OPEN`)
-})
-
-server.on(WEB_SOCKET_EVENT_MAP.FRAME, (websocket, { dataType, dataBuffer }) => {
-  console.log(`WEB_SOCKET_EVENT_MAP.FRAME`, dataType, dataBuffer.length)
-  // send back
-  dataType === DATA_TYPE_MAP.OPCODE_TEXT && websocket.sendText(dataBuffer.toString())
-  dataType === DATA_TYPE_MAP.OPCODE_BINARY && websocket.sendBuffer(dataBuffer)
-})
-
-server.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
-  console.log(`WEB_SOCKET_EVENT_MAP.CLOSE`)
 })
 
 start()
