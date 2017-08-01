@@ -1,12 +1,7 @@
-# WebStorm configuration
-.idea
-
 # source files
-/.npmignore
-/.babelrc
-/.eslintrc.js
-/.travis.yml
+/.*
 /config
 /source
 /example
 /test
+/dr-js*
