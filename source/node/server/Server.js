@@ -22,13 +22,16 @@ const DEFAULT_HTTPS_OPTION = {
   dhparam: 'BUFFER: DHPARAM.pem', // Diffie-Hellman Key Exchange
   secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
 }
-
 const DEFAULT_HTTP_OPTION = {
   port: 80,
   hostName: 'localhost'
 }
 
 const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responseReducerLogState ] : []
+const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => {
+  store.setState({ error })
+  return store
+}
 
 const getServerToggle = ({ port, hostName }, server) => ({
   start: () => {
@@ -61,7 +64,7 @@ function createServer (option, type = 'HTTPS') {
 }
 
 const INITIAL_STORE_STATE = {
-  time: -1, // set by clock()
+  time: 0, // set by clock(), in msec
   url: null, // from createResponseReducerParseURL
   error: null // from failed responseReducer
 }
@@ -71,32 +74,18 @@ const createStateStore = (state = INITIAL_STORE_STATE) => ({
   setState: (nextState) => (state = { ...state, ...nextState })
 })
 
-const applyResponseReducerList = (server, responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST) => {
-  let totalResponseCount = 0
-  let currentResponseCount = 0
-
-  return server.on('request', (request, response) => {
-    __DEV__ && totalResponseCount++
-    __DEV__ && currentResponseCount++
-    __DEV__ && console.log(`START ==== ${request.method}: ${request.url} ${totalResponseCount}/${currentResponseCount}`)
-
+const applyResponseReducerList = (server, responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST, responseReducerError = DEFAULT_RESPONSE_REDUCER_ERROR) => server.on(
+  'request',
+  (request, response) => {
+    __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
     const stateStore = createStateStore({ time: clock(), url: null, error: null })
     stateStore.request = request
     stateStore.response = response
-
-    let promiseTail = responseReducerList.reduce((promiseTail, responseReducer) => promiseTail.then(responseReducer), Promise.resolve(stateStore))
-      .catch((error) => {
-        stateStore.setState({ error })
-        return stateStore
-      })
+    responseReducerList.reduce((promiseTail, responseReducer) => promiseTail.then(responseReducer), Promise.resolve(stateStore))
+      .catch((error) => responseReducerError(stateStore, error))
       .then(responseReducerEnd)
-
-    __DEV__ && promiseTail.then(() => {
-      currentResponseCount--
-      __DEV__ && console.log(`END ====== +${(clock() - stateStore.getState().time).toFixed(3)}ms ${stateStore.response.statusCode}`)
-    })
-  })
-}
+  }
+)
 
 export {
   createServer,

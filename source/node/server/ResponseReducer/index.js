@@ -17,3 +17,9 @@ export {
   createRouterMapBuilder,
   createResponseReducerRouter
 } from './Router'
+
+export {
+  createResponseReducerLogRequestHeader,
+  createResponseReducerLogTimeStep,
+  createResponseReducerLogEnd
+} from './Statistic'

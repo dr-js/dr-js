@@ -13,12 +13,12 @@ import {
   copyPath
 } from './File'
 
-const readdir = promisify(nodeModuleFs.readdir)
+const readdirAsync = promisify(nodeModuleFs.readdir)
 
 const getDirectoryContentNameList = async (path, pathType) => {
   if (pathType === undefined) pathType = await getPathType(path)
   if (pathType !== FILE_TYPE.Directory) throw new Error(`[getDirectoryContent] error pathType: ${pathType} for ${path}`)
-  return readdir(path)
+  return readdirAsync(path)
 }
 
 // one level only

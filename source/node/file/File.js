@@ -10,13 +10,13 @@ const FILE_TYPE = {
   Error: 'Error'
 }
 
-const lstat = promisify(nodeModuleFs.lstat)
-const fstat = promisify(nodeModuleFs.fstat)
-const mkdir = promisify(nodeModuleFs.mkdir)
-const rmdir = promisify(nodeModuleFs.rmdir)
-const open = promisify(nodeModuleFs.open)
-const rename = promisify(nodeModuleFs.rename)
-const unlink = promisify(nodeModuleFs.unlink)
+const lstatAsync = promisify(nodeModuleFs.lstat)
+const fstatAsync = promisify(nodeModuleFs.fstat)
+const mkdirAsync = promisify(nodeModuleFs.mkdir)
+const rmdirAsync = promisify(nodeModuleFs.rmdir)
+const openAsync = promisify(nodeModuleFs.open)
+const renameAsync = promisify(nodeModuleFs.rename)
+const unlinkAsync = promisify(nodeModuleFs.unlink)
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
@@ -25,12 +25,12 @@ const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
 
 const pathTypeError = () => FILE_TYPE.Error
 
-const getPathType = (path) => lstat(path).then(getPathTypeFromStat, pathTypeError)
+const getPathType = (path) => lstatAsync(path).then(getPathTypeFromStat, pathTypeError)
 
 const copyFile = async (pathFrom, pathTo) => {
-  const fdFrom = await open(pathFrom, 'r')
-  const stat = await fstat(fdFrom)
-  const fdTo = await open(pathTo, 'w', stat.mode)
+  const fdFrom = await openAsync(pathFrom, 'r')
+  const stat = await fstatAsync(fdFrom)
+  const fdTo = await openAsync(pathTo, 'w', stat.mode)
 
   const readStream = nodeModuleFs.createReadStream(undefined, { fd: fdFrom })
   const writeStream = nodeModuleFs.createWriteStream(undefined, { fd: fdTo, mode: stat.mode })
@@ -53,7 +53,7 @@ const createDirectory = async (path, pathType) => {
   if (upperPathType !== FILE_TYPE.Directory) await createDirectory(upperPath, upperPathType)
 
   // create directory
-  if (pathType !== FILE_TYPE.Directory) await mkdir(path)
+  if (pathType !== FILE_TYPE.Directory) await mkdirAsync(path)
 }
 
 // NOT recursive operation
@@ -68,7 +68,7 @@ const copyPath = async (pathFrom, pathTo, pathType) => {
     case FILE_TYPE.SymbolicLink:
       return copyFile(pathFrom, pathTo)
     case FILE_TYPE.Directory:
-      return mkdir(pathTo)
+      return mkdirAsync(pathTo)
   }
   throw new Error(`[copyPath] error pathType ${pathType} for ${pathFrom}`)
 }
@@ -78,7 +78,7 @@ const movePath = async (pathFrom, pathTo, pathType) => {
     case FILE_TYPE.File:
     case FILE_TYPE.SymbolicLink:
     case FILE_TYPE.Directory:
-      return rename(pathFrom, pathTo)
+      return renameAsync(pathFrom, pathTo)
   }
   throw new Error(`[movePath] error pathType ${pathType} for ${pathFrom}`)
 }
@@ -87,9 +87,9 @@ const deletePath = async (path, pathType) => {
   switch (pathType) {
     case FILE_TYPE.File:
     case FILE_TYPE.SymbolicLink:
-      return unlink(path)
+      return unlinkAsync(path)
     case FILE_TYPE.Directory:
-      return rmdir(path)
+      return rmdirAsync(path)
   }
   throw new Error(`[deletePath] error pathType ${pathType} for ${path}`)
 }
