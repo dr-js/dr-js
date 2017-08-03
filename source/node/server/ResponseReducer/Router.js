@@ -60,19 +60,16 @@ const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeProces
   return routerMap
 }
 
-function createRouterMapBuilder () {
-  let routerMap = {}
-  return {
-    ROUTE_ANY,
-    ROUTE_PARAM,
-    addRoute: (route, method, routeProcessor) => addRouteToRouterMap(routerMap, route, method, routeProcessor),
-    getRouterMap: () => {
-      const resultRouterMap = routerMap
-      routerMap = {}
-      return resultRouterMap
-    }
+const createRouterMapBuilder = (routerMap = {}) => ({
+  ROUTE_ANY,
+  ROUTE_PARAM,
+  addRoute: (route, method, routeProcessor) => addRouteToRouterMap(routerMap, route, method, routeProcessor),
+  getRouterMap: () => {
+    const resultRouterMap = routerMap
+    routerMap = {}
+    return resultRouterMap
   }
-}
+})
 
 const createResponseReducerRouter = (routerMap) => (store) => {
   const { url, method } = store.getState()

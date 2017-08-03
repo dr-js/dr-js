@@ -13,7 +13,7 @@ export class Color4 {
     this.a = a
   }
 
-  getUint32 = rgbaToUint32
+  static getUint32 = rgbaToUint32
 
   setScalar (scalar) {
     this.r = scalar
@@ -116,7 +116,7 @@ export class Color4 {
 
   getHSLA (optionalTarget) {
     const { r, g, b, a } = this
-    const hsla = optionalTarget || { h: 0, s: 0, l: 0, a: 0 }  // h,s,l,a ranges are in 0.0 - 1.0
+    const hsla = optionalTarget || { h: 0, s: 0, l: 0, a: 0 } // h,s,l,a ranges are in 0.0 - 1.0
     const max = Math.max(r, g, b)
     const min = Math.min(r, g, b)
     let hue, saturation

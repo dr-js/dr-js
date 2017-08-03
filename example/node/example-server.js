@@ -13,7 +13,11 @@ const {
     createRouterMapBuilder,
     createResponseReducerRouter,
     createResponseReducerServeStatic,
-    createResponseReducerServeStaticSingleCached
+    createResponseReducerServeStaticSingleCached,
+
+    createResponseReducerLogRequestHeader,
+    createResponseReducerLogTimeStep,
+    createResponseReducerLogEnd
   },
   WebSocket: {
     WEB_SOCKET_EVENT_MAP,
@@ -40,8 +44,11 @@ routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
 const { server, start } = createServer({ port: 3000 }, 'HTTP')
 
 applyResponseReducerList(server, [
+  createResponseReducerLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
   createResponseReducerParseURL(),
-  createResponseReducerRouter(routerMapBuilder.getRouterMap())
+  createResponseReducerLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
+  createResponseReducerRouter(routerMapBuilder.getRouterMap()),
+  createResponseReducerLogEnd((data) => console.log('[LogEnd]', data))
 ])
 
 const webSocketSet = enableWebSocketServer({

@@ -7,9 +7,7 @@ const PRODUCTION = NODE_ENV === 'production'
 
 const BABEL_OPRTIONS = {
   babelrc: false,
-  presets: PRODUCTION
-    ? [ 'stage-0' ]
-    : [ [ 'env', { targets: { node: 'current' } } ] ],
+  presets: [ [ 'env', { targets: { node: 8 }, modules: false } ] ],
   plugins: [ 'transform-object-rest-spread', 'transform-class-properties' ]
 }
 
