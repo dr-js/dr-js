@@ -312,7 +312,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
         putColor(xRight, y, toColor)
         xRight++
       }
-      if (y - 1 >= 0) comboPush(xLeft, xRight, y - 1)  // up check
+      if (y - 1 >= 0) comboPush(xLeft, xRight, y - 1) // up check
       if (y + 1 < height) comboPush(xLeft, xRight, y + 1) // down check
     }
   }

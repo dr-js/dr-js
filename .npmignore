@@ -1,7 +1,6 @@
 # source files
 /.*
+/*.tgz
 /config
 /source
 /example
-/test
-/dr-js*

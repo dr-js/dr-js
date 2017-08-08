@@ -19,7 +19,7 @@ function createCanvasExt (canvas, eventEmitter = new EventEmitter()) {
     context2d,
     eventEmitter,
     update: (deltaTime) => eventEmitter.emit(CANVAS_EXT_EVENT.UPDATE, deltaTime),
-    clear: () => { canvas.width = canvas.width }
+    clear: () => { canvas.width += 0 }
   }
 }
 

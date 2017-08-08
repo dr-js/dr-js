@@ -1,36 +1,38 @@
 {
   "name": "dr-js",
-  "version": "0.0.10",
-  "description": "A collection of strange functions",
+  "version": "0.0.11",
   "author": "dr-js",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dr-js/dr-js.git"
-  },
-  "homepage": "https://github.com/dr-js/dr-js#readme",
-  "bugs": {
-    "url": "https://github.com/dr-js/dr-js/issues"
-  },
+  "description": "A collection of strange functions",
   "keywords": [
     "Dr",
     "Dr-js",
     "JavaScript"
   ],
+  "homepage": "https://github.com/dr-js/dr-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dr-js/dr-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dr-js/dr-js/issues"
+  },
   "main": "library/Dr.js",
   "scripts": {
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
     "example-dev": "cross-env NODE_ENV=development webpack --watch --config config/example.conf.js",
     "library": "cross-env NODE_ENV=production webpack --config config/library.conf.js",
     "library-dev": "cross-env NODE_ENV=development webpack --watch --config config/library.conf.js",
-    "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
     "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config config/library.conf.js --json > stats.json",
     "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config config/library.conf.js --profile",
-    "test-mocha-node": "mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
-    "test-mocha": "mocha --compilers js:babel-register \"source/**/*.test.js\"",
+    "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
     "test": "npm run test-mocha",
-    "build": "npm run library",
+    "test-mocha": "mocha --compilers js:babel-register \"source/**/*.test.js\"",
+    "test-mocha-common": "mocha --compilers js:babel-register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "mocha --compilers js:babel-register \"source/browser/**/*.test.js\"",
     "prepare": "npm run build",
+    "build": "npm run library",
     "start": "npm run example-dev"
   },
   "devDependencies": {
@@ -42,14 +44,14 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
-    "cross-env": "^5.0.3",
-    "eslint": "^4.3.0",
+    "cross-env": "^5.0.5",
+    "eslint": "^4.4.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "mocha": "^3.5.0",
-    "webpack": "^3.4.1"
+    "webpack": "^3.5.3"
   }
 }

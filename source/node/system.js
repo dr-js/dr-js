@@ -27,15 +27,12 @@ function addProcessExitListener (listener) {
   return () => wrappedListenerList.forEach(({ eventType, wrappedListener }) => process.removeListener(eventType, wrappedListener))
 }
 
-const startREPL = () => {
-  const replServer = nodeModuleREPL.start({
-    prompt: '> ',
-    input: global.process.stdin,
-    output: global.process.stdout,
-    useGlobal: true
-  })
-  return replServer
-}
+const startREPL = () => nodeModuleREPL.start({
+  prompt: '> ',
+  input: global.process.stdin,
+  output: global.process.stdout,
+  useGlobal: true
+})
 
 export {
   PATH_NODE_EXE,

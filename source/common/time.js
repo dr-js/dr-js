@@ -49,12 +49,9 @@ export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,
   TIMESTAMP_START,
-
   clock,
   now,
   getTimeStamp,
-
   setTimeoutPromise,
-
   onNextProperUpdate
 }

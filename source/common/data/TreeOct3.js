@@ -1,3 +1,4 @@
+import { getRandomId } from '../math'
 import { Vector3, Box3 } from '../graphic'
 
 // P for Positive, N for Negative, each for X, Y, Z
@@ -67,7 +68,7 @@ class TreeOct3 {
     this.dataListRoot = [] // data under root
     this.dataListOutOfBound = [] // data out of root interval
 
-    this.root = new TreeOct3Node(Dr.generateId(), this.config, OCTANT_INDEX_TYPE.CROSS, center, radius)
+    this.root = new TreeOct3Node(getRandomId(), this.config, OCTANT_INDEX_TYPE.CROSS, center, radius)
     this.rootOutOfBound = {
       ROOT_OUT_OF_BOUND: 'ROOT_OUT_OF_BOUND',
       parent: null,
@@ -550,9 +551,6 @@ class TreeOct3Node {
     const pendingDataList = this.pendingDataList
 
     let childDataSum = 0
-    let stuckDataCount = 0
-    let pendingDataCount = 0
-
     if (childList !== null) {
       for (let octantIndex = 0, indexMax = childList.length; octantIndex < indexMax; octantIndex++) {
         const child = childList[ octantIndex ]
@@ -563,21 +561,20 @@ class TreeOct3Node {
       }
     }
 
-    stuckDataCount = stuckDataList.length
     for (let index = 0, indexMax = stuckDataList.length; index < indexMax; index++) {
       const data = stuckDataList[ index ]
       this.checkValidData(data)
     }
 
-    if (pendingDataList !== null) {
-      pendingDataCount = pendingDataList.length
+    let pendingDataCount = (pendingDataList && pendingDataList.length) || 0
+    if (pendingDataCount !== 0) {
       for (let index = 0, indexMax = pendingDataList.length; index < indexMax; index++) {
         const data = pendingDataList[ index ]
         this.checkValidData(data)
       }
     }
 
-    if (this.dataSum !== childDataSum + stuckDataCount + pendingDataCount) {
+    if (this.dataSum !== childDataSum + stuckDataList.length + pendingDataCount) {
       throw new Error('[checkValid] data sum mismatch!')
     }
   }
@@ -720,7 +717,7 @@ class TreeOct3Node {
       default:
         throw new Error('error octantIndex', octantIndex)
     }
-    const child = new this.constructor(Dr.generateId(), this.config, octantIndex, center, radius)
+    const child = new this.constructor(getRandomId(), this.config, octantIndex, center, radius)
     this.children[ octantIndex ] = child
     child.parent = this
     child.depth = this.depth + 1
@@ -747,9 +744,9 @@ class TreeOct3Node {
 
 // inner class, should not direct access, used for sample
 class TreeOct3Data {
-  constructor (id, box) {
-    this.id = id || Dr.generateId()
-    this.box = box || new Box3()
+  constructor (id = getRandomId(), box = new Box3()) {
+    this.id = id
+    this.box = box
 
     // mark data for octree
     this.node = null

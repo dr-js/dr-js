@@ -3,8 +3,15 @@ import { createCanvasElement, canvasElementToCanvasImageData, canvasImageDataToC
 const BUFFER_CANVAS = document.createElement('canvas')
 const BUFFER_CANVAS_CONTEXT2D = BUFFER_CANVAS.getContext('2d')
 
+// intended to be used for single character
+const DEFAULT_GET_SYMBOL_METRICS = (symbol, fontConfig) => {
+  BUFFER_CANVAS_CONTEXT2D.font = fontConfig.attribute
+  return BUFFER_CANVAS_CONTEXT2D.measureText(symbol)
+}
+
 export class FontGenerator {
-  constructor () {
+  constructor (getSymbolMetrics = DEFAULT_GET_SYMBOL_METRICS) {
+    this.getSymbolMetrics = getSymbolMetrics
     this.symbolCanvasElementMap = {}
     this.scaledSymbolCanvasElementMap = {}
     this.setDefaultAttribute()
@@ -35,12 +42,6 @@ export class FontGenerator {
       attribute: `${fontStyle} ${fontSize}px/${lineHeight}px ${fontFamily}`, // css text
       cacheTag: `${fontStyle}|${fontSize}|${lineHeight}|${fontFamily}|${fillStyle}`
     }
-  }
-
-  // intended to be used for single character
-  getSymbolMetrics (symbol, fontConfig) {
-    BUFFER_CANVAS_CONTEXT2D.font = fontConfig.attribute
-    return BUFFER_CANVAS_CONTEXT2D.measureText(symbol)
   }
 
   // with generated cache, intended to be used for single character
