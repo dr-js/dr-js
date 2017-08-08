@@ -26,12 +26,14 @@
     "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
     "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config config/library.conf.js --json > stats.json",
     "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config config/library.conf.js --profile",
-    "test-mocha-node": "mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
     "test-mocha": "mocha --compilers js:babel-register \"source/**/*.test.js\"",
-    "test": "npm run test-mocha",
-    "build": "npm run library",
+    "test-mocha-common": "mocha --compilers js:babel-register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "mocha --compilers js:babel-register \"source/browser/**/*.test.js\"",
     "prepare": "npm run build",
-    "start": "npm run example-dev"
+    "start": "npm run example-dev",
+    "build": "npm run library",
+    "test": "npm run test-mocha"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -42,14 +44,14 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
-    "cross-env": "^5.0.3",
-    "eslint": "^4.3.0",
+    "cross-env": "^5.0.4",
+    "eslint": "^4.4.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "mocha": "^3.5.0",
-    "webpack": "^3.4.1"
+    "webpack": "^3.5.1"
   }
 }
