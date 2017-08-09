@@ -1,7 +1,10 @@
+const DEFAULT_ON_MISSING_REQUEST = (symbol) => null
+
 export class FontMapper {
-  constructor (fontSize = 16, lineHeight = 20) {
+  constructor (fontSize = 16, lineHeight = 20, onMissingRequest = DEFAULT_ON_MISSING_REQUEST) {
     this.configFontSize = fontSize
     this.configLineHeight = lineHeight
+    this.onMissingRequest = onMissingRequest
 
     this.setDefaultSymbol(' ')
 
@@ -24,10 +27,6 @@ export class FontMapper {
         cursorPosition.y += this.mapLineHeight
       }
     }
-  }
-
-  onMissingRequest (symbol) {
-    return null
   }
 
   setConfig (fontSize, lineHeight) {

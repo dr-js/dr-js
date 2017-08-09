@@ -76,16 +76,14 @@ function getFileType (file) {
 function addFileDragListenerToElement (element, callback) {
   element.addEventListener('dragenter', muteEvent)
   element.addEventListener('dragover', muteEvent)
-  element.addEventListener('drop', function (event) {
+  element.addEventListener('drop', (event) => {
     muteEvent(event)
-    event.dataTransfer &&
-    event.dataTransfer.files &&
-    event.dataTransfer.files.length > 0 &&
-    callback(event.dataTransfer.files)
+    const { files } = event.dataTransfer
+    files.length > 0 && callback(files)
   })
 }
 
-function muteEvent (event) {
+const muteEvent = (event) => {
   event.stopPropagation()
   event.preventDefault()
 }

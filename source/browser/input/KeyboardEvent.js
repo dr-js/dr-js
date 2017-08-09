@@ -100,4 +100,3 @@ function getPolyfill () {
     element.addEventListener(KEYBOARD_EVENT_TYPE.UP, polyfillCallback)
   }
 }
-

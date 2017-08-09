@@ -22,7 +22,6 @@ class KeySwitch {
   SET (selectorList, value) { this.set(composeSelectorList(selectorList), value) }
 
   GET (...fragList) { return this.get(composeKey(fragList)) }
-
 }
 
 export {

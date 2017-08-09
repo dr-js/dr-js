@@ -5,7 +5,7 @@ const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = 
 const NODE_ENV = process.env.NODE_ENV
 const PRODUCTION = NODE_ENV === 'production'
 
-const BABEL_OPRTIONS = {
+const BABEL_OPTIONS = {
   babelrc: false,
   presets: [ [ 'env', { targets: { node: 8 }, modules: false } ] ],
   plugins: [ 'transform-object-rest-spread', 'transform-class-properties' ]
@@ -23,7 +23,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: { loader: 'babel-loader', options: BABEL_OPRTIONS }
+        use: { loader: 'babel-loader', options: BABEL_OPTIONS }
       }
     ]
   },

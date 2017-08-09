@@ -1,4 +1,4 @@
-import { getRandomId } from'source/common/math'
+import { getRandomId } from 'source/common/math'
 
 export class TreeNode {
   constructor (id) {
