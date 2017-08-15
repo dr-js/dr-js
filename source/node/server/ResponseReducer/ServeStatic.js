@@ -4,10 +4,9 @@ import { promisify } from 'util'
 
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
+import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module'
 
 import { createResponseReducerSendStream, createResponseReducerSendBuffer } from './Common'
-
-import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from './__utils__'
 
 const statAsync = promisify(nodeModuleFs.stat)
 const readFileAsync = promisify(nodeModuleFs.readFile)

@@ -1,5 +1,5 @@
-export const DEFAULT_MIME = 'application/octet-stream'
-export const BASIC_MIME_MAP = {
+const DEFAULT_MIME = 'application/octet-stream'
+const BASIC_MIME_MAP = {
   'application/font-woff': [ 'woff' ],
   'application/font-woff2': [ 'woff2' ],
   'application/javascript': [ 'js' ],
@@ -20,15 +20,12 @@ export const BASIC_MIME_MAP = {
   'audio/wav': [ 'wav' ],
   'audio/webm': [ 'weba' ],
   'audio/x-flac': [ 'flac' ],
-  'audio/x-m4a': [ 'm4a' ],
-  'audio/x-matroska': [ 'mka' ],
   'font/opentype': [ 'otf' ],
   'image/bmp': [ 'bmp' ],
   'image/gif': [ 'gif' ],
   'image/jpeg': [ 'jpeg', 'jpg' ],
   'image/png': [ 'png' ],
   'image/svg+xml': [ 'svg' ],
-  'image/tiff': [ 'tiff', 'tif' ],
   'image/webp': [ 'webp' ],
   'image/x-icon': [ 'ico' ],
   'text/cache-manifest': [ 'appcache', 'manifest' ],
@@ -40,7 +37,6 @@ export const BASIC_MIME_MAP = {
   'text/xml': [ 'xml' ],
   'video/mp4': [ 'mp4', 'mp4v', 'mpg4' ],
   'video/mpeg': [ 'mpeg', 'mpg', 'mpe', 'm1v', 'm2v' ],
-  'video/quicktime': [ 'qt', 'mov' ],
   'video/webm': [ 'webm' ],
   'video/x-f4v': [ 'f4v' ],
   'video/x-flv': [ 'flv' ],
@@ -49,7 +45,13 @@ export const BASIC_MIME_MAP = {
   'video/x-ms-wmv': [ 'wmv' ],
   'video/x-msvideo': [ 'avi' ]
 }
-export const BASIC_EXTENSION_MAP = Object.keys(BASIC_MIME_MAP).reduce((o, mimeType) => {
+const BASIC_EXTENSION_MAP = Object.keys(BASIC_MIME_MAP).reduce((o, mimeType) => {
   BASIC_MIME_MAP[ mimeType ].forEach((extensionType) => (o[ extensionType ] = mimeType))
   return o
 }, {})
+
+export {
+  DEFAULT_MIME,
+  BASIC_MIME_MAP,
+  BASIC_EXTENSION_MAP
+}

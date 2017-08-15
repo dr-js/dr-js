@@ -56,6 +56,8 @@ const DATA_TYPE_MAP = {
 const DO_MASK_DATA = true
 const DO_NOT_MASK_DATA = false
 
+const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
+
 class FrameSender {
   constructor () {
     this.clear = this.clear.bind(this)
@@ -97,7 +99,7 @@ class FrameSender {
 
     const isMask = (maskType === DO_MASK_DATA)
     const maskOctetCount = isMask ? 4 : 0
-    const maskQuadlet = (isMask && length) ? randomBytes(4) : 0 // 4octets | 32bits
+    const maskQuadletBuffer = (isMask && length) ? randomBytes(4) : DEFAULT_MASK_QUADLET_BUFFER // 4octets | 32bits
     if (isMask) maskLengthOctet |= BIT_1000_0000
 
     this.encodedFrameHeaderBuffer = Buffer.allocUnsafe(2 + extendLengthOctetCount + maskOctetCount) // 2-14octets | 16-112bits
@@ -105,10 +107,10 @@ class FrameSender {
     extendLengthOctetCount === 2 && this.encodedFrameHeaderBuffer.writeUInt16BE(length, 2, !__DEV__) // EXTEND LENGTH [2octets]
     extendLengthOctetCount === 8 && this.encodedFrameHeaderBuffer.writeUInt32BE(0, 2, !__DEV__) // EXTEND LENGTH [4 of 8octets] // NOTE: can't use in node with buffer.constants.MAX_LENGTH
     extendLengthOctetCount === 8 && this.encodedFrameHeaderBuffer.writeUInt32BE(length, 6, !__DEV__) // EXTEND LENGTH [4 of 8octets]
-    isMask && this.encodedFrameHeaderBuffer.writeUInt32BE(maskQuadlet, 2 + extendLengthOctetCount, !__DEV__) // MASK [4octets]
+    isMask && maskQuadletBuffer.copy(this.encodedFrameHeaderBuffer, 2 + extendLengthOctetCount) // MASK [4octets]
 
     this.encodedFrameDataBuffer = dataBuffer
-    isMask && length && applyBufferMaskQuadlet(this.encodedFrameDataBuffer, maskQuadlet)
+    isMask && length && applyBufferMaskQuadlet(this.encodedFrameDataBuffer, maskQuadletBuffer)
   }
 
   encodeCloseFrame (code = 1000, reason = '', maskType) {
@@ -229,24 +231,6 @@ class FrameReceiver {
   }
 }
 
-// will change buffer
-const applyBufferMaskQuadlet = (buffer, maskQuadlet) => {
-  const { length } = buffer
-  const extraBitCount = length & 0x3
-  const indexMax = length - extraBitCount
-
-  // __DEV__ && console.log('applyBufferMaskQuadlet', { length, extraBitCount, indexMax })
-
-  for (let index = 0; index < indexMax; index += 4) buffer.writeUInt32BE(buffer.readUInt32BE(index, !__DEV__) ^ maskQuadlet, index, !__DEV__)
-
-  extraBitCount !== 0 && buffer.writeUIntBE(
-    buffer.readUIntBE(indexMax, extraBitCount, !__DEV__) ^ (maskQuadlet >>> ((4 - extraBitCount) << 3)),
-    indexMax,
-    extraBitCount,
-    !__DEV__
-  )
-}
-
 const createChunkDataBuffer = () => {
   let chunkList = []
   let chunkListBufferLength = 0
@@ -295,7 +279,7 @@ const createFrameDecoder = () => {
   let decodedFrameTypeConfig = null
   let decodedDataType = null
   let decodedIsMask = false
-  let decodedMaskQuadlet = null
+  let decodedMaskQuadletBuffer = null
   let decodedDataBuffer = null
   let decodedDataBufferLength = 0
 
@@ -356,18 +340,17 @@ const createFrameDecoder = () => {
         break
       case DECODE_STAGE_MASK_QUADLET:
         if (hasChunkDataBuffer(4)) {
-          const chunkDataBuffer = getMergedChunkDataBuffer(4)
-          decodedMaskQuadlet = chunkDataBuffer.readUInt32BE(0, !__DEV__)
+          decodedMaskQuadletBuffer = getMergedChunkDataBuffer(4)
           decodeStage = decodedDataBufferLength ? DECODE_STAGE_DATA_BUFFER : DECODE_STAGE_END_FRAME
 
-          // __DEV__ && console.log('[DECODE_STAGE_MASK_QUADLET]', { decodedMaskQuadlet })
+          // __DEV__ && console.log('[DECODE_STAGE_MASK_QUADLET]', { decodedMaskQuadletBuffer })
           return true
         }
         break
       case DECODE_STAGE_DATA_BUFFER:
         if (hasChunkDataBuffer(decodedDataBufferLength)) {
           decodedDataBuffer = getMergedChunkDataBuffer(decodedDataBufferLength)
-          decodedIsMask && applyBufferMaskQuadlet(decodedDataBuffer, decodedMaskQuadlet)
+          decodedIsMask && applyBufferMaskQuadlet(decodedDataBuffer, decodedMaskQuadletBuffer)
           decodeStage = DECODE_STAGE_END_FRAME
 
           // __DEV__ && console.log('[DECODE_STAGE_DATA_BUFFER]', { decodedDataBuffer }, decodedDataBuffer.toString())
@@ -383,7 +366,7 @@ const createFrameDecoder = () => {
     decodedFrameTypeConfig = null
     decodedDataType = null
     decodedIsMask = false
-    decodedMaskQuadlet = null
+    decodedMaskQuadletBuffer = null
     decodedDataBuffer = null
     decodedDataBufferLength = 0
   }
@@ -401,6 +384,11 @@ const createFrameDecoder = () => {
     resetDecode,
     getDecodeFrame
   }
+}
+
+// will change buffer
+const applyBufferMaskQuadlet = (buffer, maskQuadletBuffer) => {
+  for (let index = 0, indexMax = buffer.length; index < indexMax; index++) buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
 }
 
 export {
