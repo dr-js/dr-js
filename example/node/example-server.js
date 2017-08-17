@@ -57,7 +57,6 @@ const webSocketSet = enableWebSocketServer({
     // return webSocket.doCloseSocket() // can just close here
 
     const { origin, protocolList, isSecure } = webSocket
-    webSocket.protocol = protocolList[ 0 ]
     console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
 
     webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {

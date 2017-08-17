@@ -1,20 +1,34 @@
 import { now } from 'source/common/time'
 
-function createOffscreenCanvas (width, height) {
+const createOffscreenCanvas = (width, height) => {
   const element = document.createElement('canvas')
   element.width = width
   element.height = height
   return element
 }
 
-function createStyle (cssText) {
+const createStyle = (cssText) => {
   const element = document.createElement('style')
   element.type = 'text/css'
   element.innerHTML = cssText
   document.body.appendChild(element)
 }
 
-function bindLogElement (element) {
+const muteEvent = (event) => {
+  event.stopPropagation()
+  event.preventDefault()
+}
+const addDragFileListListenerToElement = (element, onFileList) => {
+  element.addEventListener('dragenter', muteEvent)
+  element.addEventListener('dragover', muteEvent)
+  element.addEventListener('drop', (event) => {
+    muteEvent(event)
+    const { files } = event.dataTransfer
+    files && files.length && onFileList(files) // FileList (Array-like, contains File)
+  })
+}
+
+const bindLogElement = (element) => {
   const logTextList = []
   let logTextListLengthMax = 20 // max logTextList length
   let prevTime = now()
@@ -29,7 +43,7 @@ function bindLogElement (element) {
   return { log, output }
 }
 
-function bindFPSElement (element) {
+const bindFPSElement = (element) => {
   const fpsList = []
   let fpsListLengthMax = 20 // max logTextList length
   let prevTime = now()
@@ -51,6 +65,7 @@ function bindFPSElement (element) {
 export {
   createOffscreenCanvas,
   createStyle,
+  addDragFileListListenerToElement,
 
   bindLogElement,
   bindFPSElement

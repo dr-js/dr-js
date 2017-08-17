@@ -50,8 +50,15 @@ const BASIC_EXTENSION_MAP = Object.keys(BASIC_MIME_MAP).reduce((o, mimeType) => 
   return o
 }, {})
 
+const REGEXP_EXTENSION = /\.(\w+)$/
+const getMIMETypeFromFileName = (fileName) => {
+  const result = REGEXP_EXTENSION.exec(fileName)
+  return (result && result[ 1 ] && BASIC_EXTENSION_MAP[ result[ 1 ] ]) || DEFAULT_MIME
+}
+
 export {
   DEFAULT_MIME,
   BASIC_MIME_MAP,
-  BASIC_EXTENSION_MAP
+  BASIC_EXTENSION_MAP,
+  getMIMETypeFromFileName
 }
