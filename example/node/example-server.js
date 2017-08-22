@@ -41,7 +41,7 @@ routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
   return responseReducerServeStatic(store)
 })
 
-const { server, start } = createServer({ port: 3000 }, 'HTTP')
+const { server, start } = createServer({ hostName: 'localhost', port: 3000 }, 'HTTP')
 
 applyResponseReducerList(server, [
   createResponseReducerLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),

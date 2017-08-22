@@ -20,7 +20,7 @@
   }
 
   const createWebSocket = () => {
-    const socket = new WebSocket('ws://localhost:3000', [ 'json', 'a', 'b' ])
+    const socket = new WebSocket(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}`, [ 'json', 'a', 'b', 'auth-token:0123ABCD' ])
     socket.addEventListener('open', (event) => log('open', socket, event))
     socket.addEventListener('error', (event) => log('error', event))
     socket.addEventListener('close', (event) => log('close', event))

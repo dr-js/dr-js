@@ -14,13 +14,14 @@ const DEFAULT_FRAME_LENGTH_LIMIT = 8 * 1024 * 1024 // 8 MiB
 
 const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFAULT_ON_UPGRADE_REQUEST, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
   const webSocketSet = new Set()
-  server.on('upgrade', (request, socket, bodyHeadBuffer) => {
+  server.on('upgrade', async (request, socket, bodyHeadBuffer) => {
     const webSocket = new WebSocketServer(socket, frameLengthLimit)
     const { responseKey } = webSocket.parseUpgradeRequest(request)
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
 
     // select and return protocol from protocolList and optionally save the socket, or call doCloseSocket and reject the socket
-    const protocol = onUpgradeRequest(webSocket, request, bodyHeadBuffer)
+    const protocol = await onUpgradeRequest(webSocket, request, bodyHeadBuffer)
+    if (!protocol) return webSocket.doCloseSocket()
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
 
     webSocket.doUpgradeSocket(protocol, responseKey)
@@ -57,10 +58,10 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
     onError(new Error('[createWebSocketClient] unexpected response'))
   })
 
-  request.on('upgrade', (response, socket, bodyHeadBuffer) => {
+  request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
     const webSocket = new WebSocketClient(socket, frameLengthLimit)
 
-    onUpgradeResponse(webSocket, response, bodyHeadBuffer)
+    await onUpgradeResponse(webSocket, response, bodyHeadBuffer)
     __DEV__ && WebSocketClient.isWebSocketClosed(webSocket) && console.log('[onUpgradeResponse] closed webSocket')
     if (WebSocketClient.isWebSocketClosed(webSocket)) return
 

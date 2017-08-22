@@ -1,2 +1,2 @@
-export { immutableTransformCache } from './__utils__'
+export { immutableTransformCache, createImmutableTransformCacheWithInfo } from './__utils__'
 export { ImmutableOperation } from './ImmutableOperation'
