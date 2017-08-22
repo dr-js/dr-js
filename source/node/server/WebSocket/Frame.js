@@ -59,7 +59,8 @@ const DO_NOT_MASK_DATA = false
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
 class FrameSender {
-  constructor () {
+  constructor (frameLengthLimit) {
+    this.frameLengthLimit = frameLengthLimit
     this.clear = this.clear.bind(this)
     this.clear()
   }
@@ -82,7 +83,6 @@ class FrameSender {
   encodeFrame (frameTypeConfig, dataType, dataBuffer, maskType) {
     const { FINQuadBit, opcodeQuadBitMask } = frameTypeConfig
     const { length } = dataBuffer
-
     const initialOctet = (FINQuadBit << 4) | (dataType & opcodeQuadBitMask)
 
     let maskLengthOctet, extendLengthOctetCount
@@ -96,6 +96,8 @@ class FrameSender {
       maskLengthOctet = 127
       extendLengthOctetCount = 8
     } else throw new Error('[encodeFrame] dataBuffer length exceeds BUFFER_MAX_LENGTH')
+
+    if (length > this.frameLengthLimit) throw new Error(`[encodeFrame] dataBuffer length ${length} exceeds limit: ${this.frameLengthLimit}`)
 
     const isMask = (maskType === DO_MASK_DATA)
     const maskOctetCount = isMask ? 4 : 0
@@ -161,7 +163,8 @@ const DECODE_STAGE_DATA_BUFFER = 4
 const DECODE_STAGE_END_FRAME = 5
 
 class FrameReceiver {
-  constructor () {
+  constructor (frameLengthLimit) {
+    this.frameLengthLimit = frameLengthLimit
     this.clear = this.clear.bind(this)
     this.clear()
   }
@@ -179,7 +182,7 @@ class FrameReceiver {
   }
 
   listenAndReceiveFrame (socket, onFrame, onError = this.clear) {
-    const { pushChunkDataBuffer, decode, resetDecode, getDecodeFrame } = createFrameDecoder()
+    const { pushChunkDataBuffer, decode, resetDecode, getDecodeFrame } = createFrameDecoder(this.frameLengthLimit)
 
     let receiveResolve = null
     let receiveReject = null
@@ -272,7 +275,7 @@ const createChunkDataBuffer = () => {
   }
 }
 
-const createFrameDecoder = () => {
+const createFrameDecoder = (frameLengthLimit) => {
   const { pushChunkDataBuffer, hasChunkDataBuffer, getMergedChunkDataBuffer } = createChunkDataBuffer()
 
   let decodeStage = DECODE_STAGE_INITIAL_OCTET
@@ -309,6 +312,7 @@ const createFrameDecoder = () => {
             decodeStage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_END_FRAME // complete, a 16bit frame
           } else if (initialLength <= 125) {
             decodedDataBufferLength = initialLength
+            if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
             decodeStage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
           } else if (initialLength === 126) decodeStage = DECODE_STAGE_EXTEND_DATA_LENGTH_2
           else decodeStage = DECODE_STAGE_EXTEND_DATA_LENGTH_8
@@ -321,6 +325,7 @@ const createFrameDecoder = () => {
         if (hasChunkDataBuffer(2)) {
           const chunkDataBuffer = getMergedChunkDataBuffer(2)
           decodedDataBufferLength = chunkDataBuffer.readUInt16BE(0, !__DEV__)
+          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           decodeStage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
 
           // __DEV__ && console.log('[DECODE_STAGE_EXTEND_DATA_LENGTH_2]', { decodedDataBufferLength })
@@ -331,8 +336,9 @@ const createFrameDecoder = () => {
         if (hasChunkDataBuffer(8)) {
           const chunkDataBuffer = getMergedChunkDataBuffer(8)
           decodedDataBufferLength = chunkDataBuffer.readUInt32BE(0, !__DEV__) * POW_2_32 + chunkDataBuffer.readUInt32BE(4, !__DEV__)
-          decodeStage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
           if (decodedDataBufferLength > BUFFER_MAX_LENGTH) throw new Error('[decode] decodedDataBufferLength exceeds BUFFER_MAX_LENGTH')
+          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
+          decodeStage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
 
           // __DEV__ && console.log('[DECODE_STAGE_EXTEND_DATA_LENGTH_8]', { decodedDataBufferLength })
           return true

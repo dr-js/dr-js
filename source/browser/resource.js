@@ -5,7 +5,7 @@ const fetch = (url, config = {}) => new Promise((resolve, reject) => {
   const { method = 'GET', headers, body = null, credentials, timeout = DEFAULT_TIMEOUT } = config
   const request = new window.XMLHttpRequest()
   request.open(method, url, true)
-  if (headers) for (const key in headers) request.setRequestHeader(key, headers[ key ])
+  if (headers) for (const [ key, value ] of Object.entries(headers)) request.setRequestHeader(key, value)
   if ([ 'same-origin', 'include' ].includes(credentials)) request.withCredentials = true
   request.timeout = timeout
   request.addEventListener('error', () => {

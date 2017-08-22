@@ -39,7 +39,17 @@ const runCommand = (command) => {
   return childProcessPromise.then(onProcessEnd, onProcessEnd)
 }
 
-export {
-  spawn,
-  runCommand
+const withCwd = (cwd, taskAsync) => async (...args) => {
+  const prevCwd = process.cwd()
+  process.chdir(cwd)
+  try {
+    const result = await taskAsync(...args)
+    process.chdir(prevCwd)
+    return result
+  } catch (error) {
+    process.chdir(prevCwd)
+    throw error
+  }
 }
+
+export { spawn, runCommand, withCwd }

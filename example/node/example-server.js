@@ -7,17 +7,17 @@ const Dr = require('../Dr.node')
 
 const {
   createServer,
-  applyResponseReducerList,
-  ResponseReducer: {
-    createResponseReducerParseURL,
+  createRequestListener,
+  Responder: {
+    createResponderParseURL,
     createRouterMapBuilder,
-    createResponseReducerRouter,
-    createResponseReducerServeStatic,
-    createResponseReducerServeStaticSingleCached,
+    createResponderRouter,
+    createResponderServeStatic,
+    createResponderServeStaticSingleCached,
 
-    createResponseReducerLogRequestHeader,
-    createResponseReducerLogTimeStep,
-    createResponseReducerLogEnd
+    createResponderLogRequestHeader,
+    createResponderLogTimeStep,
+    createResponderLogEnd
   },
   WebSocket: {
     WEB_SOCKET_EVENT_MAP,
@@ -28,28 +28,30 @@ const {
 
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
 
-const responseReducerServeStatic = createResponseReducerServeStatic({ staticRoot: fromPath('../') })
-const responseReducerServeIndex = createResponseReducerServeStaticSingleCached({ staticFilePath: fromPath('./example-server.html') })
-const responseReducerServeFavicon = createResponseReducerServeStaticSingleCached({ staticFilePath: fromPath('../browser/favicon.ico') })
+const responderServeStatic = createResponderServeStatic({ staticRoot: fromPath('../') })
+const responderServeIndex = createResponderServeStaticSingleCached({ staticFilePath: fromPath('./example-server.html') })
+const responderServeFavicon = createResponderServeStaticSingleCached({ staticFilePath: fromPath('../browser/favicon.ico') })
 
 const routerMapBuilder = createRouterMapBuilder()
-routerMapBuilder.addRoute('/', 'GET', responseReducerServeIndex)
-routerMapBuilder.addRoute('/favicon', 'GET', responseReducerServeFavicon)
-routerMapBuilder.addRoute('/favicon.ico', 'GET', responseReducerServeFavicon)
+routerMapBuilder.addRoute('/', 'GET', responderServeIndex)
+routerMapBuilder.addRoute('/favicon', 'GET', responderServeFavicon)
+routerMapBuilder.addRoute('/favicon.ico', 'GET', responderServeFavicon)
 routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
   store.setState({ filePath: store.getState().paramMap[ routerMapBuilder.ROUTE_ANY ] })
-  return responseReducerServeStatic(store)
+  return responderServeStatic(store)
 })
 
-const { server, start } = createServer({ port: 3000 }, 'HTTP')
+const { server, start } = createServer({ hostName: 'localhost', port: 3000 }, 'HTTP')
 
-applyResponseReducerList(server, [
-  createResponseReducerLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
-  createResponseReducerParseURL(),
-  createResponseReducerLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
-  createResponseReducerRouter(routerMapBuilder.getRouterMap()),
-  createResponseReducerLogEnd((data) => console.log('[LogEnd]', data))
-])
+server.on('request', createRequestListener({
+  responderList: [
+    createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
+    createResponderParseURL(),
+    createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
+    createResponderRouter(routerMapBuilder.getRouterMap()),
+    createResponderLogEnd((data) => console.log('[LogEnd]', data))
+  ]
+}))
 
 const webSocketSet = enableWebSocketServer({
   server,

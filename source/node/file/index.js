@@ -40,7 +40,7 @@ const modifyFile = async (modifyType, pathFrom, pathTo, pathType) => {
     case MODIFY_TYPE.MOVE:
       return modifyFile.move(pathFrom, pathTo, pathType)
     case MODIFY_TYPE.DELETE:
-      return deletePath(pathFrom, pathType)
+      return modifyFile.delete(pathFrom, pathType)
   }
   throw new Error(`[modifyFile] Error modifyType: ${modifyType}`)
 }
@@ -81,6 +81,33 @@ modifyDirectory.delete = async (path, pathType) => {
   const content = await getDirectoryContent(path, pathType)
   await deleteDirectoryContent(content)
   return deletePath(path)
+}
+
+const modify = async (modifyType, pathFrom, pathTo, pathType) => {
+  switch (modifyType) {
+    case MODIFY_TYPE.COPY:
+      return modify.copy(pathFrom, pathTo, pathType)
+    case MODIFY_TYPE.MOVE:
+      return modify.move(pathFrom, pathTo, pathType)
+    case MODIFY_TYPE.DELETE:
+      return modify.delete(pathFrom, pathType)
+  }
+  throw new Error(`[modify] Error modifyType: ${modifyType}`)
+}
+modify.copy = async (pathFrom, pathTo, pathType) => {
+  if (pathType === undefined) pathType = await getPathType(pathFrom)
+  if (pathType === FILE_TYPE.Directory) return modifyDirectory.copy(pathFrom, pathTo, pathType)
+  else return modifyFile.copy(pathFrom, pathTo, pathType)
+}
+modify.move = async (pathFrom, pathTo, pathType) => {
+  if (pathType === undefined) pathType = await getPathType(pathFrom)
+  if (pathType === FILE_TYPE.Directory) return modifyDirectory.move(pathFrom, pathTo, pathType)
+  else return modifyFile.move(pathFrom, pathTo, pathType)
+}
+modify.delete = async (path, pathType) => {
+  if (pathType === undefined) pathType = await getPathType(path)
+  if (pathType === FILE_TYPE.Directory) return modifyDirectory.delete(path, pathType)
+  else return modifyFile.delete(path, pathType)
 }
 
 const getFileList = async (path, getFileCollector = defaultFileCollectorCreator) => {
@@ -132,6 +159,7 @@ export {
   deleteDirectoryContent,
 
   MODIFY_TYPE,
+  modify,
   modifyFile,
   modifyDirectory,
 

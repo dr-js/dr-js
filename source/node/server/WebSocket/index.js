@@ -1,7 +1,7 @@
 import nodeModuleUrl from 'url'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
-
+import { clock } from 'source/common/time'
 import {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
@@ -10,16 +10,19 @@ import {
   WebSocketClient
 } from './WebSocket'
 
-const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFAULT_ON_UPGRADE_REQUEST }) => {
+const DEFAULT_FRAME_LENGTH_LIMIT = 8 * 1024 * 1024 // 8 MiB
+
+const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFAULT_ON_UPGRADE_REQUEST, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
   const webSocketSet = new Set()
-  server.on('upgrade', (request, socket, bodyHeadBuffer) => {
-    const webSocket = new WebSocketServer(socket)
+  server.on('upgrade', async (request, socket, bodyHeadBuffer) => {
+    const webSocket = new WebSocketServer(socket, frameLengthLimit)
     const { responseKey } = webSocket.parseUpgradeRequest(request)
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
 
     // select and return protocol from protocolList and optionally save the socket, or call doCloseSocket and reject the socket
-    const protocol = onUpgradeRequest(webSocket, request, bodyHeadBuffer)
+    const protocol = await onUpgradeRequest(webSocket, request, bodyHeadBuffer)
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
+    if (!protocol) return webSocket.doCloseSocket(new Error('no selected protocol'))
 
     webSocket.doUpgradeSocket(protocol, responseKey)
     __DEV__ && WebSocketClient.isWebSocketClosed(webSocket) && console.log('[onUpgradeResponse] closed webSocket')
@@ -35,7 +38,7 @@ const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFA
   return webSocketSet
 }
 
-const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeResponse = WebSocketClient.DEFAULT_ON_UPGRADE_RESPONSE }) => {
+const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeResponse = WebSocketClient.DEFAULT_ON_UPGRADE_RESPONSE, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
   const url = nodeModuleUrl.parse(urlString)
   if (!WebSocketClient.VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[createWebSocketClient] invalid url protocol: ${url.protocol}`)
   if (!url.host) throw new Error(`[createWebSocketClient] invalid url host: ${url.host}`)
@@ -55,10 +58,10 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
     onError(new Error('[createWebSocketClient] unexpected response'))
   })
 
-  request.on('upgrade', (response, socket, bodyHeadBuffer) => {
-    const webSocket = new WebSocketClient(socket)
+  request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
+    const webSocket = new WebSocketClient(socket, frameLengthLimit)
 
-    onUpgradeResponse(webSocket, response, bodyHeadBuffer)
+    await onUpgradeResponse(webSocket, response, bodyHeadBuffer)
     __DEV__ && WebSocketClient.isWebSocketClosed(webSocket) && console.log('[onUpgradeResponse] closed webSocket')
     if (WebSocketClient.isWebSocketClosed(webSocket)) return
 
@@ -66,10 +69,39 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
   })
 }
 
+const NULL_RESPONSE = { finished: true }
+const DEFAULT_RESPONSE_REDUCER_LIST = []
+const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => {
+  store.webSocket.doCloseSocket(error)
+  store.setState({ error })
+}
+const GET_INITIAL_STORE_STATE = () => ({
+  error: null, // from failed responder, but will not be processed
+  time: clock(), // in msec
+  url: null, // from createResponderParseURL
+  method: null, // from createResponderParseURL
+  protocol: ''
+})
+const createStateStore = (state) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+const createUpdateRequestListener = ({
+  responderList = DEFAULT_RESPONSE_REDUCER_LIST,
+  responderError = DEFAULT_RESPONSE_REDUCER_ERROR
+}) => async (webSocket, request, bodyHeadBuffer) => {
+  __DEV__ && console.log(`[createUpdateRequestListener] ${request.method}: ${request.url}`)
+  const stateStore = createStateStore(GET_INITIAL_STORE_STATE())
+  stateStore.request = request
+  stateStore.response = NULL_RESPONSE
+  stateStore.webSocket = webSocket
+  stateStore.bodyHeadBuffer = bodyHeadBuffer
+  try { for (const responder of responderList) await responder(stateStore) } catch (error) { responderError(stateStore, error) }
+  return stateStore.getState().protocol
+}
+
 export {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
   DATA_TYPE_MAP,
   enableWebSocketServer,
-  createWebSocketClient
+  createWebSocketClient,
+  createUpdateRequestListener
 }
