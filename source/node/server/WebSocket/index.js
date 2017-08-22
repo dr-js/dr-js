@@ -10,10 +10,12 @@ import {
   WebSocketClient
 } from './WebSocket'
 
-const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFAULT_ON_UPGRADE_REQUEST }) => {
+const DEFAULT_FRAME_LENGTH_LIMIT = 8 * 1024 * 1024 // 8 MiB
+
+const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFAULT_ON_UPGRADE_REQUEST, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
   const webSocketSet = new Set()
   server.on('upgrade', (request, socket, bodyHeadBuffer) => {
-    const webSocket = new WebSocketServer(socket)
+    const webSocket = new WebSocketServer(socket, frameLengthLimit)
     const { responseKey } = webSocket.parseUpgradeRequest(request)
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
 
@@ -35,7 +37,7 @@ const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFA
   return webSocketSet
 }
 
-const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeResponse = WebSocketClient.DEFAULT_ON_UPGRADE_RESPONSE }) => {
+const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeResponse = WebSocketClient.DEFAULT_ON_UPGRADE_RESPONSE, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
   const url = nodeModuleUrl.parse(urlString)
   if (!WebSocketClient.VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[createWebSocketClient] invalid url protocol: ${url.protocol}`)
   if (!url.host) throw new Error(`[createWebSocketClient] invalid url host: ${url.host}`)
@@ -56,7 +58,7 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
   })
 
   request.on('upgrade', (response, socket, bodyHeadBuffer) => {
-    const webSocket = new WebSocketClient(socket)
+    const webSocket = new WebSocketClient(socket, frameLengthLimit)
 
     onUpgradeResponse(webSocket, response, bodyHeadBuffer)
     __DEV__ && WebSocketClient.isWebSocketClosed(webSocket) && console.log('[onUpgradeResponse] closed webSocket')

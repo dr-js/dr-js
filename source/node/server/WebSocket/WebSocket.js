@@ -27,12 +27,13 @@ class WebSocketBase extends EventEmitter {
 
   static isWebSocketClosed = (webSocket) => (webSocket.readyState === WebSocketBase.CLOSED || !webSocket.socket || webSocket.socket.destroyed)
 
-  constructor (socket) {
+  constructor (socket, frameLengthLimit) {
     super()
 
     this.socket = socket
-    this.frameSender = new FrameSender()
-    this.frameReceiver = new FrameReceiver()
+    this.frameSender = new FrameSender(frameLengthLimit)
+    this.frameReceiver = new FrameReceiver(frameLengthLimit)
+    this.frameLengthLimit = frameLengthLimit
 
     // should be public
     this.readyState = WebSocketBase.CONNECTING
@@ -47,6 +48,7 @@ class WebSocketBase extends EventEmitter {
 
     this.frameDataType = null
     this.frameBufferList = []
+    this.frameBufferLength = 0
 
     this.sendFrameMaskType = null // DO_MASK_DATA | DO_NOT_MASK_DATA
 
@@ -89,15 +91,18 @@ class WebSocketBase extends EventEmitter {
   queueCompleteFrame (frame) {
     if (!this.frameDataType) this.frameDataType = frame.dataType
     this.frameBufferList.push(frame.dataBuffer)
+    this.frameBufferLength += frame.dataBuffer.length
+    if (this.frameBufferLength > this.frameLengthLimit) throw new Error(`[queueCompleteFrame] frameBufferList length ${this.frameBufferLength} exceeds limit: ${this.frameLengthLimit}`)
 
-    __DEV__ && !frame.isFIN && console.log('[WebSocket] onQueueCompleteFrame need more')
+    __DEV__ && !frame.isFIN && console.log('[WebSocket] onQueueCompleteFrame need more', this.frameBufferList.length, this.frameBufferLength)
     if (!frame.isFIN) return null// has more frames
 
-    __DEV__ && console.log('[WebSocket] onQueueCompleteFrame got one complete frame', this.frameBufferList.length)
+    __DEV__ && console.log('[WebSocket] onQueueCompleteFrame got one complete frame', this.frameBufferList.length, this.frameBufferLength)
     const dataType = this.frameDataType
-    const dataBuffer = this.frameBufferList.length === 1 ? this.frameBufferList[ 0 ] : Buffer.concat(this.frameBufferList)
+    const dataBuffer = this.frameBufferList.length === 1 ? this.frameBufferList[ 0 ] : Buffer.concat(this.frameBufferList, this.frameBufferLength)
     this.frameDataType = null
     this.frameBufferList = []
+    this.frameBufferLength = 0
 
     // __DEV__ && console.log('[WebSocket] onQueueCompleteFrame emit one complete frame')
     return { dataType, dataBuffer }
@@ -138,7 +143,8 @@ class WebSocketBase extends EventEmitter {
     this.readyState = WebSocketBase.CLOSING
     this.closeTimeoutToken = setTimeout(this.doCloseSocket, WEB_SOCKET_CLOSE_TIMEOUT)
     this.frameSender.encodeCloseFrame(code, reason, this.sendFrameMaskType)
-    this.frameSender.sendEncodedFrame(this.socket).catch(this.doCloseSocket)
+    if (code === 1000) this.frameSender.sendEncodedFrame(this.socket).catch(this.doCloseSocket)
+    else this.frameSender.sendEncodedFrame(this.socket).then(this.doCloseSocket, this.doCloseSocket) // close faster on error
   }
 
   sendText (text) {
@@ -191,13 +197,20 @@ class WebSocketBase extends EventEmitter {
     this.pongTimeoutToken && clearTimeout(this.pongTimeoutToken)
     this.pongTimeoutToken = null
   }
+
+  setFrameLengthLimit (frameLengthLimit) {
+    if (__DEV__ && !Number.isInteger(frameLengthLimit)) throw new Error(`[setFrameLengthLimit] error value: ${frameLengthLimit}`)
+    this.frameSender.frameLengthLimit = frameLengthLimit
+    this.frameReceiver.frameLengthLimit = frameLengthLimit
+    this.frameLengthLimit = frameLengthLimit
+  }
 }
 
 class WebSocketServer extends WebSocketBase {
   static DEFAULT_ON_UPGRADE_REQUEST = (webSocket, request, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
 
-  constructor (socket) {
-    super(socket)
+  constructor (socket, frameLengthLimit) {
+    super(socket, frameLengthLimit)
 
     this.sendFrameMaskType = DO_NOT_MASK_DATA
     this.protocolList = []
@@ -272,8 +285,8 @@ class WebSocketClient extends WebSocketBase {
     return { requestOption, requestProtocolString, responseKey }
   }
 
-  constructor (socket) {
-    super(socket)
+  constructor (socket, frameLengthLimit) {
+    super(socket, frameLengthLimit)
 
     this.sendFrameMaskType = DO_MASK_DATA
   }
