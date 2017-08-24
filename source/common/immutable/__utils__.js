@@ -18,6 +18,7 @@ const immutableTransformCache = (transformFunc) => {
   }
 }
 
+// memorize expensive immutable transform, with info output, mostly for debug
 const createImmutableTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOutputInfo = DEFAULT_SHOULD_OUTPUT_INFO) => {
   const infoArray = []
 

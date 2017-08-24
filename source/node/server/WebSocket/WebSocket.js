@@ -236,7 +236,7 @@ class WebSocketServer extends WebSocketBase {
       version !== WEB_SOCKET_VERSION ||
       request.method !== 'GET' ||
       request.headers.upgrade.toLowerCase() !== 'websocket'
-    ) return this.doCloseSocket()
+    ) return this.doCloseSocket(new Error('invalid upgrade request'))
     this.origin = request.headers[ 'origin' ]
     this.isSecure = Boolean(request.connection.authorized || request.connection.encrypted)
     this.protocolList = (request.headers[ 'sec-websocket-protocol' ] || '').split(/, */)
@@ -253,7 +253,7 @@ class WebSocketServer extends WebSocketBase {
     this.frameReceiver.listenAndReceiveFrame(
       this.socket,
       this.onReceiveFrame,
-      (error) => this.close(1006, __DEV__ ? `Frame Error: ${error.message}` : '')
+      (error) => this.close(1006, __DEV__ ? `Frame Error: ${error.message}` : 'Frame Error')
     )
     this.protocol = protocol
     this.readyState = WebSocketServer.OPEN
@@ -302,7 +302,7 @@ class WebSocketClient extends WebSocketBase {
     this.frameReceiver.listenAndReceiveFrame(
       this.socket,
       this.onReceiveFrame,
-      (error) => this.close(1006, __DEV__ ? `Frame Error: ${error.message}` : '')
+      (error) => this.close(1006, __DEV__ ? `Frame Error: ${error.message}` : 'Frame Error')
     )
     this.protocol = protocol
     this.readyState = WebSocketServer.OPEN

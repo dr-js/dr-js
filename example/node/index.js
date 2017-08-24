@@ -5,7 +5,7 @@ console.log(Object.keys(Dr.Node))
 
 const { runCommand } = Dr.Node.Module
 
-runCommand('"dir /w"').then(console.log)
+runCommand('dir /w').then(console.log)
 
 // const replServer = Dr.Node.System.startREPL()
 // Object.defineProperty(

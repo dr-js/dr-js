@@ -21,8 +21,8 @@ const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFA
 
     // select and return protocol from protocolList and optionally save the socket, or call doCloseSocket and reject the socket
     const protocol = await onUpgradeRequest(webSocket, request, bodyHeadBuffer)
-    if (!protocol && !WebSocketServer.isWebSocketClosed(webSocket)) return webSocket.doCloseSocket()
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
+    if (!protocol) return webSocket.doCloseSocket(new Error('no selected protocol'))
 
     webSocket.doUpgradeSocket(protocol, responseKey)
     __DEV__ && WebSocketClient.isWebSocketClosed(webSocket) && console.log('[onUpgradeResponse] closed webSocket')
@@ -71,21 +71,29 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
 
 const NULL_RESPONSE = { finished: true }
 const DEFAULT_RESPONSE_REDUCER_LIST = []
-const INITIAL_STORE_STATE = {
-  protocol: '',
-  time: 0, // set by clock(), in msec
-  url: null, // from createResponderParseURL
-  error: null // from failed responder
+const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => {
+  store.webSocket.doCloseSocket(error)
+  store.setState({ error })
 }
-const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
-const createUpdateRequestListenerFromResponderList = (responderList = DEFAULT_RESPONSE_REDUCER_LIST) => async (webSocket, request, bodyHeadBuffer) => {
-  __DEV__ && console.log(`[createUpdateRequestListenerFromResponderList] ${request.method}: ${request.url}`)
-  const stateStore = createStateStore({ protocol: '', time: clock(), url: null, error: null })
-  stateStore.webSocket = webSocket
+const GET_INITIAL_STORE_STATE = () => ({
+  error: null, // from failed responder, but will not be processed
+  time: clock(), // in msec
+  url: null, // from createResponderParseURL
+  method: null, // from createResponderParseURL
+  protocol: ''
+})
+const createStateStore = (state) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+const createUpdateRequestListener = ({
+  responderList = DEFAULT_RESPONSE_REDUCER_LIST,
+  responderError = DEFAULT_RESPONSE_REDUCER_ERROR
+}) => async (webSocket, request, bodyHeadBuffer) => {
+  __DEV__ && console.log(`[createUpdateRequestListener] ${request.method}: ${request.url}`)
+  const stateStore = createStateStore(GET_INITIAL_STORE_STATE())
   stateStore.request = request
-  stateStore.bodyHeadBuffer = bodyHeadBuffer
   stateStore.response = NULL_RESPONSE
-  for (const responder of responderList) await responder(stateStore)
+  stateStore.webSocket = webSocket
+  stateStore.bodyHeadBuffer = bodyHeadBuffer
+  try { for (const responder of responderList) await responder(stateStore) } catch (error) { responderError(stateStore, error) }
   return stateStore.getState().protocol
 }
 
@@ -95,5 +103,5 @@ export {
   DATA_TYPE_MAP,
   enableWebSocketServer,
   createWebSocketClient,
-  createUpdateRequestListenerFromResponderList
+  createUpdateRequestListener
 }

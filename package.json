@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -34,6 +34,10 @@
     "prepare": "npm run build",
     "build": "npm run library",
     "start": "npm run example-dev"
+  },
+  "engines": {
+    "node": "8.x",
+    "npm": "5.x"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

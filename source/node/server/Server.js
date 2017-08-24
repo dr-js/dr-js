@@ -25,12 +25,12 @@ const DEFAULT_HTTP_OPTION = {
 
 const getServerToggle = ({ port, hostName }, server) => ({
   start: () => {
-    !server.listening && server.listen(port, hostName)
     __DEV__ && !server.listening && console.log('Server running at port', port, 'hostName', hostName)
+    !server.listening && server.listen(port, hostName)
   },
   stop: () => {
-    server.listening && server.close()
     __DEV__ && server.listening && console.log('Server stopped')
+    server.listening && server.close()
   }
 })
 const createServer = (option, type = 'HTTPS') => {
@@ -55,26 +55,27 @@ const createServer = (option, type = 'HTTPS') => {
 const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responderLogState ] : []
 const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
 const DEFAULT_RESPONSE_REDUCER_END = responderEnd
-const INITIAL_STORE_STATE = {
-  time: 0, // set by clock(), in msec
+const GET_INITIAL_STORE_STATE = () => ({
+  error: null, // from failed responder,
+  time: clock(), // in msec
   url: null, // from createResponderParseURL
-  error: null // from failed responder
-}
-const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
-const createRequestListenerFromResponderList = (responderList = DEFAULT_RESPONSE_REDUCER_LIST,
+  method: null // from createResponderParseURL
+})
+const createStateStore = (state) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+const createRequestListener = ({
+  responderList = DEFAULT_RESPONSE_REDUCER_LIST,
   responderError = DEFAULT_RESPONSE_REDUCER_ERROR,
-  responderEnd = DEFAULT_RESPONSE_REDUCER_END) => async (request, response) => {
+  responderEnd = DEFAULT_RESPONSE_REDUCER_END
+}) => async (request, response) => {
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
-  const stateStore = createStateStore({ time: clock(), url: null, error: null })
+  const stateStore = createStateStore(GET_INITIAL_STORE_STATE())
   stateStore.request = request
   stateStore.response = response
-  try {
-    for (const responder of responderList) await responder(stateStore)
-  } catch (error) { await responderError(stateStore, error) }
+  try { for (const responder of responderList) await responder(stateStore) } catch (error) { await responderError(stateStore, error) }
   await responderEnd(stateStore)
 }
 
 export {
   createServer,
-  createRequestListenerFromResponderList
+  createRequestListener
 }

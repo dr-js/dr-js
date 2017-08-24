@@ -104,7 +104,7 @@ const createResponderRouter = (routerMap) => (store) => {
     return o
   }, {})
   store.setState({ route, paramMap })
-  return routeProcessor(store) // async
+  return routeProcessor(store)
 }
 
 export {

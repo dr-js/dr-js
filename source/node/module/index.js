@@ -1,4 +1,1 @@
-export {
-  spawn,
-  runCommand
-} from './Command'
+export { spawn, runCommand, withCwd } from './Command'

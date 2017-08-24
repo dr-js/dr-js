@@ -7,7 +7,7 @@ const Dr = require('../Dr.node')
 
 const {
   createServer,
-  createRequestListenerFromResponderList,
+  createRequestListener,
   Responder: {
     createResponderParseURL,
     createRouterMapBuilder,
@@ -43,13 +43,15 @@ routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
 
 const { server, start } = createServer({ hostName: 'localhost', port: 3000 }, 'HTTP')
 
-server.on('request', createRequestListenerFromResponderList([
-  createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
-  createResponderParseURL(),
-  createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
-  createResponderRouter(routerMapBuilder.getRouterMap()),
-  createResponderLogEnd((data) => console.log('[LogEnd]', data))
-]))
+server.on('request', createRequestListener({
+  responderList: [
+    createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
+    createResponderParseURL(),
+    createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
+    createResponderRouter(routerMapBuilder.getRouterMap()),
+    createResponderLogEnd((data) => console.log('[LogEnd]', data))
+  ]
+}))
 
 const webSocketSet = enableWebSocketServer({
   server,

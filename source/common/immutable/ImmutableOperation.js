@@ -6,14 +6,13 @@
 // Object
 const objectSet = (object, key, value) => (object[ key ] !== value) ? { ...object, [key]: value } : object
 const objectDelete = (object, key) => {
-  if (!(key in object)) return object
+  if (!object.hasOwnProperty(key)) return object
   const result = { ...object }
   delete result[ key ]
   return result
 }
 const objectMerge = (object, merge) => {
-  for (const key in merge) { // check if has new data
-    const value = merge[ key ]
+  for (const [ key, value ] of Object.entries(merge)) { // check if has new data
     if (object[ key ] === value) continue
     return { ...object, ...merge }
   }
