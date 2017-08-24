@@ -1,7 +1,7 @@
 import nodeModuleUrl from 'url'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
-
+import { clock } from 'source/common/time'
 import {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
@@ -21,7 +21,7 @@ const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFA
 
     // select and return protocol from protocolList and optionally save the socket, or call doCloseSocket and reject the socket
     const protocol = await onUpgradeRequest(webSocket, request, bodyHeadBuffer)
-    if (!protocol) return webSocket.doCloseSocket()
+    if (!protocol && !WebSocketServer.isWebSocketClosed(webSocket)) return webSocket.doCloseSocket()
     if (WebSocketServer.isWebSocketClosed(webSocket)) return
 
     webSocket.doUpgradeSocket(protocol, responseKey)
@@ -69,10 +69,31 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
   })
 }
 
+const NULL_RESPONSE = { finished: true }
+const DEFAULT_RESPONSE_REDUCER_LIST = []
+const INITIAL_STORE_STATE = {
+  protocol: '',
+  time: 0, // set by clock(), in msec
+  url: null, // from createResponseReducerParseURL
+  error: null // from failed responseReducer
+}
+const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+const createUpdateRequestListenerFromResponseReducerList = (responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST) => async (webSocket, request, bodyHeadBuffer) => {
+  __DEV__ && console.log(`[createUpdateRequestListenerFromResponseReducerList] ${request.method}: ${request.url}`)
+  const stateStore = createStateStore({ protocol: '', time: clock(), url: null, error: null })
+  stateStore.webSocket = webSocket
+  stateStore.request = request
+  stateStore.bodyHeadBuffer = bodyHeadBuffer
+  stateStore.response = NULL_RESPONSE
+  for (const responseReducer of responseReducerList) await responseReducer(stateStore)
+  return stateStore.getState().protocol
+}
+
 export {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
   DATA_TYPE_MAP,
   enableWebSocketServer,
-  createWebSocketClient
+  createWebSocketClient,
+  createUpdateRequestListenerFromResponseReducerList
 }

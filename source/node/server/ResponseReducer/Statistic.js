@@ -5,7 +5,6 @@ const createResponseReducerLogRequestHeader = (doLog) => (store) => {
   const host = headers[ 'host' ] || ''
   const userAgent = headers[ 'user-agent' ] || ''
   doLog({ url, method, host, userAgent, remoteAddress, remotePort }, store.getState())
-  return store
 }
 
 const createResponseReducerLogTimeStep = (doLog) => (store) => {
@@ -13,7 +12,6 @@ const createResponseReducerLogTimeStep = (doLog) => (store) => {
   const stepTime = clock()
   doLog(stepTime - (state.stepTime || state.time), state)
   store.setState({ stepTime })
-  return store
 }
 
 const createResponseReducerLogEnd = (doLog) => (store) => {
@@ -21,7 +19,6 @@ const createResponseReducerLogEnd = (doLog) => (store) => {
   const { finished, statusCode } = store.response
   const duration = clock() - state.time
   doLog({ duration, finished, statusCode }, state)
-  return store
 }
 
 export {

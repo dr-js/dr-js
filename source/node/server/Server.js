@@ -4,11 +4,7 @@ import { constants } from 'crypto'
 
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
-
-import {
-  responseReducerLogState,
-  responseReducerEnd
-} from './ResponseReducer'
+import { responseReducerLogState, responseReducerEnd } from './ResponseReducer'
 
 const SSL_SESSION_CACHE_MAX = 5000
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
@@ -27,12 +23,6 @@ const DEFAULT_HTTP_OPTION = {
   hostName: 'localhost'
 }
 
-const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responseReducerLogState ] : []
-const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => {
-  store.setState({ error })
-  return store
-}
-
 const getServerToggle = ({ port, hostName }, server) => ({
   start: () => {
     !server.listening && server.listen(port, hostName)
@@ -43,8 +33,7 @@ const getServerToggle = ({ port, hostName }, server) => ({
     __DEV__ && server.listening && console.log('Server stopped')
   }
 })
-
-function createServer (option, type = 'HTTPS') {
+const createServer = (option, type = 'HTTPS') => {
   const { port, hostName, key, cert } = { ...(type === 'HTTPS' ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option } // set defaults
   const server = type === 'HTTPS' ? nodeModuleHttps.createServer({ key, cert }) : nodeModuleHttp.createServer()
   const { start, stop } = getServerToggle({ port, hostName }, server)
@@ -63,31 +52,29 @@ function createServer (option, type = 'HTTPS') {
   return { server, start, stop }
 }
 
+const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responseReducerLogState ] : []
+const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
+const DEFAULT_RESPONSE_REDUCER_END = responseReducerEnd
 const INITIAL_STORE_STATE = {
   time: 0, // set by clock(), in msec
   url: null, // from createResponseReducerParseURL
   error: null // from failed responseReducer
 }
-
-const createStateStore = (state = INITIAL_STORE_STATE) => ({
-  getState: () => state,
-  setState: (nextState) => (state = { ...state, ...nextState })
-})
-
-const applyResponseReducerList = (server, responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST, responseReducerError = DEFAULT_RESPONSE_REDUCER_ERROR) => server.on(
-  'request',
-  (request, response) => {
-    __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
-    const stateStore = createStateStore({ time: clock(), url: null, error: null })
-    stateStore.request = request
-    stateStore.response = response
-    responseReducerList.reduce((promiseTail, responseReducer) => promiseTail.then(responseReducer), Promise.resolve(stateStore))
-      .catch((error) => responseReducerError(stateStore, error))
-      .then(responseReducerEnd)
-  }
-)
+const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+const createRequestListenerFromResponseReducerList = (responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST,
+  responseReducerError = DEFAULT_RESPONSE_REDUCER_ERROR,
+  responseReducerEnd = DEFAULT_RESPONSE_REDUCER_END) => async (request, response) => {
+  __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
+  const stateStore = createStateStore({ time: clock(), url: null, error: null })
+  stateStore.request = request
+  stateStore.response = response
+  try {
+    for (const responseReducer of responseReducerList) await responseReducer(stateStore)
+  } catch (error) { await responseReducerError(stateStore, error) }
+  await responseReducerEnd(stateStore)
+}
 
 export {
   createServer,
-  applyResponseReducerList
+  createRequestListenerFromResponseReducerList
 }

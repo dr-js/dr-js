@@ -7,7 +7,7 @@ const HTTP_REQUEST_METHOD_MAP = HTTP_REQUEST_METHOD_LIST.reduce((o, method, inde
   return o
 }, {})
 
-const DEFAULT_ROUTE_PROCESSOR = (store, { route, method, paramMap }) => store
+const DEFAULT_ROUTE_PROCESSOR = (store, { route, method, paramMap }) => {}
 
 // const SAMPLE_ROUTE_MAP = {
 //   '': { // '/'
@@ -73,7 +73,9 @@ const createRouterMapBuilder = (routerMap = {}) => ({
 
 const createResponseReducerRouter = (routerMap) => (store) => {
   const { url, method } = store.getState()
-  if (!url || !method) return store
+
+  __DEV__ && (!url || !method) && console.log('[Router] missing arguments', { url, method })
+  if (!url || !method) return
 
   let paramValueList = []
   let currentNode = routerMap
@@ -102,7 +104,7 @@ const createResponseReducerRouter = (routerMap) => (store) => {
     return o
   }, {})
   store.setState({ route, paramMap })
-  return routeProcessor(store)
+  return routeProcessor(store) // async
 }
 
 export {
