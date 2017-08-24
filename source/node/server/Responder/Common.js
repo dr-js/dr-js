@@ -1,6 +1,6 @@
 import nodeModuleUrl from 'url'
 
-const responseReducerEnd = (store) => {
+const responderEnd = (store) => {
   if (store.response.finished) return store
   const { error } = store.getState()
   !store.response.headersSent && store.response.writeHead(error ? 500 : 400)
@@ -9,9 +9,9 @@ const responseReducerEnd = (store) => {
   store.response.end() // force end the response to prevent pending
 }
 
-const responseReducerLogState = (store) => console.log(store.getState())
+const responderLogState = (store) => console.log(store.getState())
 
-const createResponseReducerSendStream = (getStream) => async (store) => {
+const createResponderSendStream = (getStream) => async (store) => {
   const { stream, length, type } = await getStream(store)
   return new Promise((resolve, reject) => {
     store.response.writeHead(200, { 'content-type': type, 'content-length': length })
@@ -24,7 +24,7 @@ const createResponseReducerSendStream = (getStream) => async (store) => {
   })
 }
 
-const createResponseReducerSendBuffer = (getBuffer) => async (store) => {
+const createResponderSendBuffer = (getBuffer) => async (store) => {
   const { buffer, length, type } = await getBuffer(store)
   return new Promise((resolve, reject) => {
     store.response.writeHead(200, { 'content-type': type, 'content-length': length })
@@ -36,7 +36,7 @@ const createResponseReducerSendBuffer = (getBuffer) => async (store) => {
   })
 }
 
-const createResponseReducerReceiveBuffer = (setBuffer) => (store) => new Promise((resolve, reject) => {
+const createResponderReceiveBuffer = (setBuffer) => (store) => new Promise((resolve, reject) => {
   const data = []
   store.request.on('error', reject)
   store.request.on('data', (chunk) => data.push(chunk))
@@ -47,16 +47,16 @@ const createResponseReducerReceiveBuffer = (setBuffer) => (store) => new Promise
   })
 })
 
-const createResponseReducerParseURL = (parseQueryString = true) => (store) => {
+const createResponderParseURL = (parseQueryString = true) => (store) => {
   const { url, method } = store.request
   store.setState({ url: nodeModuleUrl.parse(url, parseQueryString), method })
 }
 
 export {
-  responseReducerEnd,
-  responseReducerLogState,
-  createResponseReducerParseURL,
-  createResponseReducerSendStream,
-  createResponseReducerSendBuffer,
-  createResponseReducerReceiveBuffer
+  responderEnd,
+  responderLogState,
+  createResponderParseURL,
+  createResponderSendStream,
+  createResponderSendBuffer,
+  createResponderReceiveBuffer
 }

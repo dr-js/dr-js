@@ -1,20 +1,20 @@
 import { clock } from 'source/common/time'
 
-const createResponseReducerLogRequestHeader = (doLog) => (store) => {
+const createResponderLogRequestHeader = (doLog) => (store) => {
   const { url, method, headers, socket: { remoteAddress, remotePort } } = store.request
   const host = headers[ 'host' ] || ''
   const userAgent = headers[ 'user-agent' ] || ''
   doLog({ url, method, host, userAgent, remoteAddress, remotePort }, store.getState())
 }
 
-const createResponseReducerLogTimeStep = (doLog) => (store) => {
+const createResponderLogTimeStep = (doLog) => (store) => {
   const state = store.getState()
   const stepTime = clock()
   doLog(stepTime - (state.stepTime || state.time), state)
   store.setState({ stepTime })
 }
 
-const createResponseReducerLogEnd = (doLog) => (store) => {
+const createResponderLogEnd = (doLog) => (store) => {
   const state = store.getState()
   const { finished, statusCode } = store.response
   const duration = clock() - state.time
@@ -22,7 +22,7 @@ const createResponseReducerLogEnd = (doLog) => (store) => {
 }
 
 export {
-  createResponseReducerLogRequestHeader,
-  createResponseReducerLogTimeStep,
-  createResponseReducerLogEnd
+  createResponderLogRequestHeader,
+  createResponderLogTimeStep,
+  createResponderLogEnd
 }

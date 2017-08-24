@@ -71,7 +71,7 @@ const createRouterMapBuilder = (routerMap = {}) => ({
   }
 })
 
-const createResponseReducerRouter = (routerMap) => (store) => {
+const createResponderRouter = (routerMap) => (store) => {
   const { url, method } = store.getState()
 
   __DEV__ && (!url || !method) && console.log('[Router] missing arguments', { url, method })
@@ -109,5 +109,5 @@ const createResponseReducerRouter = (routerMap) => (store) => {
 
 export {
   createRouterMapBuilder,
-  createResponseReducerRouter
+  createResponderRouter
 }

@@ -1,4 +1,4 @@
-import * as ResponseReducer from './ResponseReducer'
+import * as Responder from './Responder'
 import * as WebSocket from './WebSocket'
-export { createServer, createRequestListenerFromResponseReducerList } from './Server'
-export { ResponseReducer, WebSocket }
+export { createServer, createRequestListenerFromResponderList } from './Server'
+export { Responder, WebSocket }

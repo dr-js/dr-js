@@ -74,18 +74,18 @@ const DEFAULT_RESPONSE_REDUCER_LIST = []
 const INITIAL_STORE_STATE = {
   protocol: '',
   time: 0, // set by clock(), in msec
-  url: null, // from createResponseReducerParseURL
-  error: null // from failed responseReducer
+  url: null, // from createResponderParseURL
+  error: null // from failed responder
 }
 const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
-const createUpdateRequestListenerFromResponseReducerList = (responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST) => async (webSocket, request, bodyHeadBuffer) => {
-  __DEV__ && console.log(`[createUpdateRequestListenerFromResponseReducerList] ${request.method}: ${request.url}`)
+const createUpdateRequestListenerFromResponderList = (responderList = DEFAULT_RESPONSE_REDUCER_LIST) => async (webSocket, request, bodyHeadBuffer) => {
+  __DEV__ && console.log(`[createUpdateRequestListenerFromResponderList] ${request.method}: ${request.url}`)
   const stateStore = createStateStore({ protocol: '', time: clock(), url: null, error: null })
   stateStore.webSocket = webSocket
   stateStore.request = request
   stateStore.bodyHeadBuffer = bodyHeadBuffer
   stateStore.response = NULL_RESPONSE
-  for (const responseReducer of responseReducerList) await responseReducer(stateStore)
+  for (const responder of responderList) await responder(stateStore)
   return stateStore.getState().protocol
 }
 
@@ -95,5 +95,5 @@ export {
   DATA_TYPE_MAP,
   enableWebSocketServer,
   createWebSocketClient,
-  createUpdateRequestListenerFromResponseReducerList
+  createUpdateRequestListenerFromResponderList
 }

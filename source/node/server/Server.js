@@ -4,7 +4,7 @@ import { constants } from 'crypto'
 
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
-import { responseReducerLogState, responseReducerEnd } from './ResponseReducer'
+import { responderLogState, responderEnd } from './Responder'
 
 const SSL_SESSION_CACHE_MAX = 5000
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
@@ -52,29 +52,29 @@ const createServer = (option, type = 'HTTPS') => {
   return { server, start, stop }
 }
 
-const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responseReducerLogState ] : []
+const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responderLogState ] : []
 const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
-const DEFAULT_RESPONSE_REDUCER_END = responseReducerEnd
+const DEFAULT_RESPONSE_REDUCER_END = responderEnd
 const INITIAL_STORE_STATE = {
   time: 0, // set by clock(), in msec
-  url: null, // from createResponseReducerParseURL
-  error: null // from failed responseReducer
+  url: null, // from createResponderParseURL
+  error: null // from failed responder
 }
 const createStateStore = (state = INITIAL_STORE_STATE) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
-const createRequestListenerFromResponseReducerList = (responseReducerList = DEFAULT_RESPONSE_REDUCER_LIST,
-  responseReducerError = DEFAULT_RESPONSE_REDUCER_ERROR,
-  responseReducerEnd = DEFAULT_RESPONSE_REDUCER_END) => async (request, response) => {
+const createRequestListenerFromResponderList = (responderList = DEFAULT_RESPONSE_REDUCER_LIST,
+  responderError = DEFAULT_RESPONSE_REDUCER_ERROR,
+  responderEnd = DEFAULT_RESPONSE_REDUCER_END) => async (request, response) => {
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
   const stateStore = createStateStore({ time: clock(), url: null, error: null })
   stateStore.request = request
   stateStore.response = response
   try {
-    for (const responseReducer of responseReducerList) await responseReducer(stateStore)
-  } catch (error) { await responseReducerError(stateStore, error) }
-  await responseReducerEnd(stateStore)
+    for (const responder of responderList) await responder(stateStore)
+  } catch (error) { await responderError(stateStore, error) }
+  await responderEnd(stateStore)
 }
 
 export {
   createServer,
-  createRequestListenerFromResponseReducerList
+  createRequestListenerFromResponderList
 }
