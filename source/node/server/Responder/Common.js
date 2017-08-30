@@ -13,8 +13,8 @@ const responderLogState = (store) => console.log(store.getState())
 
 const createResponderSendStream = (getStream) => async (store) => {
   const { stream, length, type } = await getStream(store)
-  return new Promise((resolve, reject) => {
-    store.response.writeHead(200, { 'content-type': type, 'content-length': length })
+  store.response.writeHead(200, { 'content-type': type, 'content-length': length })
+  return length !== 0 && new Promise((resolve, reject) => {
     stream.on('error', reject)
     stream.on('end', () => {
       store.response.removeListener('error', reject)
@@ -26,8 +26,8 @@ const createResponderSendStream = (getStream) => async (store) => {
 
 const createResponderSendBuffer = (getBuffer) => async (store) => {
   const { buffer, length, type } = await getBuffer(store)
-  return new Promise((resolve, reject) => {
-    store.response.writeHead(200, { 'content-type': type, 'content-length': length })
+  store.response.writeHead(200, { 'content-type': type, 'content-length': length })
+  return length !== 0 && new Promise((resolve, reject) => {
     store.response.on('error', reject)
     store.response.write(buffer, () => {
       store.response.removeListener('error', reject)
