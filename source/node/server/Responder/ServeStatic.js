@@ -5,6 +5,7 @@ import { promisify } from 'util'
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module'
+import { getWeakEntityTagByStat } from 'source/node/module'
 
 import { createResponderSendStream, createResponderSendBuffer } from './Common'
 
@@ -16,7 +17,7 @@ const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 const createResponderBufferCache = ({
   getKey,
-  getBufferData, // { buffer, length, type }
+  getBufferData, // { buffer, length, type, entityTag }
   sizeSumMax = CACHE_BUFFER_SIZE_SUM_MAX,
   expireTime = CACHE_EXPIRE_TIME,
   onCacheAdd = __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
@@ -62,36 +63,38 @@ const createResponderServeStatic = ({
       store.setState({ bufferData })
       return responderSendBuffer(store)
     }
-    const stats = await statAsync(filePath)
-    if (!stats.isFile()) throw new Error(`[ServeStatic] not file: ${filePath}`)
-    const length = stats.size
+    const stat = await statAsync(filePath)
+    if (!stat.isFile()) throw new Error(`[ServeStatic] not file: ${filePath}`)
+    const length = stat.size
     const type = getFileMIMEByPath(filePath)
-    if (stats.size > sizeSingleMax) { // too big, just pipe it
-      store.setState({ streamData: { stream: nodeModuleFs.createReadStream(filePath), length, type } })
+    const entityTag = getWeakEntityTagByStat(stat)
+    if (stat.size > sizeSingleMax) { // too big, just pipe it
+      store.setState({ streamData: { stream: nodeModuleFs.createReadStream(filePath), length, type, entityTag } })
       return responderSendStream(store)
     }
     const buffer = await readFileAsync(filePath)
     __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
     serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
-    store.setState({ bufferData: { buffer, length, type } })
+    store.setState({ bufferData: { buffer, length, type, entityTag } })
     return responderSendBuffer(store)
   }
 }
 
 // for serve small file such as favicon
 const createResponderServeStaticSingleCached = ({ staticFilePath, expireTime = CACHE_EXPIRE_TIME }) => {
-  const bufferData = { buffer: null, length: 0, type: getFileMIMEByPath(staticFilePath), expireTime: -1 }
+  const bufferData = { buffer: null, length: 0, type: getFileMIMEByPath(staticFilePath), entityTag: '', expireTime: -1 }
   const responderSendBuffer = createResponderSendBuffer(() => bufferData)
   return async (store) => {
     const { time } = store.getState()
     __DEV__ && bufferData.expireTime >= time && console.log(`[HIT] SINGLE CACHE: ${staticFilePath}`)
     if (bufferData.expireTime >= time) return responderSendBuffer(store)
-    const stats = await statAsync(staticFilePath)
-    if (!stats.isFile()) throw new Error(`[ServeStaticSingleCached] not file: ${staticFilePath}`)
+    const stat = await statAsync(staticFilePath)
+    if (!stat.isFile()) throw new Error(`[ServeStaticSingleCached] not file: ${staticFilePath}`)
     const buffer = await readFileAsync(staticFilePath)
     __DEV__ && console.log(`[SET] SINGLE CACHE: ${staticFilePath}`)
     bufferData.buffer = buffer
-    bufferData.length = stats.size
+    bufferData.length = stat.size
+    bufferData.entityTag = getWeakEntityTagByStat(stat)
     bufferData.expireTime = time + expireTime
     return responderSendBuffer(store)
   }
