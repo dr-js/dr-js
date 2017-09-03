@@ -11,8 +11,16 @@ const responderEnd = (store) => {
 
 const responderLogState = (store) => console.log(store.getState())
 
+const verifyEntityTag = (headers, entityTag) => {
+  const matchTag = headers[ 'if-none-match' ]
+  return Boolean(matchTag && matchTag.startsWith(entityTag))
+}
+
 const createResponderSendStream = (getStream) => async (store) => {
-  const { stream, length, type } = await getStream(store)
+  const { stream, length, type, entityTag } = await getStream(store)
+  const hasEntityTag = Boolean(entityTag)
+  hasEntityTag && store.response.setHeader('etag', entityTag)
+  if (hasEntityTag && verifyEntityTag(store.request.headers, entityTag)) return store.response.writeHead(304, { 'content-type': type })
   store.response.writeHead(200, { 'content-type': type, 'content-length': length })
   return length !== 0 && new Promise((resolve, reject) => {
     stream.on('error', reject)
@@ -25,7 +33,10 @@ const createResponderSendStream = (getStream) => async (store) => {
 }
 
 const createResponderSendBuffer = (getBuffer) => async (store) => {
-  const { buffer, length, type } = await getBuffer(store)
+  const { buffer, length, type, entityTag } = await getBuffer(store)
+  const hasEntityTag = Boolean(entityTag)
+  hasEntityTag && store.response.setHeader('etag', entityTag)
+  if (hasEntityTag && verifyEntityTag(store.request.headers, entityTag)) return store.response.writeHead(304, { 'content-type': type })
   store.response.writeHead(200, { 'content-type': type, 'content-length': length })
   return length !== 0 && new Promise((resolve, reject) => {
     store.response.on('error', reject)

@@ -248,7 +248,7 @@ class WebSocketServer extends WebSocketBase {
     if (protocol && !this.protocolList.includes(protocol)) throw new Error(`[WebSocketServer][doUpgradeSocket] unexpected protocol ${protocol}`)
     this.socket.on('error', this.close)
     this.socket.on('end', this.close)
-    this.socket.write(`HTTP/1.1 101\r\nupgrade: websocket\r\nconnection: upgrade\r\nsec-websocket-accept: ${responseKey}\r\n${protocol ? `sec-websocket-protocol: ${protocol}\r\n` : ''}\r\n`)
+    this.socket.write(`HTTP/1.1 101 Switching Protocols\r\nupgrade: websocket\r\nconnection: upgrade\r\nsec-websocket-accept: ${responseKey}\r\n${protocol ? `sec-websocket-protocol: ${protocol}\r\n` : ''}\r\n`)
     __DEV__ && console.log('[WebSocketServer][doUpgradeSocket]', responseKey)
     this.frameReceiver.listenAndReceiveFrame(
       this.socket,
