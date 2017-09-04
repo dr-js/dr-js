@@ -4,13 +4,13 @@ import { CacheMap } from './CacheMap'
 const { describe, it } = global
 global.__DEV__ = false
 
-function getTestData (valueSizeSumMax) {
+const getTestData = (valueSizeSumMax) => {
   const cacheMap = new CacheMap({ valueSizeSumMax })
   const dataList = [ 0, 1, 2, 3, 4 ].map((index) => ({ key: `Key${index}`, value: `Data${index}` }))
   return { cacheMap, dataList }
 }
 
-function doSanityTest (cacheMap, length) {
+const doSanityTest = (cacheMap, length) => {
   it('should has matched cacheMap.size', () => nodeModuleAssert.equal(cacheMap.cacheMap.size, length))
   it('should has matched cacheLinkedList.length', () => nodeModuleAssert.equal(cacheMap.cacheLinkedList.length, length))
 }

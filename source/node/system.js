@@ -11,7 +11,7 @@ const getLocalPath = (relativePath) => nodeModulePath.resolve(PATH_NODE_START_SC
 
 const PROCESS_EXIT_SIGNAL_EVENT_TYPE_LIST = [ 'SIGINT', 'SIGHUP', 'SIGQUIT', 'SIGTERM' ]
 
-function addProcessExitListener (listener) {
+const addProcessExitListener = (listener) => {
   const wrappedListenerList = [
     { eventType: 'exit', wrappedListener: (code) => listener({ eventType: 'exit', code }) },
     { eventType: 'uncaughtException', wrappedListener: (error) => listener({ eventType: 'uncaughtException', error }) },

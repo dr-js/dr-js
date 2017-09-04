@@ -1,5 +1,17 @@
 import { now } from 'source/common/time'
 
+const debounceByAnimationFrame = (func) => {
+  const argvQueue = []
+  const frameFunc = () => {
+    func(argvQueue)
+    argvQueue.length = 0
+  }
+  return (...argv) => {
+    argvQueue.length === 0 && window.requestAnimationFrame(frameFunc) // prevent 'Uncaught TypeError: Illegal invocation' after babel
+    argvQueue.push(argv)
+  }
+}
+
 const createOffscreenCanvas = (width, height) => {
   const element = document.createElement('canvas')
   element.width = width
@@ -63,6 +75,8 @@ const bindFPSElement = (element) => {
 }
 
 export {
+  debounceByAnimationFrame,
+
   createOffscreenCanvas,
   createStyle,
   addDragFileListListenerToElement,

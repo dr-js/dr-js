@@ -41,30 +41,24 @@ const fetch = (url, config = {}) => new Promise((resolve, reject) => {
   request.end()
 })
 
-function loadScript (src) {
-  if (src.search(':// ') !== -1) return loadRemoteScript(src)
-  else return loadLocalScript(src)
-}
+const loadScript = (src) => (src.search(':// ') !== -1)
+  ? loadRemoteScript(src)
+  : loadLocalScript(src)
 
-function loadJSON (src) {
-  if (src.search(':// ') !== -1) return loadRemoteJSON(src)
-  else return loadLocalJSON(src)
-}
+const loadJSON = (src) => (src.search(':// ') !== -1)
+  ? loadRemoteJSON(src)
+  : loadLocalJSON(src)
 
-const loadRemoteScript = (src) => {
-  return fetch(src)
-    .then((result) => result.text())
-    .then((fileString) => {
-      const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '// ...'
-      return JSON.parse(stringList.join('\n'))
-    })
-}
+const loadRemoteScript = (src) => fetch(src)
+  .then((result) => result.text())
+  .then((fileString) => {
+    const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '// ...'
+    return JSON.parse(stringList.join('\n'))
+  })
 
-const loadRemoteJSON = (src) => {
-  return fetch(src)
-    .then((result) => result.text())
-    .then((fileString) => nodeModuleVm.runInThisContext(fileString, { filename: src }))
-}
+const loadRemoteJSON = (src) => fetch(src)
+  .then((result) => result.text())
+  .then((fileString) => nodeModuleVm.runInThisContext(fileString, { filename: src }))
 
 const loadLocalScript = (src) => new Promise((resolve, reject) => {
   const filePath = getLocalPath(src)

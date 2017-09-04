@@ -14,20 +14,7 @@ const IS_KEYBOARD_API_SUPPORTED = (() => { // detect KeyboardEvent https://devel
   } catch (error) { return false }
 })()
 
-const applyKeyboardEventListener = IS_KEYBOARD_API_SUPPORTED
-  ? (element, callback) => {
-    element.addEventListener(KEYBOARD_EVENT_TYPE.DOWN, callback)
-    element.addEventListener(KEYBOARD_EVENT_TYPE.PRESS, callback)
-    element.addEventListener(KEYBOARD_EVENT_TYPE.UP, callback)
-  }
-  : getPolyfill()
-
-export {
-  KEYBOARD_EVENT_TYPE,
-  applyKeyboardEventListener
-}
-
-function getPolyfill () {
+const getPolyfill = () => {
   const charCodeMap = {
     '8': 'Backspace',
     '9': 'Tab',
@@ -85,7 +72,7 @@ function getPolyfill () {
   // F1 - F12
   repeat(12, (i) => (charCodeMap[ 112 + i ] = 'F' + (i + 1)))
 
-  function parseEvent (event) {
+  const parseEvent = (event) => {
     const { key, code, keyCode, which } = event
     if (code === undefined) event.code = charCodeMap[ keyCode || which ] || ''
     if (key === undefined) event.key = String.fromCharCode(keyCode || which) || ''
@@ -99,4 +86,15 @@ function getPolyfill () {
     element.addEventListener(KEYBOARD_EVENT_TYPE.PRESS, polyfillCallback)
     element.addEventListener(KEYBOARD_EVENT_TYPE.UP, polyfillCallback)
   }
+}
+
+const applyKeyboardEventListener = (element, callback) => {
+  element.addEventListener(KEYBOARD_EVENT_TYPE.DOWN, callback)
+  element.addEventListener(KEYBOARD_EVENT_TYPE.PRESS, callback)
+  element.addEventListener(KEYBOARD_EVENT_TYPE.UP, callback)
+}
+
+export {
+  KEYBOARD_EVENT_TYPE,
+  applyKeyboardEventListener
 }

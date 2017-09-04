@@ -2,8 +2,9 @@
  * modified from three js: https://github.com/mrdoob/three.js/blob/master/src/math/Color.js
  */
 
-import { euclideanModulo, clamp } from '../math'
-import { hue2rgb, rgbaToUint32 } from './__utils__'
+import { systemEndianness } from 'source/env'
+import { euclideanModulo, clamp } from 'source/common/math'
+import { hue2rgb } from './__utils__'
 
 export class Color4 {
   constructor (r, g, b, a) {
@@ -13,7 +14,9 @@ export class Color4 {
     this.a = a
   }
 
-  static getUint32 = rgbaToUint32
+  getUint32 = systemEndianness === 'little'
+    ? function () { return ((this.r * 255) << 0) + ((this.g * 255) << 8) + ((this.b * 255) << 16) + ((this.a * 255) << 24) } // little endian
+    : function () { return ((this.r * 255) << 24) + ((this.g * 255) << 16) + ((this.b * 255) << 8) + ((this.a * 255) << 0) } // big endian
 
   setScalar (scalar) {
     this.r = scalar

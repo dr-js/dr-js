@@ -14,7 +14,7 @@ const OCTANT_INDEX_TYPE = {
   NNN: 7
 }
 
-function removeInArray (array, data) {
+const removeInArray = (array, data) => {
   const index = array.indexOf(data)
   if (index !== -1) {
     array.splice(index, 1)
@@ -24,7 +24,7 @@ function removeInArray (array, data) {
 }
 
 // directionInvert = 1 / ray.direction
-function intersectsRay (box, origin, directionInvert) {
+const intersectsRay = (box, origin, directionInvert) => {
   let tmin, tmax, tymin, tymax, tzmin, tzmax
   if (directionInvert.x >= 0) {
     tmin = (box.min.x - origin.x) * directionInvert.x

@@ -1,42 +1,38 @@
-// https:// davidwalsh.name/javascript-debounce-function
-// https:// gist.github.com/nmsdvid/8807205
+// https://davidwalsh.name/javascript-debounce-function
+// https://gist.github.com/nmsdvid/8807205
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
-function debounce (func, wait = 250, isLeadingEdge = false) {
+const debounce = (func, wait = 250, isLeadingEdge = false) => {
   let timeoutToken = null
-  return function () {
-    const context = this
-    const args = arguments
+  return (...args) => {
     const isCallNow = isLeadingEdge && (timeoutToken === null)
     clearTimeout(timeoutToken)
-    timeoutToken = setTimeout(function () {
+    timeoutToken = setTimeout(() => {
       timeoutToken = null
-      !isLeadingEdge && func.apply(context, args)
+      !isLeadingEdge && func.apply(null, args)
     }, wait)
-    isCallNow && func.apply(context, args)
+    isCallNow && func.apply(null, args)
   }
 }
 
 // inactive for `wait` time
-function throttle (func, wait = 250, isLeadingEdge = false) {
+const throttle = (func, wait = 250, isLeadingEdge = false) => {
   let timeoutToken = null
-  return function () {
+  return (...args) => {
     if (timeoutToken) return // inactive
-    const context = this
-    const args = arguments
     const isCallNow = isLeadingEdge && (timeoutToken === null)
-    timeoutToken = setTimeout(function () {
+    timeoutToken = setTimeout(() => {
       timeoutToken = null
-      !isLeadingEdge && func.apply(context, args)
+      !isLeadingEdge && func.apply(null, args)
     }, wait)
-    isCallNow && func.apply(context, args)
+    isCallNow && func.apply(null, args)
   }
 }
 
 // control flow
-function repeat (count, func) {
+const repeat = (count, func) => {
   let looped = 0
   while (count > looped) {
     func(looped, count)
@@ -44,7 +40,7 @@ function repeat (count, func) {
   }
 }
 
-async function promiseQueue ({ taskList, shouldContinueOnError = false }) {
+const promiseQueue = async ({ taskList, shouldContinueOnError = false }) => {
   const resultList = []
   const errorList = []
   const endList = []

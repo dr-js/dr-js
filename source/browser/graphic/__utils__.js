@@ -30,27 +30,27 @@ const getCanvasImageDataDrawClip = (canvasImageData, width, height) => (context,
   context.putImageData(canvasImageData, x, y, clipX, clipY, dirtyWidth, dirtyHeight)
 }
 
-function createImageElement (width, height) {
+const createImageElement = (width, height) => {
   const imageElement = document.createElement('img')
   imageElement.width = width
   imageElement.height = height
   return imageElement
 }
 
-function createCanvasElement (width, height) {
+const createCanvasElement = (width, height) => {
   const canvasElement = document.createElement('canvas')
   canvasElement.width = width
   canvasElement.height = height
   return canvasElement
 }
 
-function createCanvasImageData (width, height) {
+const createCanvasImageData = (width, height) => {
   BUFFER_CANVAS.width = width
   BUFFER_CANVAS.height = height
   return BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, width, height)
 }
 
-function applyImageElementExt (imageElement) {
+const applyImageElementExt = (imageElement) => {
   const { width, height } = imageElement
   return {
     width,
@@ -62,7 +62,7 @@ function applyImageElementExt (imageElement) {
   }
 }
 
-function applyCanvasElementExt (canvasElement) {
+const applyCanvasElementExt = (canvasElement) => {
   const { width, height } = canvasElement
   return {
     width,
@@ -74,7 +74,7 @@ function applyCanvasElementExt (canvasElement) {
   }
 }
 
-function applyCanvasImageDataExt (canvasImageData) {
+const applyCanvasImageDataExt = (canvasImageData) => {
   const { width, height } = canvasImageData
   return {
     width,
@@ -87,24 +87,22 @@ function applyCanvasImageDataExt (canvasImageData) {
 }
 
 // transform type
-function imageElementToCanvasElement (imageElement) {
+const imageElementToCanvasElement = (imageElement) => {
   const canvasElement = document.createElement('canvas')
   canvasElement.width = imageElement.width
   canvasElement.height = imageElement.height
   canvasElement.getContext('2d').drawImage(imageElement, 0, 0)
   return canvasElement
 }
-function canvasImageDataToCanvasElement (canvasImageData) {
+const canvasImageDataToCanvasElement = (canvasImageData) => {
   const canvasElement = document.createElement('canvas')
   canvasElement.width = canvasImageData.width
   canvasElement.height = canvasImageData.height
   canvasElement.getContext('2d').putImageData(canvasImageData, 0, 0)
   return canvasElement
 }
-function canvasElementToCanvasImageData (canvasElement) {
-  return canvasElement.getContext('2d').getImageData(0, 0, canvasElement.width, canvasElement.height)
-}
-function imageElementToCanvasImageData (imageElement) {
+const canvasElementToCanvasImageData = (canvasElement) => canvasElement.getContext('2d').getImageData(0, 0, canvasElement.width, canvasElement.height)
+const imageElementToCanvasImageData = (imageElement) => {
   BUFFER_CANVAS.width = imageElement.width
   BUFFER_CANVAS.height = imageElement.height
   BUFFER_CANVAS_CONTEXT2D.drawImage(imageElement, 0, 0)
@@ -113,9 +111,7 @@ function imageElementToCanvasImageData (imageElement) {
 
 // operation
 const CANVAS_IMAGE_DATA_OPERATION = {
-  scale: function (imageData, scaleX, scaleY) {
-    scaleY = scaleY || scaleX
-
+  scale: (imageData, scaleX, scaleY = scaleX) => {
     const sourceImageData = imageData
     const sourcePixelArray = sourceImageData.data
     const sourcePixelWidth = sourceImageData.width
@@ -145,7 +141,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
 
     return targetImageData
   },
-  crop: function (imageData, cropSelectFunc) {
+  crop: (imageData, cropSelectFunc) => {
     const sourceWidth = imageData.width
     const sourceHeight = imageData.height
     const sourcePixelArray = imageData.data
@@ -182,7 +178,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
     BUFFER_CANVAS_CONTEXT2D.putImageData(imageData, 0 - minX, 0 - minY, minX, minY, targetWidth, targetHeight)
     return BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, targetWidth, targetHeight)
   },
-  getPixelColor: function (imageData, x, y) {
+  getPixelColor: (imageData, x, y) => {
     const index = x + y * imageData.width
     const index4 = index * 4
     const data = imageData.data
@@ -193,7 +189,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       a: data[ index4 + 3 ]
     }
   },
-  replaceColor: function (imageData, replacerFunc) {
+  replaceColor: (imageData, replacerFunc) => {
     const data = imageData.data
     const dataLength4 = imageData.width * imageData.height * 4
     for (let index4 = 0; index4 < dataLength4; index4 += 4) {
@@ -205,7 +201,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       data[ index4 + 3 ] = replaceColor.a
     }
   },
-  drawPixel: function (imageData, x, y, color) {
+  drawPixel: (imageData, x, y, color) => {
     const index = x + y * imageData.width
     const index4 = index * 4
     const data = imageData.data
@@ -214,7 +210,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
     data[ index4 + 2 ] = color.b
     data[ index4 + 3 ] = color.a
   },
-  drawPixelLine: function (imageData, point0, point1, color) {
+  drawPixelLine: (imageData, point0, point1, color) => {
     let x0 = Math.round(point0.x)
     let y0 = Math.round(point0.y)
     // let z0 = point0.z
@@ -243,7 +239,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       // z0 += sz
     }
   },
-  drawPixelLineList: function (imageData, pointList, color, isLoop) {
+  drawPixelLineList: (imageData, pointList, color, isLoop) => {
     if (pointList.length <= 1) throw new Error('[drawPixelLineList] error pointList length:', pointList.length)
     let fromPoint = isLoop ? pointList[ pointList.length - 1 ] : pointList[ 0 ]
     let pointIndex = isLoop ? 0 : 1
@@ -253,7 +249,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       pointIndex++
     }
   },
-  floodFill: function (imageData, startPoint, fillColor) {
+  floodFill: (imageData, startPoint, fillColor) => {
     startPoint.x = Math.round(startPoint.x)
     startPoint.y = Math.round(startPoint.y)
 
@@ -265,7 +261,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
 
     const markPointArray = []
 
-    function putColor (x, y, color) {
+    const putColor = (x, y, color) => {
       const index = (y * width + x) * 4
       data[ index ] = color.r
       data[ index + 1 ] = color.g
@@ -273,12 +269,12 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       data[ index + 3 ] = color.a
     }
 
-    function checkColor (x, y, color) {
+    const checkColor = (x, y, color) => {
       const index = (y * width + x) * 4
       return data[ index ] === color.r && data[ index + 1 ] === color.g && data[ index + 2 ] === color.b && data[ index + 3 ] === color.a
     }
 
-    function comboPush (xLeft, xRight, checkY) {
+    const comboPush = (xLeft, xRight, checkY) => {
       let checkX = xLeft + 1
       let isCombo = false
       while (checkX < xRight) {

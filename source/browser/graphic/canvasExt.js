@@ -6,7 +6,7 @@ const CANVAS_EXT_EVENT = {
   UPDATE: 'UPDATE'
 }
 
-function createCanvasExt (canvas, eventEmitter = new EventEmitter()) {
+const createCanvasExt = (canvas, eventEmitter = new EventEmitter()) => {
   const context2d = canvas.getContext('2d')
 
   applyPointerEventExtListener(canvas, (eventExtData, eventData) => {
