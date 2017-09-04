@@ -4,7 +4,7 @@ import { DoublyLinkedList } from './LinkedList'
 const { describe, it } = global
 global.__DEV__ = false
 
-function getTestData () {
+const getTestData = () => {
   const linkedList = new DoublyLinkedList()
   const nodeList = [ 0, 1, 2, 3, 4 ].map((index) => {
     const node = DoublyLinkedList.createNode(`Node${index}`)
@@ -14,7 +14,7 @@ function getTestData () {
   return { linkedList, nodeList }
 }
 
-function doSanityTest (linkedList, length) {
+const doSanityTest = (linkedList, length) => {
   it('should has head.prev === null', () => nodeModuleAssert.equal(linkedList.head.prev, null))
   it('should has tail.next === null', () => nodeModuleAssert.equal(linkedList.tail.next, null))
   it(`should has length === ${length}`, () => nodeModuleAssert.equal(linkedList.length, length))

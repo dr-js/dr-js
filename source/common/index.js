@@ -1,5 +1,4 @@
 import * as Data from './data'
-import * as Graphic from './graphic'
 import * as Immutable from './immutable'
 import * as Mutable from './mutable'
 import * as Math from './math'
@@ -10,7 +9,6 @@ import * as Format from './format'
 
 export {
   Data,
-  Graphic,
   Immutable,
   Mutable,
   Math,

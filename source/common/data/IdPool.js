@@ -1,4 +1,4 @@
-export function createIdPool (idData = []) {
+const createIdPool = (idData = []) => {
   const pool = new Set(idData)
   return {
     requestID: (id = 0) => { // might not be the id you expect, but will be near
@@ -11,3 +11,5 @@ export function createIdPool (idData = []) {
     clear: () => pool.clear()
   }
 }
+
+export { createIdPool }

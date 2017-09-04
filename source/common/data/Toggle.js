@@ -1,4 +1,4 @@
-export function createToggle () {
+const createToggle = () => {
   const data = new Map()
   const toggle = (key, value) => {
     if (value === undefined) value = !data.get(key)
@@ -8,6 +8,8 @@ export function createToggle () {
   toggle.get = data.get.bind(data)
   return toggle
 }
+
+export { createToggle }
 
 // Usage:
 // const toggle = createToggle()

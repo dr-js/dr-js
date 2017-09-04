@@ -52,7 +52,7 @@ const loadScript = (src) => new Promise((resolve, reject) => {
   document.body.appendChild(element)
 })
 
-function createDownload (fileName, src) {
+const createDownload = (fileName, src) => {
   const element = document.createElement('a')
   element.setAttribute('href', src)
   element.setAttribute('download', fileName)

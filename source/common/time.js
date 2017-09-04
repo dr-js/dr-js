@@ -1,6 +1,6 @@
 import { global } from 'source/env'
 
-function getClock () {
+const getClock = () => {
   const { performance, process } = global
   try {
     const clock = performance.now // milliseconds
@@ -17,11 +17,6 @@ function getClock () {
       const [ seconds, nanoseconds ] = process.hrtime()
       return seconds * 1000 + nanoseconds * 0.000001
     }
-    const time = clock()
-    if (time <= clock()) return clock
-  } catch (error) { }
-  try {
-    const clock = global.performance.now
     const time = clock()
     if (time <= clock()) return clock
   } catch (error) { }
@@ -42,8 +37,7 @@ const getTimeStamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 // NOTE: not cancellable
 const setTimeoutPromise = (wait = 1000) => (result) => new Promise((resolve) => setTimeout(() => resolve(result), wait))
 
-const onNextProperUpdate = global.requestAnimationFrame ||
-  ((callback) => setTimeout(callback, 1000 / 60))
+const onNextProperUpdate = global.requestAnimationFrame || ((callback) => setTimeout(callback, 1000 / 60))
 
 export {
   CLOCK_PER_SECOND,

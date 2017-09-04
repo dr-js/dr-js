@@ -35,13 +35,13 @@ const EVENT_TYPE_MAP = { // map touch/mouse event type to merged pointer event t
   // TODO: add pen event?
 }
 
-function getDistance (pointA, pointB) {
+const getDistance = (pointA, pointB) => {
   const dx = pointA.x - pointB.x
   const dy = pointA.y - pointB.y
   return Math.sqrt(dx * dx + dy * dy)
 }
 
-function parseEvent (event) {
+const parseEvent = (event) => {
   let pointerInfo = null
   if (event.touches) { // touch event
     if (event.targetTouches.length > 0) pointerInfo = event.targetTouches[ 0 ] // first touch point
@@ -64,7 +64,7 @@ function parseEvent (event) {
 const DRAG_DISTANCE_THRESHOLD = (window.devicePixelRatio || 1) * 3
 const HOLD_TIME_THRESHOLD = 0.5 // sec
 
-function parseEventExt (eventExtData, eventData) {
+const parseEventExt = (eventExtData, eventData) => {
   let eventExtType
 
   switch (eventData.type) {
@@ -111,13 +111,13 @@ function parseEventExt (eventExtData, eventData) {
 }
 
 // simple event wrapper, add all event in EVENT_TYPE_MAP
-function applyPointerEventListener (element, callback) {
+const applyPointerEventListener = (element, callback) => {
   const listener = (event) => callback(parseEvent(event, element))
   for (const eventType in EVENT_TYPE_MAP) element.addEventListener(eventType, listener, false)
   return () => { for (const eventType in EVENT_TYPE_MAP) element.removeEventListener(eventType, listener, false) }
 }
 
-function applyPointerEventExtListener (element, callback) {
+const applyPointerEventExtListener = (element, callback) => {
   const eventExtData = {
     eventExtType: null,
     isActive: false,

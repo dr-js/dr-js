@@ -1,10 +1,8 @@
-function getGlobal () {
-  if (typeof (window) !== 'undefined') return window
-  if (typeof (global) !== 'undefined') return global
-  return this
-}
+const getGlobal = () => (typeof (window) !== 'undefined') ? window
+  : (typeof (global) !== 'undefined') ? global
+    : this
 
-function getEnvironment () {
+const getEnvironment = () => {
   const { process, window, document } = getGlobal()
   const isNode = (typeof (process) !== 'undefined' && typeof (process.versions) !== 'undefined' && process.versions.node)
   const isBrowser = (typeof (window) !== 'undefined' && typeof (document) !== 'undefined')
@@ -17,7 +15,7 @@ function getEnvironment () {
   }
 }
 
-function getSystemEndianness () {
+const getSystemEndianness = () => {
   try {
     const buffer = new ArrayBuffer(4)
     const viewUint8 = new Uint8Array(buffer)
@@ -32,11 +30,9 @@ function getSystemEndianness () {
   return 'unknown'
 }
 
-function getConsoleMethod (name) {
-  return console[ name ].bind ? console[ name ].bind(console)
-    : console[ name ].apply ? (...args) => console[ name ].apply(console, args)
-      : (...args) => console[ name ](args)
-}
+const getConsoleMethod = (name) => console[ name ].bind ? console[ name ].bind(console)
+  : console[ name ].apply ? (...args) => console[ name ].apply(console, args)
+    : (...args) => console[ name ](args)
 
 const GLOBAL = getGlobal()
 const { isNode, isBrowser, environmentName } = getEnvironment()
