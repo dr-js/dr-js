@@ -41,6 +41,7 @@ const createResponderBufferCache = ({
 
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
 const getFileMIMEByPath = (filePath) => (BASIC_EXTENSION_MAP[ nodeModulePath.extname(filePath).slice(1) ] || DEFAULT_MIME)
+const REGEXP_ENCODING_GZIP = /gzip/i
 
 const createResponderServeStatic = ({
   staticRoot,
@@ -48,35 +49,55 @@ const createResponderServeStatic = ({
   sizeSumMax = CACHE_BUFFER_SIZE_SUM_MAX,
   expireTime = CACHE_EXPIRE_TIME,
   onCacheAdd = __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
-  onCacheDelete = __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null
+  onCacheDelete = __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null,
+  isEnableGzip = false // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
 }) => {
   staticRoot = nodeModulePath.normalize(staticRoot)
   const serveCacheMap = new CacheMap({ valueSizeSumMax: sizeSumMax, onCacheAdd, onCacheDelete })
   const responderSendStream = createResponderSendStream((store) => store.getState().streamData)
   const responderSendBuffer = createResponderSendBuffer((store) => store.getState().bufferData)
-  return async (store) => {
-    const filePath = nodeModulePath.normalize(nodeModulePath.join(staticRoot, store.getState().filePath))
-    if (!filePath.includes(staticRoot)) throw new Error('requesting file outside of staticRoot')
+  const serveCache = async (store, filePath, encoding) => {
     const bufferData = serveCacheMap.get(filePath)
-    if (bufferData) {
-      __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
-      store.setState({ bufferData })
-      return responderSendBuffer(store)
-    }
+    if (!bufferData) return false
+    __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
+    encoding && store.response.setHeader('content-encoding', encoding)
+    store.setState({ bufferData: bufferData })
+    await responderSendBuffer(store)
+    return true
+  }
+  const serve = async (store, filePath, encoding) => {
     const stat = await statAsync(filePath)
-    if (!stat.isFile()) throw new Error(`[ServeStatic] not file: ${filePath}`)
+    if (!stat.isFile()) return false
     const length = stat.size
     const type = getFileMIMEByPath(filePath)
     const entityTag = getWeakEntityTagByStat(stat)
+    encoding && store.response.setHeader('content-encoding', encoding)
     if (stat.size > sizeSingleMax) { // too big, just pipe it
+      __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
       store.setState({ streamData: { stream: nodeModuleFs.createReadStream(filePath), length, type, entityTag } })
-      return responderSendStream(store)
+      await responderSendStream(store)
+    } else {
+      __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
+      const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
+      serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
+      store.setState({ bufferData })
+      await responderSendBuffer(store)
     }
-    const buffer = await readFileAsync(filePath)
-    __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
-    serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
-    store.setState({ bufferData: { buffer, length, type, entityTag } })
-    return responderSendBuffer(store)
+    return true
+  }
+  return async (store) => {
+    const filePath = nodeModulePath.normalize(nodeModulePath.join(staticRoot, store.getState().filePath))
+    if (!filePath.includes(staticRoot)) throw new Error(`[ServeStatic] file out of staticRoot: ${filePath}`)
+    const acceptGzip = isEnableGzip && REGEXP_ENCODING_GZIP.test(store.request.headers[ 'accept-encoding' ]) // try .gz for gzip
+    if (acceptGzip && await serveCache(store, filePath + '.gz', 'gzip')) return
+    if (await serveCache(store, filePath)) return
+    if (acceptGzip) {
+      try {
+        if (await serve(store, filePath + '.gz', 'gzip')) return
+      } catch (error) { __DEV__ && console.log(`[MISS] CACHE: ${filePath}(GZ)`, error) }
+    }
+    if (await serve(store, filePath)) return
+    throw new Error(`[ServeStatic] miss file: ${filePath}`)
   }
 }
 
