@@ -21,4 +21,12 @@ const createStateStore = (state) => {
   return { getState, setState, subscribe, unsubscribe }
 }
 
-export { createStateStore }
+const createMinStateStore = (state) => ({
+  getState: () => state,
+  setState: (nextState) => (state = { ...state, ...nextState })
+})
+
+export {
+  createStateStore,
+  createMinStateStore
+}

@@ -2,6 +2,7 @@ import nodeModuleUrl from 'url'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
 import { clock } from 'source/common/time'
+import { createMinStateStore } from 'source/common/immutable'
 import {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
@@ -82,13 +83,13 @@ const GET_INITIAL_STORE_STATE = () => ({
   method: null, // from createResponderParseURL
   protocol: ''
 })
-const createStateStore = (state) => ({ getState: () => state, setState: (nextState) => (state = { ...state, ...nextState }) })
+
 const createUpdateRequestListener = ({
   responderList = DEFAULT_RESPONSE_REDUCER_LIST,
   responderError = DEFAULT_RESPONSE_REDUCER_ERROR
 }) => async (webSocket, request, bodyHeadBuffer) => {
   __DEV__ && console.log(`[createUpdateRequestListener] ${request.method}: ${request.url}`)
-  const stateStore = createStateStore(GET_INITIAL_STORE_STATE())
+  const stateStore = createMinStateStore(GET_INITIAL_STORE_STATE())
   stateStore.request = request
   stateStore.response = NULL_RESPONSE
   stateStore.webSocket = webSocket
