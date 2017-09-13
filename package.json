@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -40,6 +40,6 @@
     "npm": "5.x"
   },
   "devDependencies": {
-    "dev-dep-web": "^0.0.1"
+    "dev-dep-web": "^0.0.2"
   }
 }
