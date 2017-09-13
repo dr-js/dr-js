@@ -15,15 +15,18 @@ const readFileAsync = promisify(nodeModuleFs.readFile)
 const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
 const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
+const createDefaultCacheMap = () => new CacheMap({
+  valueSizeSumMax: CACHE_BUFFER_SIZE_SUM_MAX,
+  onCacheAdd: __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
+  onCacheDelete: __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null
+})
+
 const createResponderBufferCache = ({
   getKey,
   getBufferData, // { buffer, length, type, entityTag }
-  sizeSumMax = CACHE_BUFFER_SIZE_SUM_MAX,
   expireTime = CACHE_EXPIRE_TIME,
-  onCacheAdd = __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
-  onCacheDelete = __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null
+  serveCacheMap = createDefaultCacheMap()
 }) => {
-  const serveCacheMap = new CacheMap({ valueSizeSumMax: sizeSumMax, onCacheAdd, onCacheDelete })
   const responderSendBuffer = createResponderSendBuffer((store) => store.getState().bufferData)
   return async (store) => {
     const cacheKey = await getKey(store)
@@ -46,14 +49,11 @@ const REGEXP_ENCODING_GZIP = /gzip/i
 const createResponderServeStatic = ({
   staticRoot,
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
-  sizeSumMax = CACHE_BUFFER_SIZE_SUM_MAX,
   expireTime = CACHE_EXPIRE_TIME,
-  onCacheAdd = __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
-  onCacheDelete = __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null,
-  isEnableGzip = false // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
+  isEnableGzip = false, // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
+  serveCacheMap = createDefaultCacheMap()
 }) => {
   staticRoot = nodeModulePath.normalize(staticRoot)
-  const serveCacheMap = new CacheMap({ valueSizeSumMax: sizeSumMax, onCacheAdd, onCacheDelete })
   const responderSendStream = createResponderSendStream((store) => store.getState().streamData)
   const responderSendBuffer = createResponderSendBuffer((store) => store.getState().bufferData)
   const serveCache = async (store, filePath, encoding) => {
@@ -101,28 +101,7 @@ const createResponderServeStatic = ({
   }
 }
 
-// for serve small file such as favicon
-const createResponderServeStaticSingleCached = ({ staticFilePath, expireTime = CACHE_EXPIRE_TIME }) => {
-  const bufferData = { buffer: null, length: 0, type: getFileMIMEByPath(staticFilePath), entityTag: '', expireTime: -1 }
-  const responderSendBuffer = createResponderSendBuffer(() => bufferData)
-  return async (store) => {
-    const { time } = store.getState()
-    __DEV__ && bufferData.expireTime >= time && console.log(`[HIT] SINGLE CACHE: ${staticFilePath}`)
-    if (bufferData.expireTime >= time) return responderSendBuffer(store)
-    const stat = await statAsync(staticFilePath)
-    if (!stat.isFile()) throw new Error(`[ServeStaticSingleCached] not file: ${staticFilePath}`)
-    const buffer = await readFileAsync(staticFilePath)
-    __DEV__ && console.log(`[SET] SINGLE CACHE: ${staticFilePath}`)
-    bufferData.buffer = buffer
-    bufferData.length = stat.size
-    bufferData.entityTag = getWeakEntityTagByStat(stat)
-    bufferData.expireTime = time + expireTime
-    return responderSendBuffer(store)
-  }
-}
-
 export {
   createResponderBufferCache,
-  createResponderServeStatic,
-  createResponderServeStaticSingleCached
+  createResponderServeStatic
 }
