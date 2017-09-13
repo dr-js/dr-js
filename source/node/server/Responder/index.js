@@ -9,8 +9,7 @@ export {
 
 export {
   createResponderBufferCache,
-  createResponderServeStatic,
-  createResponderServeStaticSingleCached
+  createResponderServeStatic
 } from './ServeStatic'
 
 export {
