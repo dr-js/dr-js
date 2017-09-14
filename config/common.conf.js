@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = webpack
 
 const NODE_ENV = process.env.NODE_ENV
-const PRODUCTION = NODE_ENV === 'production'
+const IS_PRODUCTION = NODE_ENV === 'production'
 
 const BABEL_OPTIONS = {
   babelrc: false,
@@ -17,24 +17,20 @@ module.exports = {
     'Dr.node': [ nodeModulePath.join(__dirname, '../source/Dr.node') ],
     'Dr.browser': [ nodeModulePath.join(__dirname, '../source/Dr.browser') ]
   },
+  resolve: { alias: { source: nodeModulePath.resolve(__dirname, '../source') } },
   target: 'node', // support node main modules like 'fs'
   module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: { loader: 'babel-loader', options: BABEL_OPTIONS }
-      }
-    ]
+    rules: [ {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: { loader: 'babel-loader', options: BABEL_OPTIONS }
+    } ]
   },
-  resolve: {
-    alias: { source: nodeModulePath.resolve(__dirname, '../source') }
-  },
-  plugins: [].concat(
-    new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(NODE_ENV), '__DEV__': !PRODUCTION }),
-    PRODUCTION ? [
+  plugins: [
+    new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(NODE_ENV), '__DEV__': !IS_PRODUCTION }),
+    ...(IS_PRODUCTION ? [
       new ModuleConcatenationPlugin(),
       new BannerPlugin({ banner: '/* eslint-disable */', raw: true, test: /\.js$/, entryOnly: false })
-    ] : []
-  )
+    ] : [])
+  ]
 }
