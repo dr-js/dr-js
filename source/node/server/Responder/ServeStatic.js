@@ -65,11 +65,10 @@ const createResponderServeStatic = ({
     await responderSendBuffer(store)
     return true
   }
-  const serve = async (store, filePath, encoding) => {
+  const serve = async (store, filePath, type, encoding) => {
     const stat = await statAsync(filePath)
     if (!stat.isFile()) return false
     const length = stat.size
-    const type = getFileMIMEByPath(filePath)
     const entityTag = getWeakEntityTagByStat(stat)
     encoding && store.response.setHeader('content-encoding', encoding)
     if (stat.size > sizeSingleMax) { // too big, just pipe it
@@ -91,12 +90,13 @@ const createResponderServeStatic = ({
     const acceptGzip = isEnableGzip && REGEXP_ENCODING_GZIP.test(store.request.headers[ 'accept-encoding' ]) // try .gz for gzip
     if (acceptGzip && await serveCache(store, filePath + '.gz', 'gzip')) return
     if (await serveCache(store, filePath)) return
+    const type = getFileMIMEByPath(filePath)
     if (acceptGzip) {
       try {
-        if (await serve(store, filePath + '.gz', 'gzip')) return
+        if (await serve(store, filePath + '.gz', type, 'gzip')) return
       } catch (error) { __DEV__ && console.log(`[MISS] CACHE: ${filePath}(GZ)`, error) }
     }
-    if (await serve(store, filePath)) return
+    if (await serve(store, filePath, type)) return
     throw new Error(`[ServeStatic] miss file: ${filePath}`)
   }
 }
