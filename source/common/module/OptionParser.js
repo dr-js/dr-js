@@ -65,7 +65,7 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
     if (!format.optional) nonOptionalFormatSet.add(format)
     else if (typeof (format.optional) === 'function') optionalFormatCheckSet.add({ format, checkOptional: format.optional })
 
-    if (format.extendFormatList.length !== 0) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => parseFormat(extendFormat, index, format))
+    format.extendFormatList.forEach((extendFormat, index) => parseFormat(extendFormat, index, format))
   }
 
   formatList = formatList.map((format, index) => normalizeFormat(format, index, null))
@@ -77,9 +77,9 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
     parseJSON: getParseJSON(JSONNameMap),
     processOptionMap: getProcessOptionMap(nonOptionalFormatSet, optionalFormatCheckSet),
     formatUsage: (message) => (message ? `Message:\n${stringIndentLine(message.toString(), '  ')}\n` : '') +
-      `CLI Usage:\n${stringIndentLine(formatUsageCLI(formatList), '  ')}\n` +
-      `ENV Usage:\n${stringIndentLine(formatUsageENV(formatList), '  ')}\n` +
-      `JSON Usage:\n${stringIndentLine(formatUsageJSON(formatList), '  ')}\n`
+      `CLI Usage:\n${stringIndentLine(usageCLI(formatList), '  ')}\n` +
+      `ENV Usage:\n${stringIndentLine(usageENV(formatList), '  ')}\n` +
+      `JSON Usage:\n${stringIndentLine(usageJSON(formatList), '  ')}\n`
   }
 }
 
@@ -89,7 +89,7 @@ const normalizeFormat = (format, index, upperFormat) => {
   if (!REGEXP_FORMAT_NAME.test(format.name)) throw getFormatError(`name '${format.name}'`, format, index, upperFormat)
   if (format.shortName && !REGEXP_FORMAT_SHORT_NAME.test(format.shortName)) throw getFormatError(`shortName '${format.shortName}'`, format, index, upperFormat)
   if (!REGEXP_FORMAT_ARGUMENT_COUNT.test(format.argumentCount)) throw getFormatError(`argumentCount '${format.argumentCount}'`, format, index, upperFormat)
-  if (format.extendFormatList.length !== 0) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => normalizeFormat(extendFormat, index, format))
+  if (format.extendFormatList.length) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => normalizeFormat(extendFormat, index, format))
   return format
 }
 const getOptionalCheckUpperFormat = (optional, upperFormat) => typeof (optional) === 'function'
@@ -170,17 +170,16 @@ const formatSimple = ({ name, shortName }) => `${name}${shortName ? ` [-${shortN
 const formatUsageBase = (text, { optional, argumentLengthMin, argumentLengthMax }) => text +
   (optional ? typeof (optional) === 'function' ? ' [OPTIONAL-CHECK]' : ' [OPTIONAL]' : '') +
   (argumentLengthMin ? ` [ARGUMENT=${argumentLengthMin}${argumentLengthMax === Infinity ? '+' : argumentLengthMax > argumentLengthMin ? `-${argumentLengthMax}` : ''}]` : '')
-const formatUsageCLI = (formatList) => formatList.map((format) => (
-  formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
-  (format.description ? `:\n${stringIndentLine(format.description, '    ')}` : '')
-)).join('\n')
-const formatUsageENV = (formatList) => `"
-  #!/bin/bash
-${formatList.map((format) => `  export ${format.nameENV}="${formatUsageBase(format.name, format)}"`).join('\n')}
-"`
-const formatUsageJSON = (formatList) => `{
-${formatList.map((format) => `  "${format.nameJSON}": [ "${formatUsageBase(format.name, format)}" ]`).join(',\n')}
-}`
+const usageCLI = (formatList) => formatList.map(formatUsageCLI).join('\n')
+const formatUsageCLI = (format, ...args) => formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
+  (format.description ? `:\n${stringIndentLine(format.description, '    ')}` : '') +
+  (format.extendFormatList.length ? `\n${stringIndentLine(format.extendFormatList.map(formatUsageCLI).join('\n'), '  ')}` : '')
+const usageENV = (formatList) => `"\n  #!/bin/bash\n${stringIndentLine(formatList.map(formatUsageENV).join('\n'), '  ')}\n"`
+const formatUsageENV = (format) => `export ${format.nameENV}="${formatUsageBase(format.name, format)}"` +
+  (format.extendFormatList.length ? `\n${format.extendFormatList.map(formatUsageENV).join('\n')}` : '')
+const usageJSON = (formatList) => `{\n${stringIndentLine(formatList.map(formatUsageJSON).join('\n'), '  ')}\n}`
+const formatUsageJSON = (format) => `"${format.nameJSON}": [ "${formatUsageBase(format.name, format)}" ]` +
+  (format.extendFormatList.length ? `\n${format.extendFormatList.map(formatUsageJSON).join('\n')}` : '')
 
 // TODO: can separate to normalize
 const normalizeToString = (argumentList) => argumentList.map(String)
