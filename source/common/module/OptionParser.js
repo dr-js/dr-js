@@ -3,188 +3,184 @@ import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',
 //   prefixJSON: 'prefix-JSON',
-//   formatList: [
-//     {
-//       name: 'option-name',                                     // name, separate words with '-'
-//       shortName: 'n',                                          // optional, default '', single char [A-Za-z] name alias
-//       optional: false,                                         // optional, default false
-//       argumentCount: 0,                                        // optional, default 0, can be 0, 1, 2, ... or '0+', '1+' for more than
-//       argumentListNormalize: (argumentList) => argumentList,   // optional, default (argumentList) => argumentList, can map each value in argumentList
-//       argumentListVerify: (argumentList)=> {},                 // optional, default (argumentList)=> {}, can add custom logic to throw error
-//       description: ''                                          // optional, default '', description, can be multiline
-//       /* auto append */
-//       // nameENV: 'PREFIX_ENV_OPTION_NAME'
-//       // nameJSON: 'prefixJSONOptionName'
-//       // argumentLength: 0
-//       // argumentLengthExtend: false
-//     }
-//   ]
+//   formatList: [ {
+//     name: 'option-name',                                                   // separate words with '-'
+//     shortName: 'n',                                                        // optional, default '', single char [A-Za-z] name alias
+//     optional: false || (optionMap, optionFormatSet, format) => Boolean,    // optional, default false, can set checkOptional function, checkOptional should return false for non-optional
+//     argumentCount: 0,                                                      // optional, default 0, can be 0, 1, 2, ... or '0+', '1+' for more than
+//     argumentListNormalize: (argumentList) => argumentList,                 // optional, default (argumentList) => argumentList, can map each value in argumentList
+//     argumentListVerify: (argumentList)=> {},                               // optional, default (argumentList)=> {}, can add custom logic to throw error
+//     description: ''                                                        // optional, default '', description, can be multiline
+//     extendFormatList: []                                                   // optional, default [], will enable additional option when this option is set
+//   } ]
+// }
+// const sampleOutputOptionMap = {
+//   [format.name]: { format: { ... }, argumentList: [] }
 // }
 
-// const sampleOptionList = [
-//   { format: { ... }, argumentList: [] },
-//   { format: { ... }, argumentList: [] },
-//   { format: { ... }, argumentList: [] }
-// ]
-
-const REGEXP_FORMAT_NAME = /[A-Za-z][A-Za-z0-9-]+/
-const REGEXP_FORMAT_SHORT_NAME = /[A-Za-z]/
+const REGEXP_FORMAT_NAME = /[A-Za-z][A-Za-z0-9-]+/ // limit name to something like `abc-abc-123`
+const REGEXP_FORMAT_SHORT_NAME = /[A-Za-z]/ // single character
 const REGEXP_FORMAT_ARGUMENT_COUNT = /(\d+)(\+)?/
 const REGEXP_FORMAT_CLI_NAME = /^--([A-Za-z][A-Za-z0-9-]+)(=(.*))?$/ // NOTE: may match one extra argument
 const REGEXP_FORMAT_CLI_SHORT_NAME = /^-([A-Za-z]+)(=(.*))?$/ // NOTE: will match merged short command, may match one extra argument
-
 const NORMALIZE_DEFAULT = (argumentList) => argumentList
 const VERIFY_DEFAULT = (argumentList) => {}
-
 const FORMAT_DEFAULT = {
   name: '',
-  nameENV: '',
-  nameJSON: '',
+  nameENV: '', // auto append
+  nameJSON: '', // auto append
   shortName: '',
   optional: false,
   argumentCount: 0,
-  argumentLength: 0,
-  argumentLengthExtend: false,
+  argumentLengthMin: 0, // auto append
+  argumentLengthMax: 0, // auto append
   argumentListNormalize: NORMALIZE_DEFAULT,
   argumentListVerify: VERIFY_DEFAULT,
-  description: ''
+  description: '',
+  extendFormatList: []
 }
 
 const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => {
-  formatList = formatList.map((format, index) => {
-    format = { ...FORMAT_DEFAULT, ...format }
-    if (!REGEXP_FORMAT_NAME.test(format.name)) throw new Error(`[createOptionParser] error format name '${format.name}' at #${index}, ${JSON.stringify(format)}`)
-    if (format.shortName && !REGEXP_FORMAT_SHORT_NAME.test(format.shortName)) throw new Error(`[createOptionParser] error format shortName '${format.shortName}' at #${index}, ${JSON.stringify(format)}`)
-    if (!REGEXP_FORMAT_ARGUMENT_COUNT.test(format.argumentCount)) throw new Error(`[createOptionParser] error format argumentCount '${format.argumentCount}' at #${index}, ${JSON.stringify(format)}`)
-    return format
-  })
-
   const CLINameMap = new Map()
   const CLIShortNameMap = new Map()
   const ENVNameMap = new Map()
   const JSONNameMap = new Map()
-  const optionalFormatSet = new Set()
   const nonOptionalFormatSet = new Set()
-  formatList.forEach((format, index) => {
-    const { name, shortName, optional, argumentCount } = format
+  const optionalFormatCheckSet = new Set()
+  const parseFormat = (format, index, upperFormat) => {
+    const { name, shortName, argumentCount } = format
     const [ , argumentLengthString, argumentLengthExtendMark ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
     format.nameENV = (prefixENV ? `${prefixENV}-${name}` : name).split('-').join('_').toUpperCase()
     format.nameJSON = stringListJoinCamelCase((prefixJSON ? `${prefixJSON}-${name}` : name).split('-'))
-    format.argumentLength = parseInt(argumentLengthString)
-    format.argumentLengthExtend = argumentLengthExtendMark === '+'
+    if (upperFormat) format.optional = getOptionalCheckUpperFormat(format.optional, upperFormat)
+    format.argumentLengthMin = parseInt(argumentLengthString)
+    format.argumentLengthMax = argumentLengthExtendMark === '+' ? Infinity : format.argumentLengthMin
 
-    if (CLINameMap.has(name)) throw new Error(`[createOptionParser] duplicate name '${name}' at #${index}, ${JSON.stringify(format)}. already has ${JSON.stringify(CLINameMap.get(name))}`)
+    if (CLINameMap.has(name)) throw getFormatError(`duplicate name '${name}'`, format, index, upperFormat)
     CLINameMap.set(name, format)
-    if (shortName && CLIShortNameMap.has(shortName)) throw new Error(`[createOptionParser] duplicate shortName '${shortName}' at #${index}, ${JSON.stringify(format)}. already has ${JSON.stringify(CLIShortNameMap.get(shortName))}`)
+    if (shortName && CLIShortNameMap.has(shortName)) throw getFormatError(`duplicate shortName '${shortName}'`, format, index, upperFormat)
     shortName && CLIShortNameMap.set(shortName, format)
     ENVNameMap.set(format.nameENV, format)
     JSONNameMap.set(format.nameJSON, format)
-    optional ? optionalFormatSet.add(format) : nonOptionalFormatSet.add(format)
-  })
+    if (!format.optional) nonOptionalFormatSet.add(format)
+    else if (typeof (format.optional) === 'function') optionalFormatCheckSet.add({ format, checkOptional: format.optional })
 
-  const parseCLI = (argvList) => {
-    argvList = argvList.slice(2) // drop [node] [script]
-    const optionList = []
-    for (let index = 0, indexMax = argvList.length; index < indexMax; index++) {
-      const value = argvList[ index ]
-      if (REGEXP_FORMAT_CLI_NAME.test(value)) { // check name
-        const [ , name, , extraArgument ] = REGEXP_FORMAT_CLI_NAME.exec(value)
-        const format = CLINameMap.get(name)
-        if (!format) throw new Error(`[parseCLI] unexpected option '${name}'`)
-        optionList.push({ format, argumentList: [] })
-        extraArgument && optionList[ optionList.length - 1 ].argumentList.push(extraArgument)
-      } else if (REGEXP_FORMAT_CLI_SHORT_NAME.test(value)) { // shortName
-        const [ , shortNameString, , extraArgument ] = REGEXP_FORMAT_CLI_SHORT_NAME.exec(value)
-        shortNameString.split('').forEach((shortName) => {
-          const format = CLIShortNameMap.get(shortName)
-          if (!format) throw new Error(`[parseCLI] unexpected option '${shortName}' in '${shortNameString}'`)
-          optionList.push({ format, argumentList: [] })
-        })
-        extraArgument && optionList[ optionList.length - 1 ].argumentList.push(extraArgument)
-      } else if (value === '--') { // mark remaining argvList as current option argument
-        if (optionList.length === 0) throw new Error(`[parseCLI] unexpected '--', no leading option found`)
-        optionList[ optionList.length - 1 ].argumentList.push(...argvList.slice(index))
-        break
-      } else { // argument
-        if (optionList.length === 0) throw new Error(`[parseCLI] unexpected argument '${value}', no leading option found`)
-        optionList[ optionList.length - 1 ].argumentList.push(value)
-      }
-    }
-    return optionList.reduce((optionMap, { format, argumentList }) => {
-      optionMap[ format.name ] = { format, argumentList }
-      return optionMap
-    }, {})
+    if (format.extendFormatList.length !== 0) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => parseFormat(extendFormat, index, format))
   }
 
-  const parseENV = (envObject) => {
-    const optionMap = {}
-    ENVNameMap.forEach((format, nameENV) => {
-      let value = envObject[ nameENV ]
-      if (!value) return
-      try {
-        value = JSON.parse(value)
-      } catch (error) { __DEV__ && console.log(`[parseENV] not JSON string ${value}\n${error}`) }
-      optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
-    })
-    return optionMap
-  }
-
-  const parseJSON = (jsonObject) => {
-    const optionMap = {}
-    JSONNameMap.forEach((format, nameJSON) => {
-      const value = jsonObject[ nameJSON ]
-      if (!value) return
-      optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
-    })
-    return optionMap
-  }
-
-  const processOptionMap = (optionMap) => processOptionMapWithFormatSet(optionMap, optionalFormatSet, nonOptionalFormatSet)
-
-  const formatUsage = (message) => (
-    (message ? `Message:\n${stringIndentLine(message.toString(), '  ')}\n` : '') +
-    `CLI Usage:\n${stringIndentLine(formatUsageCLI(formatList), '  ')}\n` +
-    `ENV Usage:\n${stringIndentLine(formatUsageENV(formatList), '  ')}\n` +
-    `JSON Usage:\n${stringIndentLine(formatUsageJSON(formatList), '  ')}\n`
-  )
+  formatList = formatList.map((format, index) => normalizeFormat(format, index, null))
+  formatList.forEach((format, index) => parseFormat(format, index, null))
 
   return {
-    parseCLI,
-    parseENV,
-    parseJSON,
-    processOptionMap,
-    formatUsage
+    parseCLI: getParseCLI(CLINameMap, CLIShortNameMap),
+    parseENV: getParseENV(ENVNameMap),
+    parseJSON: getParseJSON(JSONNameMap),
+    processOptionMap: getProcessOptionMap(nonOptionalFormatSet, optionalFormatCheckSet),
+    formatUsage: (message) => (message ? `Message:\n${stringIndentLine(message.toString(), '  ')}\n` : '') +
+      `CLI Usage:\n${stringIndentLine(formatUsageCLI(formatList), '  ')}\n` +
+      `ENV Usage:\n${stringIndentLine(formatUsageENV(formatList), '  ')}\n` +
+      `JSON Usage:\n${stringIndentLine(formatUsageJSON(formatList), '  ')}\n`
   }
 }
 
-const processOptionMapWithFormatSet = (optionMap, optionalFormatSet, nonOptionalFormatSet) => {
-  const optionFormatSet = new Set()
-  Object.keys(optionMap).forEach((name) => {
-    let { format, argumentList } = optionMap[ name ]
-    if (format.argumentLength > argumentList.length) throw new Error(`[processOptionList] expected ${format.argumentLength - argumentList.length} more argument ${JSON.stringify(argumentList)} for option: ${JSON.stringify(format)}`)
-    if (!format.argumentLengthExtend && format.argumentLength < argumentList.length) throw new Error(`[processOptionList] expected ${argumentList.length - format.argumentLength} less argument ${JSON.stringify(argumentList)} for option: ${JSON.stringify(format)}`)
-    __DEV__ && optionFormatSet.has(format) && console.log(`[processOptionList] get duplicate option: ${JSON.stringify(format)}`)
-    optionMap[ name ].argumentList = argumentList = format.argumentListNormalize(argumentList)
-    format.argumentListVerify(argumentList)
-    optionFormatSet.add(format)
-  })
-  nonOptionalFormatSet.forEach((format) => {
-    if (!optionFormatSet.has(format)) throw new Error(`[processOptionList] missing required option: ${JSON.stringify(format)}`)
+const getFormatError = (message, format, index, upperFormat) => new Error(`[ERROR][Format] <${formatSimple(format)} #${index}${upperFormat ? ` of ${formatSimple(upperFormat)}` : ''}> ${message}`)
+const normalizeFormat = (format, index, upperFormat) => {
+  format = { ...FORMAT_DEFAULT, ...format }
+  if (!REGEXP_FORMAT_NAME.test(format.name)) throw getFormatError(`name '${format.name}'`, format, index, upperFormat)
+  if (format.shortName && !REGEXP_FORMAT_SHORT_NAME.test(format.shortName)) throw getFormatError(`shortName '${format.shortName}'`, format, index, upperFormat)
+  if (!REGEXP_FORMAT_ARGUMENT_COUNT.test(format.argumentCount)) throw getFormatError(`argumentCount '${format.argumentCount}'`, format, index, upperFormat)
+  if (format.extendFormatList.length !== 0) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => normalizeFormat(extendFormat, index, format))
+  return format
+}
+const getOptionalCheckUpperFormat = (optional, upperFormat) => typeof (optional) === 'function'
+  ? (optionMap, optionFormatSet, format) => !optionFormatSet.has(upperFormat) || optional(optionMap, optionFormatSet, format)
+  : (optionMap, optionFormatSet, format) => !optionFormatSet.has(upperFormat) || optional
+
+const getParseCLI = (CLINameMap, CLIShortNameMap) => (argvList, optionMap = {}) => {
+  argvList = argvList.slice(2) // drop [node] [script]
+  const optionList = []
+  for (let index = 0, indexMax = argvList.length; index < indexMax; index++) {
+    const value = argvList[ index ]
+    if (REGEXP_FORMAT_CLI_NAME.test(value)) { // check name
+      const [ , name, , extraArgument ] = REGEXP_FORMAT_CLI_NAME.exec(value)
+      const format = CLINameMap.get(name)
+      if (!format) throw new Error(`[parseCLI] unexpected option '${name}'`)
+      optionList.push({ format, argumentList: [] })
+      extraArgument && optionList[ optionList.length - 1 ].argumentList.push(extraArgument)
+    } else if (REGEXP_FORMAT_CLI_SHORT_NAME.test(value)) { // shortName
+      const [ , shortNameString, , extraArgument ] = REGEXP_FORMAT_CLI_SHORT_NAME.exec(value)
+      shortNameString.split('').forEach((shortName) => {
+        const format = CLIShortNameMap.get(shortName)
+        if (!format) throw new Error(`[parseCLI] unexpected option '${shortName}' in '${shortNameString}'`)
+        optionList.push({ format, argumentList: [] })
+      })
+      extraArgument && optionList[ optionList.length - 1 ].argumentList.push(extraArgument)
+    } else if (value === '--') { // mark remaining argvList as current option argument
+      if (optionList.length === 0) throw new Error(`[parseCLI] unexpected '--', no leading option found`)
+      optionList[ optionList.length - 1 ].argumentList.push(...argvList.slice(index))
+      break
+    } else { // argument
+      if (optionList.length === 0) throw new Error(`[parseCLI] unexpected argument '${value}', no leading option found`)
+      optionList[ optionList.length - 1 ].argumentList.push(value)
+    }
+  }
+  optionList.forEach(({ format, argumentList }) => (optionMap[ format.name ] = { format, argumentList }))
+  return optionMap
+}
+
+const getParseENV = (ENVNameMap) => (envObject, optionMap = {}) => {
+  ENVNameMap.forEach((format, nameENV) => {
+    let value = envObject[ nameENV ]
+    if (!value) return
+    try {
+      value = JSON.parse(value)
+    } catch (error) { __DEV__ && console.log(`[parseENV] not JSON string ${value}\n${error}`) }
+    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
   })
   return optionMap
 }
 
-const formatUsageBase = (text, optional, argumentLength, argumentLengthExtend) => (
-  text +
-  (optional ? ` [OPTIONAL]` : '') +
-  (argumentLength || argumentLengthExtend ? ` [ARGUMENT=${argumentLength}${argumentLengthExtend ? '+' : ''}]` : '')
-)
-const formatUsageCLI = (formatList) => formatList.map(({ name, shortName, optional, argumentLength, argumentLengthExtend, description }) => (
-  formatUsageBase(`--${name}${shortName ? ` -${shortName}` : ''}`, optional, argumentLength, argumentLengthExtend) +
-  (description ? `:\n${stringIndentLine(description, '    ')}` : '')
+const getParseJSON = (JSONNameMap) => (jsonObject, optionMap = {}) => {
+  JSONNameMap.forEach((format, nameJSON) => {
+    const value = jsonObject[ nameJSON ]
+    if (!value) return
+    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
+  })
+  return optionMap
+}
+
+const getProcessOptionMap = (nonOptionalFormatSet, optionalFormatCheckSet) => (optionMap, extendOption) => {
+  const optionFormatSet = new Set()
+  Object.keys(optionMap).forEach((name) => {
+    let { format, argumentList } = optionMap[ name ]
+    if (format.argumentLengthMin > argumentList.length) throw getProcessError(`expected ${format.argumentLengthMin - argumentList.length} more argument, get: ${JSON.stringify(argumentList)}`, format)
+    if (format.argumentLengthMax < argumentList.length) throw getProcessError(`expected ${argumentList.length - format.argumentLengthMax} less argument, get: ${JSON.stringify(argumentList)}`, format)
+    __DEV__ && optionFormatSet.has(format) && console.warn(`[processOptionList] get duplicate option: ${formatSimple(format)}`)
+    optionMap[ name ].argumentList = argumentList = format.argumentListNormalize(argumentList, extendOption)
+    format.argumentListVerify(argumentList, extendOption)
+    optionFormatSet.add(format)
+  })
+  nonOptionalFormatSet.forEach((format) => { if (!optionFormatSet.has(format)) throw getProcessError('non-optional option', format) })
+  optionalFormatCheckSet.forEach(({ format, checkOptional }) => { if (!checkOptional(optionMap, optionFormatSet, format) && !optionFormatSet.has(format)) throw getProcessError('non-optional option', format) })
+  return optionMap
+}
+const getProcessError = (message, format) => new Error(`[ERROR][Process] <${formatSimple(format)}> ${message}`)
+
+const formatSimple = ({ name, shortName }) => `${name}${shortName ? ` [-${shortName}]` : ''}`
+const formatUsageBase = (text, { optional, argumentLengthMin, argumentLengthMax }) => text +
+  (optional ? typeof (optional) === 'function' ? ' [OPTIONAL-CHECK]' : ' [OPTIONAL]' : '') +
+  (argumentLengthMin ? ` [ARGUMENT=${argumentLengthMin}${argumentLengthMax === Infinity ? '+' : argumentLengthMax > argumentLengthMin ? `-${argumentLengthMax}` : ''}]` : '')
+const formatUsageCLI = (formatList) => formatList.map((format) => (
+  formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
+  (format.description ? `:\n${stringIndentLine(format.description, '    ')}` : '')
 )).join('\n')
-const formatUsageENV = (formatList) => `"\n  #!/bin/bash\n${formatList.map(({ name, nameENV, optional, argumentLength, argumentLengthExtend }) => `  export ${nameENV}="${formatUsageBase(name, optional, argumentLength, argumentLengthExtend)}"`).join('\n')}\n"`
-const formatUsageJSON = (formatList) => `{\n${formatList.map(({ name, nameJSON, optional, argumentLength, argumentLengthExtend }) => `  "${nameJSON}": [ "${formatUsageBase(name, optional, argumentLength, argumentLengthExtend)}" ]`).join(',\n')}\n}`
+const formatUsageENV = (formatList) => `"
+  #!/bin/bash
+${formatList.map((format) => `  export ${format.nameENV}="${formatUsageBase(format.name, format)}"`).join('\n')}
+"`
+const formatUsageJSON = (formatList) => `{
+${formatList.map((format) => `  "${format.nameJSON}": [ "${formatUsageBase(format.name, format)}" ]`).join(',\n')}
+}`
 
 // TODO: can separate to normalize
 const normalizeToString = (argumentList) => argumentList.map(String)

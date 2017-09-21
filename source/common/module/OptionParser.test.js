@@ -117,3 +117,39 @@ describe('OptionParser.parseJSON', () => {
   it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
   it('should pass checkArgumentList use nameJSON', () => checkArgumentList(optionMap))
 })
+
+describe('OptionParser test optional && extendFormatList', () => {
+  const optionData1 = {
+    prefixENV: 'prefix-ENV',
+    prefixJSON: 'prefix-JSON',
+    formatList: [
+      { name: 'option-name-check-target', optional: true, ...OPTION_CONFIG_PRESET.SingleInteger },
+      { name: 'option-with-check-optional', optional: (optionMap, optionFormatSet, format) => optionMap[ 'option-name-check-target' ].argumentList[ 0 ] !== 1 },
+      {
+        name: 'option-with-extend',
+        optional: true,
+        extendFormatList: [
+          { name: 'extend-option-name-a', argumentCount: 0 },
+          { name: 'extend-option-name-b', optional: true, ...OPTION_CONFIG_PRESET.SingleInteger },
+          { name: 'extend-option-name-c', ...OPTION_CONFIG_PRESET.AllNumber, argumentCount: 2 }
+        ]
+      }
+    ]
+  }
+  const { parseJSON, processOptionMap, formatUsage } = createOptionParser(optionData1)
+  const optionMap = parseJSON({
+    prefixJSONOptionNameCheckTarget: [ 1 ],
+    prefixJSONOptionWithCheckOptional: [],
+    prefixJSONOptionWithExtend: [],
+    prefixJSONExtendOptionNameA: [],
+    prefixJSONExtendOptionNameB: [ 1 ],
+    prefixJSONExtendOptionNameC: [ 1, '2.2' ]
+  })
+
+  const message = 'TEST_MESSAGE'
+  it('should pass formatUsage()', () => nodeModuleAssert.ok(formatUsage().length > 0))
+  it('should pass formatUsage(message)', () => nodeModuleAssert.ok(formatUsage(message).includes(message)))
+  it('should pass formatUsage(error)', () => nodeModuleAssert.ok(formatUsage(new Error(message)).includes(message)))
+
+  it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
+})

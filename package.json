@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -31,9 +31,9 @@
     "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
     "test": "npm run test-mocha",
     "test-mocha": "cross-env BABEL_ENV=test mocha --compilers js:babel-register \"source/**/*.test.js\"",
-    "test-mocha-common": "cross-env BABEL_ENV=testmocha --compilers js:babel-register \"source/common/**/*.test.js\"",
-    "test-mocha-node": "cross-env BABEL_ENV=testmocha --compilers js:babel-register \"source/node/**/*.test.js\"",
-    "test-mocha-browser": "cross-env BABEL_ENV=testmocha --compilers js:babel-register \"source/browser/**/*.test.js\"",
+    "test-mocha-common": "cross-env BABEL_ENV=test mocha --compilers js:babel-register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "cross-env BABEL_ENV=test mocha --compilers js:babel-register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "cross-env BABEL_ENV=test mocha --compilers js:babel-register \"source/browser/**/*.test.js\"",
     "prepare": "npm run build",
     "build": "npm run library && npm run module",
     "start": "npm run example-dev"
