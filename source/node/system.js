@@ -26,6 +26,8 @@ const setProcessExitListener = (listener) => { // should only call once
   wrappedListenerList.forEach(({ eventType, wrappedListener }) => process.on(eventType, wrappedListener))
   return () => wrappedListenerList.forEach(({ eventType, wrappedListener }) => process.removeListener(eventType, wrappedListener))
 }
+
+// TODO: remove in 0.3.0
 const addProcessExitListener = (listener) => {
   console.warn('[Deprecated Name] use setProcessExitListener')
   return setProcessExitListener(listener)
