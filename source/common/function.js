@@ -40,6 +40,29 @@ const repeat = (count, func) => {
   }
 }
 
+const createInsideOutPromise = () => {
+  let promiseResolve = null
+  let promiseReject = null
+  const promise = new Promise((resolve, reject) => {
+    promiseResolve = resolve
+    promiseReject = reject
+  })
+  return {
+    promise,
+    resolve: (...args) => {
+      promiseResolve && promiseResolve(...args)
+      promiseResolve = null
+      promiseReject = null
+    },
+    reject: (...args) => {
+      promiseReject && promiseReject(...args)
+      promiseResolve = null
+      promiseReject = null
+    }
+  }
+}
+
+// for dynamic appending tasks, use createAsyncTaskQueue
 const promiseQueue = async ({ taskList, shouldContinueOnError = false }) => {
   const resultList = []
   const errorList = []
@@ -63,5 +86,6 @@ export {
   debounce,
   throttle,
   repeat,
+  createInsideOutPromise,
   promiseQueue
 }
