@@ -1,5 +1,6 @@
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
+const { promisify } = require('util')
 const Dr = require('../Dr.node')
 
 // console.log(Object.keys(Dr))
@@ -13,8 +14,6 @@ const {
     createRouterMapBuilder,
     createResponderRouter,
     createResponderServeStatic,
-    createResponderServeStaticSingleCached,
-
     createResponderLogRequestHeader,
     createResponderLogTimeStep,
     createResponderLogEnd
@@ -26,27 +25,28 @@ const {
   }
 } = Dr.Node.Server
 
+const readFileAsync = promisify(nodeModuleFs.readFile)
+
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
 
 const responderServeStatic = createResponderServeStatic({ staticRoot: fromPath('../') })
-const responderServeIndex = createResponderServeStaticSingleCached({ staticFilePath: fromPath('./example-server.html') })
-const responderServeFavicon = createResponderServeStaticSingleCached({ staticFilePath: fromPath('../browser/favicon.ico') })
 
 const routerMapBuilder = createRouterMapBuilder()
-routerMapBuilder.addRoute('/', 'GET', responderServeIndex)
-routerMapBuilder.addRoute('/favicon', 'GET', responderServeFavicon)
-routerMapBuilder.addRoute('/favicon.ico', 'GET', responderServeFavicon)
+routerMapBuilder.addRoute('/', 'GET', (store) => {
+  store.setState({ filePath: '/node/example-server.html' })
+  return responderServeStatic(store)
+})
 routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
   store.setState({ filePath: store.getState().paramMap[ routerMapBuilder.ROUTE_ANY ] })
   return responderServeStatic(store)
 })
 
-const { server, start } = createServer({ hostName: 'localhost', port: 3000 }, 'HTTP')
+const { server, start, baseUrl } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
 
 server.on('request', createRequestListener({
   responderList: [
     createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
-    createResponderParseURL(),
+    createResponderParseURL(baseUrl),
     createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
     createResponderRouter(routerMapBuilder.getRouterMap()),
     createResponderLogEnd((data) => console.log('[LogEnd]', data))
@@ -64,22 +64,12 @@ const webSocketSet = enableWebSocketServer({
     webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
       console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
     })
-    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, (webSocket, { dataType, dataBuffer }) => {
+    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async (webSocket, { dataType, dataBuffer }) => {
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
 
       if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') {
-        return nodeModuleFs.readFile('../Dr.node.js', 'utf8', (error, dataString) => {
-          if (error) throw error
-          webSocket.sendText(dataString)
-        })
-      }
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') {
-        return nodeModuleFs.readFile('../Dr.node.js', (error, dataBuffer) => {
-          if (error) throw error
-          webSocket.sendBuffer(dataBuffer)
-        })
-      }
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../Dr.node.js'), 'utf8'))
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../Dr.node.js')))
 
       // echo back
       dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())

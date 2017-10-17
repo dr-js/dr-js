@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'crypto'
 import { EventEmitter } from 'source/common/module'
+import { urlToOption } from 'source/node/resource'
 import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, DO_MASK_DATA, DO_NOT_MASK_DATA, FrameSender, FrameReceiver } from './Frame'
 
 const WEB_SOCKET_VERSION = 13
@@ -269,9 +270,9 @@ class WebSocketClient extends WebSocketBase {
     const requestKey = key || getRequestKey()
     const responseKey = getRespondKey(requestKey)
     const requestOption = {
-      ...url,
-      protocol: undefined, // node do not use 'ws/wss', will use 'http/https' instead
-      port: url.port || (isSecure ? 443 : 80),
+      ...urlToOption(url),
+      protocol: undefined, // node do not use 'ws/wss', will use auto set 'http/https' instead
+      port: url.port !== '' ? url.port : (isSecure ? 443 : 80),
       headers: {
         ...headers,
         origin,

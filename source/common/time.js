@@ -31,11 +31,19 @@ const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // return run
 const getTimeStamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 
 // Usage:
+// const getData = async () => {
+//   await setTimeoutAsync(500)
+//   return 'DATA'
+// }
+// NOTE: not cancellable
+const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
+
+// Usage:
 // Promise.resolve('DATA')
 //   .then(setTimeoutPromise(500))
 //   .then((result) => {}) // result === 'DATA'
 // NOTE: not cancellable
-const setTimeoutPromise = (wait = 1000) => (result) => new Promise((resolve) => setTimeout(() => resolve(result), wait))
+const setTimeoutPromise = (wait = 0) => (result) => new Promise((resolve) => setTimeout(() => resolve(result), wait))
 
 const onNextProperUpdate = global.requestAnimationFrame || ((callback) => setTimeout(callback, 1000 / 60))
 
@@ -46,6 +54,7 @@ export {
   clock,
   now,
   getTimeStamp,
+  setTimeoutAsync,
   setTimeoutPromise,
   onNextProperUpdate
 }

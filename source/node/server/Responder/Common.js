@@ -1,4 +1,5 @@
-import nodeModuleUrl from 'url'
+import { URL } from 'url'
+import { receiveBufferAsync } from 'source/node/resource'
 
 const responderEnd = (store) => {
   if (store.response.finished) return store
@@ -47,27 +48,21 @@ const createResponderSendBuffer = (getBuffer) => async (store) => {
   })
 }
 
-const createResponderReceiveBuffer = (setBuffer) => (store) => new Promise((resolve, reject) => {
-  const data = []
-  store.request.on('error', reject)
-  store.request.on('data', (chunk) => data.push(chunk))
-  store.request.on('end', () => {
-    store.response.removeListener('error', reject)
-    setBuffer(store, Buffer.concat(data))
-    resolve()
-  })
-})
-
-const createResponderParseURL = (parseQueryString = true) => (store) => {
-  const { url, method } = store.request
-  store.setState({ url: nodeModuleUrl.parse(url, parseQueryString), method })
+const createResponderParseURL = (baseUrl) => {
+  const baseUrlObject = new URL(baseUrl)
+  return (store) => {
+    const { url: urlString, method } = store.request
+    store.setState({ url: new URL(urlString, baseUrlObject), method })
+  }
 }
+
+const createResponderReceiveBuffer = (setBuffer) => async (store) => setBuffer(store, await receiveBufferAsync(store.request))
 
 export {
   responderEnd,
   responderLogState,
-  createResponderParseURL,
   createResponderSendStream,
   createResponderSendBuffer,
+  createResponderParseURL,
   createResponderReceiveBuffer
 }

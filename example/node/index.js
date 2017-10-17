@@ -3,10 +3,14 @@ const Dr = require('../Dr.node')
 // console.log(Object.keys(Dr))
 // console.log(Object.keys(Dr.Node))
 
-const { runCommand } = Dr.Node.Module
+const { System: { startREPL }, Module: { runCommand } } = Dr.Node
 
-runCommand(process.platform === 'win32' ? 'dir' : 'ls -l')
-  .then(console.log, console.error)
+const main = async () => {
+  console.log(await runCommand(process.platform === 'win32' ? 'dir' : 'ls -l'))
+  console.log('== REPL ========================')
 
-const replServer = Dr.Node.System.startREPL()
-replServer.context.Dr = Dr // set global
+  const replServer = startREPL()
+  replServer.context.Dr = Dr // set global
+}
+
+main().catch(console.error)
