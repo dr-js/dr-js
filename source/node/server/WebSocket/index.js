@@ -1,6 +1,6 @@
-import nodeModuleUrl from 'url'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
+import { URL } from 'url'
 import { clock } from 'source/common/time'
 import { createMinStateStore } from 'source/common/immutable'
 import {
@@ -40,7 +40,7 @@ const enableWebSocketServer = ({ server, onUpgradeRequest = WebSocketServer.DEFA
 }
 
 const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeResponse = WebSocketClient.DEFAULT_ON_UPGRADE_RESPONSE, frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT }) => {
-  const url = nodeModuleUrl.parse(urlString)
+  const url = new URL(urlString)
   if (!WebSocketClient.VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[createWebSocketClient] invalid url protocol: ${url.protocol}`)
   if (!url.host) throw new Error(`[createWebSocketClient] invalid url host: ${url.host}`)
   option.isSecure = WebSocketClient.SECURE_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)

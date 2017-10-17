@@ -1,4 +1,6 @@
+const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
+const { promisify } = require('util')
 const Dr = require('../Dr.node')
 
 // console.log(Object.keys(Dr))
@@ -11,6 +13,10 @@ const {
     createWebSocketClient
   }
 } = Dr.Node.Server
+
+const readFileAsync = promisify(nodeModuleFs.readFile)
+
+const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
 
 createWebSocketClient({
   urlString: 'ws://localhost:3000',
@@ -26,20 +32,15 @@ createWebSocketClient({
 
     webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
       console.log(`>> OPEN`)
+
       webSocket.sendText('WebSocketClient open message: 123ABC!@#')
 
-      setTimeout(() => { // big string
-        nodeModuleFs.readFile('../Dr.node.js', 'utf8', (error, dataString) => {
-          if (error) throw error
-          webSocket.sendText(dataString)
-        })
+      setTimeout(async () => { // big string
+        webSocket.sendText(await readFileAsync(fromPath('../Dr.node.js'), 'utf8'))
       }, 1000)
 
-      setTimeout(() => { // big buffer
-        nodeModuleFs.readFile('../Dr.node.js', (error, dataBuffer) => {
-          if (error) throw error
-          webSocket.sendBuffer(dataBuffer)
-        })
+      setTimeout(async () => { // big buffer
+        webSocket.sendBuffer(await readFileAsync(fromPath('../Dr.node.js')))
       }, 2000)
 
       setTimeout(() => { // close
