@@ -2,12 +2,11 @@
   "env": {
     "module": {
       "presets": [ [ "env", { "targets": { "node": 8 }, "modules": false } ] ],
-      "plugins": [ "transform-object-rest-spread", "transform-class-properties", [ "module-resolver", { "root": [ "./" ] } ] ]
+      "plugins": [ "transform-class-properties", [ "transform-object-rest-spread", { "useBuiltIns": true } ], [ "module-resolver", { "root": [ "./" ] } ] ]
     },
     "test": {
       "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
-      "plugins": [ "transform-object-rest-spread", "transform-class-properties", [ "module-resolver", { "root": [ "./" ] } ] ]
+      "plugins": [ "transform-class-properties", [ "transform-object-rest-spread", { "useBuiltIns": true } ], [ "module-resolver", { "root": [ "./" ] } ] ]
     }
   }
 }
-

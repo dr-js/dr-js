@@ -12,20 +12,6 @@ const debounceByAnimationFrame = (func) => {
   }
 }
 
-const createOffscreenCanvas = (width, height) => {
-  const element = document.createElement('canvas')
-  element.width = width
-  element.height = height
-  return element
-}
-
-const createStyle = (cssText) => {
-  const element = document.createElement('style')
-  element.type = 'text/css'
-  element.innerHTML = cssText
-  document.body.appendChild(element)
-}
-
 const muteEvent = (event) => {
   event.stopPropagation()
   event.preventDefault()
@@ -77,8 +63,6 @@ const bindFPSElement = (element) => {
 export {
   debounceByAnimationFrame,
 
-  createOffscreenCanvas,
-  createStyle,
   addDragFileListListenerToElement,
 
   bindLogElement,

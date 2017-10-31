@@ -6,13 +6,12 @@ const {
   },
   Browser: {
     DOM: { bindLogElement, bindFPSElement },
-    Font: { FontRender, FontRenderBitmap },
-    Input: { POINTER_EVENT_TYPE, KEYBOARD_EVENT_TYPE, applyKeyboardEventListener },
+    Font: { createFontRender, createFontRenderBitmap },
+    Input: { applyPointerEventDragListener },
     Graphic: {
       applyImageElementExt,
       applyCanvasElementExt,
       applyCanvasImageDataExt,
-      createCanvasExt,
       createCanvasElement,
       canvasElementToCanvasImageData,
       CANVAS_IMAGE_DATA_OPERATION
@@ -110,26 +109,18 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const testCanvasExt = createCanvasExt(mainCanvas)
-  const eventExtListener = ({ eventExtType }, { positionRelative, event }) => {
+  const eventExtListener = ({ to }, event) => {
+    if (!to) return
     const MARKER_HALF_SIZE = 2
-    if (positionRelative) {
-      event.preventDefault()
-      const { x, y } = positionRelative
-      updateLoop.add(() => {
-        testCanvasExt.context2d.fillRect(x - MARKER_HALF_SIZE, y - MARKER_HALF_SIZE, MARKER_HALF_SIZE * 2, MARKER_HALF_SIZE * 2)
-        return false
-      }, 'test-canvas-ext:draw-touch-position') // once
-      log(eventExtType, x.toFixed(2), y.toFixed(2))
-    } else {
-      log(eventExtType, '[ERROR] missing eventData.position_listener')
-    }
+    event.preventDefault()
+    const { x, y } = to
+    updateLoop.add(() => {
+      mainContext2d.fillRect(x - MARKER_HALF_SIZE, y - MARKER_HALF_SIZE, MARKER_HALF_SIZE * 2, MARKER_HALF_SIZE * 2)
+      return false
+    }, 'test-canvas-ext:draw-touch-position') // once
+    log(x.toFixed(2), y.toFixed(2))
   }
-  testCanvasExt.eventEmitter.on(POINTER_EVENT_TYPE.EXT_START, eventExtListener)
-  testCanvasExt.eventEmitter.on(POINTER_EVENT_TYPE.EXT_DRAGGING, eventExtListener)
-  testCanvasExt.eventEmitter.on(POINTER_EVENT_TYPE.EXT_DRAG, eventExtListener)
-  testCanvasExt.eventEmitter.on(POINTER_EVENT_TYPE.EXT_CLICK, eventExtListener)
-  testCanvasExt.eventEmitter.on(POINTER_EVENT_TYPE.EXT_HOLD, eventExtListener)
+  applyPointerEventDragListener({ element: mainCanvas, updateDragState: eventExtListener, endDragState: eventExtListener })
 
   // =========================================================================================
 
@@ -152,16 +143,14 @@ window.addEventListener('load', () => {
   testCanvasElementCursor.getContext('2d').putImageData(testCanvasImageDataCursor, 0, 0)
   const testCanvasElementExtCursor = applyCanvasElementExt(testCanvasElementCursor)
 
-  const testFontRender = new FontRender()
-  testFontRender.applyFontConfig(testFontRender.fontGenerator.getFontConfig(textFontSize, textLineHeight, 'normal', 'monospace', '#F00'))
-
+  const testFontRender = createFontRender()
+  testFontRender.applyFontConfig({ fontSize: textFontSize, lineHeight: textLineHeight, fontStyle: 'normal', fontFamily: 'monospace', fillStyle: '#F00' })
   let isBitmapLoaded = false
-  const testFontRenderBitmap = new FontRenderBitmap()
-  testFontRenderBitmap.loadBitmapFontData('fontBitmap.json', textFontSize, textLineHeight)
-    .then(() => {
-      isBitmapLoaded = true
-      updateRenderedText(textValue)
-    })
+  const testFontRenderBitmap = createFontRenderBitmap()
+  testFontRenderBitmap.loadBitmapFontData('fontBitmap.json', textFontSize, textLineHeight).then(() => {
+    isBitmapLoaded = true
+    updateRenderedText(textValue)
+  })
 
   const bufferCanvasElement = createCanvasElement(0, 0)
   const updateRenderedText = (textValue) => {
@@ -180,23 +169,18 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const keyEventListener = (keyboardEvent) => {
-    switch (keyboardEvent.type) {
-      case KEYBOARD_EVENT_TYPE.DOWN: // check if filter special key
-        if (keyboardEvent.key === 'Backspace') textValue = textValue.slice(0, -1)
-        else if (keyboardEvent.key === 'Tab') textValue += '\t'
-        else if (keyboardEvent.key === 'Enter') textValue += '\n'
-        else return // don't filter, wait for key press
-        break
-      case KEYBOARD_EVENT_TYPE.PRESS: // processed key code
-        textValue += keyboardEvent.key
-        break
-    }
-    keyboardEvent.preventDefault()
+  document.addEventListener('keydown', (event) => { // check if filter special key
+    if (event.key === 'Backspace') textValue = textValue.slice(0, -1)
+    else if (event.key === 'Tab') textValue += '\t'
+    else if (event.key === 'Enter') textValue += '\n'
+    else return // don't filter, wait for key press
+    event.preventDefault()
     updateRenderedText(textValue)
-  }
-
-  applyKeyboardEventListener(document, keyEventListener)
+  })
+  document.addEventListener('keypress', (event) => { // processed key code
+    textValue += event.key
+    updateRenderedText(textValue)
+  })
 
   // =========================================================================================
 
@@ -213,15 +197,21 @@ window.addEventListener('load', () => {
   testFontBitmapCanvas.addEventListener('click', () => textSoftKeyboardTextarea.focus())
 
   const textSoftKeyboardTextarea = document.getElementById('textSoftKeyboardTextarea')
-
-  // redirect keyboardEvent
-  applyKeyboardEventListener(textSoftKeyboardTextarea, (keyboardEvent) => {
-    keyEventListener(keyboardEvent)
-    keyboardEvent.stopPropagation() // or document will also catch this event
-    textSoftKeyboardTextarea.value = textValue
-  })
-
   textSoftKeyboardTextarea.addEventListener('focus', () => (textSoftKeyboardTextarea.value = textValue))
   textSoftKeyboardTextarea.addEventListener('input', () => updateTextValue(textSoftKeyboardTextarea.value))
   textSoftKeyboardTextarea.addEventListener('blur', () => updateTextValue(textSoftKeyboardTextarea.value))
+  textSoftKeyboardTextarea.addEventListener('keydown', (event) => { // check if filter special key
+    if (event.key === 'Backspace') textValue = textValue.slice(0, -1)
+    else if (event.key === 'Tab') textValue += '\t'
+    else if (event.key === 'Enter') textValue += '\n'
+    else return // don't filter, wait for key press
+    event.preventDefault()
+    textSoftKeyboardTextarea.value = textValue
+    updateRenderedText(textValue)
+  })
+  textSoftKeyboardTextarea.addEventListener('keypress', (event) => { // processed key code
+    textValue += event.key
+    textSoftKeyboardTextarea.value = textValue
+    updateRenderedText(textValue)
+  })
 })

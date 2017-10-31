@@ -57,8 +57,7 @@
 </body>
 
 <script type="text/javascript">
-  function fitCanvas (canvas, devicePixelRatio) {
-    if (devicePixelRatio === undefined) devicePixelRatio = window.devicePixelRatio || 1
+  const fitCanvas = (canvas, devicePixelRatio = window.devicePixelRatio || 1) => {
     const width = canvas.width || parseInt(canvas.style.width)
     const height = canvas.height || parseInt(canvas.style.height)
     const scale = Math.min(document.body.offsetWidth * 0.9, width) / width
@@ -69,9 +68,7 @@
   }
 
   window.addEventListener('load', () => {
-    fitCanvas(document.getElementById('Dr.Canvas'), 1)
-
-    const fontSize = 50
+    fitCanvas(document.getElementById('Dr.Canvas'))
 
     const setContext = (context, fontSize, fillStyle) => Object.assign(context, {
       font: `bold ${fontSize}px monospace`,
@@ -79,6 +76,8 @@
       textBaseline: 'middle',
       fillStyle
     })
+
+    const fontSize = 50
 
     const testCanvasElement = document.getElementById('testCanvasElement')
     const testCanvasElementContext2d = testCanvasElement.getContext('2d')

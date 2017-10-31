@@ -1,10 +1,9 @@
-const BUFFER_CANVAS = document.createElement('canvas')
-const BUFFER_CANVAS_CONTEXT2D = BUFFER_CANVAS.getContext('2d')
-
-const IMAGE_DATA_TYPE = {
-  IMAGE_ELEMENT: 'IMAGE_ELEMENT', // fast, but not editable
-  CANVAS_ELEMENT: 'CANVAS_ELEMENT', // fast, with vector graph edit API(recommend to use)
-  CANVAS_IMAGE_DATA: 'CANVAS_IMAGE_DATA' // slow, but with pixel manipulation
+let BUFFER_CANVAS_CONTEXT2D
+const getBufferCanvasContext2D = (width, height) => {
+  if (BUFFER_CANVAS_CONTEXT2D === undefined) BUFFER_CANVAS_CONTEXT2D = document.createElement('canvas').getContext('2d')
+  BUFFER_CANVAS_CONTEXT2D.canvas.width = width
+  BUFFER_CANVAS_CONTEXT2D.canvas.height = height
+  return BUFFER_CANVAS_CONTEXT2D
 }
 
 // for CANVAS_ELEMENT / IMAGE_ELEMENT
@@ -44,11 +43,7 @@ const createCanvasElement = (width, height) => {
   return canvasElement
 }
 
-const createCanvasImageData = (width, height) => {
-  BUFFER_CANVAS.width = width
-  BUFFER_CANVAS.height = height
-  return BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, width, height)
-}
+const createCanvasImageData = (width, height) => new window.ImageData(width, height)
 
 const applyImageElementExt = (imageElement) => {
   const { width, height } = imageElement
@@ -56,7 +51,6 @@ const applyImageElementExt = (imageElement) => {
     width,
     height,
     imageElement,
-    type: IMAGE_DATA_TYPE.IMAGE_ELEMENT,
     draw: getElementDraw(imageElement),
     drawClip: getElementDrawClip(imageElement, width, height)
   }
@@ -68,7 +62,6 @@ const applyCanvasElementExt = (canvasElement) => {
     width,
     height,
     canvasElement,
-    type: IMAGE_DATA_TYPE.CANVAS_ELEMENT,
     draw: getElementDraw(canvasElement),
     drawClip: getElementDrawClip(canvasElement, width, height)
   }
@@ -80,7 +73,6 @@ const applyCanvasImageDataExt = (canvasImageData) => {
     width,
     height,
     canvasImageData,
-    type: IMAGE_DATA_TYPE.CANVAS_IMAGE_DATA,
     draw: getCanvasImageDataDraw(canvasImageData),
     drawClip: getCanvasImageDataDrawClip(canvasImageData, width, height)
   }
@@ -88,25 +80,20 @@ const applyCanvasImageDataExt = (canvasImageData) => {
 
 // transform type
 const imageElementToCanvasElement = (imageElement) => {
-  const canvasElement = document.createElement('canvas')
-  canvasElement.width = imageElement.width
-  canvasElement.height = imageElement.height
+  const canvasElement = createCanvasElement(imageElement.width, imageElement.height)
   canvasElement.getContext('2d').drawImage(imageElement, 0, 0)
   return canvasElement
 }
 const canvasImageDataToCanvasElement = (canvasImageData) => {
-  const canvasElement = document.createElement('canvas')
-  canvasElement.width = canvasImageData.width
-  canvasElement.height = canvasImageData.height
+  const canvasElement = createCanvasElement(canvasImageData.width, canvasImageData.height)
   canvasElement.getContext('2d').putImageData(canvasImageData, 0, 0)
   return canvasElement
 }
 const canvasElementToCanvasImageData = (canvasElement) => canvasElement.getContext('2d').getImageData(0, 0, canvasElement.width, canvasElement.height)
 const imageElementToCanvasImageData = (imageElement) => {
-  BUFFER_CANVAS.width = imageElement.width
-  BUFFER_CANVAS.height = imageElement.height
-  BUFFER_CANVAS_CONTEXT2D.drawImage(imageElement, 0, 0)
-  return BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, imageElement.width, imageElement.height)
+  const bufferCanvasContext2D = getBufferCanvasContext2D(imageElement.width, imageElement.height)
+  bufferCanvasContext2D.drawImage(imageElement, 0, 0)
+  return bufferCanvasContext2D.getImageData(0, 0, imageElement.width, imageElement.height)
 }
 
 // operation
@@ -117,7 +104,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
     const sourcePixelWidth = sourceImageData.width
     __DEV__ && console.log('[scale] sourceImageData size:', sourceImageData.width, sourceImageData.height)
 
-    const targetImageData = BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, sourcePixelWidth * scaleX, sourceImageData.height * scaleY)
+    const targetImageData = new window.ImageData(sourcePixelWidth * scaleX, sourceImageData.height * scaleY)
     const targetPixelArray = targetImageData.data
     const targetPixelWidth = targetImageData.width
     __DEV__ && console.log('[scale] targetImageData size:', targetImageData.width, targetImageData.height)
@@ -133,6 +120,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
       const targetPixelArrayIndex = targetPixelIndex * 4
       const sourcePixelArrayIndex = (sourceX + sourceY * sourcePixelWidth) * 4
 
+      // TODO: use 32bit ArrayView
       targetPixelArray[ targetPixelArrayIndex ] = sourcePixelArray[ sourcePixelArrayIndex ]
       targetPixelArray[ targetPixelArrayIndex + 1 ] = sourcePixelArray[ sourcePixelArrayIndex + 1 ]
       targetPixelArray[ targetPixelArrayIndex + 2 ] = sourcePixelArray[ sourcePixelArrayIndex + 2 ]
@@ -173,10 +161,9 @@ const CANVAS_IMAGE_DATA_OPERATION = {
     const targetWidth = maxX - minX + 1
     const targetHeight = maxY - minY + 1
     __DEV__ && console.log('[CANVAS_ELEMENT][crop] size after', targetWidth, targetHeight)
-    BUFFER_CANVAS.width = targetWidth
-    BUFFER_CANVAS.height = targetHeight
-    BUFFER_CANVAS_CONTEXT2D.putImageData(imageData, 0 - minX, 0 - minY, minX, minY, targetWidth, targetHeight)
-    return BUFFER_CANVAS_CONTEXT2D.getImageData(0, 0, targetWidth, targetHeight)
+    const bufferCanvasContext2D = getBufferCanvasContext2D(targetWidth, targetHeight)
+    bufferCanvasContext2D.putImageData(imageData, 0 - minX, 0 - minY, minX, minY, targetWidth, targetHeight)
+    return bufferCanvasContext2D.getImageData(0, 0, targetWidth, targetHeight)
   },
   getPixelColor: (imageData, x, y) => {
     const index = x + y * imageData.width
@@ -315,8 +302,6 @@ const CANVAS_IMAGE_DATA_OPERATION = {
 }
 
 export {
-  IMAGE_DATA_TYPE,
-
   createImageElement,
   createCanvasElement,
   createCanvasImageData,
