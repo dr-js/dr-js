@@ -1,6 +1,7 @@
 # source files
 /.*
 /*.tgz
+/*.lock
 /config
 /source
 /example
