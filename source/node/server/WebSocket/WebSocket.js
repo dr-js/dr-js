@@ -65,7 +65,7 @@ class WebSocketBase extends EventEmitter {
     if (this.readyState === WebSocketBase.CLOSED) return
     __DEV__ && console.log('[WebSocket] doCloseSocket')
 
-    this.readyState === WebSocketBase.CONNECTING && this.socket.writable && this.socket.write('HTTP/1.1 400\r\nconnection: close\r\n\r\n') // TODO: HACK: socket.writable not in Official API
+    this.readyState === WebSocketBase.CONNECTING && this.socket.writable && this.socket.write('HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n') // TODO: HACK: socket.writable not in Official API
     this.readyState = WebSocketBase.CLOSED
 
     this.closeTimeoutToken && clearTimeout(this.closeTimeoutToken)

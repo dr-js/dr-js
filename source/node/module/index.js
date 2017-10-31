@@ -1,3 +1,4 @@
 export { spawn, runCommand, withCwd } from './Command'
-export { createLogger } from './Logger'
 export { getEntityTagByContentHash, getWeakEntityTagByStat } from './EntityTag'
+export { createLogger } from './Logger'
+export { createSafeWriteStream } from './SafeWriteStream'

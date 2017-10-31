@@ -1,34 +1,26 @@
 import { createCanvasElement } from 'source/browser/graphic'
-import { FontMapper } from './FontMapper'
-import { FontGenerator } from './FontGenerator'
+import { createFontMapper } from './FontMapper'
+import { createFontGenerator } from './FontGenerator'
 
-export class FontRender {
-  constructor () {
-    this.fontGenerator = new FontGenerator()
-    this.fontconfig = this.fontGenerator.getFontConfig()
+const createFontRender = (fontMapper = createFontMapper(), fontGenerator = createFontGenerator()) => {
+  let fontConfig
 
-    this.fontMapper = new FontMapper()
-    this.fontMapper.onMissingRequest = (symbol) => { // link request to create
-      const symbolImageData = this.fontGenerator.renderSymbol(symbol, this.fontconfig)
-      return this.fontMapper.addSymbol(symbol, symbolImageData.width, 0, 0)
-    }
+  fontMapper.setOnMissingRequest((symbol) => { // link request to create
+    const symbolImageData = fontGenerator.renderSymbol(symbol, fontConfig)
+    return fontMapper.addSymbol(symbol, symbolImageData.width, 0, 0)
+  })
 
-    this.applyFontConfig(this.fontconfig)
-  }
-
-  applyFontConfig (fontConfig) {
+  const applyFontConfig = (nextFontConfig = {}) => {
+    fontConfig = fontGenerator.getFontConfig(nextFontConfig)
     const { fontSize, lineHeight } = fontConfig
-
     const defaultSymbol = ' '
-    const defaultSymbolImageData = this.fontGenerator.renderSymbol(defaultSymbol, fontConfig)
-
-    this.fontMapper.setConfig(fontSize, lineHeight)
-    this.fontMapper.setDefaultSymbol(defaultSymbol, defaultSymbolImageData.width, 0, 0)
+    const defaultSymbolImageData = fontGenerator.renderSymbol(defaultSymbol, fontConfig)
+    fontMapper.setConfig(fontSize, lineHeight)
+    fontMapper.setDefaultSymbol(defaultSymbol, defaultSymbolImageData.width, 0, 0)
   }
 
-  renderText (text, scaleRatio, limitWidth, textCanvasElement = createCanvasElement(0, 0)) {
-    let textAreaMetrics = this.fontMapper.autoMapping(text, scaleRatio, limitWidth, undefined)
-
+  const renderText = (text, scaleRatio, limitWidth, textCanvasElement = createCanvasElement(0, 0)) => {
+    let textAreaMetrics = fontMapper.autoMapping(text, scaleRatio, limitWidth, undefined)
     textCanvasElement.width = textAreaMetrics.size.width
     textCanvasElement.height = textAreaMetrics.size.height
 
@@ -36,8 +28,8 @@ export class FontRender {
     // textCanvasElement.toCanvas()
 
     const textCanvasElementContext2d = textCanvasElement.getContext('2d')
-    textAreaMetrics = this.fontMapper.autoMapping(text, scaleRatio, limitWidth, (index, symbol, x, y) => {
-      const scaledSymbolCanvasElement = this.fontGenerator.renderSymbolScaled(symbol, scaleRatio, this.fontconfig)
+    textAreaMetrics = fontMapper.autoMapping(text, scaleRatio, limitWidth, (index, symbol, x, y) => {
+      const scaledSymbolCanvasElement = fontGenerator.renderSymbolScaled(symbol, scaleRatio, fontConfig)
       textCanvasElementContext2d.drawImage(scaledSymbolCanvasElement, x, y)
     })
 
@@ -47,4 +39,13 @@ export class FontRender {
       textEndPosition: textAreaMetrics.position
     }
   }
+
+  applyFontConfig()
+
+  return {
+    applyFontConfig,
+    renderText
+  }
 }
+
+export { createFontRender }

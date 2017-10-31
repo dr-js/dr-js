@@ -1,29 +1,21 @@
 import { createCanvasElement } from 'source/browser/graphic'
-import { FontMapper } from './FontMapper'
-import { FontGeneratorBitmap } from './FontGeneratorBitmap'
+import { createFontMapper } from './FontMapper'
+import { createFontGeneratorBitmap } from './FontGeneratorBitmap'
 
-export class FontRenderBitmap {
-  constructor () {
-    this.fontGenerator = new FontGeneratorBitmap()
-    this.fontMapper = new FontMapper()
-    this.fontMapper.onMissingRequest = (symbol) => { // link request to create
-      const symbolImageData = this.fontGenerator.renderSymbol(symbol)
-      return this.fontMapper.addSymbol(symbol, symbolImageData.width, 0, 0)
-    }
+const createFontRenderBitmap = (fontMapper = createFontMapper(), fontGenerator = createFontGeneratorBitmap()) => {
+  fontMapper.setOnMissingRequest((symbol) => { // link request to create
+    const symbolImageData = fontGenerator.renderSymbol(symbol)
+    return fontMapper.addSymbol(symbol, symbolImageData.width, 0, 0)
+  })
+
+  const loadBitmapFontData = async (bitmapFontDataSrc, fontSize, lineHeight) => {
+    fontMapper.setConfig(fontSize, lineHeight)
+    await fontGenerator.loadBitmapFontData(bitmapFontDataSrc)
+    fontMapper.setDefaultSymbol(fontGenerator.getDefaultSymbol(), fontGenerator.renderSymbol().width, 0, 0)
   }
 
-  loadBitmapFontData (bitmapFontDataSrc, fontSize, lineHeight) {
-    this.fontMapper.setConfig(fontSize, lineHeight)
-    return this.fontGenerator.loadBitmapFontData(bitmapFontDataSrc)
-      .then(() => {
-        const defaultSymbolImageData = this.fontGenerator.renderSymbol(this.fontGenerator.defaultSymbol)
-        this.fontMapper.setDefaultSymbol(this.fontGenerator.defaultSymbol, defaultSymbolImageData.width, 0, 0)
-      })
-  }
-
-  renderText (text, scaleRatio, limitWidth, textCanvasElement = createCanvasElement(0, 0)) {
-    let textAreaMetrics = this.fontMapper.autoMapping(text, scaleRatio, limitWidth, undefined)
-
+  const renderText = (text, scaleRatio, limitWidth, textCanvasElement = createCanvasElement(0, 0)) => {
+    let textAreaMetrics = fontMapper.autoMapping(text, scaleRatio, limitWidth, undefined)
     textCanvasElement.width = textAreaMetrics.size.width
     textCanvasElement.height = textAreaMetrics.size.height
 
@@ -31,8 +23,8 @@ export class FontRenderBitmap {
     // textCanvasElement.toCanvas()
 
     const textCanvasElementContext2d = textCanvasElement.getContext('2d')
-    textAreaMetrics = this.fontMapper.autoMapping(text, scaleRatio, limitWidth, (index, symbol, x, y) => {
-      const scaledSymbolCanvasElement = this.fontGenerator.renderSymbolScaled(symbol, scaleRatio)
+    textAreaMetrics = fontMapper.autoMapping(text, scaleRatio, limitWidth, (index, symbol, x, y) => {
+      const scaledSymbolCanvasElement = fontGenerator.renderSymbolScaled(symbol, scaleRatio)
       textCanvasElementContext2d.drawImage(scaledSymbolCanvasElement, x, y)
     })
 
@@ -42,4 +34,11 @@ export class FontRenderBitmap {
       textEndPosition: textAreaMetrics.position
     }
   }
+
+  return {
+    loadBitmapFontData,
+    renderText
+  }
 }
+
+export { createFontRenderBitmap }

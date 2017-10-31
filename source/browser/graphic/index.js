@@ -1,6 +1,4 @@
 export {
-  IMAGE_DATA_TYPE,
-
   createImageElement,
   createCanvasElement,
   createCanvasImageData,
@@ -16,8 +14,3 @@ export {
 
   CANVAS_IMAGE_DATA_OPERATION
 } from './__utils__'
-
-export {
-  CANVAS_EXT_EVENT,
-  createCanvasExt
-} from './canvasExt'
