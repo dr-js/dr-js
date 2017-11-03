@@ -1,5 +1,5 @@
 import { createLogQueue } from 'source/common/data'
-import { createSafeWriteStream } from './SafeWriteStream'
+import { createSafeWriteStream } from './SafeWrite'
 
 const createLogger = ({ queueLengthThreshold, pathOutputFile, onError }) => createLogQueue({
   queueLengthThreshold,

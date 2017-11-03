@@ -4,7 +4,7 @@ import { promisify } from 'util'
 import { createLogQueue } from 'source/common/data'
 import { createStateStore } from 'source/common/immutable'
 import { createDirectory, getFileList } from 'source/node/file'
-import { createSafeWriteStream } from './SafeWriteStream'
+import { createSafeWriteStream } from './SafeWrite'
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
 const writeFileAsync = promisify(nodeModuleFs.writeFile)
