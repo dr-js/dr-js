@@ -4,11 +4,12 @@ const DEFAULT_ON_ERROR = (error) => {
   console.warn(error)
   throw error
 }
+const DEFAULT_WRITE_OPTION = { flags: 'a', encoding: 'utf8' }
 
 // async write normally, sync write on emergency
-const createSafeWriteStream = ({ pathOutputFile, onError = DEFAULT_ON_ERROR }) => {
+const createSafeWriteStream = ({ pathOutputFile, onError = DEFAULT_ON_ERROR, option = DEFAULT_WRITE_OPTION }) => {
   const writeSet = new Set() // pending log in write stream
-  const writeStream = nodeModuleFs.createWriteStream(pathOutputFile, { flags: 'a' })
+  const writeStream = nodeModuleFs.createWriteStream(pathOutputFile, option)
 
   writeStream.on('error', onError)
 
