@@ -10,10 +10,8 @@ const main = async () => {
     applyFact: (state, fact) => ({ ...state, ...fact }),
     encodeFact: JSON.stringify, // (fact) => factText
     decodeFact: JSON.parse, // (factText) => fact
-    pathFactDirectory: `${__dirname}/fact`,
+    pathFactDirectory: `${__dirname}/fact-gitignore`,
     // queueLengthThreshold: 100,
-    logFilePrefix: 'fact',
-    cacheStateFileName: 'factCacheState.json',
     onError: console.error
   })
 
@@ -55,7 +53,9 @@ const main = async () => {
   factDB.addFact({ key2: 4 })
   factDB.addFact({ key3: 6 })
   console.log('state:', factDB.getState())
+
   // setTimeout(() => process.exit(), 1)
+  // process.nextTick(() => process.exit())
   // process.exit()
 }
 
