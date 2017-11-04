@@ -9,9 +9,10 @@ node_modules
 .idea
 
 # distribute file
+**/*-gitignore/**
+/*.tgz
 /example/Dr.js
 /example/Dr.node.js
 /example/Dr.browser.js
 /library
 /module
-/*.tgz
