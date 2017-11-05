@@ -1,7 +1,7 @@
 import nodeModuleFs from 'fs'
 
 // async write normally, sync write on emergency
-const createSafeWriteStream = ({ pathOutputFile, onError = DEFAULT_ON_ERROR, flag = 'a', mode = 0o666 }) => {
+const createSafeWriteStream = ({ pathOutputFile, onError = DEFAULT_ON_ERROR, flag = 'w', mode = 0o666 }) => {
   let fileDescriptor = nodeModuleFs.openSync(pathOutputFile, flag, mode)
   let writingQueue = []
   let pendingQueue = []

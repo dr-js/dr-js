@@ -2,9 +2,10 @@ export {
   responderEnd,
   responderLogState,
   createResponderParseURL,
+  createResponderReceiveBuffer,
   createResponderSendStream,
   createResponderSendBuffer,
-  createResponderReceiveBuffer
+  createResponderSendJSON
 } from './Common'
 
 export {

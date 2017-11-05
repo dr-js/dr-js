@@ -5,7 +5,6 @@ import {
 
   getPathType,
   createDirectory,
-  copyFile,
 
   deletePath,
   movePath,
@@ -143,7 +142,6 @@ export {
   FILE_TYPE,
   getPathType,
   createDirectory,
-  copyFile,
   deletePath,
   movePath,
   copyPath,

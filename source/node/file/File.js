@@ -11,12 +11,11 @@ const FILE_TYPE = {
 }
 
 const lstatAsync = promisify(nodeModuleFs.lstat)
-const fstatAsync = promisify(nodeModuleFs.fstat)
 const mkdirAsync = promisify(nodeModuleFs.mkdir)
 const rmdirAsync = promisify(nodeModuleFs.rmdir)
-const openAsync = promisify(nodeModuleFs.open)
 const renameAsync = promisify(nodeModuleFs.rename)
 const unlinkAsync = promisify(nodeModuleFs.unlink)
+const copyFileAsync = promisify(nodeModuleFs.copyFile) // since 8.5.0
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
@@ -26,21 +25,6 @@ const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
 const pathTypeError = () => FILE_TYPE.Error
 
 const getPathType = (path) => lstatAsync(path).then(getPathTypeFromStat, pathTypeError)
-
-const copyFile = async (pathFrom, pathTo) => {
-  const fdFrom = await openAsync(pathFrom, 'r')
-  const stat = await fstatAsync(fdFrom)
-  const fdTo = await openAsync(pathTo, 'w', stat.mode)
-
-  const readStream = nodeModuleFs.createReadStream(undefined, { fd: fdFrom })
-  const writeStream = nodeModuleFs.createWriteStream(undefined, { fd: fdTo, mode: stat.mode })
-  await new Promise((resolve, reject) => {
-    readStream.on('error', reject)
-    writeStream.on('error', reject)
-    writeStream.on('close', resolve)
-    readStream.pipe(writeStream)
-  })
-}
 
 const createDirectory = async (path, pathType) => {
   if (pathType === undefined) pathType = await getPathType(path)
@@ -66,7 +50,7 @@ const copyPath = async (pathFrom, pathTo, pathType) => {
   switch (pathType) {
     case FILE_TYPE.File:
     case FILE_TYPE.SymbolicLink:
-      return copyFile(pathFrom, pathTo)
+      return copyFileAsync(pathFrom, pathTo)
     case FILE_TYPE.Directory:
       return mkdirAsync(pathTo)
   }
@@ -99,7 +83,6 @@ export {
 
   getPathType,
   createDirectory,
-  copyFile,
 
   deletePath,
   movePath,
