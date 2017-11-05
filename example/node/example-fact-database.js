@@ -21,6 +21,7 @@ const main = async () => {
       factDB.addFact({ key1: 2 })
       factDB.addFact({ key2: 4 })
       factDB.addFact({ key3: 6 })
+      factDB.addFact({ exitAt: (new Date()).toString() })
       console.log('state:', factDB.getState())
       factDB.end()
     }

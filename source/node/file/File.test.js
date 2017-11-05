@@ -5,7 +5,6 @@ import {
 
   getPathType,
   createDirectory,
-  copyFile,
 
   copyPath,
   movePath,
@@ -37,10 +36,7 @@ const directoryPath6 = nodeModulePath.join(TEST_ROOT, 'a/e1/')
 const directoryPath7 = nodeModulePath.join(TEST_ROOT, 'a/b/')
 const directoryPath8 = nodeModulePath.join(TEST_ROOT, 'a/')
 
-before('prepare', async () => {
-  await createDirectory(TEST_ROOT)
-})
-
+before('prepare', () => createDirectory(TEST_ROOT))
 after('clear', async () => {
   await deletePath(scriptFilePath3)
   await deletePath(directoryPath6)
@@ -70,12 +66,10 @@ describe('Node.File.File', () => {
     nodeModuleAssert.equal(getExpectedError, true)
   })
 
-  it('copyFile()', async () => {
-    await copyFile(scriptFilePath0, scriptFilePath1)
-    nodeModuleAssert.equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
-  })
-
   it('copyPath()', async () => {
+    await copyPath(scriptFilePath0, scriptFilePath1)
+    nodeModuleAssert.equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
+
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
     nodeModuleAssert.equal(getExpectedError, true)

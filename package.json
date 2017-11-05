@@ -38,7 +38,7 @@
     "start": "npm run example-dev"
   },
   "engines": {
-    "node": ">=8.3.0",
+    "node": ">=8.5.0",
     "npm": ">=5.4.0"
   },
   "devDependencies": {
