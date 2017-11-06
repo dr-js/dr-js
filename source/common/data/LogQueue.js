@@ -1,6 +1,6 @@
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 
-const createLogQueue = ({ queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD, outputStream }) => {
+const createLogQueue = ({ outputStream, queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD }) => {
   const logQueue = [] // buffered log
 
   const consumeLogQueue = () => {

@@ -1,4 +1,5 @@
 import { URL } from 'url'
+import { BASIC_EXTENSION_MAP } from 'source/common/module'
 import { receiveBufferAsync } from 'source/node/resource'
 
 const responderEnd = (store) => {
@@ -12,10 +13,15 @@ const responderEnd = (store) => {
 
 const responderLogState = (store) => console.log(store.getState())
 
-const verifyEntityTag = (headers, entityTag) => {
-  const matchTag = headers[ 'if-none-match' ]
-  return Boolean(matchTag && matchTag.startsWith(entityTag))
+const createResponderParseURL = (baseUrl) => {
+  const baseUrlObject = new URL(baseUrl)
+  return (store) => {
+    const { url: urlString, method } = store.request
+    store.setState({ url: new URL(urlString, baseUrlObject), method })
+  }
 }
+
+const createResponderReceiveBuffer = (setBuffer) => async (store) => setBuffer(store, await receiveBufferAsync(store.request))
 
 const createResponderSendStream = (getStream) => async (store) => {
   const { stream, length, type, entityTag } = await getStream(store)
@@ -48,21 +54,27 @@ const createResponderSendBuffer = (getBuffer) => async (store) => {
   })
 }
 
-const createResponderParseURL = (baseUrl) => {
-  const baseUrlObject = new URL(baseUrl)
-  return (store) => {
-    const { url: urlString, method } = store.request
-    store.setState({ url: new URL(urlString, baseUrlObject), method })
+const createResponderSendJSON = (getJSONObject) => {
+  const responderSendBuffer = createResponderSendBuffer((store) => store.getState().JSONBuffer)
+  return async (store) => {
+    const { JSONObject, entityTag } = await getJSONObject(store)
+    const buffer = Buffer.from(JSON.stringify(JSONObject))
+    store.setState({ JSONBuffer: { buffer, length: buffer.length, type: BASIC_EXTENSION_MAP.json, entityTag } })
+    return responderSendBuffer(store)
   }
 }
 
-const createResponderReceiveBuffer = (setBuffer) => async (store) => setBuffer(store, await receiveBufferAsync(store.request))
+const verifyEntityTag = (headers, entityTag) => {
+  const matchTag = headers[ 'if-none-match' ]
+  return Boolean(matchTag && matchTag.startsWith(entityTag))
+}
 
 export {
   responderEnd,
   responderLogState,
+  createResponderParseURL,
+  createResponderReceiveBuffer,
   createResponderSendStream,
   createResponderSendBuffer,
-  createResponderParseURL,
-  createResponderReceiveBuffer
+  createResponderSendJSON
 }

@@ -15,45 +15,53 @@ const main = async () => {
     onError: console.error
   })
 
+  const logFactDBState = () => console.log('state:', JSON.stringify(factDB.getState()))
+
   setProcessExitListener({
     listenerSync: ({ eventType, code }) => {
       console.log('listenerSync', eventType, code)
-      factDB.addFact({ key1: 2 })
-      factDB.addFact({ key2: 4 })
-      factDB.addFact({ key3: 6 })
-      factDB.addFact({ exitAt: (new Date()).toString() })
-      console.log('state:', factDB.getState())
+      factDB.add({ key1: 2 })
+      factDB.add({ key2: 4 })
+      factDB.add({ key3: 6 })
+      factDB.add({ exitAt: (new Date()).toString() })
+      logFactDBState()
       factDB.end()
     }
   })
 
   console.log('inited:', factDB)
-  console.log('state:', factDB.getState())
+  logFactDBState()
 
-  factDB.addFact({ key1: 1 })
-  factDB.addFact({ key2: 2 })
-  factDB.addFact({ key3: 3 })
-  console.log('state:', factDB.getState())
+  factDB.add({ key1: 1 })
+  factDB.add({ key2: 2 })
+  factDB.add({ key3: 3 })
+  logFactDBState()
 
-  factDB.addFact({ key1: 2 })
-  factDB.addFact({ key2: 4 })
-  factDB.addFact({ key3: 6 })
-  console.log('state:', factDB.getState())
+  factDB.add({ key1: 2 })
+  factDB.add({ key2: 4 })
+  factDB.add({ key3: 6 })
+  logFactDBState()
 
-  factDB.addFact({ [Date.now()]: 'time' })
-  factDB.addFact({})
-  // factDB.addFact(null) // will fail
-  console.log('state:', factDB.getState())
+  factDB.add({ splitAt: (new Date()).toString() })
+  factDB.split()
 
-  factDB.addFact({ key1: 1 })
-  factDB.addFact({ key2: 2 })
-  factDB.addFact({ key3: 3 })
-  console.log('state:', factDB.getState())
+  factDB.add({ [`IncrementalKey-${Date.now()}`]: 'time' })
+  factDB.add({}) // empty fact
+  // factDB.add(null) // will fail
+  logFactDBState()
 
-  factDB.addFact({ key1: 2 })
-  factDB.addFact({ key2: 4 })
-  factDB.addFact({ key3: 6 })
-  console.log('state:', factDB.getState())
+  factDB.add({ key1: 1 })
+  factDB.add({ key2: 2 })
+  factDB.add({ key3: 3 })
+  logFactDBState()
+
+  factDB.add({ saveAt: (new Date()).toString() })
+  factDB.save()
+
+  factDB.add({ key1: 2 })
+  factDB.add({ key2: 4 })
+  factDB.add({ key3: 6 })
+  logFactDBState()
 
   // setTimeout(() => process.exit(), 1)
   // process.nextTick(() => process.exit())

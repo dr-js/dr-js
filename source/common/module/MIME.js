@@ -1,12 +1,10 @@
 const DEFAULT_MIME = 'application/octet-stream'
 const BASIC_MIME_MAP = {
-  'application/font-woff': [ 'woff' ],
-  'application/font-woff2': [ 'woff2' ],
   'application/javascript': [ 'js' ],
   'application/json': [ 'json' ],
   'application/json5': [ 'json5' ],
   'application/pdf': [ 'pdf' ],
-  'application/x-font-ttf': [ 'ttf', 'ttc' ],
+  'application/vnd.ms-fontobject': [ 'eot' ],
   'application/x-rar-compressed': [ 'rar' ],
   'application/x-sh': [ 'sh' ],
   'application/x-tar': [ 'tar' ],
@@ -21,6 +19,9 @@ const BASIC_MIME_MAP = {
   'audio/webm': [ 'weba' ],
   'audio/x-flac': [ 'flac' ],
   'font/opentype': [ 'otf' ],
+  'font/ttf': [ 'ttf' ],
+  'font/woff': [ 'woff' ],
+  'font/woff2': [ 'woff2' ],
   'image/bmp': [ 'bmp' ],
   'image/gif': [ 'gif' ],
   'image/jpeg': [ 'jpeg', 'jpg' ],
