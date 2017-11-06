@@ -54,11 +54,11 @@ const createResponderSendBuffer = (getBuffer) => async (store) => {
   })
 }
 
-const createResponderSendJSON = (getJSONObject) => {
+const createResponderSendJSON = (getJSON) => {
   const responderSendBuffer = createResponderSendBuffer((store) => store.getState().JSONBuffer)
   return async (store) => {
-    const { JSONObject, entityTag } = await getJSONObject(store)
-    const buffer = Buffer.from(JSON.stringify(JSONObject))
+    const { object, entityTag } = await getJSON(store)
+    const buffer = Buffer.from(JSON.stringify(object))
     store.setState({ JSONBuffer: { buffer, length: buffer.length, type: BASIC_EXTENSION_MAP.json, entityTag } })
     return responderSendBuffer(store)
   }
