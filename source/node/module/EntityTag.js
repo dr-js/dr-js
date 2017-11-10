@@ -2,9 +2,7 @@ import { createHash } from 'crypto'
 
 const getEntityTagByContentHash = (buffer) => {
   const length = buffer.length.toString(16)
-  const hash = createHash('sha1') // TODO: this is sync code
-    .update(buffer, 'utf8')
-    .digest('base64')
+  const hash = createHash('sha1').update(buffer).digest('base64') // TODO: this is sync code
   return `"${length}-${hash}"`
 }
 
