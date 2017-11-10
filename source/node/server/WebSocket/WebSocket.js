@@ -7,7 +7,7 @@ const WEB_SOCKET_VERSION = 13
 
 const WEB_SOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 const getRequestKey = () => randomBytes(16).toString('base64')
-const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEB_SOCKET_MAGIC_STRING}`, 'binary').digest('base64')
+const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEB_SOCKET_MAGIC_STRING}`).digest('base64')
 
 const WEB_SOCKET_EVENT_MAP = {
   OPEN: 'web-socket:open',

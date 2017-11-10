@@ -100,9 +100,10 @@ const tryLoadFactLog = async ({ factId, factState }, { factLogFileList, decodeFa
   for (const { filePath } of factLogFileList) {
     const fileText = await readFileAsync(filePath, { encoding: 'utf8' })
     fileText.split('\n').forEach((logText) => {
-      if (!logText) return
-      const fact = decodeFact(logText)
-      if (fact.id <= factId) return
+      const fact = logText && decodeFact(logText)
+      __DEV__ && !fact && console.log('skipped empty fact from log:', logText)
+      if (!fact || fact.id <= factId) return
+      if (fact.id !== factId + 1) throw new Error(`unexpected next factId: ${fact.id}, should be: ${factId + 1}. file: ${filePath}`)
       factState = applyFact(factState, fact)
       factId = fact.id
     })
