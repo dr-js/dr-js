@@ -4,6 +4,7 @@ import { createAsyncTaskQueue } from './AsyncTaskQueue'
 // const TaskRunnerOptionDebug = {
 //   clearRunner: () => {},
 //   resetRunner: (error, taskId) => error && console.log(`[DebugTaskRunner|${taskId}] error: ${error.stack || error.toString()}`),
+//   getTaskId: (inputData) => inputData.id,
 //   getTaskInitialState: (task) => task,
 //   runTask: async (taskId, { getTaskState, updateTaskState }) => {
 //     console.log(`[DebugTaskRunner|${taskId}] start`)
@@ -19,9 +20,10 @@ import { createAsyncTaskQueue } from './AsyncTaskQueue'
 // }
 
 const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialState, runTask }) => {
-  const { pushTask, resetTaskQueue, getTaskQueueSize } = createAsyncTaskQueue()
+  const { resetTaskQueue, getTaskQueueSize, pushTask } = createAsyncTaskQueue()
   const taskStateMap = new Map()
   const clear = async () => {
+    taskStateMap.clear()
     await clearRunner()
     resetTaskQueue()
   }
@@ -35,23 +37,21 @@ const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialS
   const startTask = (inputData) => {
     const taskId = getTaskId(inputData)
     if (!taskStateMap.get(taskId)) {
+      const promise = pushTask(() => runTask(taskId, { getTaskState, updateTaskState }))
+        .then((outputData) => updateTaskState(taskId, { outputData, promise: null, endAt: getTimeStamp() }))
+        .catch((error) => {
+          updateTaskState(taskId, { error, promise: null, endAt: getTimeStamp() })
+          return resetRunner(error, taskId)
+        })
       taskStateMap.set(taskId, getTaskInitialState({
         id: taskId,
-        promise: null,
+        promise,
         error: null, // if error is set, task is considered failed
         inputData,
         outputData: null, // if outputData is set, task is considered completed
         startAt: getTimeStamp(), // in second
         endAt: null // if outputData is set, task is considered ended (failed|completed)
       }))
-      const promise = pushTask(async () => {
-        const outputData = await runTask(taskId, { getTaskState, updateTaskState })
-        updateTaskState(taskId, { outputData, promise: null, endAt: getTimeStamp() }) // force complete
-      }).catch((error) => {
-        updateTaskState(taskId, { error, promise: null, endAt: getTimeStamp() })
-        return resetRunner(error, taskId)
-      })
-      updateTaskState(taskId, { promise })
     }
     return taskStateMap.get(taskId)
   }

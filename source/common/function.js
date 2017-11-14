@@ -41,23 +41,23 @@ const repeat = (count, func) => {
 }
 
 const createInsideOutPromise = () => {
-  let promiseResolve = null
-  let promiseReject = null
-  const promise = new Promise((resolve, reject) => {
-    promiseResolve = resolve
-    promiseReject = reject
-  })
+  let promiseResolve, promiseReject
   return {
-    promise,
-    resolve: (...args) => {
-      promiseResolve && promiseResolve(...args)
-      promiseResolve = null
-      promiseReject = null
+    promise: new Promise((resolve, reject) => {
+      promiseResolve = resolve
+      promiseReject = reject
+    }),
+    resolve: (value) => {
+      if (promiseResolve === undefined) return
+      const resolve = promiseResolve
+      promiseResolve = promiseReject = undefined
+      return resolve(value)
     },
-    reject: (...args) => {
-      promiseReject && promiseReject(...args)
-      promiseResolve = null
-      promiseReject = null
+    reject: (error) => {
+      if (promiseReject === undefined) return
+      const reject = promiseReject
+      promiseResolve = promiseReject = undefined
+      return reject(error)
     }
   }
 }

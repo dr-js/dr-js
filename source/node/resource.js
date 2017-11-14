@@ -37,22 +37,21 @@ const requestAsync = (option, body) => new Promise((resolve, reject) => {
   const request = (option.protocol === 'https:' ? nodeModuleHttps : nodeModuleHttp).request(option, resolve)
   request.on('timeout', reject)
   request.on('error', reject)
-  body && request.write(body)
-  request.end()
+  request.end(body)
 })
-const receiveBufferAsync = (response) => new Promise((resolve, reject) => {
+const receiveBufferAsync = (readableStream) => new Promise((resolve, reject) => {
   const data = []
-  response.on('error', reject)
-  response.on('data', (chunk) => data.push(chunk))
-  response.on('end', () => {
-    response.removeListener('error', reject)
+  readableStream.on('error', reject)
+  readableStream.on('data', (chunk) => data.push(chunk))
+  readableStream.on('end', () => {
+    readableStream.removeListener('error', reject)
     resolve(Buffer.concat(data))
   })
 })
 
 // ping with a status code of 500 is still a successful ping
-const pingRequestAsync = async ({ url, body, method, headers, timeout = 5000, retryCount = 0 }) => {
-  const option = { ...urlToOption(new URL(url)), method, headers, timeout } // will result in error if timeout
+const pingRequestAsync = async ({ url, body, timeout = 5000, retryCount = 0, ...option }) => {
+  option = { ...option, ...urlToOption(new URL(url)), timeout } // will result in error if timeout
   while (retryCount >= 0) {
     const startTime = clock()
     try {
