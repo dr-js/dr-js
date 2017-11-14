@@ -1,24 +1,38 @@
 import { createInsideOutPromise } from 'source/common/function'
 
-const createAsyncTaskQueue = (onQueueError = () => {}) => {
-  let taskSet, taskQueueTail
+const MUTE_ERROR = (error) => { __DEV__ && console.error(error) }
+
+const createQueueStatus = (size = 0, isValid = true) => ({
+  getSize: () => size,
+  increaseSize: () => ++size,
+  decreaseSize: () => --size,
+  getIsValid: () => isValid,
+  invalid: () => (isValid = false)
+})
+
+const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
+  let queueStatus, queueTail
   const resetTaskQueue = () => {
-    taskSet = new Set()
-    taskQueueTail = Promise.resolve('QUEUE_HEAD')
+    queueStatus && queueStatus.invalid()
+    queueStatus = createQueueStatus()
+    queueTail = Promise.resolve('QUEUE_HEAD')
   }
-  const pushTask = (task) => { // task is async function
-    const { promise, resolve, reject } = createInsideOutPromise()
-    taskQueueTail = taskQueueTail.then(() => Promise.resolve(task())
-      .then(resolve, reject)
-      .catch(onQueueError) // mute error
-      .then(() => taskSet.delete(task))
-    )
-    taskSet.add(task)
-    return promise
+  const getTaskQueueSize = () => queueStatus.getSize()
+  const pushTask = (asyncTask) => { // task is async function
+    const { promise, resolve } = createInsideOutPromise()
+    const taskPromise = queueTail.then(asyncTask)
+    taskPromise
+      .catch(onQueueError) // should not re-throw error for the queue to keep running
+      .then(() => {
+        queueStatus.decreaseSize()
+        queueStatus.getIsValid() && resolve()
+      }) // the promise chain is not chained up directly
+    queueStatus.increaseSize()
+    queueTail = promise
+    return taskPromise
   }
-  const getTaskQueueSize = () => taskSet.size
   resetTaskQueue()
-  return { resetTaskQueue, pushTask, getTaskQueueSize }
+  return { resetTaskQueue, getTaskQueueSize, pushTask }
 }
 
 export { createAsyncTaskQueue }

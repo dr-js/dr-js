@@ -29,9 +29,9 @@ const DEFAULT_HTTP_OPTION = {
   port: 80
 }
 
-const getServerToggle = ({ port, hostname }, server) => ({
+const getServerToggle = ({ port, hostname }, server, baseUrl = `${hostname}:${port}`) => ({
   start: () => {
-    __DEV__ && !server.listening && console.log('Server running at port', port, 'hostname', hostname)
+    __DEV__ && !server.listening && console.log(`Server running at: '${baseUrl}'`)
     !server.listening && server.listen(port, hostname)
   },
   stop: () => {
@@ -57,8 +57,9 @@ const createServer = (option) => {
   option = { ...(isSecure ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option } // set defaults
   const server = isSecure ? nodeModuleHttps.createServer(option) : nodeModuleHttp.createServer()
   isSecure && applyServerSessionCache(server)
-  const { start, stop } = getServerToggle(option, server)
-  return { server, start, stop, baseUrl: `${option.protocol}//${option.hostname}:${option.port}` }
+  const baseUrl = `${option.protocol}//${option.hostname}:${option.port}`
+  const { start, stop } = getServerToggle(option, server, baseUrl)
+  return { server, start, stop, baseUrl }
 }
 
 const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responderLogState ] : []
