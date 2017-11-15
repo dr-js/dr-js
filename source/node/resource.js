@@ -49,19 +49,33 @@ const receiveBufferAsync = (readableStream) => new Promise((resolve, reject) => 
   })
 })
 
+const sendBufferAsync = (writableStream, buffer) => new Promise((resolve, reject) => {
+  writableStream.on('error', reject)
+  writableStream.write(buffer, () => {
+    writableStream.removeListener('error', reject)
+    resolve()
+  })
+})
+
+const pipeBufferAsync = (writableStream, readableStream) => new Promise((resolve, reject) => {
+  readableStream.on('error', reject)
+  readableStream.on('end', () => {
+    readableStream.removeListener('error', reject)
+    resolve()
+  })
+  readableStream.pipe(writableStream)
+})
+
 // ping with a status code of 500 is still a successful ping
 const pingRequestAsync = async ({ url, body, timeout = 5000, retryCount = 0, ...option }) => {
   option = { ...option, ...urlToOption(new URL(url)), timeout } // will result in error if timeout
   while (retryCount >= 0) {
     const startTime = clock()
     try {
-      __DEV__ && console.log('[pingRequestAsync] start:', url)
       const response = await requestAsync(option, body)
-      __DEV__ && console.log('[pingRequestAsync] success:', url, response.statusCode)
       response.destroy() // skip response data
       break
     } catch (error) {
-      __DEV__ && console.warn('[pingRequestAsync] error:', retryCount, error)
       if (retryCount === 0) throw error
       const remainingTime = timeout - (clock() - startTime)
       if (remainingTime > 0) await setTimeoutAsync(remainingTime)
@@ -98,7 +112,10 @@ export {
   fetch,
   urlToOption,
   requestAsync,
+
   receiveBufferAsync,
+  sendBufferAsync,
+  pipeBufferAsync,
 
   pingRequestAsync,
 

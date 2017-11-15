@@ -10,33 +10,39 @@ import { responderLogState, responderEnd } from './Responder'
 const SSL_SESSION_CACHE_MAX = 5000
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
 
-const VALID_SERVER_PROTOCOL_SET = new Set([ 'https:', 'http:' ])
-
 const DEFAULT_HTTPS_OPTION = {
   protocol: 'https:',
   hostname: 'localhost',
   port: 443,
-  key: 'BUFFER: KEY.pem',
-  cert: 'BUFFER: CERT.pem',
-  ca: 'BUFFER: CA.pem',
-  dhparam: 'BUFFER: DHPARAM.pem', // Diffie-Hellman Key Exchange
+  isSecure: true,
+  // key: 'BUFFER: KEY.pem', // [optional]
+  // cert: 'BUFFER: CERT.pem', // [optional]
+  // ca: 'BUFFER: CA.pem', // [optional]
+  // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange
   secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
 }
-
 const DEFAULT_HTTP_OPTION = {
   protocol: 'http:',
   hostname: 'localhost',
-  port: 80
+  port: 80,
+  isSecure: false
 }
+const VALID_SERVER_PROTOCOL_SET = new Set([ DEFAULT_HTTPS_OPTION.protocol, DEFAULT_HTTP_OPTION.protocol ])
 
-const getServerToggle = ({ port, hostname }, server, baseUrl = `${hostname}:${port}`) => ({
+const getServerOption = (protocol, option) => {
+  if (!VALID_SERVER_PROTOCOL_SET.has(protocol)) throw new Error(`[createServer] invalid protocol: ${protocol}`)
+  option = { ...(protocol === 'https:' ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option } // set defaults
+  option.baseUrl = `${protocol}//${option.hostname}:${option.port}`
+  return option
+}
+const getServerToggle = (server, { hostname, port, baseUrl }) => ({
   start: () => {
-    __DEV__ && !server.listening && console.log(`Server running at: '${baseUrl}'`)
     !server.listening && server.listen(port, hostname)
+    __DEV__ && !server.listening && console.log(`Server running at: '${baseUrl}'`)
   },
   stop: () => {
-    __DEV__ && server.listening && console.log('Server stopped')
     server.listening && server.close()
+    __DEV__ && server.listening && console.log('Server stopped')
   }
 })
 const applyServerSessionCache = (server) => {
@@ -51,22 +57,19 @@ const applyServerSessionCache = (server) => {
     next(null, sslSessionCacheMap.get(sessionId.toString('hex')) || null)
   })
 }
-const createServer = (option) => {
-  if (!VALID_SERVER_PROTOCOL_SET.has(option.protocol)) throw new Error(`[createServer] invalid protocol: ${option.protocol}`)
-  const isSecure = option.protocol === 'https:'
-  option = { ...(isSecure ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option } // set defaults
-  const server = isSecure ? nodeModuleHttps.createServer(option) : nodeModuleHttp.createServer()
-  isSecure && applyServerSessionCache(server)
-  const baseUrl = `${option.protocol}//${option.hostname}:${option.port}`
-  const { start, stop } = getServerToggle(option, server, baseUrl)
-  return { server, start, stop, baseUrl }
+const createServer = ({ protocol, ...option }) => {
+  option = getServerOption(protocol, option)
+  const server = option.isSecure ? nodeModuleHttps.createServer(option) : nodeModuleHttp.createServer() // TODO: NOTE: the argument is different for https/http.createServer
+  const { start, stop } = getServerToggle(server, option)
+  option.isSecure && applyServerSessionCache(server)
+  return { server, start, stop, option }
 }
 
 const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responderLogState ] : []
 const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
 const DEFAULT_RESPONSE_REDUCER_END = responderEnd
 const GET_INITIAL_STORE_STATE = () => ({
-  error: null, // from failed responder,
+  error: null, // from failed responder
   time: clock(), // in msec
   url: null, // from createResponderParseURL
   method: null // from createResponderParseURL
@@ -81,11 +84,10 @@ const createRequestListener = ({
   const stateStore = createMinStateStore(GET_INITIAL_STORE_STATE())
   stateStore.request = request
   stateStore.response = response
-  try { for (const responder of responderList) await responder(stateStore) } catch (error) { await responderError(stateStore, error) }
+  try {
+    for (const responder of responderList) await responder(stateStore)
+  } catch (error) { await responderError(stateStore, error) }
   await responderEnd(stateStore)
 }
 
-export {
-  createServer,
-  createRequestListener
-}
+export { createServer, createRequestListener }
