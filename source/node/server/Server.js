@@ -5,7 +5,7 @@ import { constants } from 'crypto'
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
 import { createMinStateStore } from 'source/common/immutable'
-import { responderLogState, responderEnd } from './Responder'
+import { responderEnd } from './Responder'
 
 const SSL_SESSION_CACHE_MAX = 5000
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
@@ -65,7 +65,7 @@ const createServer = ({ protocol, ...option }) => {
   return { server, start, stop, option }
 }
 
-const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ responderLogState ] : []
+const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ (store) => console.log(store.getState()) ] : []
 const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
 const DEFAULT_RESPONSE_REDUCER_END = responderEnd
 const GET_INITIAL_STORE_STATE = () => ({

@@ -1,26 +1,23 @@
+const nodeModuleHttp = require('http')
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
 const { promisify } = require('util')
 const Dr = require('../Dr.node')
 
 const {
-  createServer,
-  createRequestListener,
-  Responder: {
-    createResponderParseURL,
-    createRouterMapBuilder,
-    createResponderRouter,
-    createResponderServeStatic,
-    createResponderLogRequestHeader,
-    createResponderLogTimeStep,
-    createResponderLogEnd
-  },
-  WebSocket: {
-    WEB_SOCKET_EVENT_MAP,
-    DATA_TYPE_MAP,
-    enableWebSocketServer
+  Resource: { receiveBufferAsync, requestAsync },
+  Server: {
+    createServer,
+    createRequestListener,
+    Responder: { createResponderParseURL, createRouterMapBuilder, createResponderRouter, createResponderServeStatic },
+    WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
   }
-} = Dr.Node.Server
+} = Dr.Node
+
+const ServerHost = 'localhost'
+const ServerPort = 3000
+const ProxyHost = 'localhost'
+const ProxyPort = 4000
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
@@ -29,6 +26,13 @@ const responderServeStatic = createResponderServeStatic({ staticRoot: fromPath('
 
 const routerMapBuilder = createRouterMapBuilder()
 routerMapBuilder.addRoute('/favicon.ico', 'GET', (store) => store.response.end(faviconBuffer))
+routerMapBuilder.addRoute('/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE'))
+routerMapBuilder.addRoute('/get-get-proxy', 'GET', async (store) => {
+  const requestBuffer = await receiveBufferAsync(store.request)
+  const proxyResponse = await requestAsync({ hostname: ProxyHost, port: ProxyPort, path: '/get-proxy' }, requestBuffer)
+  const responseBuffer = await receiveBufferAsync(proxyResponse)
+  store.response.end(responseBuffer)
+})
 routerMapBuilder.addRoute('/', 'GET', (store) => {
   store.setState({ filePath: '/node/example-server.html' })
   return responderServeStatic(store)
@@ -38,23 +42,18 @@ routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
   return responderServeStatic(store)
 })
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
+const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
 
 server.on('request', createRequestListener({
   responderList: [
-    createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
     createResponderParseURL(option),
-    createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
-    createResponderRouter(routerMapBuilder.getRouterMap()),
-    createResponderLogEnd((data) => console.log('[LogEnd]', data))
+    createResponderRouter(routerMapBuilder.getRouterMap())
   ]
 }))
 
 const webSocketSet = enableWebSocketServer({
   server,
   onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
-    // return webSocket.doCloseSocket() // can just close here
-
     const { origin, protocolList, isSecure } = webSocket
     console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
 
@@ -81,3 +80,12 @@ const webSocketSet = enableWebSocketServer({
 })
 
 start()
+
+nodeModuleHttp.createServer(async (originalRequest, originalResponse) => {
+  console.log(`[proxy] get: ${originalRequest.url}`)
+  const requestBuffer = await receiveBufferAsync(originalRequest)
+  const proxyResponse = await requestAsync({ hostname: ServerHost, port: ServerPort, path: originalRequest.url }, requestBuffer)
+  const responseBuffer = await receiveBufferAsync(proxyResponse)
+  originalResponse.end(responseBuffer)
+}).listen(ProxyPort, ProxyHost)
+console.log(`Proxy running at: 'http://${ProxyHost}:${ProxyPort}'`)
