@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.6.0-dev.2",
+  "version": "0.6.0-dev.3",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -17,6 +17,7 @@
   "bugs": {
     "url": "https://github.com/dr-js/dr-js/issues"
   },
+  "bin": "bin/index.js",
   "main": "library/Dr.js",
   "scripts": {
     "example": "cross-env NODE_ENV=production webpack --config config/example.conf.js",
@@ -33,7 +34,8 @@
     "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
     "test-mocha-node": "cross-env BABEL_ENV=test mocha --require babel-register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
-    "build": "npm run library && npm run module",
+    "build": "npm run build-clear&& npm run library && npm run module",
+    "build-clear": "node bin/index.js --mode file-modify-delete --argument library module",
     "start": "npm run example-dev",
     "prepack": "npm run test && npm run build",
     "publish-dev": "npm publish --tag dev"
