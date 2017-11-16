@@ -22,11 +22,11 @@ import {
 const { describe, it, before, after } = global
 global.__DEV__ = false
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-directory/')
+const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-directory-gitignore/')
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
-const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/node/script.js')
+const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/resource/script.js')
 
 const directoryPath0 = nodeModulePath.join(TEST_ROOT, '../example/node/')
 const directoryPath1 = nodeModulePath.join(TEST_ROOT, '../example/')
