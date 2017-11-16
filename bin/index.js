@@ -5,9 +5,12 @@ const nodeModuleFs = require('fs')
 const { promisify } = require('util')
 const Dr = require('../library/Dr.node')
 
-const __DEV__ = false
+const {
+  Common: { Module: { createOptionParser, OPTION_CONFIG_PRESET } },
+  Node: { File: { getFileList, modify } }
+} = Dr
 const readFileAsync = promisify(nodeModuleFs.readFile)
-const { createOptionParser, OPTION_CONFIG_PRESET } = Dr.Common.Module
+const __DEV__ = false
 
 const MODE_OPTION = [
   'env-info',
@@ -16,7 +19,6 @@ const MODE_OPTION = [
   'file-modify-move',
   'file-modify-delete'
 ]
-
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
   formatList: [
@@ -33,12 +35,7 @@ const OPTION_CONFIG = {
       description: `should be one of [ ${MODE_OPTION.join(', ')} ]`,
       ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION)
     },
-    {
-      name: 'argument',
-      shortName: 'a',
-      optional: true,
-      argumentCount: '0+'
-    }
+    { name: 'argument', shortName: 'a', optional: true, argumentCount: '0+' }
   ]
 }
 
@@ -82,18 +79,13 @@ const main = async () => {
         const { isNode, isBrowser, environmentName, systemEndianness } = Dr.Env
         return console.log({ isNode, isBrowser, environmentName, systemEndianness })
       case 'file-list':
-        return console.log(JSON.stringify(await Dr.Node.File.getFileList(getSingleOption('argument'))))
+        return console.log(JSON.stringify(await getFileList(getSingleOption('argument'))))
       case 'file-modify-copy':
-        return Dr.Node.File.modify.copy(...getOption('argument', 2))
+        return modify.copy(...getOption('argument', 2))
       case 'file-modify-move':
-        return Dr.Node.File.modify.move(...getOption('argument', 2))
+        return modify.move(...getOption('argument', 2))
       case 'file-modify-delete':
-        for (const path of getOption('argument')) {
-          await Dr.Node.File.modify.delete(path).then(
-            () => console.log(`[DELETE-DONE] ${path}`),
-            (error) => console.warn(`[DELETE-ERROR] ${error}`)
-          )
-        }
+        for (const path of getOption('argument')) await modify.delete(path).then(() => console.log(`[DELETE-DONE] ${path}`), (error) => console.warn(`[DELETE-ERROR] ${error}`))
         return
     }
   } catch (error) { console.warn(`[Error] in mode: ${getSingleOption('mode')}:\n`, error) }
