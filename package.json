@@ -34,7 +34,7 @@
     "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
     "test-mocha-node": "cross-env BABEL_ENV=test mocha --require babel-register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
-    "build": "npm run build-clear&& npm run library && npm run module",
+    "build": "npm run build-clear && npm run library && npm run module",
     "build-clear": "node bin/index.js --mode file-modify-delete --argument library module",
     "start": "npm run example-dev",
     "prepack": "npm run test && npm run build",
@@ -45,6 +45,6 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "dev-dep-web": "^0.0.6"
+    "dev-dep-web": "^0.0.7"
   }
 }
