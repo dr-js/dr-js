@@ -17,9 +17,9 @@ import {
 const { describe, it, before, after } = global
 global.__DEV__ = false
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-index/')
+const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-index-gitignore/')
 
-const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/node/script.js')
+const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/resource/script.js')
 const scriptFilePath1 = nodeModulePath.join(TEST_ROOT, 'script0.js')
 const scriptFilePath2 = nodeModulePath.join(TEST_ROOT, 'script1.js')
 const scriptFilePath3 = nodeModulePath.join(TEST_ROOT, 'script2.js')

@@ -8,7 +8,7 @@ import { setTimeoutAsync } from 'source/common/time'
 const { describe, it, before, after } = global
 global.__DEV__ = false
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-write/')
+const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-write-gitignore/')
 
 before('prepare', () => createDirectory(TEST_ROOT))
 after('clear', () => modify.delete(TEST_ROOT))

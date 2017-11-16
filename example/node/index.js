@@ -1,8 +1,5 @@
 const Dr = require('../Dr.node')
 
-// console.log(Object.keys(Dr))
-// console.log(Object.keys(Dr.Node))
-
 const { System: { startREPL }, Module: { runCommand } } = Dr.Node
 
 const main = async () => {

@@ -24,7 +24,7 @@ const {
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
-const faviconBuffer = nodeModuleFs.readFileSync(fromPath('../browser/favicon.ico'))
+const faviconBuffer = nodeModuleFs.readFileSync(fromPath('../resource/favicon.ico'))
 const responderServeStatic = createResponderServeStatic({ staticRoot: fromPath('../') })
 
 const routerMapBuilder = createRouterMapBuilder()
