@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.6.0-dev.3",
+  "version": "0.6.0-dev.4",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -24,8 +24,8 @@
     "example-dev": "cross-env NODE_ENV=development webpack --watch --config config/example.conf.js",
     "library": "cross-env NODE_ENV=production webpack --config config/library.conf.js",
     "library-dev": "cross-env NODE_ENV=development webpack --watch --config config/library.conf.js",
-    "module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./module",
-    "module-dev": "cross-env NODE_ENV=development BABEL_ENV=module babel ./source --out-dir ./module",
+    "module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./module --ignore test.js",
+    "module-dev": "cross-env NODE_ENV=development BABEL_ENV=module babel ./source --out-dir ./module --ignore test.js",
     "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config config/library.conf.js --json > stats.json",
     "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config config/library.conf.js --profile",
     "perf-node-example-server": "cross-env NODE_ENV=production node --prof example/node/example-server.js",
