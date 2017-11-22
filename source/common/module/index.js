@@ -1,5 +1,5 @@
 export { EventTarget, EventEmitter } from './Event'
-export { UpdateLoop } from './UpdateLoop'
+export { createUpdateLoop } from './UpdateLoop'
 export { createAsyncTaskQueue } from './AsyncTaskQueue'
 export { createTaskRunner, createTaskRunnerCluster } from './TaskRunner'
 export { createOptionParser, OPTION_CONFIG_PRESET } from './OptionParser'
