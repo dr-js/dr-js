@@ -124,7 +124,7 @@ const getParseCLI = (CLINameMap, CLIShortNameMap) => (argvList, optionMap = {}) 
       optionList[ optionList.length - 1 ].argumentList.push(value)
     }
   }
-  optionList.forEach(({ format, argumentList }) => (optionMap[ format.name ] = { format, argumentList }))
+  optionList.forEach(({ format, argumentList }) => (optionMap[ format.name ] = { format, argumentList, source: 'CLI' }))
   return optionMap
 }
 
@@ -135,7 +135,7 @@ const getParseENV = (ENVNameMap) => (envObject, optionMap = {}) => {
     try {
       value = JSON.parse(value)
     } catch (error) { __DEV__ && console.log(`[parseENV] not JSON string ${value}\n${error}`) }
-    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
+    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'ENV' }
   })
   return optionMap
 }
@@ -144,7 +144,7 @@ const getParseJSON = (JSONNameMap) => (jsonObject, optionMap = {}) => {
   JSONNameMap.forEach((format, nameJSON) => {
     const value = jsonObject[ nameJSON ]
     if (!value) return
-    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ] }
+    optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'JSON' }
   })
   return optionMap
 }

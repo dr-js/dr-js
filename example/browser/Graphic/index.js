@@ -2,7 +2,7 @@ const {
   Common: {
     Time: { now },
     Data: { createToggle },
-    Module: { UpdateLoop, EventEmitter }
+    Module: { createUpdateLoop, EventEmitter }
   },
   Browser: {
     DOM: { bindLogElement, bindFPSElement },
@@ -25,7 +25,7 @@ window.addEventListener('load', () => {
 
   const log = (...args) => LOG.log(args.join(' '))
 
-  const updateLoop = new UpdateLoop()
+  const updateLoop = createUpdateLoop()
   updateLoop.start()
   updateLoop.add(() => {
     FPS.step()

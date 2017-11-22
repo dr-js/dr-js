@@ -45,7 +45,15 @@ const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolv
 // NOTE: not cancellable
 const setTimeoutPromise = (wait = 0) => (result) => new Promise((resolve) => setTimeout(() => resolve(result), wait))
 
-const onNextProperUpdate = global.requestAnimationFrame || ((callback) => setTimeout(callback, 1000 / 60))
+const onNextProperUpdate = global.requestAnimationFrame
+  ? (callback) => {
+    const token = global.requestAnimationFrame(callback)
+    return () => global.cancelAnimationFrame(token)
+  }
+  : (callback) => {
+    const token = setTimeout(callback, 1000 / 60)
+    return () => clearTimeout(token)
+  }
 
 export {
   CLOCK_PER_SECOND,
