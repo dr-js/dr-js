@@ -1,13 +1,12 @@
 import nodeModuleFs from 'fs'
-import nodeModulePath from 'path'
 import { promisify } from 'util'
 
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
-import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module'
+import { getMIMETypeFromFileName } from 'source/common/module'
 import { getWeakEntityTagByStat } from 'source/node/module'
 
-import { createResponderSendStream, createResponderSendBuffer } from './Common'
+import { responderSendBuffer, responderSendStream } from './Common'
 
 const statAsync = promisify(nodeModuleFs.stat)
 const readFileAsync = promisify(nodeModuleFs.readFile)
@@ -22,81 +21,64 @@ const createDefaultCacheMap = () => new CacheMap({
 })
 
 const createResponderBufferCache = ({
-  getKey,
-  getBufferData, // { buffer, length, type, entityTag }
+  getBufferData, // (store, cacheKey) => ({ buffer, length, type, entityTag })
+  sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
   serveCacheMap = createDefaultCacheMap()
-}) => {
-  const responderSendBuffer = createResponderSendBuffer((store) => store.getState().bufferData)
-  return async (store) => {
-    const cacheKey = await getKey(store)
-    let bufferData = serveCacheMap.get(cacheKey)
-    __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
-    if (!bufferData) {
-      bufferData = await getBufferData(store, cacheKey)
-      __DEV__ && bufferData.length <= CACHE_FILE_SIZE_MAX && console.log(`[SET] CACHE: ${cacheKey}`)
-      bufferData.length <= CACHE_FILE_SIZE_MAX && serveCacheMap.set(cacheKey, bufferData, bufferData.length, clock() + expireTime)
-    }
-    store.setState({ bufferData })
-    return responderSendBuffer(store)
+}) => async (store, cacheKey) => {
+  let bufferData = serveCacheMap.get(cacheKey)
+  __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
+  if (!bufferData) {
+    bufferData = await getBufferData(store, cacheKey)
+    __DEV__ && console.log(`[${bufferData.length <= sizeSingleMax ? 'SET' : 'BAIL'}] CACHE: ${cacheKey}`)
+    bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, clock() + expireTime)
   }
+  return responderSendBuffer(store, bufferData)
 }
 
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
-const getFileMIMEByPath = (filePath) => (BASIC_EXTENSION_MAP[ nodeModulePath.extname(filePath).slice(1) ] || DEFAULT_MIME)
 const REGEXP_ENCODING_GZIP = /gzip/i
 
 const createResponderServeStatic = ({
-  staticRoot,
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
   isEnableGzip = false, // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
   serveCacheMap = createDefaultCacheMap()
 }) => {
-  staticRoot = nodeModulePath.normalize(staticRoot)
-  const responderSendStream = createResponderSendStream((store) => store.getState().streamData)
-  const responderSendBuffer = createResponderSendBuffer((store) => store.getState().bufferData)
   const serveCache = async (store, filePath, encoding) => {
     const bufferData = serveCacheMap.get(filePath)
     if (!bufferData) return false
     __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
     encoding && store.response.setHeader('content-encoding', encoding)
-    store.setState({ bufferData: bufferData })
-    await responderSendBuffer(store)
+    await responderSendBuffer(store, bufferData)
     return true
   }
   const serve = async (store, filePath, type, encoding) => {
-    const stat = await statAsync(filePath)
-    if (!stat.isFile()) return false
+    const stat = await (statAsync(filePath).catch((error) => { __DEV__ && console.log(`[MISS] CACHE: ${filePath}(GZ)`, error) }))
+    if (!stat || !stat.isFile()) return false
     const length = stat.size
     const entityTag = getWeakEntityTagByStat(stat)
     encoding && store.response.setHeader('content-encoding', encoding)
-    if (stat.size > sizeSingleMax) { // too big, just pipe it
+    if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
-      store.setState({ streamData: { stream: nodeModuleFs.createReadStream(filePath), length, type, entityTag } })
-      await responderSendStream(store)
+      await responderSendStream(store, { stream: nodeModuleFs.createReadStream(filePath), length, type, entityTag })
     } else {
-      __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
       const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
       serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
-      store.setState({ bufferData })
-      await responderSendBuffer(store)
+      __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
+      await responderSendBuffer(store, bufferData)
     }
     return true
   }
-  return async (store) => {
-    const filePath = nodeModulePath.normalize(nodeModulePath.join(staticRoot, store.getState().filePath))
-    if (!filePath.includes(staticRoot)) throw new Error(`[ServeStatic] file out of staticRoot: ${filePath}`)
+  return async (store, filePath) => {
     const acceptGzip = isEnableGzip && REGEXP_ENCODING_GZIP.test(store.request.headers[ 'accept-encoding' ]) // try .gz for gzip
     if (acceptGzip && await serveCache(store, filePath + '.gz', 'gzip')) return
     if (await serveCache(store, filePath)) return
-    const type = getFileMIMEByPath(filePath)
-    if (acceptGzip) {
-      try {
-        if (await serve(store, filePath + '.gz', type, 'gzip')) return
-      } catch (error) { __DEV__ && console.log(`[MISS] CACHE: ${filePath}(GZ)`, error) }
-    }
+
+    const type = getMIMETypeFromFileName(filePath)
+    if (acceptGzip && await serve(store, filePath + '.gz', type, 'gzip')) return
     if (await serve(store, filePath, type)) return
+
     throw new Error(`[ServeStatic] miss file: ${filePath}`)
   }
 }
