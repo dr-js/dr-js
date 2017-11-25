@@ -138,6 +138,15 @@ const prefixMapperFileCollectorCreator = (prefix) => (fileList) => (path, name) 
   nodeModulePath.join(path, prefix + name)
 ])
 
+const createGetPathFromRoot = (rootPath) => {
+  rootPath = nodeModulePath.normalize(rootPath)
+  return (relativePath) => {
+    const absolutePath = nodeModulePath.normalize(nodeModulePath.join(rootPath, relativePath))
+    if (!absolutePath.startsWith(rootPath)) throw new Error(`[getPathFromRoot] relativePath out of rootPath: ${relativePath}`)
+    return absolutePath
+  }
+}
+
 export {
   FILE_TYPE,
   getPathType,
@@ -163,5 +172,7 @@ export {
 
   getFileList,
   extnameFilterFileCollectorCreator,
-  prefixMapperFileCollectorCreator
+  prefixMapperFileCollectorCreator,
+
+  createGetPathFromRoot
 }

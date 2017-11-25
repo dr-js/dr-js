@@ -11,7 +11,9 @@ import {
 
   getFileList,
   extnameFilterFileCollectorCreator,
-  prefixMapperFileCollectorCreator
+  prefixMapperFileCollectorCreator,
+
+  createGetPathFromRoot
 } from './index'
 
 const { describe, it, before, after } = global
@@ -166,5 +168,24 @@ describe('Node.File.index', () => {
     nodeModuleAssert.equal(fileList.length >= 2, true)
     nodeModuleAssert.equal(fileList.map((v) => v[ 0 ]).includes(scriptFilePath0), true)
     nodeModuleAssert.equal(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
+  })
+
+  it('createGetPathFromRoot()', () => {
+    const checkPath = (getPathFromRoot, rootPath) => {
+      const expectedPath = `${rootPath}/a/b/c`.replace(/\//g, nodeModulePath.sep)
+      nodeModuleAssert.equal(getPathFromRoot('a/b/c'), expectedPath)
+      nodeModuleAssert.equal(getPathFromRoot('./a/b/c'), expectedPath)
+      nodeModuleAssert.equal(getPathFromRoot('a/d/../b/c'), expectedPath)
+      nodeModuleAssert.throws(() => getPathFromRoot('..'), `should throw Error for to much '../'`)
+      nodeModuleAssert.throws(() => getPathFromRoot('a/../../b'), `should throw Error for to much '../'`)
+    }
+
+    const getPathFromRoot0 = createGetPathFromRoot('/root/path/0/')
+    const getPathFromRoot1 = createGetPathFromRoot('/root/../root/path/./1')
+    const getPathFromRoot2 = createGetPathFromRoot('/root/path////2')
+
+    checkPath(getPathFromRoot0, '/root/path/0')
+    checkPath(getPathFromRoot1, '/root/path/1')
+    checkPath(getPathFromRoot2, '/root/path/2')
   })
 })

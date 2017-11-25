@@ -57,7 +57,7 @@ const sendBufferAsync = (writableStream, buffer) => new Promise((resolve, reject
   })
 })
 
-const pipeBufferAsync = (writableStream, readableStream) => new Promise((resolve, reject) => {
+const pipeStreamAsync = (writableStream, readableStream) => new Promise((resolve, reject) => {
   readableStream.on('error', reject)
   readableStream.on('end', () => {
     readableStream.removeListener('error', reject)
@@ -115,7 +115,7 @@ export {
 
   receiveBufferAsync,
   sendBufferAsync,
-  pipeBufferAsync,
+  pipeStreamAsync,
 
   pingRequestAsync,
 
