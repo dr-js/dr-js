@@ -34,11 +34,20 @@ const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce
   ''
 )
 
+const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
+const formatPadTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
+  const widthMaxList = [] // get max width for each cell
+  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
+  widthMaxList.forEach((v, index) => { padFuncList[ index ] = padFuncList[ index ] || DEFAULT_PAD_FUNC })
+  return table.map((rowList) => rowList.map((text, index) => (padFuncList[ index ](text, widthMaxList[ index ]))).join(cellPad)).join(rowPad)
+}
+
 export {
   time,
   binary,
   escapeHTML,
   unescapeHTML,
   stringIndentLine,
-  stringListJoinCamelCase
+  stringListJoinCamelCase,
+  formatPadTable
 }

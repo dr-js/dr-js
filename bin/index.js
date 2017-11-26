@@ -1,11 +1,14 @@
+#!/usr/bin/env node
+
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
 const { promisify } = require('util')
 const Dr = require('../library/Dr.node')
 const { createServerServeStatic } = require('./server-serve-static')
 
-const readFileAsync = promisify(nodeModuleFs.readFile)
 const __DEV__ = false
+
+const readFileAsync = promisify(nodeModuleFs.readFile)
 const {
   Common: { Module: { createOptionParser, OPTION_CONFIG_PRESET } },
   Node: { File: { modify, getFileList } }
@@ -13,14 +16,13 @@ const {
 
 const MODE_OPTION = [
   'env-info',
-
   'file-list',
   'file-modify-copy',
   'file-modify-move',
   'file-modify-delete',
-
   'server-serve-static'
 ]
+
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
   formatList: [
@@ -58,7 +60,6 @@ const main = async () => {
     return argumentList
   }
   const getOptionOptional = (name) => optionMap[ name ] && optionMap[ name ].argumentList
-
   const getSingleOption = (name) => getOption(name, 1)[ 0 ]
   const getSingleOptionOptional = (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
 
@@ -73,15 +74,13 @@ const main = async () => {
 
   __DEV__ && console.log('[option]')
   __DEV__ && Object.keys(optionMap).forEach((name) => console.log(`  - [${name}] ${JSON.stringify(getOption(name))}`))
-
   optionMap = processOptionMap(optionMap)
-  __DEV__ && console.log('processOptionMap PASS')
 
   try {
     switch (getSingleOption('mode')) {
       case 'env-info':
         const { isNode, isBrowser, environmentName, systemEndianness } = Dr.Env
-        return console.log({ isNode, isBrowser, environmentName, systemEndianness })
+        return console.log(JSON.stringify({ isNode, isBrowser, environmentName, systemEndianness }, null, '  '))
       case 'file-list':
         return console.log(JSON.stringify(await getFileList(getSingleOption('argument'))))
       case 'file-modify-copy':
