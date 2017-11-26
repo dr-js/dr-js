@@ -174,7 +174,7 @@ const usageCLI = (formatList) => formatList.map(formatUsageCLI).join('\n')
 const formatUsageCLI = (format, ...args) => formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
   (format.description ? `:\n${stringIndentLine(format.description, '    ')}` : '') +
   (format.extendFormatList.length ? `\n${stringIndentLine(format.extendFormatList.map(formatUsageCLI).join('\n'), '  ')}` : '')
-const usageENV = (formatList) => `"\n  #!/bin/bash\n${stringIndentLine(formatList.map(formatUsageENV).join('\n'), '  ')}\n"`
+const usageENV = (formatList) => `"\n  #!/usr/bin/env bash\n${stringIndentLine(formatList.map(formatUsageENV).join('\n'), '  ')}\n"`
 const formatUsageENV = (format) => `export ${format.nameENV}="${formatUsageBase(format.name, format)}"` +
   (format.extendFormatList.length ? `\n${format.extendFormatList.map(formatUsageENV).join('\n')}` : '')
 const usageJSON = (formatList) => `{\n${stringIndentLine(formatList.map(formatUsageJSON).join('\n'), '  ')}\n}`
