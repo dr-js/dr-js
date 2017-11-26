@@ -38,6 +38,7 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
   routerMapBuilder.addRoute('/', 'GET', (store) => responderFilePathList(store, staticRoot, staticRoot))
   server.on('request', createRequestListener({ responderList: [ createResponderParseURL(option), createResponderRouter(routerMapBuilder.getRouterMap()) ] }))
   start()
+  console.log(`[ServerServeStatic]\n  running at: '${protocol}//${hostname}:${port}'\n  staticRoot: '${staticRoot}'`)
 }
 
 // TODO: make reusable
@@ -51,7 +52,7 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
   fileList.forEach((name) => HTMLFragList.push(renderFilePath(relativeRootPath, name)))
   return responderSendBuffer(store, { buffer: Buffer.from(renderHTML(titleHTML, HTMLFragList)), type: BASIC_EXTENSION_MAP.html })
 }
-const renderUpperListPath = (path) => `<a href="${formatPathHref('/list', nodeModulePath.dirname(path))}">📂|..</a>`
+const renderUpperListPath = (path) => `<a href="${formatPathHref('/list', nodeModulePath.dirname(path))}">🔙|..</a>`
 const renderListPath = (path, name) => `<a href="${formatPathHref('/list', path, name)}">📁|${formatPathHTML(name)}</a>`
 const renderFilePath = (path, name) => `<a href="${formatPathHref('/file', path, name)}">📄|${formatPathHTML(name)}</a>`
 const formatPathHref = (...args) => encodeURI(normalizePathSeparator(nodeModulePath.join(...args)))
@@ -68,9 +69,9 @@ const renderHTML = (titleHTML, HTMLFragList) => `<!DOCTYPE html>
 <meta name="viewport" content="minimum-scale=1, width=device-width">
 <title>${titleHTML}</title>
 <style>
-a { text-decoration: none; border-top: 1px solid #ddd; }
+a { text-decoration: none; border-top: 1px solid #ddd; font-size: 14px; }
 a:hover { background: #eee; }
-@media (pointer: coarse) { a, b { min-height: 32px; line-height: 32px; font-size: 16px; } }
+@media (pointer: coarse) { a, b { min-height: 32px; line-height: 32px; font-size: 18px; } }
 </style>
 <pre style="display: flex; flex-flow: column;">${HTMLFragList.join('\n')}</pre>`
 
