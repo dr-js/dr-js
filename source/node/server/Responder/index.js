@@ -1,5 +1,8 @@
 export {
   responderEnd,
+  responderEndWithStatusCode,
+  responderEndWithRedirect,
+
   responderSendBuffer,
   responderSendStream,
   responderSendJSON,

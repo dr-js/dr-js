@@ -10,6 +10,16 @@ const responderEnd = (store) => {
   __DEV__ && error && console.error(`[ERROR] ${store.request.method}: ${store.request.url}\n`, error)
   store.response.end() // force end the response to prevent pending
 }
+const responderEndWithStatusCode = (store, { statusCode = 500, headerMap }) => {
+  if (store.response.finished) return store
+  !store.response.headersSent && store.response.writeHead(statusCode, headerMap)
+  store.response.end()
+}
+const responderEndWithRedirect = (store, { statusCode = 302, redirectUrl }) => {
+  if (store.response.finished) return store
+  !store.response.headersSent && store.response.writeHead(statusCode, { 'location': redirectUrl })
+  store.response.end()
+}
 
 const responderSendBuffer = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }) => setResponseContent(store, entityTag, type, length) &&
   length &&
@@ -52,6 +62,9 @@ const AccessorMap = {
 
 export {
   responderEnd,
+  responderEndWithStatusCode,
+  responderEndWithRedirect,
+
   responderSendBuffer,
   responderSendStream,
   responderSendJSON,

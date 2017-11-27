@@ -12,6 +12,7 @@ const {
       createServer,
       createRequestListener,
       Responder: {
+        responderEndWithRedirect,
         responderSendBuffer,
         createRouterMapBuilder,
         createResponderRouter,
@@ -22,24 +23,25 @@ const {
   }
 } = Dr
 
-const BASE64_1X1_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg=='
-
 const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
   const { server, start, option } = createServer({ protocol, hostname, port })
-  const bufferImageFavicon = Buffer.from(BASE64_1X1_PNG, 'base64')
   const responderServeStatic = createResponderServeStatic({})
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(store.getState().paramMap[ routerMapBuilder.ROUTE_ANY ]))
   const routerMapBuilder = createRouterMapBuilder()
-  routerMapBuilder.addRoute('/favicon.ico', 'GET', (store) => responderSendBuffer(store, { buffer: bufferImageFavicon, type: BASIC_EXTENSION_MAP.png }))
-  routerMapBuilder.addRoute('/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)))
+  routerMapBuilder.addRoute('/favicon.ico', 'GET', responderSendFavicon)
+  routerMapBuilder.addRoute('/', 'GET', responderRedirectFilePathList)
+  routerMapBuilder.addRoute('/list', 'GET', responderRedirectFilePathList)
   routerMapBuilder.addRoute('/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot))
-  routerMapBuilder.addRoute('/list', 'GET', (store) => responderFilePathList(store, staticRoot, staticRoot))
-  routerMapBuilder.addRoute('/', 'GET', (store) => responderFilePathList(store, staticRoot, staticRoot))
+  routerMapBuilder.addRoute('/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)))
   server.on('request', createRequestListener({ responderList: [ createResponderParseURL(option), createResponderRouter(routerMapBuilder.getRouterMap()) ] }))
   start()
   console.log(`[ServerServeStatic]\n  running at: '${protocol}//${hostname}:${port}'\n  staticRoot: '${staticRoot}'`)
 }
+
+const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }
+const responderSendFavicon = (store) => responderSendBuffer(store, BUFFER_DATA_FAVICON_PNG)
+const responderRedirectFilePathList = (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' })
 
 // TODO: make reusable
 const responderFilePathList = async (store, rootPath, staticRoot) => {
