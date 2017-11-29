@@ -4,48 +4,40 @@ const { promisify } = require('util')
 const Dr = require('../Dr.node')
 
 const {
-  createServer,
-  createRequestListener,
-  Responder: {
-    createResponderParseURL,
-    createRouterMapBuilder,
-    createResponderRouter,
-    createResponderServeStatic,
-    createResponderLogRequestHeader,
-    createResponderLogTimeStep,
-    createResponderLogEnd
-  },
-  WebSocket: {
-    WEB_SOCKET_EVENT_MAP,
-    DATA_TYPE_MAP,
-    enableWebSocketServer
+  File: { createGetPathFromRoot },
+  Server: {
+    createServer, createRequestListener,
+    Responder: {
+      responderSendBuffer,
+      createResponderParseURL,
+      createResponderRouter, createRouterMap, getRouteParamAny,
+      createResponderServeStatic,
+      createResponderLogRequestHeader, createResponderLogTimeStep, createResponderLogEnd
+    },
+    WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
   }
-} = Dr.Node.Server
+} = Dr.Node
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
-const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
-const faviconBuffer = nodeModuleFs.readFileSync(fromPath('../resource/favicon.ico'))
-const responderServeStatic = createResponderServeStatic({ staticRoot: fromPath('../') })
 
-const routerMapBuilder = createRouterMapBuilder()
-routerMapBuilder.addRoute('/favicon.ico', 'GET', (store) => store.response.end(faviconBuffer))
-routerMapBuilder.addRoute('/', 'GET', (store) => {
-  store.setState({ filePath: '/node/example-server.html' })
-  return responderServeStatic(store)
-})
-routerMapBuilder.addRoute('/static/*', 'GET', (store) => {
-  store.setState({ filePath: store.getState().paramMap[ routerMapBuilder.ROUTE_ANY ] })
-  return responderServeStatic(store)
-})
+const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
+const faviconBufferData = { buffer: nodeModuleFs.readFileSync(fromPath('../resource/favicon.ico')), type: 'image/png' }
+const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
+const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
+
+const responderServeStatic = createResponderServeStatic({})
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
-
 server.on('request', createRequestListener({
   responderList: [
     createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
     createResponderParseURL(option),
     createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
-    createResponderRouter(routerMapBuilder.getRouterMap()),
+    createResponderRouter(createRouterMap([
+      [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
+      [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
+      [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+    ])),
     createResponderLogEnd((data) => console.log('[LogEnd]', data))
   ]
 }))

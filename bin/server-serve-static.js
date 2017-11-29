@@ -9,13 +9,11 @@ const {
   Node: {
     File: { FILE_TYPE, getDirectoryContent, createGetPathFromRoot },
     Server: {
-      createServer,
-      createRequestListener,
+      createServer, createRequestListener,
       Responder: {
         responderEndWithRedirect,
         responderSendBuffer,
-        createRouterMapBuilder,
-        createResponderRouter,
+        createResponderRouter, createRouterMap, getRouteParamAny,
         createResponderParseURL,
         createResponderServeStatic
       }
@@ -27,14 +25,19 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
   const { server, start, option } = createServer({ protocol, hostname, port })
   const responderServeStatic = createResponderServeStatic({})
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
-  const getParamFilePath = (store) => fromStaticRoot(decodeURI(store.getState().paramMap[ routerMapBuilder.ROUTE_ANY ]))
-  const routerMapBuilder = createRouterMapBuilder()
-  routerMapBuilder.addRoute('/favicon.ico', 'GET', responderSendFavicon)
-  routerMapBuilder.addRoute('/', 'GET', responderRedirectFilePathList)
-  routerMapBuilder.addRoute('/list', 'GET', responderRedirectFilePathList)
-  routerMapBuilder.addRoute('/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot))
-  routerMapBuilder.addRoute('/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)))
-  server.on('request', createRequestListener({ responderList: [ createResponderParseURL(option), createResponderRouter(routerMapBuilder.getRouterMap()) ] }))
+  const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
+  server.on('request', createRequestListener({
+    responderList: [
+      createResponderParseURL(option),
+      createResponderRouter(createRouterMap([
+        [ '/favicon.ico', 'GET', responderSendFavicon ],
+        [ '/', 'GET', responderRedirectFilePathList ],
+        [ '/list', 'GET', responderRedirectFilePathList ],
+        [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
+        [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+      ]))
+    ]
+  }))
   start()
   console.log(`[ServerServeStatic]\n  running at: '${protocol}//${hostname}:${port}'\n  staticRoot: '${staticRoot}'`)
 }
