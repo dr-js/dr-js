@@ -22,7 +22,6 @@ export {
 export {
   createRouterMap,
   createResponderRouter,
-  addRouteToRouterMap,
   getRouteParamAny,
   getRouteParam
 } from './Router'

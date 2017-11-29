@@ -31,8 +31,7 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
       createResponderParseURL(option),
       createResponderRouter(createRouterMap([
         [ '/favicon.ico', 'GET', responderSendFavicon ],
-        [ '/', 'GET', responderRedirectFilePathList ],
-        [ '/list', 'GET', responderRedirectFilePathList ],
+        [ [ '/', '/list' ], 'GET', responderRedirectFilePathList ],
         [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
         [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
       ]))
