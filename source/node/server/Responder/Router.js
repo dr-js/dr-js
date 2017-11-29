@@ -15,7 +15,6 @@ const parseRouteToMap = (routeNode, route) => {
   const paramNameList = []
   routeNode = route.split('/').reduce((routeNode, frag) => {
     if (frag === '*') { // /*
-      if (routeNode[ ROUTE_ANY ]) throw new Error(`[parseRouteToMap] duplicate [*] for route: ${route}`)
       paramNameList.push(ROUTE_ANY)
       return nextObject(routeNode, ROUTE_ANY)
     } else if (frag[ 0 ] === ':') { // /:PARAM
@@ -47,6 +46,8 @@ const findRouteFromMap = (routeNode, route) => {
 }
 
 const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeResponder) => {
+  if (Array.isArray(route)) return route.reduce((o, v) => addRouteToRouterMap(routerMap, v, method, routeResponder), routerMap)
+  if (Array.isArray(method)) return method.reduce((o, v) => addRouteToRouterMap(routerMap, route, v, routeResponder), routerMap)
   const { routeNode, paramNameList } = parseRouteToMap(routerMap, route)
   if (!METHOD_MAP[ method ]) throw new Error(`[addRouteToRouterMap] invalid method [${method}] for route: ${route}`)
   if (routeNode[ METHOD_MAP[ method ] ]) throw new Error(`[addRouteToRouterMap] duplicate method [${method}] for route: ${route}`)
@@ -55,14 +56,16 @@ const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeRespon
   return routerMap
 }
 
-const createRouterMap = (configList) => configList.reduce((o, config) => addRouteToRouterMap(o, ...config), {})
+const createRouterMap = (configList) => configList.reduce((o, [ route, method, routeResponder ]) => addRouteToRouterMap(o, route, method, routeResponder), {})
 
 const createResponderRouter = (routerMap) => (store) => {
   const { url, method } = store.getState()
-  if (!url || !method) throw new Error(`[createResponderRouter] missing state: ${JSON.stringify({ url, method })}`)
+  if (!url || !method) throw new Error(`[responderRouter] missing state: ${JSON.stringify({ url, method })}`)
+  if (!METHOD_MAP[ method ]) throw new Error(`[responderRouter] invalid method [${method}] from route: ${url.pathname}`)
 
   const { routeNode, paramValueList } = findRouteFromMap(routerMap, url.pathname)
-  if (!routeNode || !routeNode[ METHOD_MAP[ method ] ]) throw new Error(`[createResponderRouter] invalid node info for: [${method}] ${url.pathname}`)
+
+  if (!routeNode[ METHOD_MAP[ method ] ]) throw new Error(`[responderRouter] invalid method [${method}] for route: ${url.pathname}`)
   const { route, paramNameList, routeResponder } = routeNode[ METHOD_MAP[ method ] ]
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]
@@ -98,5 +101,7 @@ export {
   createResponderRouter,
   addRouteToRouterMap,
   getRouteParamAny,
-  getRouteParam
+  getRouteParam,
+  parseRouteToMap,
+  findRouteFromMap
 }
