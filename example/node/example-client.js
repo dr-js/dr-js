@@ -3,15 +3,10 @@ const nodeModuleFs = require('fs')
 const { promisify } = require('util')
 const Dr = require('../Dr.node')
 
-const {
-  WebSocket: {
-    WEB_SOCKET_EVENT_MAP,
-    // DATA_TYPE_MAP,
-    createWebSocketClient
-  }
-} = Dr.Node.Server
+const { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient } = Dr.Node.ServerWebSocket
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
+
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
 
 createWebSocketClient({

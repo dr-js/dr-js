@@ -1,113 +1,102 @@
-const ROUTE_ANY = '/*/'
-const ROUTE_PARAM = '/:PARAM/'
-const HTTP_REQUEST_METHOD_LIST = [ 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE' ]
-const ROUTE_METHOD_LIST = HTTP_REQUEST_METHOD_LIST.map((method) => `/${method}/`)
-const HTTP_REQUEST_METHOD_MAP = HTTP_REQUEST_METHOD_LIST.reduce((o, method, index) => {
-  o[ method ] = ROUTE_METHOD_LIST[ index ]
-  return o
-}, {})
+const ROUTE_ANY = '/*'
+const ROUTE_PARAM = '/:PARAM'
+const METHOD_MAP = {
+  GET: '/GET',
+  PUT: '/PUT',
+  POST: '/POST',
+  HEAD: '/HEAD',
+  PATCH: '/PATCH',
+  DELETE: '/DELETE'
+}
 
-const DEFAULT_ROUTE_PROCESSOR = (store, { route, method, paramMap }) => {}
+const nextObject = (object, key) => object[ key ] === undefined ? (object[ key ] = {}) : object[ key ]
 
-// const SAMPLE_ROUTE_MAP = {
-//   '': { // '/'
-//     [HTTP_REQUEST_METHOD_MAP[ 'GET' ]]: DEFAULT_ROUTE_PROCESSOR
-//   },
-//   user: { // '/user'
-//     [ROUTE_PARAM]: { // '/user/:userId'
-//       [HTTP_REQUEST_METHOD_MAP[ 'GET' ]]: DEFAULT_ROUTE_PROCESSOR,
-//       [HTTP_REQUEST_METHOD_MAP[ 'DELETE' ]]: DEFAULT_ROUTE_PROCESSOR
-//     }
-//   },
-//   users: { // '/users'
-//     '': { // '/users/'
-//       [HTTP_REQUEST_METHOD_MAP[ 'GET' ]]: DEFAULT_ROUTE_PROCESSOR
-//     }
-//   },
-//   static: { // '/static'
-//     [ROUTE_ANY]: { // '/static/*'
-//       [HTTP_REQUEST_METHOD_MAP[ 'GET' ]]: DEFAULT_ROUTE_PROCESSOR
-//     }
-//   }
-// }
-
-const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeProcessor = DEFAULT_ROUTE_PROCESSOR) => {
-  let currentNode = routerMap
+const parseRouteToMap = (routeNode, route) => {
   const paramNameList = []
+  routeNode = route.split('/').reduce((routeNode, frag) => {
+    if (frag === '*') { // /*
+      if (routeNode[ ROUTE_ANY ]) throw new Error(`[parseRouteToMap] duplicate [*] for route: ${route}`)
+      paramNameList.push(ROUTE_ANY)
+      return nextObject(routeNode, ROUTE_ANY)
+    } else if (frag[ 0 ] === ':') { // /:PARAM
+      const paramName = frag.slice(1)
+      if (!paramName || paramNameList.includes(paramName)) throw new Error(`[parseRouteToMap] invalid frag [${frag}] for route: ${route}`)
+      paramNameList.push(paramName)
+      return nextObject(routeNode, ROUTE_PARAM)
+    } else return nextObject(routeNode, frag) // /frag
+  }, routeNode)
+  return { routeNode, paramNameList }
+}
 
-  // route
-  route.split('/').forEach((frag) => {
-    if (frag === '*') {
-      if (currentNode[ ROUTE_ANY ]) throw new Error(`[Router] duplicate [*] for route: ${route}`)
-      currentNode[ ROUTE_ANY ] = {}
-      currentNode = currentNode[ ROUTE_ANY ]
-      paramNameList.push(ROUTE_ANY) // as paramName
-    } else if (frag[ 0 ] === ':') { // /:paramName
-      if (currentNode[ ROUTE_PARAM ] === undefined) currentNode[ ROUTE_PARAM ] = {}
-      currentNode = currentNode[ ROUTE_PARAM ]
-      paramNameList.push(frag.slice(1)) // paramName
-    } else { // /frag
-      if (currentNode[ frag ] === undefined) currentNode[ frag ] = {}
-      currentNode = currentNode[ frag ]
-    }
-  })
+const findRouteFromMap = (routeNode, route) => {
+  const paramValueList = []
+  const routeFragList = route.split('/')
+  for (let index = 0, indexMax = routeFragList.length; index < indexMax; index++) {
+    const frag = routeFragList[ index ]
+    if (routeNode[ frag ]) routeNode = routeNode[ frag ] // hit frag
+    else if (routeNode[ ROUTE_PARAM ]) {
+      paramValueList.push(frag)
+      routeNode = routeNode[ ROUTE_PARAM ]
+    } else if (routeNode[ ROUTE_ANY ]) {
+      paramValueList.push(routeFragList.slice(index).join('/')) // set all follow-up fragList
+      routeNode = routeNode[ ROUTE_ANY ]
+      break
+    } else throw new Error(`[findRouteFromMap] stuck at [${frag}] for route: ${route}`)
+  }
+  return { routeNode, paramValueList }
+}
 
-  // method
-  if (!HTTP_REQUEST_METHOD_MAP[ method ]) throw new Error(`[Router] error method [${method}] for route: ${route}`)
-  if (currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) throw new Error(`[Router] duplicate method [${method}] for route: ${route}`)
-  currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ] = { route, paramNameList, routeProcessor }
-
+const addRouteToRouterMap = (routerMap, route = '/', method = 'GET', routeResponder) => {
+  const { routeNode, paramNameList } = parseRouteToMap(routerMap, route)
+  if (!METHOD_MAP[ method ]) throw new Error(`[addRouteToRouterMap] invalid method [${method}] for route: ${route}`)
+  if (routeNode[ METHOD_MAP[ method ] ]) throw new Error(`[addRouteToRouterMap] duplicate method [${method}] for route: ${route}`)
+  if (typeof (routeResponder) !== 'function') throw new Error(`[addRouteToRouterMap] invalid routeResponder for route: ${route}`)
+  routeNode[ METHOD_MAP[ method ] ] = { route, paramNameList, routeResponder }
   return routerMap
 }
 
-const createRouterMapBuilder = (routerMap = {}) => ({
-  ROUTE_ANY,
-  ROUTE_PARAM,
-  addRoute: (route, method, routeProcessor) => addRouteToRouterMap(routerMap, route, method, routeProcessor),
-  getRouterMap: () => {
-    const resultRouterMap = routerMap
-    routerMap = {}
-    return resultRouterMap
-  }
-})
+const createRouterMap = (configList) => configList.reduce((o, config) => addRouteToRouterMap(o, ...config), {})
 
 const createResponderRouter = (routerMap) => (store) => {
   const { url, method } = store.getState()
+  if (!url || !method) throw new Error(`[createResponderRouter] missing state: ${JSON.stringify({ url, method })}`)
 
-  __DEV__ && (!url || !method) && console.log('[Router] missing arguments', { url, method })
-  if (!url || !method) return
-
-  let paramValueList = []
-  let currentNode = routerMap
-  const routeString = url.pathname
-  const routeFragList = routeString.split('/')
-
-  // route
-  routeFragList.find((frag, index) => {
-    if (currentNode[ frag ]) { // hit frag
-      currentNode = currentNode[ frag ]
-    } else if (currentNode[ ROUTE_PARAM ]) { // check :param
-      currentNode = currentNode[ ROUTE_PARAM ]
-      paramValueList.push(frag)
-    } else if (currentNode[ ROUTE_ANY ]) { // check *
-      currentNode = currentNode[ ROUTE_ANY ]
-      paramValueList.push(routeFragList.slice(index).join('/'))
-      return true
-    } else throw new Error(`[Router] stuck at [${frag}] for route: ${routeString}`)
-  })
-
-  // node info
-  const { route, paramNameList, routeProcessor } = (currentNode && currentNode[ HTTP_REQUEST_METHOD_MAP[ method ] ]) || {}
-  if (__DEV__ && (!route || !paramNameList || !routeProcessor)) throw new Error(`[Router] invalid node info for: [${method}] ${routeString}`)
+  const { routeNode, paramValueList } = findRouteFromMap(routerMap, url.pathname)
+  if (!routeNode || !routeNode[ METHOD_MAP[ method ] ]) throw new Error(`[createResponderRouter] invalid node info for: [${method}] ${url.pathname}`)
+  const { route, paramNameList, routeResponder } = routeNode[ METHOD_MAP[ method ] ]
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]
     return o
   }, {})
-  store.setState({ route, paramMap })
-  return routeProcessor(store)
+
+  return routeResponder(store, store.setState({ route, paramMap }))
 }
 
+const getRouteParamAny = (store) => store.getState().paramMap[ ROUTE_ANY ]
+const getRouteParam = (store, paramName) => store.getState().paramMap[ paramName ]
+
+// const SAMPLE_ROUTE_RESPONDER = (store, { url, route, method, paramMap }) => {}
+// const SAMPLE_RESULT_ROUTE_MAP = {
+//   // GET /users/list
+//   // GET /users/
+//   // GET /users
+//   users: {
+//     list: { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//     '': { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//     '/GET': DEFAULT_ROUTE_PROCESSOR
+//   },
+//   // GET '/'
+//   '': { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//   // GET '/static/*'
+//   static: { '/*': { '/GET': DEFAULT_ROUTE_PROCESSOR } },
+//   // DELETE '/user/:userId'
+//   user: { '/:PARAM': { '/DELETE': DEFAULT_ROUTE_PROCESSOR } }
+// }
+
 export {
-  createRouterMapBuilder,
-  createResponderRouter
+  createRouterMap,
+  createResponderRouter,
+  addRouteToRouterMap,
+  getRouteParamAny,
+  getRouteParam
 }
