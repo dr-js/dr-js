@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.7.0-dev.3",
+  "version": "0.7.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -21,7 +21,7 @@
   "main": "library/Dr.js",
   "scripts": {
     "build": "npm run build-clear && npm run build-library && npm run build-module && npm run build-bin",
-    "build-clear": "npm run build-bin-dev && node bin/index.js --mode file-modify-delete --argument library module bin",
+    "build-clear": "npm run build-bin-dev && node bin/index.js --mode file-modify-delete --argument ./library ./module ./bin",
     "build-library": "cross-env NODE_ENV=production webpack --config .webpackrc.js",
     "build-library-dev": "cross-env NODE_ENV=development webpack --watch --config .webpackrc.js",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./module --ignore test.js",
