@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.7.0-dev.2",
+  "version": "0.7.0-dev.3",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -43,10 +43,6 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "babel-minify-webpack-plugin": "^0.2.0",
-    "babel-plugin-minify-dead-code-elimination": "^0.2.0",
-    "babel-plugin-minify-guarded-expressions": "^0.2.0",
-    "babel-plugin-minify-replace": "^0.2.0",
-    "dev-dep-web": "^0.0.7"
+    "dev-dep-web": "^0.0.8"
   }
 }

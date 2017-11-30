@@ -1417,21 +1417,23 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-web@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.0.7.tgz#751ee14049247bfae375653acb60343a9d9ba38c"
+dev-dep-web@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.0.8.tgz#37ac6edf75a7ed8aa841074baacddf2257fb82c4"
   dependencies:
     babel-cli "^6.26.0"
     babel-core "^6.26.0"
     babel-eslint "^8.0.2"
     babel-loader "^7.1.2"
+    babel-minify-webpack-plugin "^0.2.0"
     babel-plugin-module-resolver "^3.0.0"
     babel-plugin-transform-class-properties "^6.24.1"
     babel-plugin-transform-object-rest-spread "^6.26.0"
     babel-preset-env "^1.6.1"
+    babel-preset-minify "^0.2.0"
     babel-register "^6.26.0"
     cross-env "^5.1.1"
-    eslint "^4.11.0"
+    eslint "^4.12.0"
     eslint-config-standard "^10.2.1"
     eslint-plugin-import "^2.8.0"
     eslint-plugin-node "^5.2.1"
@@ -1638,7 +1640,7 @@ eslint-scope@^3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint@^4.11.0:
+eslint@^4.12.0:
   version "4.12.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.12.0.tgz#a7ce78eba8cc8f2443acfbbc870cc31a65135884"
   dependencies:
