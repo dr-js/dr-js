@@ -1,6 +1,11 @@
-const Dr = require('../library/Dr.node')
+import { Common, Node } from '../library/Dr.node'
 
-const { createOptionParser, OPTION_CONFIG_PRESET } = Dr.Common.Module
+const { createOptionParser, OPTION_CONFIG_PRESET } = Common.Module
+const {
+  parseOptionMap,
+  getOptionOptional, getSingleOptionOptional,
+  getOption, getSingleOption
+} = Node.Module
 
 const MODE_OPTION = [
   'env-info',
@@ -39,10 +44,18 @@ const OPTION_CONFIG = {
 
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(OPTION_CONFIG)
 
+const parseOption = async () => ({
+  optionMap: await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap }),
+  getOption,
+  getOptionOptional,
+  getSingleOption,
+  getSingleOptionOptional
+})
+
 const exitWithError = (error) => {
   __DEV__ && console.warn(error)
   console.warn(formatUsage(error.message || error.toString()))
   process.exit(1)
 }
 
-module.exports = { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage, exitWithError }
+export { parseOption, exitWithError }

@@ -1,25 +1,20 @@
-const nodeModulePath = require('path')
-const Dr = require('../library/Dr.node')
+import nodeModulePath from 'path'
+import { Common, Node } from '../library/Dr.node'
 
+const { Module: { BASIC_EXTENSION_MAP }, Format: { escapeHTML } } = Common
 const {
-  Common: {
-    Module: { BASIC_EXTENSION_MAP },
-    Format: { escapeHTML }
-  },
-  Node: {
-    File: { FILE_TYPE, getDirectoryContent, createGetPathFromRoot },
-    Server: {
-      createServer, createRequestListener,
-      Responder: {
-        responderEndWithRedirect,
-        responderSendBuffer,
-        createResponderRouter, createRouterMap, getRouteParamAny,
-        createResponderParseURL,
-        createResponderServeStatic
-      }
+  File: { FILE_TYPE, getDirectoryContent, createGetPathFromRoot },
+  Server: {
+    createServer, createRequestListener,
+    Responder: {
+      responderEndWithRedirect,
+      responderSendBuffer,
+      createResponderRouter, createRouterMap, getRouteParamAny,
+      createResponderParseURL,
+      createResponderServeStatic
     }
   }
-} = Dr
+} = Node
 
 const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
   const { server, start, option } = createServer({ protocol, hostname, port })
@@ -79,4 +74,4 @@ a:hover { background: #eee; }
 </style>
 <pre style="display: flex; flex-flow: column;">${HTMLFragList.join('\n')}</pre>`
 
-module.exports = { createServerServeStatic }
+export { createServerServeStatic }

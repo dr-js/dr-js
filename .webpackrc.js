@@ -1,5 +1,6 @@
 const nodeModulePath = require('path')
 const webpack = require('webpack')
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = webpack
 
 const NODE_ENV = process.env.NODE_ENV
@@ -12,12 +13,18 @@ const BABEL_OPTIONS = {
 }
 
 module.exports = {
+  output: {
+    path: nodeModulePath.join(__dirname, './library/'),
+    filename: '[name].js',
+    library: 'Dr',
+    libraryTarget: 'umd'
+  },
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
     'Dr': [ 'source/Dr' ],
     'Dr.node': [ 'source/Dr.node' ],
     'Dr.browser': [ 'source/Dr.browser' ]
   },
-  resolve: { alias: { source: nodeModulePath.resolve(__dirname, '../source') } },
+  resolve: { alias: { source: nodeModulePath.resolve(__dirname, './source/') } },
   target: 'node', // support node main modules like 'fs'
   module: {
     rules: [
@@ -28,6 +35,7 @@ module.exports = {
     new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(NODE_ENV), '__DEV__': !IS_PRODUCTION }),
     ...(IS_PRODUCTION ? [
       new ModuleConcatenationPlugin(),
+      new BabelMinifyPlugin(),
       new BannerPlugin({ banner: '/* eslint-disable */', raw: true, test: /\.js$/, entryOnly: false })
     ] : [])
   ]

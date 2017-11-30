@@ -3,6 +3,7 @@
 /.*
 /*.tgz
 /*.lock
-/config
+/bin-source
 /source
+/config
 /example
