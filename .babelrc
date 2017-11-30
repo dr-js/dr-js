@@ -1,12 +1,47 @@
 {
   "env": {
+    "// COMMENT": "__DEV__ = false, use require(), minify",
+    "library-minify": {
+      "presets": [ [ "env", { "targets": { "node": 8 } } ], [ "minify" ] ],
+      "plugins": [
+        [ "transform-class-properties" ],
+        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
+        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
+      ]
+    },
+    "// COMMENT": "__DEV__ = false, use require()",
+    "library": {
+      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
+      "plugins": [
+        [ "transform-class-properties" ],
+        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
+        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
+      ]
+    },
+    "// COMMENT": "__DEV__ = true, use require()",
+    "library-dev": {
+      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
+      "plugins": [
+        [ "transform-class-properties" ],
+        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
+        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": true } } ] } ]
+      ]
+    },
+    "// COMMENT": "__DEV__ = false, use import from, remove unused code & comment",
     "module": {
       "presets": [ [ "env", { "targets": { "node": 8 }, "modules": false } ] ],
-      "plugins": [ "transform-class-properties", [ "transform-object-rest-spread", { "useBuiltIns": true } ], [ "module-resolver", { "root": [ "./" ] } ] ]
-    },
-    "test": {
-      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
-      "plugins": [ "transform-class-properties", [ "transform-object-rest-spread", { "useBuiltIns": true } ], [ "module-resolver", { "root": [ "./" ] } ] ]
+      "plugins": [
+        [ "transform-class-properties" ],
+        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
+        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ],
+        [ "minify-guarded-expressions" ],
+        [ "minify-dead-code-elimination" ]
+      ],
+      "comments": false
     }
   }
 }

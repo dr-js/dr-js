@@ -1,4 +1,4 @@
-const Dr = require('../Dr.node')
+const Dr = require('../../library/Dr.node')
 
 const { System: { setProcessExitListener }, Module: { createFactDatabase } } = Dr.Node
 

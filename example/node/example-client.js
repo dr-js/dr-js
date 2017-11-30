@@ -1,7 +1,7 @@
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
 const { promisify } = require('util')
-const Dr = require('../Dr.node')
+const Dr = require('../../library/Dr.node')
 
 const { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient } = Dr.Node.ServerWebSocket
 

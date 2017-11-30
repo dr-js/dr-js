@@ -1,4 +1,4 @@
-const Dr = require('../Dr.node')
+const Dr = require('../../library/Dr.node')
 
 const { System: { startREPL }, Module: { runCommand } } = Dr.Node
 
