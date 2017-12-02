@@ -3,7 +3,7 @@ const nodeModuleFs = require('fs')
 const { promisify } = require('util')
 const Dr = require('../../library/Dr.node')
 
-const { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient } = Dr.Node.ServerWebSocket
+const { WEB_SOCKET_EVENT_MAP, /* DATA_TYPE_MAP, */ createWebSocketClient } = Dr.Node.ServerWebSocket
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
 

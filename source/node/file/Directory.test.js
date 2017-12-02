@@ -20,7 +20,6 @@ import {
 } from './Directory'
 
 const { describe, it, before, after } = global
-global.__DEV__ = false
 
 const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-directory-gitignore/')
 

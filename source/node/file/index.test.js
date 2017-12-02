@@ -17,7 +17,6 @@ import {
 } from './index'
 
 const { describe, it, before, after } = global
-global.__DEV__ = false
 
 const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-index-gitignore/')
 

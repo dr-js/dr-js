@@ -2,7 +2,6 @@ import nodeModuleAssert from 'assert'
 import { packBufferPacket, parseBufferPacket } from './buffer'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 describe('Node.Buffer', () => {
   const headerString = 'headerString'

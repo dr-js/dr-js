@@ -171,7 +171,7 @@ const formatUsageBase = (text, { optional, argumentLengthMin, argumentLengthMax 
   (optional ? typeof (optional) === 'function' ? ' [OPTIONAL-CHECK]' : ' [OPTIONAL]' : '') +
   (argumentLengthMin ? ` [ARGUMENT=${argumentLengthMin}${argumentLengthMax === Infinity ? '+' : argumentLengthMax > argumentLengthMin ? `-${argumentLengthMax}` : ''}]` : '')
 const usageCLI = (formatList) => formatList.map(formatUsageCLI).join('\n')
-const formatUsageCLI = (format, ...args) => formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
+const formatUsageCLI = (format) => formatUsageBase(`--${format.name}${format.shortName ? ` -${format.shortName}` : ''}`, format) +
   (format.description ? `:\n${stringIndentLine(format.description, '    ')}` : '') +
   (format.extendFormatList.length ? `\n${stringIndentLine(format.extendFormatList.map(formatUsageCLI).join('\n'), '  ')}` : '')
 const usageENV = (formatList) => `"\n  #!/usr/bin/env bash\n${stringIndentLine(formatList.map(formatUsageENV).join('\n'), '  ')}\n"`
@@ -193,18 +193,21 @@ const verifySingleInteger = (argumentList) => { if (argumentList.length !== 1 ||
 const verifyAllString = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (typeof (v) !== 'string') throw new Error(`[verify] String expected at #${index}, get ${v} in ${argumentList}`) }) }
 const verifyAllNumber = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (typeof (v) !== 'number') throw new Error(`[verify] Number expected at #${index}, get ${v} in ${argumentList}`) }) }
 const verifyAllInteger = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (!Number.isInteger(v)) throw new Error(`[verify] Integer expected at #${index}, get ${v} in ${argumentList}`) }) }
-const verifyOneOf = (selectList) => (argumentList) => { if (argumentList.length !== 1 || !selectList.includes(argumentList[ 0 ])) throw new Error(`[verify] unexpected selection, should be one of ${selectList}, get ${argumentList}`) }
+const verifyOneOf = (selectList) => (argumentList) => { if (argumentList.length !== 1 || !selectList.includes(argumentList[ 0 ])) throw new Error(`[verify] unexpected selection, get ${argumentList}, expect ${descriptionOneOf(selectList)}`) }
+
+const descriptionOneOf = (selectList) => `one of:\n  ${selectList.join(', ')}`
+const getPreset = (argumentCount, argumentListNormalize, argumentListVerify, description) => ({ argumentCount, argumentListNormalize, argumentListVerify, description })
 
 const OPTION_CONFIG_PRESET = {
-  SingleString: { argumentCount: 1, argumentListNormalize: normalizeToString, argumentListVerify: verifySingleString },
-  SingleNumber: { argumentCount: 1, argumentListNormalize: normalizeToNumber, argumentListVerify: verifySingleNumber },
-  SingleInteger: { argumentCount: 1, argumentListNormalize: normalizeToInteger, argumentListVerify: verifySingleInteger },
-  AllString: { argumentCount: '1+', argumentListNormalize: normalizeToString, argumentListVerify: verifyAllString },
-  AllNumber: { argumentCount: '1+', argumentListNormalize: normalizeToNumber, argumentListVerify: verifyAllNumber },
-  AllInteger: { argumentCount: '1+', argumentListNormalize: normalizeToInteger, argumentListVerify: verifyAllInteger },
-  OneOfString: (selectList) => ({ argumentCount: 1, argumentListNormalize: normalizeToString, argumentListVerify: verifyOneOf(selectList) }),
-  OneOfNumber: (selectList) => ({ argumentCount: 1, argumentListNormalize: normalizeToNumber, argumentListVerify: verifyOneOf(selectList) }),
-  OneOfInteger: (selectList) => ({ argumentCount: 1, argumentListNormalize: normalizeToInteger, argumentListVerify: verifyOneOf(selectList) })
+  SingleString: getPreset(1, normalizeToString, verifySingleString),
+  SingleNumber: getPreset(1, normalizeToNumber, verifySingleNumber),
+  SingleInteger: getPreset(1, normalizeToInteger, verifySingleInteger),
+  AllString: getPreset('1+', normalizeToString, verifyAllString),
+  AllNumber: getPreset('1+', normalizeToNumber, verifyAllNumber),
+  AllInteger: getPreset('1+', normalizeToInteger, verifyAllInteger),
+  OneOfString: (selectList) => getPreset(1, normalizeToString, verifyOneOf(selectList), descriptionOneOf(selectList)),
+  OneOfNumber: (selectList) => getPreset(1, normalizeToNumber, verifyOneOf(selectList), descriptionOneOf(selectList)),
+  OneOfInteger: (selectList) => getPreset(1, normalizeToInteger, verifyOneOf(selectList), descriptionOneOf(selectList))
 }
 
 export {

@@ -2,7 +2,6 @@ import nodeModuleAssert from 'assert'
 import { DoublyLinkedList } from './LinkedList'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 const getTestData = () => {
   const linkedList = new DoublyLinkedList()

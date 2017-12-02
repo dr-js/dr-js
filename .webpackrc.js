@@ -9,7 +9,7 @@ const IS_PRODUCTION = NODE_ENV === 'production'
 const BABEL_OPTIONS = {
   babelrc: false,
   presets: [ [ 'env', { targets: { node: 8 }, modules: false } ] ],
-  plugins: [ 'transform-class-properties', [ 'transform-object-rest-spread', { useBuiltIns: true } ] ]
+  plugins: [ [ 'transform-class-properties' ], [ 'transform-object-rest-spread', { useBuiltIns: true } ] ]
 }
 
 module.exports = {

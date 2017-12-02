@@ -6,7 +6,6 @@ import { createDirectory, modify } from '../file'
 import { setTimeoutAsync } from 'source/common/time'
 
 const { describe, it, before, after } = global
-global.__DEV__ = false
 
 const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-write-gitignore/')
 

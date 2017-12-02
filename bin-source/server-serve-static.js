@@ -16,19 +16,21 @@ const {
   }
 } = Node
 
-const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
-  const { server, start, option } = createServer({ protocol, hostname, port })
-  const responderServeStatic = createResponderServeStatic({})
+const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe }) => {
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
+  const responderServeStatic = createResponderServeStatic({})
+  const { server, start, option } = createServer({ protocol, hostname, port })
   server.on('request', createRequestListener({
     responderList: [
       createResponderParseURL(option),
-      createResponderRouter(createRouterMap([
-        [ '/favicon.ico', 'GET', responderSendFavicon ],
-        [ [ '/', '/list' ], 'GET', responderRedirectFilePathList ],
+      createResponderRouter(createRouterMap(isSimpleServe ? [
+        [ '/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+      ] : [
+        [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
         [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
-        [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+        [ [ '/', '/list' ], 'GET', responderRedirectFilePathList ],
+        [ '/favicon.ico', 'GET', responderSendFavicon ]
       ]))
     ]
   }))
@@ -39,6 +41,13 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port }) => {
 const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }
 const responderSendFavicon = (store) => responderSendBuffer(store, BUFFER_DATA_FAVICON_PNG)
 const responderRedirectFilePathList = (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' })
+
+const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
+  const content = await getDirectoryContent(rootPath, undefined, true) // single level deep
+  const directoryList = Array.from(content[ FILE_TYPE.Directory ].keys())
+  const fileList = content[ FILE_TYPE.File ]
+  return { directoryList, fileList }
+}
 
 // TODO: make reusable
 const responderFilePathList = async (store, rootPath, staticRoot) => {
@@ -57,12 +66,6 @@ const renderFilePath = (path, name) => `<a href="${formatPathHref('/file', path,
 const formatPathHref = (...args) => encodeURI(normalizePathSeparator(nodeModulePath.join(...args)))
 const formatPathHTML = (name) => escapeHTML(normalizePathSeparator(name))
 const normalizePathSeparator = nodeModulePath.sep === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
-const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
-  const content = await getDirectoryContent(rootPath, undefined, true) // single level deep
-  const directoryList = Array.from(content[ FILE_TYPE.Directory ].keys())
-  const fileList = content[ FILE_TYPE.File ]
-  return { directoryList, fileList }
-}
 const renderHTML = (titleHTML, HTMLFragList) => `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="minimum-scale=1, width=device-width">
@@ -74,4 +77,4 @@ a:hover { background: #eee; }
 </style>
 <pre style="display: flex; flex-flow: column;">${HTMLFragList.join('\n')}</pre>`
 
-export { createServerServeStatic }
+export { createServerServeStatic, getPathContent }
