@@ -2,7 +2,6 @@ import nodeModuleAssert from 'assert'
 import { CacheMap } from './CacheMap'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 const getTestData = (valueSizeSumMax) => {
   const cacheMap = new CacheMap({ valueSizeSumMax })

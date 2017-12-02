@@ -1,23 +1,36 @@
 #!/usr/bin/env node
 
 import nodeModulePath from 'path'
+import nodeModuleOs from 'os'
 import { Env, Node } from '../library/Dr.node'
+import { name as packageName, version as packageVersion } from '../package.json'
 import { parseOption, exitWithError } from './option'
-import { createServerServeStatic } from './server-serve-static'
+import { createServerServeStatic, getPathContent } from './server-serve-static'
 
-const { isNode, isBrowser, environmentName, systemEndianness } = Env
+const { systemEndianness } = Env
 const { modify, getFileList } = Node.File
 
+const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
+
 const main = async () => {
-  const { optionMap, getOption, getSingleOption } = await parseOption()
+  const { optionMap, getOption, getSingleOption, getSingleOptionOptional } = await parseOption()
 
   try {
-    switch (getSingleOption(optionMap, 'mode')) {
+    const mode = getSingleOption(optionMap, 'mode')
+    switch (mode) {
       case 'env-info':
-        return console.log(JSON.stringify({ isNode, isBrowser, environmentName, systemEndianness }, null, '  '))
+      case 'i':
+        const { node: versionNode, v8: versionV8 } = process.versions
+        const systemPlatform = nodeModuleOs.platform()
+        const systemCPUArchitecture = nodeModuleOs.arch()
+        const systemCPUCoreCount = nodeModuleOs.cpus().length
+        return logJSON({ packageName, packageVersion, versionNode, versionV8, systemEndianness, systemPlatform, systemCPUArchitecture, systemCPUCoreCount })
       case 'file-list':
       case 'ls':
-        return console.log(JSON.stringify(await getFileList(getSingleOption(optionMap, 'argument'))))
+        return logJSON(await getPathContent(getSingleOptionOptional(optionMap, 'argument') || './'))
+      case 'file-list-all':
+      case 'ls-R':
+        return logJSON(await getFileList(getSingleOptionOptional(optionMap, 'argument') || './'))
       case 'file-modify-copy':
       case 'cp':
         return modify.copy(...getOption(optionMap, 'argument', 2))
@@ -30,9 +43,12 @@ const main = async () => {
         return
       case 'server-serve-static':
       case 'sss':
-        let [ staticRoot, hostname = '0.0.0.0', port = 80 ] = getOption(optionMap, 'argument')
-        staticRoot = nodeModulePath.resolve(optionMap[ 'argument' ].source === 'JSON' ? nodeModulePath.dirname(getSingleOption(optionMap, 'config')) : process.cwd(), staticRoot)
-        return createServerServeStatic({ staticRoot, protocol: 'http:', hostname, port })
+      case 'server-serve-static-simple':
+      case 'ssss':
+        const [ relativeStaticRoot, hostname = '0.0.0.0', port = 80 ] = getOption(optionMap, 'argument')
+        const staticRoot = nodeModulePath.resolve(optionMap[ 'argument' ].source === 'JSON' ? nodeModulePath.dirname(getSingleOption(optionMap, 'config')) : process.cwd(), relativeStaticRoot)
+        const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
+        return createServerServeStatic({ staticRoot, protocol: 'http:', hostname, port, isSimpleServe })
     }
   } catch (error) {
     console.warn(`[Error] in mode: ${getSingleOption(optionMap, 'mode')}:`)

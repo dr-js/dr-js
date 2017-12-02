@@ -8,12 +8,14 @@ const {
 } = Node.Module
 
 const MODE_OPTION = [
-  'env-info',
+  'env-info', 'i',
   'file-list', 'ls',
+  'file-list-all', 'ls-R',
   'file-modify-copy', 'cp',
   'file-modify-move', 'mv',
   'file-modify-delete', 'rm',
-  'server-serve-static', 'sss'
+  'server-serve-static', 'sss',
+  'server-serve-static-simple', 'ssss'
 ]
 
 const OPTION_CONFIG = {
@@ -26,19 +28,8 @@ const OPTION_CONFIG = {
       description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`,
       ...OPTION_CONFIG_PRESET.SingleString
     },
-    {
-      name: 'mode',
-      shortName: 'm',
-      description: `should be one of:\n  - ${MODE_OPTION.join('\n  - ')}`,
-      ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION)
-    },
-    {
-      name: 'argument',
-      shortName: 'a',
-      optional: true,
-      description: `different for each mode`,
-      argumentCount: '0+'
-    }
+    { name: 'mode', shortName: 'm', ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION) },
+    { name: 'argument', shortName: 'a', optional: true, description: `different for each mode`, argumentCount: '0+' }
   ]
 }
 

@@ -6,7 +6,6 @@ import {
 } from './EntityTag'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 describe('Node.Module.EntityTag', () => {
   it('getEntityTagByContentHash()', () => {

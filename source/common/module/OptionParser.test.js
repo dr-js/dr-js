@@ -2,7 +2,6 @@ import nodeModuleAssert from 'assert'
 import { createOptionParser, OPTION_CONFIG_PRESET } from './OptionParser'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 const optionData = {
   prefixENV: 'prefix-ENV',

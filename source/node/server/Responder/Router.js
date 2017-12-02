@@ -80,20 +80,22 @@ const getRouteParam = (store, paramName) => store.getState().paramMap[ paramName
 
 // const SAMPLE_ROUTE_RESPONDER = (store, { url, route, method, paramMap }) => {}
 // const SAMPLE_RESULT_ROUTE_MAP = {
-//   // GET /users/list
-//   // GET /users/
-//   // GET /users
-//   users: {
-//     list: { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//   '': {
+//     // GET /users/list
+//     // GET /users/
+//     // GET /users
+//     users: {
+//       list: { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//       '': { '/GET': DEFAULT_ROUTE_PROCESSOR },
+//       '/GET': DEFAULT_ROUTE_PROCESSOR
+//     },
+//     // GET '/'
 //     '': { '/GET': DEFAULT_ROUTE_PROCESSOR },
-//     '/GET': DEFAULT_ROUTE_PROCESSOR
-//   },
-//   // GET '/'
-//   '': { '/GET': DEFAULT_ROUTE_PROCESSOR },
-//   // GET '/static/*'
-//   static: { '/*': { '/GET': DEFAULT_ROUTE_PROCESSOR } },
-//   // DELETE '/user/:userId'
-//   user: { '/:PARAM': { '/DELETE': DEFAULT_ROUTE_PROCESSOR } }
+//     // GET '/static/*'
+//     static: { '/*': { '/GET': DEFAULT_ROUTE_PROCESSOR } },
+//     // DELETE '/user/:userId'
+//     user: { '/:PARAM': { '/DELETE': DEFAULT_ROUTE_PROCESSOR } }
+//   }
 // }
 
 export {

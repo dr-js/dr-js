@@ -3,7 +3,6 @@ import { createServer } from '../Server'
 import { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient, enableWebSocketServer } from './index'
 
 const { describe, it } = global
-global.__DEV__ = false
 
 const TEST_PROTOCOL_LIST = [ 'protocol-a', 'protocol-b' ]
 const TEST_STRING = 'TEST STRING'
@@ -64,13 +63,11 @@ describe('Node.Server.WebSocket', () => {
       nodeModuleAssert.equal(dataBuffer.size, TEST_BUFFER.size)
     }
 
-    {
-      webSocket.close(1000, 'CLOSE') // close
-      await new Promise((resolve, reject) => {
-        webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, resolve)
-        setTimeout(reject, 500)
-      })
-    }
+    webSocket.close(1000, 'CLOSE') // close
+    await new Promise((resolve, reject) => {
+      webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, resolve)
+      setTimeout(reject, 500)
+    })
 
     stop()
   })

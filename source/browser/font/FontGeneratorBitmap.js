@@ -12,7 +12,6 @@ import { loadText, loadImage } from 'source/browser/resource'
 
 const createFontGeneratorBitmap = () => {
   let defaultSymbol = null
-  let symbolMetricsMap = {}
   let symbolCanvasElementMap = {}
   let scaledSymbolCanvasElementMap = {}
 
@@ -31,7 +30,6 @@ const createFontGeneratorBitmap = () => {
       bitmapSymbolCanvasElementMap[ symbol ] = symbolCanvasElement
     }
     defaultSymbol = bitmapDefaultSymbol || ' '
-    symbolMetricsMap = bitmapSymbolMetricsMap
     symbolCanvasElementMap = bitmapSymbolCanvasElementMap
     scaledSymbolCanvasElementMap = {}
   }
