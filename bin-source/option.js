@@ -1,4 +1,4 @@
-import { Common, Node } from '../library/Dr.node'
+import { Common, Node } from 'module/Dr.node'
 
 const { createOptionParser, OPTION_CONFIG_PRESET } = Common.Module
 const {
@@ -22,13 +22,17 @@ const OPTION_CONFIG = {
   prefixENV: 'dr-js',
   formatList: [
     {
+      ...OPTION_CONFIG_PRESET.SingleString,
       name: 'config',
       shortName: 'c',
       optional: true,
-      description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`,
-      ...OPTION_CONFIG_PRESET.SingleString
+      description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
     },
-    { name: 'mode', shortName: 'm', ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION) },
+    {
+      ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION),
+      name: 'mode',
+      shortName: 'm'
+    },
     { name: 'argument', shortName: 'a', optional: true, description: `different for each mode`, argumentCount: '0+' }
   ]
 }
@@ -45,7 +49,7 @@ const parseOption = async () => ({
 
 const exitWithError = (error) => {
   __DEV__ && console.warn(error)
-  console.warn(formatUsage(error.message || error.toString()))
+  !__DEV__ && console.warn(formatUsage(error.message || error.toString()))
   process.exit(1)
 }
 
