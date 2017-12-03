@@ -8,12 +8,15 @@ import { parseOption, exitWithError } from './option'
 import { createServerServeStatic, getPathContent } from './server-serve-static'
 
 const { systemEndianness } = Env
-const { modify, getFileList } = Node.File
+const { modify, getFileList, createDirectory } = Node.File
 
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
 const main = async () => {
   const { optionMap, getOption, getSingleOption, getSingleOptionOptional } = await parseOption()
+
+  const argumentRootPath = optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON' ? nodeModulePath.dirname(getSingleOption(optionMap, 'config')) : process.cwd())
+  const resolveArgumentPath = (path) => nodeModulePath.resolve(argumentRootPath, path)
 
   try {
     const mode = getSingleOption(optionMap, 'mode')
@@ -32,6 +35,15 @@ const main = async () => {
       case 'file-list-all':
       case 'ls-R':
         return logJSON(await getFileList(getSingleOptionOptional(optionMap, 'argument') || './'))
+      case 'file-create-directory':
+      case 'mkdir':
+        for (const path of getOption(optionMap, 'argument').map(resolveArgumentPath)) {
+          await createDirectory(path).then(
+            () => console.log(`[CREATE-DONE] ${path}`),
+            (error) => console.warn(`[CREATE-ERROR] ${path}\n  ${error}`)
+          )
+        }
+        return
       case 'file-modify-copy':
       case 'cp':
         return modify.copy(...getOption(optionMap, 'argument', 2))
@@ -40,16 +52,20 @@ const main = async () => {
         return modify.move(...getOption(optionMap, 'argument', 2))
       case 'file-modify-delete':
       case 'rm':
-        for (const path of getOption(optionMap, 'argument')) await modify.delete(path).then(() => console.log(`[DELETE-DONE] ${path}`), (error) => console.warn(`[DELETE-ERROR] ${error}`))
+        for (const path of getOption(optionMap, 'argument').map(resolveArgumentPath)) {
+          await modify.delete(path).then(
+            () => console.log(`[DELETE-DONE] ${path}`),
+            (error) => console.warn(`[DELETE-ERROR] ${path}\n  ${error}`)
+          )
+        }
         return
       case 'server-serve-static':
       case 'sss':
       case 'server-serve-static-simple':
       case 'ssss':
         const [ relativeStaticRoot, hostname = '0.0.0.0', port = 80 ] = getOption(optionMap, 'argument')
-        const staticRoot = nodeModulePath.resolve(optionMap[ 'argument' ].source === 'JSON' ? nodeModulePath.dirname(getSingleOption(optionMap, 'config')) : process.cwd(), relativeStaticRoot)
         const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-        return createServerServeStatic({ staticRoot, protocol: 'http:', hostname, port, isSimpleServe })
+        return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port, isSimpleServe })
     }
   } catch (error) {
     console.warn(`[Error] in mode: ${getSingleOption(optionMap, 'mode')}:`)

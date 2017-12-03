@@ -11,6 +11,7 @@ const MODE_OPTION = [
   'env-info', 'i',
   'file-list', 'ls',
   'file-list-all', 'ls-R',
+  'file-create-directory', 'mkdir',
   'file-modify-copy', 'cp',
   'file-modify-move', 'mv',
   'file-modify-delete', 'rm',
