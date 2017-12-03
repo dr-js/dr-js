@@ -1,5 +1,5 @@
 import nodeModulePath from 'path'
-import { Common, Node } from '../library/Dr.node'
+import { Common, Node } from 'module/Dr.node'
 
 const { Module: { BASIC_EXTENSION_MAP }, Format: { escapeHTML } } = Common
 const {

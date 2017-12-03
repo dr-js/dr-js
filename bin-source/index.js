@@ -2,8 +2,8 @@
 
 import nodeModulePath from 'path'
 import nodeModuleOs from 'os'
-import { Env, Node } from '../library/Dr.node'
-import { name as packageName, version as packageVersion } from '../package.json'
+import PackageJSON from 'package.json'
+import { Env, Node } from 'module/Dr.node'
 import { parseOption, exitWithError } from './option'
 import { createServerServeStatic, getPathContent } from './server-serve-static'
 
@@ -20,7 +20,8 @@ const main = async () => {
     switch (mode) {
       case 'env-info':
       case 'i':
-        const { node: versionNode, v8: versionV8 } = process.versions
+        const { name: packageName, version: packageVersion } = PackageJSON
+        const { versions: { node: versionNode, v8: versionV8 } } = process
         const systemPlatform = nodeModuleOs.platform()
         const systemCPUArchitecture = nodeModuleOs.arch()
         const systemCPUCoreCount = nodeModuleOs.cpus().length

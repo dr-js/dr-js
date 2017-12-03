@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.7.1-dev.0",
+  "version": "0.7.1-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -21,19 +21,19 @@
   "main": "library/Dr.js",
   "scripts": {
     "build": "npm run build-clear && npm run build-library && npm run build-module && npm run build-bin",
-    "build-clear": "npm run build-bin-dev && node bin/index.js --mode file-modify-delete --argument ./library ./module ./bin",
+    "build-clear": "dr-js -m rm -a ./library ./module ./bin",
     "build-library": "cross-env NODE_ENV=production webpack --config .webpackrc.js",
-    "build-library-dev": "cross-env NODE_ENV=development webpack --watch --config .webpackrc.js",
+    "build-library-dev": "cross-env NODE_ENV=development webpack --config .webpackrc.js --watch",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./module --ignore test.js",
-    "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library-minify babel ./bin-source --out-dir ./bin --ignore test.js",
-    "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./bin-source --out-dir ./bin --ignore test.js",
+    "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library babel ./bin-source --out-dir ./bin --ignore test.js",
+    "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./bin-source --out-dir ./bin --ignore test.js --watch",
     "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config .webpackrc.js --json > stats-gitignore.json",
     "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config .webpackrc.js --profile",
     "test": "npm run test-mocha",
-    "test-mocha": "cross-env BABEL_ENV=library mocha --require babel-register \"source/**/*.test.js\"",
-    "test-mocha-common": "cross-env BABEL_ENV=library mocha --require babel-register \"source/common/**/*.test.js\"",
-    "test-mocha-node": "cross-env BABEL_ENV=library mocha --require babel-register \"source/node/**/*.test.js\"",
-    "test-mocha-browser": "cross-env BABEL_ENV=library mocha --require babel-register \"source/browser/**/*.test.js\"",
+    "test-mocha": "cross-env BABEL_ENV=test mocha --require babel-register \"source/**/*.test.js\"",
+    "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "cross-env BABEL_ENV=test mocha --require babel-register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
     "start": "npm run build-library-dev",
     "prepack": "npm run test && npm run build",
     "publish-dev": "npm publish --tag dev"
@@ -43,6 +43,7 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "dev-dep-web": "^0.0.8"
+    "dev-dep-web": "^0.0.8",
+    "dr-js": "^0.7.0"
   }
 }

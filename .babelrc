@@ -1,22 +1,12 @@
 {
   "env": {
     "// COMMENT": "__DEV__ = false, use require(), minify",
-    "library-minify": {
+    "library": {
       "presets": [ [ "env", { "targets": { "node": 8 } } ], [ "minify" ] ],
       "plugins": [
         [ "transform-class-properties" ],
         [ "transform-object-rest-spread", { "useBuiltIns": true } ],
-        [ "module-resolver", { "root": [ "./" ] } ],
-        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
-      ]
-    },
-    "// COMMENT": "__DEV__ = false, use require()",
-    "library": {
-      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
-      "plugins": [
-        [ "transform-class-properties" ],
-        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
-        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "module-resolver", { "root": [ "./" ], "alias": { "module/Dr.node": "./library/Dr.node" } } ],
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
       ]
     },
@@ -26,7 +16,7 @@
       "plugins": [
         [ "transform-class-properties" ],
         [ "transform-object-rest-spread", { "useBuiltIns": true } ],
-        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "module-resolver", { "root": [ "./" ], "alias": { "module/Dr.node": "./library/Dr.node" } } ],
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": true } } ] } ]
       ]
     },
@@ -42,6 +32,16 @@
         [ "minify-dead-code-elimination" ]
       ],
       "comments": false
+    },
+    "// COMMENT": "__DEV__ = false, use require()",
+    "test": {
+      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
+      "plugins": [
+        [ "transform-class-properties" ],
+        [ "transform-object-rest-spread", { "useBuiltIns": true } ],
+        [ "module-resolver", { "root": [ "./" ] } ],
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
+      ]
     }
   }
 }
