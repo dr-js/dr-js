@@ -1,14 +1,17 @@
 {
   "env": {
-    "// COMMENT": "__DEV__ = false, use require(), minify",
+    "// COMMENT": "__DEV__ = false, use require(), remove unused code & comment",
     "library": {
-      "presets": [ [ "env", { "targets": { "node": 8 } } ], [ "minify" ] ],
+      "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
       "plugins": [
         [ "transform-class-properties" ],
         [ "transform-object-rest-spread", { "useBuiltIns": true } ],
         [ "module-resolver", { "root": [ "./" ], "alias": { "module/Dr.node": "./library/Dr.node" } } ],
-        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ]
-      ]
+        [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ],
+        [ "minify-guarded-expressions" ],
+        [ "minify-dead-code-elimination" ]
+      ],
+      "comments": false
     },
     "// COMMENT": "__DEV__ = true, use require()",
     "library-dev": {
