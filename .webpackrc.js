@@ -21,7 +21,6 @@ module.exports = {
   },
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
     'Dr': [ 'source/Dr' ],
-    'Dr.node': [ 'source/Dr.node' ],
     'Dr.browser': [ 'source/Dr.browser' ]
   },
   resolve: { alias: { source: nodeModulePath.resolve(__dirname, './source/') } },
