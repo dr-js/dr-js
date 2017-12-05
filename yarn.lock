@@ -1427,9 +1427,9 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-web@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.0.9.tgz#5345ead22774bbb7df5d010aa23b6281c6d492a7"
+dev-dep-web@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.0.10.tgz#6ae6a10abd68f494239a592c6ba670d946499a16"
   dependencies:
     babel-cli "^6.26.0"
     babel-core "^6.26.0"
@@ -1450,7 +1450,7 @@ dev-dep-web@^0.0.9:
     eslint-plugin-promise "^3.6.0"
     eslint-plugin-standard "^3.0.1"
     mocha "^4.0.1"
-    webpack "^3.9.1"
+    webpack "^3.10.0"
 
 diff@3.3.1:
   version "3.3.1"
@@ -3568,9 +3568,9 @@ webpack-sources@^1.0.1:
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^3.9.1:
-  version "3.9.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.9.1.tgz#9a60aa544ed5d4d454c069e3f521aa007e02643c"
+webpack@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-3.10.0.tgz#5291b875078cf2abf42bdd23afe3f8f96c17d725"
   dependencies:
     acorn "^5.0.0"
     acorn-dynamic-import "^2.0.0"
