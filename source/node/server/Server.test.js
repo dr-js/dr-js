@@ -5,7 +5,7 @@ import {
   responderSendBuffer,
   responderSendJSON,
   createResponderParseURL,
-  createRouterMap,
+  createRouteMap,
   createResponderRouter,
   getRouteParamAny,
   getRouteParam
@@ -20,7 +20,7 @@ describe('Node.Server', () => {
     server.on('request', createRequestListener({
       responderList: [
         createResponderParseURL(option),
-        createResponderRouter(createRouterMap([
+        createResponderRouter(createRouteMap([
           [ '/test-param/:param-a', 'GET', (store) => responderSendJSON(store, { object: { param: getRouteParam(store, 'param-a') } }) ],
           [ '/test-param-any/*', 'GET', (store) => responderSendJSON(store, { object: { param: getRouteParamAny(store) } }) ],
           [ '/test-buffer', 'GET', (store) => responderSendBuffer(store, { buffer: Buffer.from('TEST BUFFER') }) ],

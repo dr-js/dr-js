@@ -1,15 +1,16 @@
 import nodeModulePath from 'path'
 import { Common, Node } from 'module/Dr.node'
 
-const { Module: { BASIC_EXTENSION_MAP }, Format: { escapeHTML } } = Common
+const { Module: { BASIC_EXTENSION_MAP }, Format: { escapeHTML, stringIndentLine } } = Common
 const {
   File: { FILE_TYPE, getDirectoryContent, createGetPathFromRoot },
+  System: { getNetworkIPv4AddressList },
   Server: {
     createServer, createRequestListener,
     Responder: {
       responderEndWithRedirect,
       responderSendBuffer,
-      createResponderRouter, createRouterMap, getRouteParamAny,
+      createResponderRouter, createRouteMap, getRouteParamAny,
       createResponderParseURL,
       createResponderServeStatic
     }
@@ -24,7 +25,7 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
   server.on('request', createRequestListener({
     responderList: [
       createResponderParseURL(option),
-      createResponderRouter(createRouterMap(isSimpleServe ? [
+      createResponderRouter(createRouteMap(isSimpleServe ? [
         [ '/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
       ] : [
         [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
@@ -35,7 +36,13 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
     ]
   }))
   start()
-  console.log(`[ServerServeStatic]\n  running at: '${protocol}//${hostname}:${port}'\n  staticRoot: '${staticRoot}'`)
+  console.log(`[ServerServeStatic] <${isSimpleServe ? 'no-list' : 'with-list'}>`)
+  console.log(`  running at:\n    - '${protocol}//${hostname}:${port}'`)
+  console.log(`  staticRoot:\n    - '${staticRoot}'`)
+  hostname === '0.0.0.0' && console.log(`  connect at:\n${stringIndentLine(
+    getNetworkIPv4AddressList().map(({ address }) => `'${protocol}//${address}:${port}'`).join('\n'),
+    '    - '
+  )}`)
 }
 
 const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }

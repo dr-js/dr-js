@@ -2,102 +2,70 @@ import nodeModuleAssert from 'assert'
 import { URL } from 'url'
 import { createMinStateStore } from 'source/common/immutable'
 import {
-  createRouterMap,
+  createRouteMap,
   createResponderRouter,
-  addRouteToRouterMap,
+  appendRouteMap,
   getRouteParamAny,
-  getRouteParam,
-  parseRouteToMap,
-  findRouteFromMap
+  getRouteParam
 } from './Router'
 
 const { describe, it } = global
 
 describe('Node.Server.Responder', () => {
-  it('parseRouteToMap(), findRouteFromMap()', () => {
+  it('appendRouteMap()', () => {
     nodeModuleAssert.doesNotThrow(() => {
-      const routeMap = {}
-      const { routeNode } = parseRouteToMap(routeMap, '')
-      nodeModuleAssert.equal(findRouteFromMap(routeMap, '').routeNode, routeNode)
+      const routeMap = appendRouteMap({}, '', 'GET', () => {})
+      nodeModuleAssert.equal(routeMap[ '' ][ '/GET' ].route, '')
     })
     nodeModuleAssert.doesNotThrow(() => {
-      const routeMap = {}
-      const { routeNode } = parseRouteToMap(routeMap, '/')
-      nodeModuleAssert.equal(findRouteFromMap(routeMap, '/').routeNode, routeNode)
+      const routeMap = appendRouteMap({}, '/', 'GET', () => {})
+      nodeModuleAssert.equal(routeMap[ '' ][ '' ][ '/GET' ].route, '/')
     })
     nodeModuleAssert.doesNotThrow(() => {
-      const routeMap = {}
-      const { routeNode } = parseRouteToMap(routeMap, '/a/b/c')
-      nodeModuleAssert.equal(findRouteFromMap(routeMap, '/a/b/c').routeNode, routeNode)
+      const routeMap = appendRouteMap({}, '/a/b/c', 'GET', () => {})
+      nodeModuleAssert.equal(routeMap[ '' ].a.b.c[ '/GET' ].route, '/a/b/c')
     })
     nodeModuleAssert.doesNotThrow(() => {
-      const routeMap = {}
-      const { routeNode } = parseRouteToMap(routeMap, '/a/b/c/')
-      nodeModuleAssert.equal(findRouteFromMap(routeMap, '/a/b/c/').routeNode, routeNode)
-    })
-    nodeModuleAssert.doesNotThrow(() => {
-      const routeMap = {}
-      const { routeNode, paramNameList } = parseRouteToMap(routeMap, '/:a/:b/:c/')
-      nodeModuleAssert.deepEqual(paramNameList, [ 'a', 'b', 'c' ])
-      nodeModuleAssert.equal(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').routeNode, routeNode)
-      nodeModuleAssert.deepEqual(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').paramValueList, [ 'AAA', 'BBB', 'CCC' ])
+      const routeMap = appendRouteMap({}, '/a/b/c/', 'GET', () => {})
+      nodeModuleAssert.equal(routeMap[ '' ].a.b.c[ '' ][ '/GET' ].route, '/a/b/c/')
     })
   })
 
-  it('addRouteToRouterMap()', () => {
-    nodeModuleAssert.doesNotThrow(() => {
-      const routerMap = addRouteToRouterMap({}, '', 'GET', () => {})
-      nodeModuleAssert.equal(routerMap[ '' ][ '/GET' ].route, '')
-    })
-    nodeModuleAssert.doesNotThrow(() => {
-      const routerMap = addRouteToRouterMap({}, '/', 'GET', () => {})
-      nodeModuleAssert.equal(routerMap[ '' ][ '' ][ '/GET' ].route, '/')
-    })
-    nodeModuleAssert.doesNotThrow(() => {
-      const routerMap = addRouteToRouterMap({}, '/a/b/c', 'GET', () => {})
-      nodeModuleAssert.equal(routerMap[ '' ].a.b.c[ '/GET' ].route, '/a/b/c')
-    })
-    nodeModuleAssert.doesNotThrow(() => {
-      const routerMap = addRouteToRouterMap({}, '/a/b/c/', 'GET', () => {})
-      nodeModuleAssert.equal(routerMap[ '' ].a.b.c[ '' ][ '/GET' ].route, '/a/b/c/')
-    })
-  })
-
-  it('createRouterMap()', () => {
-    nodeModuleAssert.doesNotThrow(() => createRouterMap([
+  it('createRouteMap()', () => {
+    nodeModuleAssert.doesNotThrow(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ [ '/test/', '/test/test' ], 'GET', () => {} ]
     ]))
-    nodeModuleAssert.doesNotThrow(() => createRouterMap([
+    nodeModuleAssert.doesNotThrow(() => createRouteMap([
       [ '/test/*', 'GET', () => {} ],
       [ '/test/:param', [ 'GET', 'POST' ], () => {} ],
       [ '/test/:param/test', [ 'GET', 'POST' ], () => {} ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test', 'GET' ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ '/test', [ 'GET', 'POST' ], () => {} ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test/*', 'GET', () => {} ],
       [ '/test/*', [ 'GET', 'POST' ], () => {} ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test/:param-a', 'GET', () => {} ],
       [ '/test/:param-b', [ 'GET', 'POST' ], () => {} ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test', 'STRANGE_METHOD', () => {} ]
     ]))
-    nodeModuleAssert.throws(() => createRouterMap([
+    nodeModuleAssert.throws(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ '/test', [ 'GET', 'STRANGE_METHOD' ], () => {} ]
     ]))
   })
 
-  const responderRouter = createResponderRouter(createRouterMap([
+  const responderRouter = createResponderRouter(createRouteMap([
     [ '/test-basic', 'GET', (store, state) => ({ ...state, tag: 'A' }) ],
     [ '/test-param-any/*', 'GET', (store, state) => ({ ...state, tag: 'B' }) ],
     [ '/test-param-a/:param-a', 'GET', (store, state) => ({ ...state, tag: 'C' }) ],

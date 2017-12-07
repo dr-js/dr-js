@@ -10,7 +10,7 @@ const {
     Responder: {
       responderSendBuffer,
       createResponderParseURL,
-      createResponderRouter, createRouterMap, getRouteParamAny,
+      createResponderRouter, createRouteMap, getRouteParamAny,
       createResponderServeStatic,
       createResponderLogRequestHeader, createResponderLogTimeStep, createResponderLogEnd
     },
@@ -33,7 +33,7 @@ server.on('request', createRequestListener({
     createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
     createResponderParseURL(option),
     createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
-    createResponderRouter(createRouterMap([
+    createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
       [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]

@@ -26,7 +26,7 @@ const main = async () => {
     }
   })
 
-  console.log('inited:', factDB)
+  console.log('init:', factDB)
   logFactDBState()
 
   factDB.add({ key1: 1 })

@@ -65,7 +65,7 @@ const main = async () => {
       case 'ssss':
         const [ relativeStaticRoot, hostname = '0.0.0.0', port = 80 ] = getOption(optionMap, 'argument')
         const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-        return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port, isSimpleServe })
+        return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe })
     }
   } catch (error) {
     console.warn(`[Error] in mode: ${getSingleOption(optionMap, 'mode')}:`)
