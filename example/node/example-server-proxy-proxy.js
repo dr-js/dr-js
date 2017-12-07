@@ -12,7 +12,7 @@ const {
     Responder: {
       responderSendBuffer,
       createResponderParseURL,
-      createResponderRouter, createRouterMap, getRouteParamAny,
+      createResponderRouter, createRouteMap, getRouteParamAny,
       createResponderServeStatic
     },
     WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
@@ -44,7 +44,7 @@ const { server, start, option } = createServer({ protocol: 'http:', hostname: Se
 server.on('request', createRequestListener({
   responderList: [
     createResponderParseURL(option),
-    createResponderRouter(createRouterMap([
+    createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
       [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],

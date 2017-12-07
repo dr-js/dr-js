@@ -20,8 +20,9 @@ export {
 } from './ServeStatic'
 
 export {
-  createRouterMap,
+  createRouteMap,
   createResponderRouter,
+  appendRouteMap,
   getRouteParamAny,
   getRouteParam
 } from './Router'
