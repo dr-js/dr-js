@@ -1,5 +1,6 @@
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 
+// TODO: just use native fetch
 // TODO: native fetch do not have a timeout, yet?
 const fetch = (url, config = {}) => new Promise((resolve, reject) => {
   const { method = 'GET', headers, body = null, credentials, timeout = DEFAULT_TIMEOUT } = config
