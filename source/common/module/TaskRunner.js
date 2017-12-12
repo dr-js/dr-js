@@ -1,4 +1,4 @@
-import { getTimeStamp } from 'source/common/time'
+import { getTimestamp } from 'source/common/time'
 import { createAsyncTaskQueue } from './AsyncTaskQueue'
 
 // const TaskRunnerOptionDebug = {
@@ -38,9 +38,9 @@ const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialS
     const taskId = getTaskId(inputData)
     if (!taskStateMap.get(taskId)) {
       const promise = pushTask(() => runTask(taskId, { getTaskState, updateTaskState }))
-        .then((outputData) => updateTaskState(taskId, { outputData, promise: null, endAt: getTimeStamp() }))
+        .then((outputData) => updateTaskState(taskId, { outputData, promise: null, endAt: getTimestamp() }))
         .catch((error) => {
-          updateTaskState(taskId, { error, promise: null, endAt: getTimeStamp() })
+          updateTaskState(taskId, { error, promise: null, endAt: getTimestamp() })
           return resetRunner(error, taskId)
         })
       taskStateMap.set(taskId, getTaskInitialState({
@@ -49,7 +49,7 @@ const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialS
         error: null, // if error is set, task is considered failed
         inputData,
         outputData: null, // if outputData is set, task is considered completed
-        startAt: getTimeStamp(), // in second
+        startAt: getTimestamp(), // in second
         endAt: null // if outputData is set, task is considered ended (failed|completed)
       }))
     }
@@ -57,7 +57,7 @@ const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialS
   }
   const endTask = (taskId) => taskStateMap.delete(taskId)
   const autoEndTask = (endDeltaTime) => { // in second
-    const maxEndTime = getTimeStamp() - Math.abs(endDeltaTime)
+    const maxEndTime = getTimestamp() - Math.abs(endDeltaTime)
     taskStateMap.forEach((task, taskId) => { task.endAt && task.endAt <= maxEndTime && endTask(taskId) })
   }
   return { clear, getStatus, getTaskQueueSize, getTaskState, startTask, endTask, autoEndTask }
