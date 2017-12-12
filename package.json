@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.8.0",
+  "version": "0.9.0-dev.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -39,6 +39,7 @@
     "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
     "start": "npm run build-library-dev",
     "prepack": "npm run test && npm run build",
+    "publish-latest": "npm publish",
     "publish-dev": "npm publish --tag dev"
   },
   "engines": {
