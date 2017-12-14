@@ -1,10 +1,11 @@
-/**
- * Operation for Immutable operate Data Structure
- * use only Object and Array for JSON support
- */
+// Operation for Immutable operate Data Structure
+// use only Object and Array for JSON support
+// NOTE: all method do not check if the value is valid
 
 // Object
-const objectSet = (object, key, value) => (object[ key ] !== value) ? { ...object, [key]: value } : object
+const objectSet = (object, key, value) => (object[ key ] !== value)
+  ? { ...object, [ key ]: value }
+  : object
 const objectDelete = (object, key) => {
   if (!object.hasOwnProperty(key)) return object
   const result = { ...object }
@@ -13,8 +14,7 @@ const objectDelete = (object, key) => {
 }
 const objectMerge = (object, merge) => {
   for (const [ key, value ] of Object.entries(merge)) { // check if has new data
-    if (object[ key ] === value) continue
-    return { ...object, ...merge }
+    if (object[ key ] !== value) return { ...object, ...merge }
   }
   return object
 }
@@ -26,11 +26,15 @@ const arraySet = (array, index, value) => {
   result[ index ] = value
   return result
 }
-const arrayDelete = (array, index) => (index >= 0 && index <= array.length - 1) ? [ ...array.slice(0, index), ...array.slice(index + 1) ] : array
-const arrayInsert = (array, index, value) => { // ALWAYS CHANGE
-  index = Math.min(Math.max(index, 0), array.length)
-  return [ ...array.slice(0, index), value, ...array.slice(index) ]
-}
+const arrayDelete = (array, index) => (index >= 0 && index <= array.length - 1)
+  ? [ ...array.slice(0, index), ...array.slice(index + 1) ]
+  : array
+const arrayInsert = (array, index, value) => [ ...array.slice(0, index), value, ...array.slice(index) ] // ALWAYS CHANGE
+const arrayMove = (array, index, fromIndex) => (fromIndex === index)
+  ? array
+  : (fromIndex < index)
+    ? [ ...array.slice(0, fromIndex), ...array.slice(fromIndex + 1, index + 1), array[ fromIndex ], ...array.slice(index + 1) ]
+    : [ ...array.slice(0, index), array[ fromIndex ], ...array.slice(index, fromIndex), ...array.slice(fromIndex + 1) ]
 const arrayPush = (array, value) => [ ...array, value ] // ALWAYS CHANGE
 const arrayUnshift = (array, value) => [ value, ...array ] // ALWAYS CHANGE
 const arrayPop = (array) => {
@@ -45,30 +49,38 @@ const arrayShift = (array) => {
   result.shift()
   return result
 }
-const arrayConcat = (array, concat) => (concat && concat.length) ? [ ...array, ...concat ] : array
-const arrayMatchPush = (array, value) => !array.includes(value) ? [ ...array, value ] : array
+const arrayConcat = (array, concat) => (concat && concat.length)
+  ? [ ...array, ...concat ]
+  : array
+const arrayMatchPush = (array, value) => !array.includes(value)
+  ? [ ...array, value ]
+  : array
 const arrayMatchDelete = (array, value) => {
   const index = array.indexOf(value)
-  return ~index ? [ ...array.slice(0, index), ...array.slice(index + 1) ] : array
+  return ~index
+    ? [ ...array.slice(0, index), ...array.slice(index + 1) ]
+    : array
 }
 const arrayMatchMove = (array, index, value) => {
-  index = Math.min(Math.max(index, 0), array.length - 1)
   const fromIndex = array.indexOf(value)
-  return (!~fromIndex || fromIndex === index) ? array
-    : (fromIndex < index) ? [ ...array.slice(0, fromIndex), ...array.slice(fromIndex + 1, index + 1), value, ...array.slice(index + 1) ]
-      : [ ...array.slice(0, index), value, ...array.slice(index, fromIndex), ...array.slice(fromIndex + 1) ]
+  return ~fromIndex
+    ? arrayMove(array, index, fromIndex)
+    : array
 }
-const arrayFindPush = (array, find, value) => array.find(find) === undefined ? [ ...array, value ] : array
+const arrayFindPush = (array, find, value) => array.find(find) === undefined
+  ? [ ...array, value ]
+  : array
 const arrayFindDelete = (array, find) => {
   const index = array.findIndex(find)
-  return ~index ? [ ...array.slice(0, index), ...array.slice(index + 1) ] : array
+  return ~index
+    ? [ ...array.slice(0, index), ...array.slice(index + 1) ]
+    : array
 }
 const arrayFindMove = (array, find, index) => {
   const fromIndex = array.findIndex(find)
-  const value = array[ fromIndex ]
-  return (!~fromIndex || fromIndex === index) ? array
-    : (fromIndex < index) ? [ ...array.slice(0, fromIndex), ...array.slice(fromIndex + 1, index + 1), value, ...array.slice(index + 1) ]
-      : [ ...array.slice(0, index), value, ...array.slice(index, fromIndex), ...array.slice(fromIndex + 1) ]
+  return ~fromIndex
+    ? arrayMove(array, index, fromIndex)
+    : array
 }
 const arrayFindSet = (array, find, value) => {
   const index = array.findIndex(find)
@@ -78,7 +90,7 @@ const arrayFindSet = (array, find, value) => {
   return result
 }
 
-export const ImmutableOperation = {
+export {
   objectSet,
   objectDelete,
   objectMerge,
@@ -86,6 +98,7 @@ export const ImmutableOperation = {
   arraySet,
   arrayDelete,
   arrayInsert,
+  arrayMove,
   arrayPush,
   arrayUnshift,
   arrayPop,

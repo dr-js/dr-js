@@ -1,4 +1,5 @@
 import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
+export { OPTION_CONFIG_PRESET } from './__utils__'
 
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',
@@ -181,36 +182,4 @@ const usageJSON = (formatList) => `{\n${stringIndentLine(formatList.map(formatUs
 const formatUsageJSON = (format) => `"${format.nameJSON}": [ "${formatUsageBase(format.name, format)}" ]` +
   (format.extendFormatList.length ? `\n${format.extendFormatList.map(formatUsageJSON).join('\n')}` : '')
 
-// TODO: can separate to normalize
-const normalizeToString = (argumentList) => argumentList.map(String)
-const normalizeToNumber = (argumentList) => argumentList.map(Number)
-const normalizeToInteger = (argumentList) => argumentList.map(parseInt)
-
-// TODO: can separate to verify
-const verifySingleString = (argumentList) => { if (argumentList.length !== 1 || typeof (argumentList[ 0 ]) !== 'string') throw new Error(`[verify] single String expected, get ${argumentList}`) }
-const verifySingleNumber = (argumentList) => { if (argumentList.length !== 1 || typeof (argumentList[ 0 ]) !== 'number') throw new Error(`[verify] single Number expected, get ${argumentList}`) }
-const verifySingleInteger = (argumentList) => { if (argumentList.length !== 1 || !Number.isInteger(argumentList[ 0 ])) throw new Error(`[verify] single Integer expected, get ${argumentList}`) }
-const verifyAllString = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (typeof (v) !== 'string') throw new Error(`[verify] String expected at #${index}, get ${v} in ${argumentList}`) }) }
-const verifyAllNumber = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (typeof (v) !== 'number') throw new Error(`[verify] Number expected at #${index}, get ${v} in ${argumentList}`) }) }
-const verifyAllInteger = (argumentList) => { argumentList.length && argumentList.some((v, index) => { if (!Number.isInteger(v)) throw new Error(`[verify] Integer expected at #${index}, get ${v} in ${argumentList}`) }) }
-const verifyOneOf = (selectList) => (argumentList) => { if (argumentList.length !== 1 || !selectList.includes(argumentList[ 0 ])) throw new Error(`[verify] unexpected selection, get ${argumentList}, expect ${descriptionOneOf(selectList)}`) }
-
-const descriptionOneOf = (selectList) => `one of:\n  ${selectList.join(', ')}`
-const getPreset = (argumentCount, argumentListNormalize, argumentListVerify, description) => ({ argumentCount, argumentListNormalize, argumentListVerify, description })
-
-const OPTION_CONFIG_PRESET = {
-  SingleString: getPreset(1, normalizeToString, verifySingleString),
-  SingleNumber: getPreset(1, normalizeToNumber, verifySingleNumber),
-  SingleInteger: getPreset(1, normalizeToInteger, verifySingleInteger),
-  AllString: getPreset('1+', normalizeToString, verifyAllString),
-  AllNumber: getPreset('1+', normalizeToNumber, verifyAllNumber),
-  AllInteger: getPreset('1+', normalizeToInteger, verifyAllInteger),
-  OneOfString: (selectList) => getPreset(1, normalizeToString, verifyOneOf(selectList), descriptionOneOf(selectList)),
-  OneOfNumber: (selectList) => getPreset(1, normalizeToNumber, verifyOneOf(selectList), descriptionOneOf(selectList)),
-  OneOfInteger: (selectList) => getPreset(1, normalizeToInteger, verifyOneOf(selectList), descriptionOneOf(selectList))
-}
-
-export {
-  createOptionParser,
-  OPTION_CONFIG_PRESET
-}
+export { createOptionParser }

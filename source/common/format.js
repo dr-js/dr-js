@@ -1,3 +1,9 @@
+const describe = (value) => {
+  const valueType = typeof (value)
+  const valueString = valueType === 'function' ? 'function' : JSON.stringify(value)
+  return `<${valueType}> ${valueString}`
+}
+
 const UP_THRESHOLD = 1.5
 
 const TIME_SEC = 1000
@@ -28,26 +34,32 @@ const replaceUnescapeHTML = (substring) => UNESCAPE_HTML_MAP[ substring ] || sub
 const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replaceUnescapeHTML)
 
 const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.split('\n').join(`\n${indentString}`)}`
-
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
-  (o, string, index) => index >= fromIndex ? o + string[ 0 ].toUpperCase() + string.slice(1) : o + string,
+  (o, string, index) => index >= fromIndex
+    ? o + string[ 0 ].toUpperCase() + string.slice(1)
+    : o + string,
   ''
 )
 
 const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
-const formatPadTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
+const padTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
   const widthMaxList = [] // get max width for each cell
   table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
   widthMaxList.forEach((v, index) => { padFuncList[ index ] = padFuncList[ index ] || DEFAULT_PAD_FUNC })
   return table.map((rowList) => rowList.map((text, index) => (padFuncList[ index ](text, widthMaxList[ index ]))).join(cellPad)).join(rowPad)
 }
 
+const formatPadTable = padTable // TODO: DEPRECATE
+
 export {
+  describe,
   time,
   binary,
   escapeHTML,
   unescapeHTML,
   stringIndentLine,
   stringListJoinCamelCase,
-  formatPadTable
+  padTable,
+
+  formatPadTable // TODO: DEPRECATE
 }

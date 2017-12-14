@@ -1,6 +1,6 @@
 import nodeModuleAssert from 'assert'
 import { URL } from 'url'
-import { createMinStateStore } from 'source/common/immutable'
+import { createStateStoreLite } from 'source/common/immutable'
 import {
   createRouteMap,
   createResponderRouter,
@@ -11,7 +11,7 @@ import {
 
 const { describe, it } = global
 
-describe('Node.Server.Responder', () => {
+describe('Node.Server.Responder.Router', () => {
   it('appendRouteMap()', () => {
     nodeModuleAssert.doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '', 'GET', () => {})
@@ -75,24 +75,24 @@ describe('Node.Server.Responder', () => {
   ]))
 
   it('createResponderRouter()', () => {
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'POST', url: new URL('aa://B/test-basic') }))) // no method 'POST' for route
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') }))) // wrong route
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') }))) // too much param
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') }))) // too much param
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') }))) // too few param
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') }))) // too few param
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') }))) // wrong frag
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'GET', url: new URL('aa://B/test') }))) // wrong method route pair
-    nodeModuleAssert.throws(() => responderRouter(createMinStateStore({ method: 'POST', url: new URL('aa://B/test/') }))) // wrong method route pair
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') }))) // no method 'POST' for route
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') }))) // wrong route
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') }))) // too much param
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') }))) // too much param
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') }))) // too few param
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') }))) // too few param
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') }))) // wrong frag
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') }))) // wrong method route pair
+    nodeModuleAssert.throws(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') }))) // wrong method route pair
     {
-      const store = createMinStateStore({ method: 'GET', url: new URL('aa://B/test-basic') })
+      const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-basic') })
       const { tag, route, paramMap } = responderRouter(store)
       nodeModuleAssert.equal(tag, 'A')
       nodeModuleAssert.equal(route, '/test-basic')
       nodeModuleAssert.equal(Object.keys(paramMap).length, 0)
     }
     {
-      const store = createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-any/a/b/c/d/e?f#g') })
+      const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-any/a/b/c/d/e?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
       nodeModuleAssert.equal(tag, 'B')
       nodeModuleAssert.equal(route, '/test-param-any/*')
@@ -100,7 +100,7 @@ describe('Node.Server.Responder', () => {
       nodeModuleAssert.equal(getRouteParamAny(store), 'a/b/c/d/e')
     }
     {
-      const store = createMinStateStore({ method: 'GET', url: new URL('aa://B/test-param-a/aaa-aaa?f#g') })
+      const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa-aaa?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
       nodeModuleAssert.equal(tag, 'C')
       nodeModuleAssert.equal(route, '/test-param-a/:param-a')
@@ -108,7 +108,7 @@ describe('Node.Server.Responder', () => {
       nodeModuleAssert.equal(getRouteParam(store, 'param-a'), 'aaa-aaa')
     }
     {
-      const store = createMinStateStore({ method: 'HEAD', url: new URL('aa://B/test-param-b/bbb-bbb/ccc-ccc/ddd-ddd/eee?f#g') })
+      const store = createStateStoreLite({ method: 'HEAD', url: new URL('aa://B/test-param-b/bbb-bbb/ccc-ccc/ddd-ddd/eee?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
       nodeModuleAssert.equal(tag, 'D')
       nodeModuleAssert.equal(route, '/test-param-b/:param-b/:param-c/:param-d/eee')

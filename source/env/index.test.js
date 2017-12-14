@@ -3,7 +3,7 @@ import { getGlobal, getEnvironment, getSystemEndianness, log, warn, error, asser
 
 const { describe, it } = global
 
-describe('Common.Env.utils', () => {
+describe('Env', () => {
   it('getGlobal() equal global in node', () => nodeModuleAssert.equal(getGlobal(), global))
 
   it('getEnvironment().environmentName should be node', () => nodeModuleAssert.equal(getEnvironment().environmentName, 'node'))
