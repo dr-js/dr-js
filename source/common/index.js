@@ -6,6 +6,7 @@ import * as Module from './module'
 import * as Function from './function'
 import * as Time from './time'
 import * as Format from './format'
+import * as Verify from './verify'
 
 export {
   Data,
@@ -15,5 +16,6 @@ export {
   Module,
   Function,
   Time,
-  Format
+  Format,
+  Verify
 }

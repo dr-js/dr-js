@@ -4,7 +4,7 @@ import { constants } from 'crypto'
 
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data'
-import { createMinStateStore } from 'source/common/immutable'
+import { createStateStoreLite } from 'source/common/immutable'
 import { responderEnd } from './Responder'
 
 const SSL_SESSION_CACHE_MAX = 5000
@@ -81,7 +81,7 @@ const createRequestListener = ({
   responderEnd = DEFAULT_RESPONSE_REDUCER_END
 }) => async (request, response) => {
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
-  const stateStore = createMinStateStore(GET_INITIAL_STORE_STATE())
+  const stateStore = createStateStoreLite(GET_INITIAL_STORE_STATE())
   stateStore.request = request
   stateStore.response = response
   try {

@@ -13,7 +13,7 @@ import {
 
 const { describe, it } = global
 
-describe('Node.Server', () => {
+describe('Node.Server.Server', () => {
   it('createServer()', async () => {
     const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 12345 })
 

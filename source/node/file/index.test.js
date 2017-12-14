@@ -38,7 +38,7 @@ after('clear', async () => {
   await modifyDirectory.delete(TEST_ROOT)
 })
 
-describe('Node.File.index', () => {
+describe('Node.File', () => {
   it('modifyFile() File', async () => {
     await modifyFile(MODIFY_TYPE.COPY, scriptFilePath0, scriptFilePath1)
     nodeModuleAssert.equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
