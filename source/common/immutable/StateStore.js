@@ -78,12 +78,8 @@ const createStateStoreEnhanced = ({
   return { subscribe, unsubscribe, getState, dispatch }
 }
 
-const createMinStateStore = createStateStoreLite // TODO: DEPRECATE
-
 export {
   createStateStore,
   createStateStoreLite,
-  createStateStoreEnhanced,
-
-  createMinStateStore // TODO: DEPRECATE
+  createStateStoreEnhanced
 }
