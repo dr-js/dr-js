@@ -25,6 +25,14 @@ const binary = (value) => value < BINARY_KIBI * UP_THRESHOLD ? `${Math.floor(val
     : value < BINARY_GIBI * UP_THRESHOLD ? `${(value / BINARY_MEBI).toFixed(2)}Mi`
       : `${(value / BINARY_GIBI).toFixed(2)}Gi`
 
+const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
+const padTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
+  const widthMaxList = [] // get max width for each cell
+  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
+  widthMaxList.forEach((v, index) => { padFuncList[ index ] = padFuncList[ index ] || DEFAULT_PAD_FUNC })
+  return table.map((rowList) => rowList.map((text, index) => (padFuncList[ index ](text, widthMaxList[ index ]))).join(cellPad)).join(rowPad)
+}
+
 const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }
 const replaceEscapeHTML = (substring) => ESCAPE_HTML_MAP[ substring ] || substring
 const escapeHTML = (text) => text && text.replace(/[&<>]/g, replaceEscapeHTML)
@@ -35,31 +43,22 @@ const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replac
 
 const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.split('\n').join(`\n${indentString}`)}`
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
-  (o, string, index) => index >= fromIndex
+  (o, string, index) => (index >= fromIndex)
     ? o + string[ 0 ].toUpperCase() + string.slice(1)
     : o + string,
   ''
 )
 
-const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
-const padTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
-  const widthMaxList = [] // get max width for each cell
-  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
-  widthMaxList.forEach((v, index) => { padFuncList[ index ] = padFuncList[ index ] || DEFAULT_PAD_FUNC })
-  return table.map((rowList) => rowList.map((text, index) => (padFuncList[ index ](text, widthMaxList[ index ]))).join(cellPad)).join(rowPad)
-}
-
-const formatPadTable = padTable // TODO: DEPRECATE
-
 export {
   describe,
+
   time,
   binary,
-  escapeHTML,
-  unescapeHTML,
-  stringIndentLine,
-  stringListJoinCamelCase,
   padTable,
 
-  formatPadTable // TODO: DEPRECATE
+  escapeHTML,
+  unescapeHTML,
+
+  stringIndentLine,
+  stringListJoinCamelCase
 }
