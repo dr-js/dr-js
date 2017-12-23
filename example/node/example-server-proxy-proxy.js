@@ -40,9 +40,9 @@ const responderProxy = async (store) => {
 }
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
-
 server.on('request', createRequestListener({
   responderList: [
+    (store) => { console.log(`[server] get: ${store.request.url}`) },
     createResponderParseURL(option),
     createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
@@ -53,6 +53,7 @@ server.on('request', createRequestListener({
     ]))
   ]
 }))
+console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
 
 const webSocketSet = enableWebSocketServer({
   server,
