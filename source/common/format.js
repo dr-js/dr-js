@@ -10,6 +10,7 @@ const TIME_SEC = 1000
 const TIME_MIN = 60 * TIME_SEC
 const TIME_HOUR = 60 * TIME_MIN
 const TIME_DAY = 24 * TIME_HOUR
+// value should be msec
 const time = (value) => value < TIME_SEC * UP_THRESHOLD ? `${Math.floor(value)}ms`
   : value < TIME_MIN * UP_THRESHOLD ? `${(value / TIME_SEC).toFixed(2)}s`
     : value < TIME_HOUR * UP_THRESHOLD ? `${(value / TIME_MIN).toFixed(2)}m`

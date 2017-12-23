@@ -15,8 +15,8 @@ const parseOptionMap = async ({ parseCLI, parseENV, parseJSON, processOptionMap 
   return optionMap
 }
 
-const getOptionOptional = (optionMap, name) => optionMap[ name ] && optionMap[ name ].argumentList
-const getSingleOptionOptional = (optionMap, name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
+const getOptionOptional = (optionMap, name) => optionMap[ name ] ? optionMap[ name ].argumentList : undefined
+const getSingleOptionOptional = (optionMap, name) => optionMap[ name ] ? optionMap[ name ].argumentList[ 0 ] : undefined
 const getOption = (optionMap, name, argumentCount) => {
   const argumentList = getOptionOptional(optionMap, name)
   if (!argumentList) throw new Error(`[parseOption] expecting option ${name}`)

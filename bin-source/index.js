@@ -5,7 +5,7 @@ import nodeModuleOs from 'os'
 import PackageJSON from 'package.json'
 import { Env, Node } from 'module/Dr.node'
 import { parseOption, exitWithError } from './option'
-import { createServerServeStatic, getPathContent } from './server-serve-static'
+import { createServerServeStatic, autoTestServerPort, getPathContent } from './server-serve-static'
 
 const { systemEndianness } = Env
 const { modify, getFileList, createDirectory } = Node.File
@@ -13,9 +13,12 @@ const { modify, getFileList, createDirectory } = Node.File
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
 const main = async () => {
-  const { optionMap, getOption, getSingleOption, getSingleOptionOptional } = await parseOption()
+  const { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional } = await parseOption()
 
-  const argumentRootPath = optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON' ? nodeModulePath.dirname(getSingleOption(optionMap, 'config')) : process.cwd())
+  const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
+    ? nodeModulePath.dirname(getSingleOption(optionMap, 'config'))
+    : process.cwd())
+
   const resolveArgumentPath = (path) => nodeModulePath.resolve(argumentRootPath, path)
 
   try {
@@ -63,7 +66,7 @@ const main = async () => {
       case 'sss':
       case 'server-serve-static-simple':
       case 'ssss':
-        const [ relativeStaticRoot, hostname = '0.0.0.0', port = 80 ] = getOption(optionMap, 'argument')
+        const [ relativeStaticRoot = '.', hostname = '0.0.0.0', port = await autoTestServerPort(80, hostname) ] = getOptionOptional(optionMap, 'argument') || []
         const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
         return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe })
     }

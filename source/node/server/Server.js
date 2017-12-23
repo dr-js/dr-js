@@ -1,3 +1,4 @@
+import nodeModuleNet from 'net'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
 import { constants } from 'crypto'
@@ -90,4 +91,15 @@ const createRequestListener = ({
   await responderEnd(stateStore)
 }
 
-export { createServer, createRequestListener }
+// set to non-zero to check if that port is available
+const getUnusedPort = (expectPort = 0, host = '0.0.0.0') => new Promise((resolve, reject) => {
+  const server = nodeModuleNet.createServer()
+  server.on('error', reject)
+  server.listen({ host, port: expectPort, exclusive: true }, (error) => {
+    if (error) return reject(error)
+    const { port } = server.address()
+    server.close(() => resolve(port))
+  })
+})
+
+export { createServer, createRequestListener, getUnusedPort }

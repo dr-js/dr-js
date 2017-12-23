@@ -12,7 +12,7 @@ import {
   loadLocalScript,
   loadLocalJSON
 } from './resource'
-import { createServer, createRequestListener, Responder } from 'source/node/server'
+import { createServer, createRequestListener, getUnusedPort, Responder } from 'source/node/server'
 import { setTimeoutAsync } from 'source/common/time'
 
 const {
@@ -26,9 +26,8 @@ const {
 
 const { describe, it } = global
 
-let serverPort = 12345
 const withTestServer = (asyncTest) => async () => {
-  const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: serverPort++ })
+  const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
   let retryCount = 0
   server.on('request', createRequestListener({
     responderList: [

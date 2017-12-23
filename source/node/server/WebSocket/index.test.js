@@ -1,5 +1,5 @@
 import nodeModuleAssert from 'assert'
-import { createServer } from '../Server'
+import { createServer, getUnusedPort } from '../Server'
 import { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient, enableWebSocketServer } from './index'
 
 const { describe, it } = global
@@ -10,7 +10,10 @@ const TEST_BUFFER = Buffer.allocUnsafe(8 * 1024 * 1024)
 
 describe('Node.Server.WebSocket', () => {
   it('enableWebSocketServer + createWebSocketClient', async () => {
-    const { server, start, stop } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
+    const serverHostname = 'localhost'
+    const serverPort = await getUnusedPort()
+
+    const { server, start, stop } = createServer({ protocol: 'http:', hostname: serverHostname, port: serverPort })
     const webSocketSet = enableWebSocketServer({
       server,
       onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
@@ -32,7 +35,7 @@ describe('Node.Server.WebSocket', () => {
     start()
 
     const webSocket = await new Promise((resolve, reject) => createWebSocketClient({
-      urlString: 'ws://localhost:3000',
+      urlString: `ws://${serverHostname}:${serverPort}`,
       option: { requestProtocolString: TEST_PROTOCOL_LIST.join(',') },
       onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
         webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => resolve(webSocket))

@@ -1,6 +1,7 @@
 import nodeModuleAssert from 'assert'
+import nodeModuleChildProcess from 'child_process'
 import { fetch } from '../resource'
-import { createServer, createRequestListener } from './Server'
+import { createServer, createRequestListener, getUnusedPort } from './Server'
 import {
   responderSendBuffer,
   responderSendJSON,
@@ -15,7 +16,7 @@ const { describe, it } = global
 
 describe('Node.Server.Server', () => {
   it('createServer()', async () => {
-    const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 12345 })
+    const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
 
     server.on('request', createRequestListener({
       responderList: [
@@ -49,6 +50,41 @@ describe('Node.Server.Server', () => {
     nodeModuleAssert.deepEqual(
       await fetch(`${option.baseUrl}/test-json`).then((response) => response.json()),
       { testKey: 'testValue' }
+    )
+
+    stop()
+  })
+
+  it('getUnusedPort() single', async () => {
+    const port = await getUnusedPort()
+
+    nodeModuleAssert.strictEqual(typeof (port), 'number')
+  })
+
+  it('getUnusedPort() multiple', async () => {
+    const portList = await Promise.all([
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort(),
+      getUnusedPort()
+    ])
+
+    nodeModuleAssert.strictEqual(portList.length, new Set(portList).size)
+  })
+
+  it('getUnusedPort() check', async () => {
+    const port = await getUnusedPort()
+
+    const { start, stop } = createServer({ protocol: 'http:', hostname: '0.0.0.0', port })
+    start()
+
+    await getUnusedPort(port, '0.0.0.0').then(
+      () => { throw new Error('should throw port token error') },
+      (error) => `good, expected Error: ${error}`
     )
 
     stop()
