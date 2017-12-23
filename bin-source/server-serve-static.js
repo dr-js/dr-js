@@ -1,14 +1,14 @@
 import nodeModulePath from 'path'
 import { Common, Node } from 'module/Dr.node'
 
-const { Module: { BASIC_EXTENSION_MAP }, Format: { escapeHTML, stringIndentLine } } = Common
+const { Module: { BASIC_EXTENSION_MAP }, Format, Time } = Common
 const {
   File: { FILE_TYPE, getDirectoryContent, createGetPathFromRoot },
   System: { getNetworkIPv4AddressList },
   Server: {
-    createServer, createRequestListener,
+    createServer, createRequestListener, getUnusedPort,
     Responder: {
-      responderEndWithRedirect,
+      responderEnd, responderEndWithRedirect,
       responderSendBuffer,
       createResponderRouter, createRouteMap, getRouteParamAny,
       createResponderParseURL,
@@ -33,16 +33,29 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
         [ [ '/', '/list' ], 'GET', responderRedirectFilePathList ],
         [ '/favicon.ico', 'GET', responderSendFavicon ]
       ]))
-    ]
+    ],
+    responderEnd: async (store) => {
+      await responderEnd(store)
+      const { time, method } = store.getState()
+      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(Time.clock() - time)})`)
+    }
   }))
   start()
   console.log(`[ServerServeStatic] <${isSimpleServe ? 'no-list' : 'with-list'}>`)
-  console.log(`  running at:\n    - '${protocol}//${hostname}:${port}'`)
   console.log(`  staticRoot:\n    - '${staticRoot}'`)
-  hostname === '0.0.0.0' && console.log(`  connect at:\n${stringIndentLine(
+  console.log(`  running at:\n    - '${protocol}//${hostname}:${port}'`)
+  hostname === '0.0.0.0' && console.log(`  connect at:\n${Format.stringIndentLine(
     getNetworkIPv4AddressList().map(({ address }) => `'${protocol}//${address}:${port}'`).join('\n'),
     '    - '
   )}`)
+}
+
+const autoTestServerPort = async (expectPort, host) => {
+  try {
+    await getUnusedPort(expectPort, host) // expected
+    return expectPort
+  } catch (error) { __DEV__ && console.log(`[autoTestServerPort] failed for expectPort: ${expectPort}`, error) }
+  return getUnusedPort(0, host) // any
 }
 
 const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }
@@ -71,7 +84,7 @@ const renderUpperListPath = (path) => `<a href="${formatPathHref('/list', nodeMo
 const renderListPath = (path, name) => `<a href="${formatPathHref('/list', path, name)}">📁|${formatPathHTML(name)}</a>`
 const renderFilePath = (path, name) => `<a href="${formatPathHref('/file', path, name)}">📄|${formatPathHTML(name)}</a>`
 const formatPathHref = (...args) => encodeURI(normalizePathSeparator(nodeModulePath.join(...args)))
-const formatPathHTML = (name) => escapeHTML(normalizePathSeparator(name))
+const formatPathHTML = (name) => Format.escapeHTML(normalizePathSeparator(name))
 const normalizePathSeparator = nodeModulePath.sep === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
 const renderHTML = (titleHTML, HTMLFragList) => `<!DOCTYPE html>
 <meta charset="utf-8">
@@ -84,4 +97,4 @@ a:hover { background: #eee; }
 </style>
 <pre style="display: flex; flex-flow: column;">${HTMLFragList.join('\n')}</pre>`
 
-export { createServerServeStatic, getPathContent }
+export { createServerServeStatic, autoTestServerPort, getPathContent }
