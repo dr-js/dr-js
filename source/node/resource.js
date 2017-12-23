@@ -13,32 +13,61 @@ const readFileAsync = promisify(nodeModuleFs.readFile)
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 
 // TODO: native fetch do not have a timeout, yet?
-// TODO: currently should call end to drop connection
+// NOTE:
+//   currently should call one of `buffer, text, json` to receive data.
+//   These method can only be called once.
+//   If not, on nextTick, the data will be dropped.
+const DATA_STATE = {
+  PENDING: 'PENDING',
+  RECEIVING: 'RECEIVING',
+  CLOSED: 'CLOSED'
+}
 const fetch = async (url, config = {}) => {
   const { method, headers, body = null, timeout = DEFAULT_TIMEOUT } = config
   const option = { ...urlToOption(new URL(url)), method, headers, timeout } // will result in error if timeout
   const response = await requestAsync(option, body)
   const status = response.statusCode
   const ok = (status >= 200 && status < 300)
-  const buffer = () => receiveBufferAsync(response)
+  let responseDataState = DATA_STATE.PENDING
+  let bufferCache
+  process.nextTick(() => {
+    if (responseDataState === DATA_STATE.RECEIVING) return
+    responseDataState = DATA_STATE.CLOSED
+    response.destroy() // drop response data
+  })
+  const buffer = async () => {
+    if (bufferCache === undefined) {
+      if (responseDataState !== DATA_STATE.PENDING) throw new Error('[fetch] data already dropped, should call receive data immediately')
+      responseDataState = DATA_STATE.RECEIVING
+      bufferCache = await receiveBufferAsync(response)
+      responseDataState = DATA_STATE.CLOSED
+    }
+    return bufferCache
+  }
   const text = () => buffer().then((buffer) => buffer.toString())
   const json = () => text().then((text) => JSON.parse(text))
-  const end = () => response.destroy()
+  const end = () => {} // TODO: DEPRECATED
   return { status, ok, buffer, text, json, end }
 }
 
 const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, username, password }) => {
-  const option = { protocol, hostname, href, hash, search, pathname, path: `${pathname}${search}` }
+  const option = { protocol, hostname, hash, search, pathname, href, path: `${pathname}${search}` }
   if (port !== '') option.port = Number(port)
   if (username || password) option.auth = `${username}:${password}`
   return option
 }
+
 const requestAsync = (option, body) => new Promise((resolve, reject) => {
   const request = (option.protocol === 'https:' ? nodeModuleHttps : nodeModuleHttp).request(option, resolve)
-  request.on('timeout', reject)
-  request.on('error', reject)
+  const endWithError = (error) => {
+    request.destroy()
+    reject(error)
+  }
+  request.on('timeout', endWithError)
+  request.on('error', endWithError)
   request.end(body)
 })
+
 const receiveBufferAsync = (readableStream) => new Promise((resolve, reject) => {
   const data = []
   readableStream.on('error', reject)
@@ -84,28 +113,24 @@ const pingRequestAsync = async ({ url, body, timeout = 5000, retryCount = 0, ...
   }
 }
 
-const loadScript = (src) => src.includes('://') ? loadRemoteScript(src) : loadLocalScript(src)
+// TODO: check if is needed?
+const loadScript = (src, contextObject) => src.includes('://') ? loadRemoteScript(src, contextObject) : loadLocalScript(src, contextObject)
 const loadJSON = (src) => src.includes('://') ? loadRemoteJSON(src) : loadLocalJSON(src)
-const loadRemoteScript = async (src) => {
+const loadRemoteScript = async (src, contextObject) => {
   const response = await fetch(src)
-  return nodeModuleVm.runInThisContext(await response.text(), { filename: src })
+  return nodeModuleVm.runInNewContext(await response.text(), contextObject, { filename: src })
 }
 const loadRemoteJSON = async (src) => {
   const response = await fetch(src)
-  return parseJSON(await response.text())
+  return response.json()
 }
-const loadLocalScript = async (src) => {
+const loadLocalScript = async (src, contextObject) => {
   const filePath = getLocalPath(src)
-  return nodeModuleVm.runInThisContext(await readFileAsync(filePath, { encoding: 'utf8' }), { filename: filePath })
+  return nodeModuleVm.runInNewContext(await readFileAsync(filePath, 'utf8'), contextObject, { filename: filePath })
 }
 const loadLocalJSON = async (src) => {
   const filePath = getLocalPath(src)
-  return parseJSON(await readFileAsync(filePath, { encoding: 'utf8' }))
-}
-
-const parseJSON = (fileString) => {
-  const stringList = fileString.split('\n').forEach((v) => v.replace(/\/\/.*/, '')) // support single line comment like '// ...'
-  return JSON.parse(stringList.join('\n'))
+  return JSON.parse(await readFileAsync(filePath, 'utf8'))
 }
 
 export {
