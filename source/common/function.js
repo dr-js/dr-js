@@ -17,7 +17,7 @@ const debounce = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
-// inactive for `wait` time
+// inactive for `wait` time, will drop arguments during inactive time
 const throttle = (func, wait = 250, isLeadingEdge = false) => {
   let timeoutToken = null
   return (...args) => {
@@ -62,24 +62,29 @@ const createInsideOutPromise = () => {
   }
 }
 
-// for dynamic appending tasks, use createAsyncTaskQueue
-const promiseQueue = async ({ taskList, shouldContinueOnError = false }) => {
+// for dynamic appending tasks, use `Common.Module.createAsyncTaskQueue`
+const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) => {
   const resultList = []
   const errorList = []
   const endList = []
-  const pendingList = [ ...taskList ]
+  const pendingList = [ ...asyncTaskList ] // do not change original asyncTaskList
   while (pendingList.length) {
     const index = endList.length
-    const task = pendingList.shift()
-    endList.push(task)
+    const asyncTask = pendingList.shift()
+    endList.push(asyncTask) // this asyncTask will end either way
     try {
-      resultList[ index ] = await task()
+      resultList[ index ] = await asyncTask()
     } catch (error) {
       errorList[ index ] = error
       if (!shouldContinueOnError) break
     }
   }
-  return { resultList, errorList, endList, pendingList }
+  return {
+    resultList,
+    errorList,
+    endList,
+    pendingList // normally empty. If shouldContinueOnError and got error, this list will have some pending asyncTask
+  }
 }
 
 export {
