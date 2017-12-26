@@ -1,37 +1,4 @@
-const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
-
-// TODO: just use native fetch
-// TODO: native fetch do not have a timeout, yet?
-const fetch = (url, config = {}) => new Promise((resolve, reject) => {
-  const { method = 'GET', headers, body = null, credentials, timeout = DEFAULT_TIMEOUT } = config
-  const request = new window.XMLHttpRequest()
-  request.open(method, url, true)
-  if (headers) for (const [ key, value ] of Object.entries(headers)) request.setRequestHeader(key, value)
-  if ([ 'same-origin', 'include' ].includes(credentials)) request.withCredentials = true
-  request.timeout = timeout
-  request.addEventListener('error', () => {
-    __DEV__ && console.warn('[fetch] error', url, method)
-    reject(new Error('error-message-fetch-error'))
-  })
-  request.addEventListener('timeout', () => {
-    __DEV__ && console.warn('[fetch] timeout', url, method)
-    request.abort()
-    reject(new Error('error-message-fetch-timeout'))
-  })
-  request.addEventListener('load', () => {
-    __DEV__ && console.log('[fetch] load', url, method)
-    const { status, response, responseText } = request
-    const responseString = String(response || responseText)
-    resolve({
-      status,
-      ok: status < 200 || status >= 300,
-      text: () => responseString,
-      json: () => JSON.parse(responseString)
-    })
-  })
-  request.send(body)
-  __DEV__ && console.log('[fetch] start', url, method)
-})
+const { fetch } = window
 
 const loadText = (src) => fetch(src)
   .then((result) => result.text())
@@ -66,7 +33,7 @@ const createDownloadText = (fileName, text) => createDownload(fileName, `data:te
 const createDownloadBlob = (fileName, data) => createDownload(fileName, window.URL.createObjectURL(new window.Blob(data)))
 
 export {
-  fetch,
+  fetch, // TODO: DEPRECATED: use window.fetch
 
   loadText,
   loadImage,

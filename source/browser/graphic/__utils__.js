@@ -227,7 +227,7 @@ const CANVAS_IMAGE_DATA_OPERATION = {
     }
   },
   drawPixelLineList: (imageData, pointList, color, isLoop) => {
-    if (pointList.length <= 1) throw new Error('[drawPixelLineList] error pointList length:', pointList.length)
+    if (pointList.length <= 1) throw new Error(`[drawPixelLineList] error pointList length: ${pointList.length}`)
     let fromPoint = isLoop ? pointList[ pointList.length - 1 ] : pointList[ 0 ]
     let pointIndex = isLoop ? 0 : 1
     while (pointIndex < pointList.length) {

@@ -28,7 +28,7 @@ describe('Common.Data.CacheMap', () => {
 
   describe('CacheMap.set size busted', () => {
     const { cacheMap, dataList } = getTestData(3)
-    dataList.forEach(({ key, value }, index) => cacheMap.set(key, value))
+    dataList.forEach(({ key, value }) => cacheMap.set(key, value))
     cacheMap.set(dataList[ 0 ].key, dataList[ 0 ].value)
     cacheMap.set(dataList[ 0 ].key, dataList[ 0 ].value)
     cacheMap.set(dataList[ 1 ].key, dataList[ 1 ].value)

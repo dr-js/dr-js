@@ -1,5 +1,4 @@
 import nodeModuleAssert from 'assert'
-import nodeModuleChildProcess from 'child_process'
 import { fetch } from '../resource'
 import { createServer, createRequestListener, getUnusedPort } from './Server'
 import {

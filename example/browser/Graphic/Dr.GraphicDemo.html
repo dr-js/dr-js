@@ -1,70 +1,77 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
-    <link href="../../resource/favicon.ico" rel="shortcut icon">
-    <link href="../index.css" rel="stylesheet" type="text/css">
-    <style>
-        canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; }
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <title>Dr.Graphic Demo Page</title>
+  <link rel="icon" href="../../resource/favicon.ico">
+  <link rel="stylesheet" href="../../resource/reset.css">
+  <style>
+    .box, .flex-row, .flex-column { max-width: 100%; max-height: 100%; }
 
-        #FPS { font-size: 0.9em; color: #900; }
+    .box { overflow: auto; padding: 16px; }
 
-        #Log { font-size: 0.6em; color: #666; }
-    </style>
-    <title>Dr.Graphic Demo Page</title>
+    .flex-row { display: flex; flex-flow: row wrap; }
+
+    .flex-column { display: flex; flex-flow: column wrap; }
+
+    .pixelated { image-rendering: optimizeSpeed; /* Legal fallback */ image-rendering: pixelated; /* CSS4 Proposed */ }
+
+    canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; }
+
+    #root { overflow: auto; width: 100vw; min-height: 100vh; align-items: center; font-family: monospace; }
+
+    #FPS { font-size: 12px; color: #900; }
+
+    #Log { font-size: 10px; color: #666; }
+  </style>
 </head>
 <body>
-<div id="page-content" class="align-center text-center">
-    <div><p>This page is for <b>Dr.Graphic develop</b> use</p></div>
+<div id="root" class="flex-column">
+  <div class="flex-row">
+    <div class="flex-column box">
+      <button onclick="Toggle('DRAW_IMAGE_ELEMENT')">DRAW_IMAGE_ELEMENT</button>
+      <button onclick="Toggle('DRAW_CANVAS_ELEMENT')">DRAW_CANVAS_ELEMENT</button>
+      <button onclick="Toggle('DRAW_CANVAS_IMAGE_DATA')">DRAW_CANVAS_IMAGE_DATA</button>
+    </div>
+    <div class="flex-column box">
+      <button onclick="Toggle('DRAW_COUNT', 10)">DRAW_COUNT 10</button>
+      <button onclick="Toggle('DRAW_COUNT', 100)">DRAW_COUNT 100</button>
+      <button onclick="Toggle('DRAW_COUNT', 500)">DRAW_COUNT 500</button>
+      <button onclick="Toggle('DRAW_COUNT', 1000)">DRAW_COUNT 1000</button>
+      <button onclick="Toggle('DRAW_COUNT', 5000)">DRAW_COUNT 5000</button>
+      <button onclick="Toggle('DRAW_COUNT', 10000)">DRAW_COUNT 10000</button>
+    </div>
+  </div>
 
-    <div>
-        <button onclick="Toggle('DRAW_IMAGE_ELEMENT')">DRAW_IMAGE_ELEMENT</button>
-        <button onclick="Toggle('DRAW_CANVAS_ELEMENT')">DRAW_CANVAS_ELEMENT</button>
-        <button onclick="Toggle('DRAW_CANVAS_IMAGE_DATA')">DRAW_CANVAS_IMAGE_DATA</button>
-        <br />
-        <br />
-        <button onclick="Toggle('DRAW_COUNT', 10)">DRAW_COUNT 10</button>
-        <button onclick="Toggle('DRAW_COUNT', 100)">DRAW_COUNT 100</button>
-        <button onclick="Toggle('DRAW_COUNT', 500)">DRAW_COUNT 500</button>
-        <button onclick="Toggle('DRAW_COUNT', 1000)">DRAW_COUNT 1000</button>
-        <button onclick="Toggle('DRAW_COUNT', 5000)">DRAW_COUNT 5000</button>
-        <button onclick="Toggle('DRAW_COUNT', 10000)">DRAW_COUNT 10000</button>
+  <div class="flex-row box">
+    <div class="box">
+      <canvas id="Dr.Canvas" class="pixelated" width="300" height="600"></canvas>
     </div>
 
-    <br />
-    <canvas id="Dr.Canvas" class="pixelated" width="300" height="600"></canvas>
-    <br />
-    <img id="testImageElement" src="" />
-    <canvas id="testCanvasElement" class="pixelated" width="300" height="50"></canvas>
-    <canvas id="testCanvasImageData" class="pixelated" width="300" height="50"></canvas>
-    <br />
-
-    <br />
-    <input id="textSoftKeyboardInput" style="position: absolute; z-index: -2; width: 400px; height: 1px;" />
-    <textarea id="textSoftKeyboardTextarea" style="position: absolute; z-index: -1; width: 1px; height: 1px;"></textarea>
-    <canvas id="testFont" class="pixelated" width="400" height="200"></canvas>
-    <br />
-    <canvas id="testFontBitmap" class="pixelated" width="400" height="200"></canvas>
-    <br />
-</div>
-
-<div class="fixed-placeholder">
-    <div class="fixed-top text-left" style="z-index: -1;">
-        <p id="FPS">FPS</p>
-        <p id="Log" class="text-left">Log</p>
+    <div class="flex-column box">
+      <img id="testImageElement" src="" />
+      <canvas id="testCanvasElement" class="pixelated" width="300" height="50"></canvas>
+      <canvas id="testCanvasImageData" class="pixelated" width="300" height="50"></canvas>
     </div>
-</div>
-</body>
+  </div>
 
-<script type="text/javascript">
+  <textarea id="textSoftKeyboardTextarea" style="position: absolute; z-index: -1; width: 1px; height: 1px;"></textarea>
+  <canvas id="testFont" class="pixelated" width="400" height="200"></canvas>
+  <canvas id="testFontBitmap" class="pixelated" width="400" height="200"></canvas>
+</div>
+<div style="position: fixed; top: 0; left: 0; width: 100%; z-index: -1;">
+  <pre id="FPS">FPS</pre>
+  <pre id="Log">Log</pre>
+</div>
+<script>
   const fitCanvas = (canvas, devicePixelRatio = window.devicePixelRatio || 1) => {
     const width = canvas.width || parseInt(canvas.style.width)
     const height = canvas.height || parseInt(canvas.style.height)
     const scale = Math.min(document.body.offsetWidth * 0.9, width) / width
-    canvas.width = parseInt(devicePixelRatio * scale * width)
-    canvas.height = parseInt(devicePixelRatio * scale * height)
-    canvas.style.width = parseInt(scale * width) + 'px'
-    canvas.style.height = parseInt(scale * height) + 'px'
+    canvas.width = Math.floor(devicePixelRatio * scale * width)
+    canvas.height = Math.floor(devicePixelRatio * scale * height)
+    canvas.style.width = `${Math.floor(scale * width)}px`
+    canvas.style.height = `${Math.floor(scale * height)}px`
   }
 
   window.addEventListener('load', () => {
@@ -98,8 +105,7 @@
     testCanvasImageDataContext2d.fillText('CanvasImageData', 0, testCanvasImageData.height * 0.5)
   })
 </script>
-
 <script src="../../../library/Dr.browser.js"></script>
 <script src="index.js"></script>
-
+</body>
 </html>
