@@ -3,7 +3,7 @@ import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module'
 import { receiveBufferAsync, sendBufferAsync, pipeStreamAsync } from 'source/node/resource'
 
 const responderEnd = (store) => {
-  if (store.response.finished) return store // TODO: NOTE: normally this should be it, the request is handled and response ended
+  if (store.response.finished) return store // NOTE: normally this should be it, the request is handled and response ended
   const { error } = store.getState()
   !store.response.headersSent && store.response.writeHead(error ? 500 : 400)
   __DEV__ && error && store.response.write(`[ERROR] ${store.request.method}: ${store.request.url}\n${error.message}\n${error.stack}`)

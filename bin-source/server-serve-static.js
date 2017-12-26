@@ -69,7 +69,6 @@ const getPathContent = async (rootPath) => { // The resulting path is normalized
   return { directoryList, fileList }
 }
 
-// TODO: make reusable
 const responderFilePathList = async (store, rootPath, staticRoot) => {
   const relativeRootPath = nodeModulePath.relative(staticRoot, rootPath)
   const titleHTML = `/${formatPathHTML(relativeRootPath)}`
