@@ -41,10 +41,11 @@ const createStateStoreEnhanced = ({
 
   const rootDispatch = (action) => {
     dispatchingState = getStoreState()
-    isDispatching = true
 
+    isDispatching = true
     enhancer(enhancerStore, action)
     if (!dispatchingState) throw new Error(`[rootDispatch] dispatchingState from enhancer is invalid, get: ${JSON.stringify(dispatchingState)}`)
+    isDispatching = false
 
     isReducing = true
     const nextState = reducer(dispatchingState, action)
@@ -52,7 +53,6 @@ const createStateStoreEnhanced = ({
     isReducing = false
 
     dispatchingState = null
-    isDispatching = false
   }
 
   const subDispatch = (action) => {
