@@ -19,7 +19,7 @@ const createHistoryStateStore = (state = window.location.href) => {
   const listenerSet = new Set()
   const subscribe = (listener) => {
     listenerSet.add(listener)
-    if (listenerSet.size !== 0) return
+    if (listenerSet.size !== 1) return
     window.addEventListener('popstate', listenerPopState)
     window.addEventListener('hashchange', listenerHashChange)
   }
