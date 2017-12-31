@@ -31,4 +31,4 @@ export {
   createResponderLogRequestHeader,
   createResponderLogTimeStep,
   createResponderLogEnd
-} from './Statistic'
+} from './Statistic' // TODO: DEPRECATED

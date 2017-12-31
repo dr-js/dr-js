@@ -1,45 +1,67 @@
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
 const { promisify } = require('util')
-const Dr = require('../../library/Dr.node')
+const { Common, Node } = require('../../library/Dr.node')
 
+const readFileAsync = promisify(nodeModuleFs.readFile)
+
+const { Time: { clock }, Format } = Common
 const {
   File: { createGetPathFromRoot },
   Server: {
     createServer, createRequestListener,
     Responder: {
-      responderSendBuffer,
+      responderEnd,
       createResponderParseURL,
       createResponderRouter, createRouteMap, getRouteParamAny,
-      createResponderServeStatic,
-      createResponderLogRequestHeader, createResponderLogTimeStep, createResponderLogEnd
+      createResponderServeStatic
     },
     WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
   }
-} = Dr.Node
-
-const readFileAsync = promisify(nodeModuleFs.readFile)
+} = Node
 
 const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
-const faviconBufferData = { buffer: nodeModuleFs.readFileSync(fromPath('../resource/favicon.ico')), type: 'image/png' }
 const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
+const responderLogHeader = (store) => {
+  const { url, method, headers, socket: { remoteAddress, remotePort } } = store.request
+  const host = headers[ 'host' ] || ''
+  const userAgent = headers[ 'user-agent' ] || ''
+  console.log(`${new Date().toISOString()} [REQUEST] ${method} ${host}${url} ${remoteAddress}:${remotePort} ${userAgent}`)
+}
+const responderLogTimeStep = () => (store) => {
+  const state = store.getState()
+  const stepTime = clock()
+  console.log(`${new Date().toISOString()} [STEP] ${Format.time(stepTime - (state.stepTime || state.time))}`)
+  store.setState({ stepTime })
+}
+const responderLogEnd = (store) => {
+  const state = store.getState()
+  __DEV__ && state.error && console.error(state.error)
+  const errorLog = state.error
+    ? `[ERROR] ${store.request.method} ${store.request.url} ${store.response.finished ? 'finished' : 'not-finished'} ${state.error}`
+    : ''
+  console.log(`${new Date().toISOString()} [END] ${Format.time(clock() - state.time)} ${store.response.statusCode} ${errorLog}`)
+}
 const responderServeStatic = createResponderServeStatic({})
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
 server.on('request', createRequestListener({
   responderList: [
-    createResponderLogRequestHeader((data) => console.log('[LogRequestHeader]', data)),
+    responderLogHeader,
     createResponderParseURL(option),
-    createResponderLogTimeStep((timeStep) => console.log('[LogTimeStep]', timeStep)),
+    responderLogTimeStep,
     createResponderRouter(createRouteMap([
-      [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
+      [ '/favicon.ico', 'GET', (store) => responderServeStatic(store, fromStaticRoot('resource/favicon.ico')) ],
       [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
-    ])),
-    createResponderLogEnd((data) => console.log('[LogEnd]', data))
-  ]
+    ]))
+  ],
+  responderEnd: async (store) => {
+    await responderEnd(store)
+    await responderLogEnd(store)
+  }
 }))
 
 const webSocketSet = enableWebSocketServer({

@@ -21,7 +21,7 @@ const createResponderLogEnd = (doLog) => (store) => {
   doLog({ duration, finished, statusCode }, state)
 }
 
-export {
+export { // TODO: DEPRECATED
   createResponderLogRequestHeader,
   createResponderLogTimeStep,
   createResponderLogEnd
