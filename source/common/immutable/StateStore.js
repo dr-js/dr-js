@@ -43,16 +43,17 @@ const createStateStoreEnhanced = ({
     dispatchingState = getStoreState()
 
     isDispatching = true
-    enhancer(enhancerStore, action)
+    enhancer(enhancerStore, action) // may trigger deeper dispatch
     if (!dispatchingState) throw new Error(`[rootDispatch] dispatchingState from enhancer is invalid, get: ${JSON.stringify(dispatchingState)}`)
     isDispatching = false
 
     isReducing = true
-    const nextState = reducer(dispatchingState, action)
-    setStoreState(nextState)
+    const nextState = reducer(dispatchingState, action) // should not trigger dispatch
     isReducing = false
 
     dispatchingState = null
+
+    setStoreState(nextState) // may trigger deeper dispatch
   }
 
   const subDispatch = (action) => {
