@@ -14,8 +14,8 @@ const DEFAULT_GET_LOG_FILE_NAME = (prefixLogFile) => `${getRandomId(prefixLogFil
 
 const createLogger = async ({
   pathLogDirectory,
-  prefixLogFile = '',
   getLogFileName = DEFAULT_GET_LOG_FILE_NAME,
+  prefixLogFile = '', // TODO: DEPRECATED, use getLogFileName
   queueLengthThreshold,
   fileSplitInterval = FILE_SPLIT_INTERVAL,
   flag,
