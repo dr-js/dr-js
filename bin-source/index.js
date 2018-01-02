@@ -66,7 +66,7 @@ const main = async () => {
       case 'sss':
       case 'server-serve-static-simple':
       case 'ssss':
-        const [ relativeStaticRoot = '.', hostname = '0.0.0.0', port = await autoTestServerPort(80, hostname) ] = getOptionOptional(optionMap, 'argument') || []
+        const [ relativeStaticRoot = '.', hostname = '0.0.0.0', port = await autoTestServerPort([ 80, 8080, 8888 ], hostname) ] = getOptionOptional(optionMap, 'argument') || []
         const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
         return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe })
     }

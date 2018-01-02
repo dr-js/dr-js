@@ -1483,9 +1483,9 @@ domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
-dr-js@^0.9.1:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.9.1.tgz#0c73211745c4d1aa553f54cd3c2b333a292924ea"
+dr-js@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.9.2.tgz#a2fcede428bdbf4d43055bf8ccca9b6313f7377f"
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"

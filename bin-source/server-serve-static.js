@@ -50,11 +50,13 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
   )}`)
 }
 
-const autoTestServerPort = async (expectPort, host) => {
-  try {
-    await getUnusedPort(expectPort, host) // expected
-    return expectPort
-  } catch (error) { __DEV__ && console.log(`[autoTestServerPort] failed for expectPort: ${expectPort}`, error) }
+const autoTestServerPort = async (expectPortList, host) => {
+  for (const expectPort of expectPortList) {
+    try {
+      await getUnusedPort(expectPort, host) // expected
+      return expectPort
+    } catch (error) { __DEV__ && console.log(`[autoTestServerPort] failed for expectPort: ${expectPort}`, error) }
+  }
   return getUnusedPort(0, host) // any
 }
 
