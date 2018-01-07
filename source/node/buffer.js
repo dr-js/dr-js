@@ -1,6 +1,7 @@
 const MAX_BUFFER_PACKET_SIZE = Math.pow(2, 16) - 1
+const EMPTY_BUFFER = Buffer.allocUnsafe(0)
 
-const packBufferPacket = (headerString, payloadBuffer) => {
+const packBufferPacket = (headerString, payloadBuffer = EMPTY_BUFFER) => {
   const headerBuffer = Buffer.from(headerString)
   if (headerBuffer.length > MAX_BUFFER_PACKET_SIZE) throw new Error(`[packBufferPacket] headerString exceeds max length ${MAX_BUFFER_PACKET_SIZE} with length: ${headerBuffer.length}`)
   const headerLengthBuffer = Buffer.allocUnsafe(2)
