@@ -26,11 +26,7 @@ const createStateStoreLite = (state) => ({
 })
 
 // for Redux-like use
-const createStateStoreEnhanced = ({
-  initialState,
-  enhancer,
-  reducer
-}) => {
+const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
   verifyBasicFunction(enhancer, '[createStateStoreEnhanced] enhancer function required')
   verifyBasicFunction(reducer, '[createStateStoreEnhanced] reducer function required')
   const { subscribe, unsubscribe, getState: getStoreState, setState: setStoreState } = createStateStore(initialState)
@@ -63,15 +59,11 @@ const createStateStoreEnhanced = ({
     verifyBasicObject(dispatchingState, '[subDispatch] reducer should return basic Object state')
   }
 
-  const getState = () => !isDispatching
-    ? getStoreState()
-    : dispatchingState
+  const getState = () => !isDispatching ? getStoreState() : dispatchingState
 
   const dispatch = (action) => {
     verifyBasicObject(action, '[dispatch] action should be basic Object')
-    return !isDispatching
-      ? rootDispatch(action)
-      : subDispatch(action)
+    return !isDispatching ? rootDispatch(action) : subDispatch(action)
   }
 
   const enhancerStore = { getState, dispatch }
@@ -79,8 +71,25 @@ const createStateStoreEnhanced = ({
   return { subscribe, unsubscribe, getState, dispatch }
 }
 
+// merge unsubscribe into subscribe
+const makeReduxLikeListener = (store) => {
+  const { subscribe: subscribeStore, unsubscribe } = store
+
+  verifyBasicFunction(subscribeStore, '[makeReduxLikeListener] subscribe function required')
+  verifyBasicFunction(unsubscribe, '[makeReduxLikeListener] unsubscribe function required')
+
+  return {
+    ...store,
+    subscribe: (listener) => {
+      subscribeStore(listener)
+      return () => unsubscribe(listener)
+    }
+  }
+}
+
 export {
   createStateStore,
   createStateStoreLite,
-  createStateStoreEnhanced
+  createStateStoreEnhanced,
+  makeReduxLikeListener
 }
