@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.9.3",
+  "version": "0.9.4-dev.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -30,8 +30,6 @@
     "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library babel ./bin-source --out-dir ./bin --ignore test.js",
     "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./bin-source --out-dir ./bin --ignore test.js --watch",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./module --ignore test.js",
-    "perf-webpack-stats": "cross-env NODE_ENV=production webpack --config .webpackrc.js --json > stats-gitignore.json",
-    "perf-webpack-profile": "cross-env NODE_ENV=production webpack --config .webpackrc.js --profile",
     "test": "npm run test-mocha",
     "test-mocha": "cross-env BABEL_ENV=test mocha --require babel-register \"source/**/*.test.js\"",
     "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
@@ -48,6 +46,6 @@
   },
   "devDependencies": {
     "dev-dep-web": "^0.0.11",
-    "dr-js": "^0.9.2"
+    "dr-js": "^0.9.3"
   }
 }
