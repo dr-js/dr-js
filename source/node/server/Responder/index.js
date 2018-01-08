@@ -26,9 +26,3 @@ export {
   getRouteParamAny,
   getRouteParam
 } from './Router'
-
-export {
-  createResponderLogRequestHeader,
-  createResponderLogTimeStep,
-  createResponderLogEnd
-} from './Statistic' // TODO: DEPRECATED

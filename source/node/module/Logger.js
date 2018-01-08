@@ -10,12 +10,11 @@ const createSimpleLogger = ({ pathOutputFile, queueLengthThreshold, flag, mode, 
 })
 
 const FILE_SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // 24hour
-const DEFAULT_GET_LOG_FILE_NAME = (prefixLogFile) => `${getRandomId(prefixLogFile)}.log`
+const DEFAULT_GET_LOG_FILE_NAME = () => `${getRandomId()}.log`
 
 const createLogger = async ({
   pathLogDirectory,
   getLogFileName = DEFAULT_GET_LOG_FILE_NAME,
-  prefixLogFile = '', // TODO: DEPRECATED, use getLogFileName
   queueLengthThreshold,
   fileSplitInterval = FILE_SPLIT_INTERVAL,
   flag,
@@ -26,7 +25,7 @@ const createLogger = async ({
   let logger = null
   const splitLogFile = () => {
     logger && logger.end()
-    logger = createSimpleLogger({ pathOutputFile: nodeModulePath.join(pathLogDirectory, getLogFileName(prefixLogFile)), queueLengthThreshold, flag, mode, onError })
+    logger = createSimpleLogger({ pathOutputFile: nodeModulePath.join(pathLogDirectory, getLogFileName()), queueLengthThreshold, flag, mode, onError })
   }
   splitLogFile()
   let intervalToken = setInterval(splitLogFile, fileSplitInterval)
