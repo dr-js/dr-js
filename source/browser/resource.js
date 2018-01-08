@@ -34,11 +34,7 @@ const createDownloadBlob = (fileName, dataArray) => {
   window.URL.revokeObjectURL(objectUrl)
 }
 
-const fetch = window.fetch // TODO: DEPRECATED: use window.fetch
-
 export {
-  fetch, // TODO: DEPRECATED: use window.fetch
-
   loadText,
   loadImage,
   loadScript,

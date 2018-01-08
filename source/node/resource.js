@@ -46,8 +46,7 @@ const fetch = async (url, config = {}) => {
   }
   const text = () => buffer().then((buffer) => buffer.toString())
   const json = () => text().then((text) => JSON.parse(text))
-  const end = () => {} // TODO: DEPRECATED
-  return { status, ok, buffer, text, json, end }
+  return { status, ok, buffer, text, json }
 }
 
 const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, username, password }) => {
