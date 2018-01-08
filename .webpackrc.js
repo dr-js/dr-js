@@ -14,13 +14,12 @@ const BABEL_OPTIONS = {
 
 module.exports = {
   output: {
-    path: nodeModulePath.join(__dirname, './library/'),
+    path: nodeModulePath.join(__dirname, './output-gitignore/library/'),
     filename: '[name].js',
     library: 'Dr',
     libraryTarget: 'umd'
   },
   entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
-    'Dr': [ 'source/Dr' ],
     'Dr.browser': [ 'source/Dr.browser' ]
   },
   resolve: { alias: { source: nodeModulePath.resolve(__dirname, './source/') } },

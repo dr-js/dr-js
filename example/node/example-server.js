@@ -1,7 +1,7 @@
 const nodeModulePath = require('path')
 const nodeModuleFs = require('fs')
 const { promisify } = require('util')
-const { Common, Node } = require('../../library/Dr.node')
+const { Common, Node } = require('../../output-gitignore/library/Dr.node')
 
 const readFileAsync = promisify(nodeModuleFs.readFile)
 
