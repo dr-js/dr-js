@@ -42,6 +42,7 @@ const main = async () => {
   padLog(`create ${fromOutput('package.json')}`)
   const packageJSON = require('../package.json')
   delete packageJSON.scripts
+  delete packageJSON.engines
   delete packageJSON.devDependencies
   nodeModuleFs.writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
 

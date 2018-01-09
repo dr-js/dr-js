@@ -15,7 +15,25 @@ const mkdirAsync = promisify(nodeModuleFs.mkdir)
 const rmdirAsync = promisify(nodeModuleFs.rmdir)
 const renameAsync = promisify(nodeModuleFs.rename)
 const unlinkAsync = promisify(nodeModuleFs.unlink)
-const copyFileAsync = promisify(nodeModuleFs.copyFile) // since 8.5.0
+const copyFileAsync = nodeModuleFs.copyFile
+  ? promisify(nodeModuleFs.copyFile) // since 8.5.0
+  : (() => {
+    const openAsync = promisify(nodeModuleFs.open)
+    const fstatAsync = promisify(nodeModuleFs.fstat)
+    return async (pathFrom, pathTo) => {
+      const fdFrom = await openAsync(pathFrom, 'r')
+      const stat = await fstatAsync(fdFrom)
+      const fdTo = await openAsync(pathTo, 'w', stat.mode)
+      const readStream = nodeModuleFs.createReadStream(undefined, { fd: fdFrom })
+      const writeStream = nodeModuleFs.createWriteStream(undefined, { fd: fdTo, mode: stat.mode })
+      await new Promise((resolve, reject) => {
+        readStream.on('error', reject)
+        writeStream.on('error', reject)
+        writeStream.on('close', resolve)
+        readStream.pipe(writeStream)
+      })
+    }
+  })()
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
