@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Example Server</title>
+  <meta charset="UTF-8">
+  <title>Example Server</title>
 </head>
 
 <body>
@@ -11,8 +11,6 @@
 <button onclick="getCurrentSocket() && closeWebSocket(getCurrentSocket()); setCurrentSocket(null)">closeWebSocket</button>
 <pre id="log">LOG</pre>
 <button onclick="document.getElementById('log').innerHTML = ''">clear Log</button>
-</body>
-
 <script>
   const log = (...args) => {
     console.log(...args)
@@ -42,8 +40,8 @@
   }
 
   let currentSocket = null
-  const setCurrentSocket = (socket) => (currentSocket = socket )
+  const setCurrentSocket = (socket) => (currentSocket = socket)
   const getCurrentSocket = () => currentSocket
 </script>
-
+</body>
 </html>

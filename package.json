@@ -1,6 +1,6 @@
 {
   "name": "dr-js",
-  "version": "0.10.1-dev.0",
+  "version": "0.10.1-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -39,6 +39,7 @@
     "repack-publish": "node script/repack.js publish",
     "repack-publish-dev": "node script/repack.js publish-dev",
     "repack-pack-only": "node script/repack.js pack-only",
+    "repack-package-json-only": "node script/repack.js package-json-only",
     "prepack": "echo \"Error: should pack with repack-*\" && exit 1"
   },
   "engines": {

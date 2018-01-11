@@ -22,20 +22,16 @@ const DEFAULT_EXEC_OPTION = { stdio: [ process.stdin, process.stdout, process.st
 const main = async () => {
   const { log, padLog } = getLogger('repack')
 
-  const [ , , MODE = 'pack-only' ] = process.argv
+  const [ , , MODE = 'package-json-only' ] = process.argv
 
-  Verify.oneOf(MODE, [ 'pack-only', 'publish', 'publish-dev' ])
+  Verify.oneOf(MODE, [ 'package-json-only', 'pack-only', 'publish', 'publish-dev' ])
 
   log(`MODE: ${MODE}`)
 
   const execOptionRoot = { ...DEFAULT_EXEC_OPTION, cwd: fromRoot() }
   const execOptionOutput = { ...DEFAULT_EXEC_OPTION, cwd: fromOutput() }
 
-  padLog('test')
-  nodeModuleChildProcess.execSync('npm run test', execOptionRoot)
-
-  padLog('build')
-  nodeModuleChildProcess.execSync('npm run build', execOptionRoot)
+  nodeModuleChildProcess.execSync('npm run build-clear', execOptionRoot)
 
   await createDirectory(fromOutput())
 
@@ -46,9 +42,19 @@ const main = async () => {
   delete packageJSON.devDependencies
   nodeModuleFs.writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
 
+  if (MODE === 'package-json-only') return
+
   padLog(`copy LICENSE, README.md`)
   await modify.copy(fromRoot('LICENSE'), fromOutput('LICENSE'))
   await modify.copy(fromRoot('README.md'), fromOutput('README.md'))
+
+  padLog('run test')
+  nodeModuleChildProcess.execSync('npm run test', execOptionRoot)
+
+  padLog('run build')
+  nodeModuleChildProcess.execSync('npm run build-library', execOptionRoot)
+  nodeModuleChildProcess.execSync('npm run build-module', execOptionRoot)
+  nodeModuleChildProcess.execSync('npm run build-bin', execOptionRoot)
 
   if (MODE === 'pack-only') {
     padLog(`pack`)

@@ -1,3 +1,5 @@
+import { DEFAULT_MIME } from 'source/common/module/MIME'
+
 const loadText = (url) => window.fetch(url)
   .then((result) => result.text())
 
@@ -20,16 +22,16 @@ const loadScript = (url) => new Promise((resolve, reject) => {
 
 const createDownload = (fileName, url) => {
   const element = document.createElement('a')
-  element.setAttribute('href', url)
-  element.setAttribute('download', fileName)
+  element.download = fileName
+  element.href = url
   document.body.appendChild(element) // for Firefox
   element.click()
   document.body.removeChild(element)
 }
 
 const createDownloadText = (fileName, text) => createDownload(fileName, `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`)
-const createDownloadBlob = (fileName, dataArray) => {
-  const objectUrl = window.URL.createObjectURL(new window.Blob(dataArray))
+const createDownloadBlob = (fileName, dataArray, dataType = DEFAULT_MIME) => {
+  const objectUrl = window.URL.createObjectURL(new window.Blob(dataArray, { type: dataType }))
   createDownload(fileName, objectUrl)
   window.URL.revokeObjectURL(objectUrl)
 }
