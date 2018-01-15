@@ -1,11 +1,7 @@
 import { Common, Node } from 'module/Dr.node'
 
-const { createOptionParser, OPTION_CONFIG_PRESET } = Common.Module
-const {
-  parseOptionMap,
-  getOptionOptional, getSingleOptionOptional,
-  getOption, getSingleOption
-} = Node.Module
+const { Format, Data: { getArrayChunk }, Module: { createOptionParser, OPTION_CONFIG_PRESET } } = Common
+const { parseOptionMap, createOptionGetter } = Node.Module
 
 const MODE_OPTION = [
   'env-info', 'i',
@@ -33,7 +29,8 @@ const OPTION_CONFIG = {
     {
       ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION),
       name: 'mode',
-      shortName: 'm'
+      shortName: 'm',
+      description: `one of:\n${Format.stringIndentLine(getArrayChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
     },
     { name: 'argument', shortName: 'a', optional: true, description: `different for each mode`, argumentCount: '0+' }
   ]
@@ -41,13 +38,10 @@ const OPTION_CONFIG = {
 
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(OPTION_CONFIG)
 
-const parseOption = async () => ({
-  optionMap: await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap }),
-  getOption,
-  getOptionOptional,
-  getSingleOption,
-  getSingleOptionOptional
-})
+const parseOption = async () => {
+  const optionMap = await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap })
+  return { optionMap, ...createOptionGetter(optionMap) }
+}
 
 const exitWithError = (error) => {
   __DEV__ && console.warn(error)

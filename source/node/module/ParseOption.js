@@ -15,6 +15,28 @@ const parseOptionMap = async ({ parseCLI, parseENV, parseJSON, processOptionMap 
   return optionMap
 }
 
+const optionMapResolvePath = (optionMap, pathRoot) => {
+  Object.values(optionMap).forEach(({ format: { isPath }, argumentList }) => isPath && argumentList.forEach((v, i) => (argumentList[ i ] = nodeModulePath.resolve(pathRoot, v))))
+  return optionMap
+}
+
+const createOptionGetter = (optionMap) => {
+  const getOptionOptional = (name) => optionMap[ name ] ? optionMap[ name ].argumentList : undefined
+  const getOption = (name, argumentCount) => {
+    const argumentList = getOptionOptional(name)
+    if (!argumentList) throw new Error(`[getOption] expecting option ${name}`)
+    if (argumentCount !== undefined && argumentList.length !== argumentCount) throw new Error(`[getOption] expecting option ${name} has ${argumentCount} value instead of ${argumentList.length}`)
+    return argumentList
+  }
+  return {
+    getOptionOptional,
+    getOption,
+    getSingleOptionOptional: (name) => optionMap[ name ] ? optionMap[ name ].argumentList[ 0 ] : undefined,
+    getSingleOption: (name) => getOption(name, 1)[ 0 ]
+  }
+}
+
+// TODO: DEPRECATED
 const getOptionOptional = (optionMap, name) => optionMap[ name ] ? optionMap[ name ].argumentList : undefined
 const getSingleOptionOptional = (optionMap, name) => optionMap[ name ] ? optionMap[ name ].argumentList[ 0 ] : undefined
 const getOption = (optionMap, name, argumentCount) => {
@@ -25,15 +47,11 @@ const getOption = (optionMap, name, argumentCount) => {
 }
 const getSingleOption = (optionMap, name) => getOption(optionMap, name, 1)[ 0 ]
 
-const optionMapResolvePath = (optionMap, pathRoot) => {
-  Object.values(optionMap).forEach(({ format: { isPath }, argumentList }) => isPath && argumentList.forEach((v, i) => (argumentList[ i ] = nodeModulePath.resolve(pathRoot, v))))
-  return optionMap
-}
-
 export {
   parseOptionMap,
-  getOptionOptional,
-  getSingleOptionOptional,
-  getOption,
-  getSingleOption
+  createOptionGetter,
+  getOptionOptional, // TODO: DEPRECATED
+  getOption, // TODO: DEPRECATED
+  getSingleOptionOptional, // TODO: DEPRECATED
+  getSingleOption // TODO: DEPRECATED
 }

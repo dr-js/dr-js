@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const BabelMinifyPlugin = require('babel-minify-webpack-plugin')
 const { DefinePlugin, BannerPlugin, optimize: { ModuleConcatenationPlugin } } = webpack
 
-const NODE_ENV = process.env.NODE_ENV
+const { NODE_ENV } = process.env
 const IS_PRODUCTION = NODE_ENV === 'production'
 
 const BABEL_OPTIONS = {
