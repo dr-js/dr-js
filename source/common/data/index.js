@@ -12,4 +12,13 @@ const hashStringToNumber = (string = '', hash = 0) => {
   return hash >>> 0 // drop the sign bit (for +/-), so result range will be: [0, 2^32-1]
 }
 
-export { hashStringToNumber }
+const getArrayChunk = (array, chunkLength) => {
+  const resultArray = []
+  for (let index = 0, indexMax = array.length; index < indexMax; index += chunkLength) resultArray.push(array.slice(index, index + chunkLength))
+  return resultArray
+}
+
+export {
+  hashStringToNumber,
+  getArrayChunk
+}
