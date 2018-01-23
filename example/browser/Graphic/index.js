@@ -7,7 +7,7 @@ const {
   Browser: {
     DOM: { bindLogElement, bindFPSElement },
     Font: { createFontRender, createFontRenderBitmap },
-    Input: { applyPointerEventDragListener },
+    Input: { applyPointerEventListener, applyPointerEnhancedEventListener },
     Graphic: {
       applyImageElementExt,
       applyCanvasElementExt,
@@ -109,18 +109,35 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const eventExtListener = ({ to }, event) => {
-    if (!to) return
-    const MARKER_HALF_SIZE = 2
-    event.preventDefault()
-    const { x, y } = to
-    updateLoop.add(() => {
-      mainContext2d.fillRect(x - MARKER_HALF_SIZE, y - MARKER_HALF_SIZE, MARKER_HALF_SIZE * 2, MARKER_HALF_SIZE * 2)
-      return false
-    }, 'test-canvas-ext:draw-touch-position') // once
-    log(x.toFixed(2), y.toFixed(2))
-  }
-  applyPointerEventDragListener({ element: mainCanvas, updateDragState: eventExtListener, endDragState: eventExtListener })
+  mainCanvas.style.touchAction = 'none'
+
+  applyPointerEventListener({
+    element: mainCanvas,
+    onEvent: (type, event) => {
+      if (type !== 'MOVE') return
+      event.preventDefault()
+      updateLoop.add(() => {
+        const MARKER_HALF_SIZE = 2
+        const { clientX, clientY } = event
+        const { left, top } = mainCanvas.getBoundingClientRect()
+        const x = clientX - left
+        const y = clientY - top
+        mainContext2d.fillRect(x - MARKER_HALF_SIZE, y - MARKER_HALF_SIZE, MARKER_HALF_SIZE * 2, MARKER_HALF_SIZE * 2)
+        log(x.toFixed(2), y.toFixed(2))
+        return false
+      }, 'test-canvas-ext:draw-touch-position') // once
+    }
+  })
+
+  applyPointerEnhancedEventListener({
+    element: mainCanvas,
+    onEvent: (name, event) => {
+      console.log(name, event.type, event.pointerType)
+    },
+    onEnhancedEvent: (name, event) => {
+      console.log(name, event.type, event.pointerType)
+    }
+  })
 
   // =========================================================================================
 

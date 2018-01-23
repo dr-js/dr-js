@@ -23,7 +23,6 @@ const main = async () => {
   const { log, padLog } = getLogger('repack')
 
   const [ , , MODE = 'package-json-only' ] = process.argv
-
   Verify.oneOf(MODE, [ 'package-json-only', 'pack-only', 'publish', 'publish-dev' ])
 
   log(`MODE: ${MODE}`)
@@ -37,6 +36,7 @@ const main = async () => {
 
   padLog(`create ${fromOutput('package.json')}`)
   const packageJSON = require('../package.json')
+  delete packageJSON.private
   delete packageJSON.scripts
   delete packageJSON.engines
   delete packageJSON.devDependencies

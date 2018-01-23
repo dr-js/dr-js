@@ -1,6 +1,6 @@
 import { DEFAULT_MIME } from 'source/common/module/MIME'
 
-const loadText = (url) => window.fetch(url)
+const loadText = (url) => window.fetch(url, { credentials: 'same-origin' })
   .then((result) => result.text())
 
 const loadImage = (url) => new Promise((resolve, reject) => {

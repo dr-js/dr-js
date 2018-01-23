@@ -5,12 +5,16 @@ export {
 } from './random'
 
 export {
-  clamp,
-  euclideanModulo,
-  smoothstep,
-
   degreeToRadiansFactor,
   radianToDegreesFactor,
   degToRad,
   radToDeg
-} from './__utils__'
+} from './__utils__' // TODO: DEPRECATED
+
+export {
+  roundFloat,
+
+  clamp,
+  euclideanModulo,
+  smoothstep
+} from './base'
