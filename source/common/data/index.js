@@ -2,7 +2,7 @@ export { IndexBox } from './IndexBox'
 export { SetMap } from './SetMap'
 export { DoublyLinkedList } from './LinkedList'
 export { CacheMap } from './CacheMap'
-export { KeySwitch, composeSelectorList, composeKey } from './KeySwitch'
+export { KeySwitch, composeSelectorList, composeKey } from './KeySwitch' // TODO: DEPRECATED
 export { createIdPool } from './IdPool'
 export { createToggle } from './Toggle'
 export { createLogQueue } from './LogQueue'

@@ -1,3 +1,5 @@
+// TODO: DEPRECATED
+
 const toArray = (value) => (value instanceof Array ? value : value ? [ value ] : [])
 
 const composeSelectorList = (selectorList) => selectorList.reduce((preList, selector) => {

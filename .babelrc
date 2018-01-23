@@ -8,6 +8,9 @@
         [ "transform-object-rest-spread", { "useBuiltIns": true } ],
         [ "module-resolver", { "root": [ "./" ], "alias": { "module/Dr.node": "./library/Dr.node" } } ],
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ],
+        [ "minify-simplify" ],
+        [ "minify-mangle-names" ],
+        [ "minify-constant-folding" ],
         [ "minify-guarded-expressions" ],
         [ "minify-dead-code-elimination" ]
       ],
@@ -31,6 +34,8 @@
         [ "transform-object-rest-spread", { "useBuiltIns": true } ],
         [ "module-resolver", { "root": [ "./" ] } ],
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ],
+        [ "minify-simplify" ],
+        [ "minify-constant-folding" ],
         [ "minify-guarded-expressions" ],
         [ "minify-dead-code-elimination" ]
       ],
