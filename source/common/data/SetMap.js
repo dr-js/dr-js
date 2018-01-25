@@ -36,4 +36,9 @@ export class SetMap {
     if (set.size === 0) this.map.delete(mapKey)
     return true
   }
+
+  static getInvertSetMap (sourceSetMap, targetSetMap = new SetMap()) {
+    sourceSetMap.forEach((setKey, mapKey) => targetSetMap.add(setKey, mapKey))
+    return targetSetMap
+  }
 }

@@ -1,4 +1,5 @@
 export { IndexBox } from './IndexBox'
+export { ListMap } from './ListMap'
 export { SetMap } from './SetMap'
 export { DoublyLinkedList } from './LinkedList'
 export { CacheMap } from './CacheMap'

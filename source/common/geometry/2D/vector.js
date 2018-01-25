@@ -1,5 +1,8 @@
 // mostly modified from: https://github.com/mrdoob/three.js/tree/dev/src/math
-// 2D vector: { x, y }
+// 2D vector: { x: float, y: float }
+
+const getLength = ({ x, y }) => Math.sqrt(x * x + y * y)
+const getLengthSq = ({ x, y }) => x * x + y * y
 
 const getDist = (a, b) => Math.sqrt(getDistSq(a, b))
 const getDistSq = (a, b) => {
@@ -9,16 +12,18 @@ const getDistSq = (a, b) => {
 }
 
 // from axis x+(0) to y+(PI/2)
-const getAngleRad = ({ x, y }) => {
+const getAngle = ({ x, y }) => {
   const radian = Math.atan2(y, x)
   return radian >= 0 ? radian : radian + 2 * Math.PI
 }
-const getRotateRad = (a, b) => {
+const getRotate = (a, b) => {
   const radian = Math.atan2(a.y - b.y, a.x - b.x)
   return radian >= 0 ? radian : radian + 2 * Math.PI
 }
-const getRotateDeltaRad = (anchor, from, to) => {
-  const radian = Math.atan2(anchor.y - to.y, anchor.x - to.x) - Math.atan2(anchor.y - from.y, anchor.x - from.x)
+const getRotateDelta = (anchor, from, to) => {
+  const radian =
+    Math.atan2(anchor.y - to.y, anchor.x - to.x) -
+    Math.atan2(anchor.y - from.y, anchor.x - from.x)
   return radian >= 0 ? radian : radian + 2 * Math.PI
 }
 
@@ -62,12 +67,19 @@ const clamp = ({ x, y }, min, max) => ({
   y: Math.max(Math.min(y, max.y), min.y)
 })
 
+const round = ({ x, y }) => ({
+  x: Math.round(x),
+  y: Math.round(y)
+})
+
 export {
+  getLength,
+  getLengthSq,
   getDist,
   getDistSq,
-  getAngleRad,
-  getRotateRad,
-  getRotateDeltaRad,
+  getAngle,
+  getRotate,
+  getRotateDelta,
   add,
   sub,
   multiply,
@@ -75,5 +87,6 @@ export {
   scale,
   min,
   max,
-  clamp
+  clamp,
+  round
 }

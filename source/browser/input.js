@@ -1,6 +1,6 @@
 import { clock } from 'source/common/time'
-import { getDist } from 'source/common/geometry/2D/vec'
-import { isBoundingRectContainPoint } from 'source/browser/geometry/2D'
+import { getDist } from 'source/common/geometry/2D/vector'
+import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/2D/boundingRect'
 
 // TODO: Safari do not have PointerEvent yet, use mouse* + touch* event
 // TODO: single pointer only
