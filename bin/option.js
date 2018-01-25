@@ -21,9 +21,9 @@ const OPTION_CONFIG = {
   formatList: [
     {
       ...OPTION_CONFIG_PRESET.SingleString,
+      optional: true,
       name: 'config',
       shortName: 'c',
-      optional: true,
       description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
     },
     {
@@ -32,7 +32,7 @@ const OPTION_CONFIG = {
       shortName: 'm',
       description: `one of:\n${Format.stringIndentLine(getArrayChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
     },
-    { name: 'argument', shortName: 'a', optional: true, description: `different for each mode`, argumentCount: '0+' }
+    { optional: true, name: 'argument', shortName: 'a', description: `different for each mode`, argumentCount: '0+' }
   ]
 }
 
