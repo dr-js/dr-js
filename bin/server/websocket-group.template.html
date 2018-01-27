@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="minimum-scale=1, width=device-width">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    label { display: flex; align-items: center; }
+
+    p { position: relative; padding: 12px 4px 4px; border-top: 1px solid #ddd; word-break: break-all; }
+
+    p:hover { background: #f5f5f5; }
+
+    input { flex: 1; }
+
+    button { text-decoration: none; border: 0; background: #ddd; }
+
+    button:hover { background: #eee; }
+
+    @media (pointer: coarse) {
+      input, button { min-height: 32px; line-height: 32px; font-size: 18px; }
+    }
+
+    @media (pointer: fine) {
+      input, button { min-height: 20px; line-height: 20px; font-size: 14px; }
+    }
+
+    .flex-column { display: flex; flex-flow: column; }
+
+    .non-flex { flex-shrink: 0; }
+
+    .time-tag, .id-tag { position: absolute; top: 0; font-size: 12px; line-height: 12px; }
+
+    .time-tag { right: 0; color: #f99 }
+
+    .id-tag { left: 0; color: #22a }
+
+    .color-self { color: #2a2 }
+
+    .color-alert { color: #a22 }
+  </style>
+</head>
+<body class="flex-column" style="overflow: hidden; width: 100vw; height: 100vh; font-family: monospace;">
+<div id="setup" class="flex-column">
+  <input id="group-path" type="text" placeholder="group-path" autofocus />
+  <input id="id" type="text" placeholder="id" />
+</div>
+<button id="button-toggle"></button>
+<div id="log" style="overflow-y: auto; flex: 1; min-height: 0;"></div>
+<button id="button-log-clear" class="non-flex">Clear Log [Ctrl+l]</button>
+<div id="main" class="flex-column non-flex">
+  <label for="payload-text">Message Text: </label>
+  <textarea id="payload-text" style="min-height: 6em;"></textarea>
+  <label>Message File: <input id="payload-file" type="file" /></label>
+  <b id="info"></b>
+  <button id="button-send"></button>
+</div>
+<script>
+  const qS = (selector) => document.querySelector(selector)
+  const qSS = (selector, innerHTML) => (qS(selector).innerHTML = innerHTML)
+  const cT = (tagName, attributeMap, ...childTagList) => {
+    const tag = Object.assign(document.createElement(tagName), attributeMap)
+    childTagList.forEach((childTag) => childTag && tag.appendChild(childTag))
+    return tag
+  }
+
+  const idTag = (id, className = '') => cT('span', { innerHTML: `[${id}]`, className: `id-tag ${className}` })
+  const timeTag = () => cT('span', { innerHTML: new Date().toLocaleString(), className: 'time-tag' })
+
+  const appendLog = (innerHTML, ...extraTagList) => {
+    const log = qS('#log')
+    log.appendChild(cT('p', { innerHTML }, ...extraTagList))
+    log.scrollTop = log.scrollHeight
+  }
+
+  const addLog = ({ id, text, className }) => appendLog('',
+    cT('pre', { innerText: text }),
+    idTag(id, className),
+    timeTag()
+  )
+  const addLogWithFile = ({ id, fileName, isSend, className }) => appendLog(isSend ? `send 📄${fileName}` : 'get ',
+    onclick && cT('button', { innerHTML: `📄${fileName}`, onclick }),
+    idTag(id, className),
+    timeTag()
+  )
+  const addLogAlert = (text) => appendLog(text, idTag('Alert', 'color-alert'), timeTag())
+  const clearLog = () => qSS('#log', '')
+
+  const getWebSocketGroupUrl = (groupPath, id) => {
+    const { protocol, host } = window.location
+    return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURI(groupPath)}?id=${encodeURIComponent(id)}`
+  }
+
+  const STATE = {}
+  const onCloseWebSocket = () => {
+    addLogAlert(`-- left group: ${STATE.groupPath} --`)
+    qS('#setup').style.display = ''
+    qS('#main').style.display = 'none'
+    qS('#group-path').focus()
+    qSS('#button-toggle', 'Open [Ctrl+d]')
+    document.title = `WebSocket Group`
+    STATE.websocket = null
+    STATE.groupPath = null
+    STATE.id = null
+    STATE.groupInfo = []
+  }
+  const onOpenWebSocket = ({ websocket, groupPath, id }) => {
+    addLogAlert(`-- joined group: ${groupPath}, as id: ${id} --`)
+    qS('#setup').style.display = 'none'
+    qS('#main').style.display = ''
+    qS('#payload-text').focus()
+    qSS('#button-toggle', `Close [Ctrl+d]`)
+    document.title = `[${groupPath}/${id}]`
+    STATE.websocket = websocket
+    STATE.groupPath = groupPath
+    STATE.id = id
+    STATE.groupInfo = []
+  }
+
+  onCloseWebSocket()
+  clearLog()
+</script>
+<script>window.onload = () => {
+  const {
+    Blob: { packBlobPacket, parseBlobPacket },
+    Resource: { createDownloadBlob },
+    Input: { createKeyCommandListener }
+  } = window.Dr.Browser
+
+  const toggleWebSocket = () => {
+    if (STATE.websocket) {
+      STATE.websocket.send(packBlobPacket(JSON.stringify({ type: 'close' })))
+      return
+    }
+    const groupPath = qS('#group-path').value.trim() || 'public'
+    const id = qS('#id').value.trim() || 'User'
+    const websocket = new window.WebSocket(getWebSocketGroupUrl(groupPath, id), 'group-binary-packet')
+    websocket.addEventListener('close', onCloseWebSocket)
+    websocket.addEventListener('error', onCloseWebSocket)
+    websocket.addEventListener('message', async ({ data }) => {
+      const [ headerString, payloadBlob ] = await parseBlobPacket(data)
+      const { type, payload } = JSON.parse(headerString)
+      if (type === 'buffer') {
+        const { id, text, fileName, fileType } = payload
+        text && addLog({ id, text })
+        fileName && addLogWithFile({ id, fileName, onclick: () => createDownloadBlob(fileName, [ payloadBlob ], fileType) })
+      } else if (type === 'groupInfo') {
+        addLogAlert(`-- group user: ${payload.length}, ${JSON.stringify(payload)} --`)
+        qS('#button-send').disabled = payload.length <= 1
+        qSS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
+        qSS('#info', `group: ${groupPath}, id: ${id}, user: ${payload.length}`)
+        STATE.groupInfo = payload
+      } else if (type === 'userInfo') {
+        const { id } = payload
+        qS('#group-path').value = groupPath
+        qS('#id').value = id
+        onOpenWebSocket({ websocket, groupPath, id })
+      }
+    })
+  }
+
+  const sendPayload = () => {
+    if (!STATE.websocket || STATE.groupInfo.length <= 1) return
+    const text = qS('#payload-text').value.trim()
+    const file = qS('#payload-file').files[ 0 ]
+    qS('#payload-text').value = ''
+    qS('#payload-file').value = ''
+    const fileName = file && file.name
+    const fileType = file && file.type
+    text && addLog({ id: STATE.id, text, className: 'color-self' })
+    fileName && addLogWithFile({ id: STATE.id, fileName, isSend: true, className: 'color-self' })
+    if (text || fileName) STATE.websocket.send(packBlobPacket(JSON.stringify({ type: 'buffer', payload: { text, fileName, fileType } }), file))
+  }
+
+  qS('#button-log-clear').onclick = clearLog
+  qS('#button-toggle').onclick = toggleWebSocket
+  qS('#button-send').onclick = sendPayload
+
+  const { addKeyCommand } = createKeyCommandListener(document)
+  addKeyCommand({ checkMap: { ctrlKey: true, key: 'd' }, callback: toggleWebSocket })
+  addKeyCommand({ checkMap: { ctrlKey: true, key: 'l' }, callback: clearLog })
+  addKeyCommand({ target: qS('#payload-text'), checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })
+  addKeyCommand({ target: qS('#group-path'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
+  addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
+}</script>
+<script>"{SCRIPT_DR_JS}"</script>
+</body>
+</html>

@@ -19,7 +19,10 @@ const getArrayChunk = (array, chunkLength) => {
   return resultArray
 }
 
+const matchObjectEntry = (object, entryMap) => Object.entries(entryMap).every(([ key, value ]) => object[ key ] === value)
+
 export {
   hashStringToNumber,
-  getArrayChunk
+  getArrayChunk,
+  matchObjectEntry
 }

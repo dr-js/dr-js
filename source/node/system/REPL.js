@@ -1,10 +1,9 @@
 import nodeModuleRepl from 'repl'
-import { global } from 'source/env'
 
 const startREPL = () => nodeModuleRepl.start({
   prompt: '> ',
-  input: global.process.stdin,
-  output: global.process.stdout,
+  input: process.stdin,
+  output: process.stdout,
   useGlobal: true
 })
 

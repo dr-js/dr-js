@@ -2,6 +2,7 @@ import * as Data from './data'
 import * as Immutable from './immutable'
 import * as Mutable from './mutable'
 import * as Math from './math'
+import * as Geometry from './geometry'
 import * as Module from './module'
 import * as Function from './function'
 import * as Time from './time'
@@ -13,6 +14,7 @@ export {
   Immutable,
   Mutable,
   Math,
+  Geometry,
   Module,
   Function,
   Time,
