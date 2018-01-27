@@ -50,6 +50,12 @@ const getBoundingTop = (widget) =>
 const getBoundingBottom = (widget) =>
   widget.center.y + getBoundingHeight(widget) * 0.5
 
+const round = ({ center, size, rotate }) => ({
+  center: roundVector(center),
+  size: roundVector(size),
+  rotate: roundFloat(rotate)
+})
+
 const localPoint = ({ center, rotate }, { x, y }) => {
   const offsetX = x - center.x
   const offsetY = y - center.y
@@ -99,12 +105,6 @@ const isInterceptBoundingRect = ({ center, size }, boundingRect) => !(
   center.y - size.y * 0.5 > boundingRect.bottom
 )
 
-const round = ({ center, size, rotate }) => ({
-  center: roundVector(center),
-  size: roundVector(size),
-  rotate: roundFloat(rotate)
-})
-
 export {
   fromPoint,
   fromLine,
@@ -115,9 +115,9 @@ export {
   getBoundingRight,
   getBoundingTop,
   getBoundingBottom,
+  round,
   localPoint,
   localBoundingRect,
   isContainBoundingRect,
-  isInterceptBoundingRect,
-  round
+  isInterceptBoundingRect
 }

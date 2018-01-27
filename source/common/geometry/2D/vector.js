@@ -1,6 +1,12 @@
 // mostly modified from: https://github.com/mrdoob/three.js/tree/dev/src/math
 // 2D vector: { x: float, y: float }
 
+const fromOrigin = () => ({ x: 0, y: 0 })
+const fromAngleLength = (angle, length) => ({
+  x: length * Math.cos(angle),
+  y: length * Math.sin(angle)
+})
+
 const getLength = ({ x, y }) => Math.sqrt(x * x + y * y)
 const getLengthSq = ({ x, y }) => x * x + y * y
 
@@ -73,6 +79,8 @@ const round = ({ x, y }) => ({
 })
 
 export {
+  fromOrigin,
+  fromAngleLength,
   getLength,
   getLengthSq,
   getDist,

@@ -40,7 +40,10 @@ const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
     : stat.isSymbolicLink() ? FILE_TYPE.SymbolicLink
       : FILE_TYPE.Other
 
-const pathTypeError = () => FILE_TYPE.Error
+const pathTypeError = (error) => {
+  __DEV__ && console.log('[pathTypeError]', error)
+  return FILE_TYPE.Error
+}
 
 const getPathType = (path) => lstatAsync(path).then(getPathTypeFromStat, pathTypeError)
 

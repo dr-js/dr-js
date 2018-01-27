@@ -43,7 +43,8 @@ const getDirectoryContent = async (path, pathType, isShallow = false) => {
     [ FILE_TYPE.Directory ]: new Map(), // name - sub Directory
     [ FILE_TYPE.File ]: [],
     [ FILE_TYPE.SymbolicLink ]: [],
-    [ FILE_TYPE.Other ]: []
+    [ FILE_TYPE.Other ]: [],
+    [ FILE_TYPE.Error ]: []
   }
   for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
     const name = subNameList[ index ]
@@ -53,13 +54,9 @@ const getDirectoryContent = async (path, pathType, isShallow = false) => {
       case FILE_TYPE.Directory:
         content[ subPathType ].set(name, isShallow ? null : await getDirectoryContent(subPath, subPathType, false))
         break
-      case FILE_TYPE.File:
-      case FILE_TYPE.SymbolicLink:
-      case FILE_TYPE.Other:
+      default:
         content[ subPathType ].push(name)
         break
-      default:
-        throw new Error(`[getDirectoryContent] error subPathType: ${subPathType} for ${subPath}`)
     }
   }
   return content

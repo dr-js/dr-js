@@ -1,18 +1,18 @@
 import { clock } from 'source/common/time'
+import { getRandomId } from 'source/common/math'
+import { matchObjectEntry } from 'source/common/data'
 import { getDist } from 'source/common/geometry/2D/vector'
 import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/2D/boundingRect'
 
 // TODO: Safari do not have PointerEvent yet, use mouse* + touch* event
-// TODO: single pointer only
+// TODO: currently single pointer only
 const applyPointerEventListener = ({ element, onEvent }) => {
   if (!element.style.touchAction) throw new Error(`[applyPointerEventListener] should set CSS 'touch-action' to 'none' to prevent browser defaults`)
 
-  let pointerIdStart = null
   let timeStart = null
   let pointStart = null // relative to client/viewport
 
   const reset = () => {
-    pointerIdStart = null
     timeStart = null
     pointStart = null // relative to client/viewport
     element.removeEventListener('pointermove', onMove)
@@ -25,9 +25,8 @@ const applyPointerEventListener = ({ element, onEvent }) => {
   let prevEvent
   let prevState
   const calcState = (event) => {
-    if (__DEV__ && !pointerIdStart) throw new Error(`[calcState] pointerIdStart expected, get event: ${event.type}`) // TODO: check this
+    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`) // TODO: check this
     if (__DEV__ && !event) throw new Error('[calcState] event expected')
-
     if (event !== prevEvent) {
       const { clientX, clientY } = event
       const time = clock()
@@ -48,8 +47,8 @@ const applyPointerEventListener = ({ element, onEvent }) => {
   }
 
   const onStart = (event) => {
-    const { pointerId, clientX, clientY } = event
-    pointerIdStart = pointerId
+    if (!event.isPrimary) return
+    const { clientX, clientY } = event
     timeStart = clock()
     pointStart = { x: clientX, y: clientY }
     element.addEventListener('pointermove', onMove)
@@ -59,18 +58,18 @@ const applyPointerEventListener = ({ element, onEvent }) => {
     onEvent('START', event, calcState)
   }
   const onMove = (event) => {
-    if (event.pointerId !== pointerIdStart) return
+    if (!event.isPrimary) return
     const { point, elementRect } = calcState(event)
     if (!isBoundingRectContainPoint(elementRect, point)) return onCancel(event)
     onEvent('MOVE', event, calcState)
   }
   const onEnd = (event) => {
-    if (event.pointerId !== pointerIdStart) return
+    if (!event.isPrimary) return
     onEvent('END', event, calcState)
     reset()
   }
   const onCancel = (event) => {
-    if (event.pointerId !== pointerIdStart) return
+    if (!event.isPrimary) return
     onEvent('CANCEL', event, calcState)
     reset()
   }
@@ -160,9 +159,30 @@ const applyPointerEventDragListener = ({ element, updateDragState, endDragState 
   }
 }
 
+// TODO: single key, not key sequence
+const createKeyCommandListener = (element = window.document) => {
+  const keyCommandMap = new Map()
+  const keyCommandListener = (event) => keyCommandMap.forEach((keyCommand) => {
+    const { target, checkMap, callback } = keyCommand
+    if (target && !target.contains(event.target)) return
+    if (!matchObjectEntry(event, checkMap)) return
+    event.preventDefault()
+    callback(event, keyCommand)
+  })
+  const clear = () => element.removeEventListener('keydown', keyCommandListener)
+  const addKeyCommand = ({ id = getRandomId(), target, checkMap, callback }) => {
+    keyCommandMap.set(id, { id, target, checkMap, callback })
+    return id
+  }
+  const deleteKeyCommand = ({ id }) => keyCommandMap.delete(id)
+  element.addEventListener('keydown', keyCommandListener)
+  return { clear, addKeyCommand, deleteKeyCommand }
+}
+
 export {
   applyPointerEventListener,
   applyPointerEnhancedEventListener,
+  createKeyCommandListener,
 
   applyPointerEventDragListener // TODO: DEPRECATED
 }

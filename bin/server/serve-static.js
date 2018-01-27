@@ -1,11 +1,10 @@
 import nodeModulePath from 'path'
 import { Common, Node } from 'module/Dr.node'
-import { getPathContent, responderSendFavicon, formatPathHref, formatPathHTML } from './__utils__'
+import { getPathContent, responderSendFavicon, getServerInfo } from './__utils__'
 
 const { Module: { BASIC_EXTENSION_MAP }, Format, Time } = Common
 const {
   File: { createGetPathFromRoot },
-  System: { getNetworkIPv4AddressList },
   Server: {
     createServer, createRequestListener,
     Responder: {
@@ -42,38 +41,41 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
     }
   }))
   start()
-  console.log(`[ServerServeStatic] <${isSimpleServe ? 'no-list' : 'with-list'}>`)
-  console.log(`  staticRoot:\n    - '${staticRoot}'`)
-  console.log(`  running at:\n    - '${protocol}//${hostname}:${port}'`)
-  hostname === '0.0.0.0' && console.log(`  connect at:\n${Format.stringIndentLine(
-    getNetworkIPv4AddressList().map(({ address }) => `'${protocol}//${address}:${port}'`).join('\n'),
-    '    - '
-  )}`)
+  console.log(`[ServerServeStatic] ${isSimpleServe ? 'no-list' : 'with-list'}`)
+  console.log(Format.stringIndentLine([
+    `staticRoot:`,
+    `  - '${staticRoot}'`,
+    getServerInfo(protocol, hostname, port)
+  ].join('\n'), '  '))
 }
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {
-  const relativeRootPath = nodeModulePath.relative(staticRoot, rootPath)
-  const titleHTML = `/${formatPathHTML(relativeRootPath)}`
-  const HTMLFragList = [ `<b>${titleHTML}</b>` ]
-  relativeRootPath && HTMLFragList.push(renderUpperListPath(relativeRootPath))
   const { directoryList, fileList } = await getPathContent(rootPath)
-  directoryList.forEach((name) => HTMLFragList.push(renderListPath(relativeRootPath, name)))
-  fileList.forEach((name) => HTMLFragList.push(renderFilePath(relativeRootPath, name)))
-  return responderSendBuffer(store, { buffer: Buffer.from(renderHTML(titleHTML, HTMLFragList)), type: BASIC_EXTENSION_MAP.html })
+  const relativeRoot = nodeModulePath.relative(staticRoot, rootPath)
+  const titleHTML = `/${formatPathHTML(relativeRoot)}`
+  const contentHTML = [
+    `<b>${titleHTML}</b>`,
+    relativeRoot && renderItem('..', '🔙', [ '/list', nodeModulePath.dirname(relativeRoot) ]),
+    ...directoryList.map((name) => renderItem(name, '📁', [ '/list', relativeRoot, name ])),
+    ...fileList.map((name) => renderItem(name, '📄', [ '/file', relativeRoot, name ]))
+  ].join('\n')
+  return responderSendBuffer(store, { buffer: Buffer.from(renderHTML(titleHTML, contentHTML)), type: BASIC_EXTENSION_MAP.html })
 }
 
-const renderUpperListPath = (path) => `<a href="${formatPathHref('/list', nodeModulePath.dirname(path))}">🔙|..</a>`
-const renderListPath = (path, name) => `<a href="${formatPathHref('/list', path, name)}">📁|${formatPathHTML(name)}</a>`
-const renderFilePath = (path, name) => `<a href="${formatPathHref('/file', path, name)}">📄|${formatPathHTML(name)}</a>`
-const renderHTML = (titleHTML, HTMLFragList) => `<!DOCTYPE html>
+const renderHTML = (titleHTML, contentHTML) => `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="minimum-scale=1, width=device-width">
 <title>${titleHTML}</title>
 <style>
-a { text-decoration: none; border-top: 1px solid #ddd; font-size: 14px; }
+a { text-decoration: none; border-top: 1px solid #ddd; }
 a:hover { background: #eee; }
 @media (pointer: coarse) { a, b { min-height: 32px; line-height: 32px; font-size: 18px; } }
+@media (pointer: fine) { a, b { min-height: 20px; line-height: 20px; font-size: 14px; } }
 </style>
-<pre style="display: flex; flex-flow: column;">${HTMLFragList.join('\n')}</pre>`
+<pre style="display: flex; flex-flow: column;">${contentHTML}</pre>`
+const renderItem = (text, icon, hrefFragList) => `<a href="${formatPathHref(hrefFragList)}">${icon}|${formatPathHTML(text)}</a>`
+const formatPathHref = (fragList) => encodeURI(normalizePathSeparator(nodeModulePath.join(...fragList)))
+const formatPathHTML = (name) => Format.escapeHTML(normalizePathSeparator(name))
+const normalizePathSeparator = nodeModulePath.sep === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
 
 export { createServerServeStatic }

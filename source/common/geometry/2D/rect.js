@@ -1,7 +1,7 @@
 // mostly modified from: https://github.com/mrdoob/three.js/tree/dev/src/math
 // 2D rectangle: { min: 2D.vector, max: 2D.vector }
 
-import { min, max } from 'vector'
+import { min, max } from './vector'
 
 const fromEmpty = () => ({
   min: { x: Infinity, y: Infinity },
