@@ -5,6 +5,7 @@ const { parseOptionMap, createOptionGetter } = Node.Module
 
 const MODE_OPTION = [
   'env-info', 'i',
+  'open', 'o',
   'file-list', 'ls',
   'file-list-all', 'ls-R',
   'file-create-directory', 'mkdir',

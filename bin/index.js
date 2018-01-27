@@ -2,12 +2,14 @@
 
 import nodeModulePath from 'path'
 import nodeModuleOs from 'os'
+import { spawnSync } from 'child_process'
 import PackageJSON from '../package.json'
 import { Env, Node } from 'module/Dr.node'
 import { parseOption, exitWithError } from './option'
 import { autoTestServerPort, getPathContent, createServerServeStatic, createServerWebSocketGroup } from './server'
 
 const { systemEndianness } = Env
+const { getDefaultOpen } = Node.System
 const { modify, getFileList, createDirectory } = Node.File
 
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
@@ -28,17 +30,20 @@ const main = async () => {
       case 'i': {
         const { name: packageName, version: packageVersion } = PackageJSON
         const { versions: { node: versionNode, v8: versionV8 } } = process
-        const systemPlatform = nodeModuleOs.platform()
-        const systemCPUArchitecture = nodeModuleOs.arch()
+        const systemPlatform = process.platform
+        const systemCPUArchitecture = process.arch
         const systemCPUCoreCount = nodeModuleOs.cpus().length
         return logJSON({ packageName, packageVersion, versionNode, versionV8, systemEndianness, systemPlatform, systemCPUArchitecture, systemCPUCoreCount })
       }
+      case 'open':
+      case 'o':
+        return spawnSync(getDefaultOpen(), getOptionOptional('argument') || [ '.' ], { cwd: argumentRootPath, stdio: 'inherit', shell: true })
       case 'file-list':
       case 'ls':
-        return logJSON(await getPathContent(getSingleOptionOptional('argument') || './'))
+        return logJSON(await getPathContent(getSingleOptionOptional('argument') || '.'))
       case 'file-list-all':
       case 'ls-R':
-        return logJSON(await getFileList(getSingleOptionOptional('argument') || './'))
+        return logJSON(await getFileList(getSingleOptionOptional('argument') || '.'))
       case 'file-create-directory':
       case 'mkdir':
         for (const path of getOption('argument').map(resolveArgumentPath)) {
