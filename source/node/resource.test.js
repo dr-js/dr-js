@@ -1,5 +1,5 @@
-import nodeModuleAssert from 'assert'
 import nodeModulePath from 'path'
+import { deepEqual, strictEqual } from 'assert'
 import { URL } from 'url'
 import {
   fetch,
@@ -57,8 +57,8 @@ describe('Node.Resource', () => {
   it('urlToOption()', () => {
     const urlObject = new URL('aaa://bbb.ccc:111/ddd?eee=fff#ggg')
     const option = urlToOption(urlObject)
-    nodeModuleAssert.strictEqual(option.port, 111)
-    nodeModuleAssert.strictEqual(option.path, '/ddd?eee=fff')
+    strictEqual(option.port, 111)
+    strictEqual(option.path, '/ddd?eee=fff')
   })
 
   it('fetch() option: timeout', withTestServer(async (serverUrl) => {
@@ -81,15 +81,15 @@ describe('Node.Resource', () => {
   }))
 
   it('fetch() buffer(), text(), json()', withTestServer(async (serverUrl) => {
-    nodeModuleAssert.strictEqual(Buffer.compare(
+    strictEqual(Buffer.compare(
       await fetch(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.buffer()),
       Buffer.from('TEST BUFFER')
     ), 0)
-    nodeModuleAssert.strictEqual(
+    strictEqual(
       await fetch(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.text()),
       'TEST BUFFER'
     )
-    nodeModuleAssert.deepEqual(
+    deepEqual(
       await fetch(`${serverUrl}/test-json`, { timeout: 50 }).then((response) => response.json()),
       { testKey: 'testValue' }
     )
@@ -97,11 +97,11 @@ describe('Node.Resource', () => {
 
   it('fetch() should allow receive response data multiple times (cached)', withTestServer(async (serverUrl) => {
     const response = await fetch(`${serverUrl}/test-buffer`, { timeout: 50 })
-    nodeModuleAssert.strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
-    nodeModuleAssert.strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
+    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
+    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
     await setTimeoutAsync(0)
-    nodeModuleAssert.strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
-    nodeModuleAssert.strictEqual(await response.text(), 'TEST BUFFER')
+    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
+    strictEqual(await response.text(), 'TEST BUFFER')
   }))
 
   it('fetch() unreceived response should clear up on next tick and throw when try to access', withTestServer(async (serverUrl) => {

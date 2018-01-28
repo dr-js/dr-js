@@ -5,19 +5,15 @@
 class DoublyLinkedList {
   static createNode = (value, prev = null, next = null) => ({ value, prev, next })
 
-  constructor () {
-    this.clear()
-  }
+  constructor () { this.clear() }
 
   get length () { return this.nodeSet.size }
 
   clear () {
     this.head = DoublyLinkedList.createNode(null)
     this.tail = DoublyLinkedList.createNode(null)
-
     this.head.next = this.tail
     this.tail.prev = this.head
-
     this.nodeSet = new Set()
   }
 
@@ -25,8 +21,7 @@ class DoublyLinkedList {
     if (__DEV__ && this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
     if (__DEV__ && prevNode !== this.head && !this.nodeSet.has(prevNode)) throw new Error('[DoublyLinkedList][insertAfter] invalid prevNode')
     const { next } = prevNode
-    prevNode.next = node
-    next.prev = node
+    prevNode.next = next.prev = node
     node.prev = prevNode
     node.next = next
     this.nodeSet.add(node)
@@ -36,8 +31,7 @@ class DoublyLinkedList {
     if (__DEV__ && this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertBefore] already has node')
     if (__DEV__ && nextNode !== this.tail && !this.nodeSet.has(nextNode)) throw new Error('[DoublyLinkedList][insertBefore] invalid nextNode')
     const { prev } = nextNode
-    nextNode.prev = node
-    prev.next = node
+    nextNode.prev = prev.next = node
     node.prev = prev
     node.next = nextNode
     this.nodeSet.add(node)
@@ -48,8 +42,7 @@ class DoublyLinkedList {
     const { prev, next } = node
     prev.next = next
     next.prev = prev
-    node.prev = null
-    node.next = null
+    node.prev = node.next = null
     this.nodeSet.delete(node)
   }
 
@@ -60,8 +53,7 @@ class DoublyLinkedList {
     const { next } = toNode
     prev.next = next
     next.prev = prev
-    fromNode.prev = null
-    toNode.next = null
+    fromNode.prev = toNode.next = null
     let node = fromNode
     while (node) {
       this.nodeSet.delete(node)
@@ -82,7 +74,7 @@ class DoublyLinkedList {
 
   forEachReverse (callback, thisArg = this) { // the index starts from length - 1
     let node = this.tail.prev
-    let index = this.length - 1
+    let index = this.nodeSet.size - 1
     while (node !== this.head) {
       callback(node, index)
       callback.call(thisArg, node, index, this)
@@ -142,6 +134,4 @@ class DoublyLinkedList {
   shift () { return this.remove(this.head.next) }
 }
 
-export {
-  DoublyLinkedList
-}
+export { DoublyLinkedList }

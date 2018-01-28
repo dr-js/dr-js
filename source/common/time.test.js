@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { notEqual } from 'assert'
 import {
   clock,
   onNextProperUpdate
@@ -8,7 +8,7 @@ const { describe, it } = global
 
 describe('Common.Time', () => {
   it('clock() should get msec precision', () => {
-    nodeModuleAssert.notEqual(clock() - clock(), 0)
+    notEqual(clock() - clock(), 0)
   })
 
   it('onNextProperUpdate() should invoke under 500 msec', () => new Promise((resolve, reject) => {

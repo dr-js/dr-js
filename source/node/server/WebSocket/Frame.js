@@ -1,7 +1,7 @@
-import nodeModuleBuffer from 'buffer'
 import { randomBytes } from 'crypto'
+import { constants as bufferConstants } from 'buffer'
 
-const BUFFER_MAX_LENGTH = nodeModuleBuffer.constants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
+const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 // Frame format:

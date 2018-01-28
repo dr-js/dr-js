@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'crypto'
-import { EventEmitter } from 'source/common/module'
+import { EventEmitter } from 'source/common/module/Event'
 import { urlToOption } from 'source/node/resource'
 import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, DO_MASK_DATA, DO_NOT_MASK_DATA, FrameSender, FrameReceiver } from './Frame'
 

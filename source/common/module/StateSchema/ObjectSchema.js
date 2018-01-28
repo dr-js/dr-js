@@ -1,4 +1,4 @@
-import { SCHEMA_MARK, isSchemaObject, toStructJSONWithCheck, getActionReducer, getReducer } from './__utils'
+import { SCHEMA_MARK, isSchemaObject, toStructJSONWithCheck, getActionReducer, getReducer } from './__utils__'
 
 const objectMap = (object, mapFunc, result = {}) => { // ALWAYS CHANGE
   for (const key in object) result[ key ] = mapFunc(object[ key ], key)

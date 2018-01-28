@@ -1,7 +1,9 @@
-import { Common, Node } from 'module/Dr.node'
+import { stringIndentLine } from 'dr-js/module/common/format'
+import { arraySplitChunk } from 'dr-js/module/common/data/__utils__'
+import { createOptionParser, OPTION_CONFIG_PRESET } from 'dr-js/module/common/module/OptionParser'
+import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/ParseOption'
 
-const { Format, Data: { getArrayChunk }, Module: { createOptionParser, OPTION_CONFIG_PRESET } } = Common
-const { parseOptionMap, createOptionGetter } = Node.Module
+const { SingleString, OneOfString } = OPTION_CONFIG_PRESET
 
 const MODE_OPTION = [
   'env-info', 'i',
@@ -19,30 +21,29 @@ const MODE_OPTION = [
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
-  formatList: [
-    {
-      ...OPTION_CONFIG_PRESET.SingleString,
-      optional: true,
-      name: 'config',
-      shortName: 'c',
-      description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
-    },
-    {
-      ...OPTION_CONFIG_PRESET.OneOfString(MODE_OPTION),
-      name: 'mode',
-      shortName: 'm',
-      description: `one of:\n${Format.stringIndentLine(getArrayChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
-    },
-    { optional: true, name: 'argument', shortName: 'a', description: `different for each mode`, argumentCount: '0+' }
-  ]
+  formatList: [ {
+    ...SingleString,
+    optional: true,
+    name: 'config',
+    shortName: 'c',
+    description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
+  }, {
+    ...OneOfString(MODE_OPTION),
+    name: 'mode',
+    shortName: 'm',
+    description: `one of:\n${stringIndentLine(arraySplitChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
+  }, {
+    optional: true,
+    name: 'argument',
+    shortName: 'a',
+    description: `different for each mode`,
+    argumentCount: '0+'
+  } ]
 }
 
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(OPTION_CONFIG)
 
-const parseOption = async () => {
-  const optionMap = await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap })
-  return { optionMap, ...createOptionGetter(optionMap) }
-}
+const parseOption = async () => createOptionGetter(await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap }))
 
 const exitWithError = (error) => {
   __DEV__ && console.warn(error)

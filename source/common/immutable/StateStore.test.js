@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { equal, deepEqual, deepStrictEqual, notEqual, notStrictEqual, throws, doesNotThrow } from 'assert'
 import { objectMerge } from './ImmutableOperation'
 import { createInsideOutPromise } from 'source/common/function'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
@@ -6,35 +6,35 @@ import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from
 const { describe, it } = global
 
 const verifyBasicStateGetSet = (store, initialState) => {
-  nodeModuleAssert.equal(typeof (store.getState), 'function')
-  nodeModuleAssert.equal(typeof (store.setState), 'function')
-  nodeModuleAssert.equal(typeof (store.getState()), 'object')
-  nodeModuleAssert.deepStrictEqual(store.setState({}), store.getState())
+  equal(typeof (store.getState), 'function')
+  equal(typeof (store.setState), 'function')
+  equal(typeof (store.getState()), 'object')
+  deepStrictEqual(store.setState({}), store.getState())
 
-  nodeModuleAssert.deepStrictEqual(store.setState({}), initialState)
-  nodeModuleAssert.deepStrictEqual(store.setState({ key1: 'value1' }), initialState)
-  nodeModuleAssert.deepStrictEqual(store.setState(initialState), initialState)
-  nodeModuleAssert.deepStrictEqual(store.setState({}), store.getState())
+  deepStrictEqual(store.setState({}), initialState)
+  deepStrictEqual(store.setState({ key1: 'value1' }), initialState)
+  deepStrictEqual(store.setState(initialState), initialState)
+  deepStrictEqual(store.setState({}), store.getState())
 
   const alteredState = store.setState({ test: 'value' })
-  nodeModuleAssert.notEqual(alteredState, initialState)
-  nodeModuleAssert.notEqual(store.setState({}), initialState)
-  nodeModuleAssert.notEqual(store.setState(initialState), initialState)
-  nodeModuleAssert.deepStrictEqual(store.setState({}), store.getState())
-  nodeModuleAssert.deepStrictEqual(store.setState({}), alteredState)
-  nodeModuleAssert.deepStrictEqual(store.setState(initialState), alteredState)
+  notEqual(alteredState, initialState)
+  notEqual(store.setState({}), initialState)
+  notEqual(store.setState(initialState), initialState)
+  deepStrictEqual(store.setState({}), store.getState())
+  deepStrictEqual(store.setState({}), alteredState)
+  deepStrictEqual(store.setState(initialState), alteredState)
 }
 
 const verifyBasicSubscribeUnsubscribe = (store) => {
-  nodeModuleAssert.equal(typeof (store.subscribe), 'function')
-  nodeModuleAssert.equal(typeof (store.unsubscribe), 'function')
+  equal(typeof (store.subscribe), 'function')
+  equal(typeof (store.unsubscribe), 'function')
 
   const listener = (state, prevState) => {
-    nodeModuleAssert.notStrictEqual(state, prevState)
+    notStrictEqual(state, prevState)
     callCount++
   }
   const listenerAlter = (state, prevState) => {
-    nodeModuleAssert.notStrictEqual(state, prevState)
+    notStrictEqual(state, prevState)
     callCount++
   }
   let callCount = 0
@@ -43,41 +43,41 @@ const verifyBasicSubscribeUnsubscribe = (store) => {
 
   callCount = 0
   store.setState({})
-  nodeModuleAssert.equal(callCount, 0)
+  equal(callCount, 0)
 
   callCount = 0
   store.setState({ key1: 'value1' })
-  nodeModuleAssert.equal(callCount, 0)
+  equal(callCount, 0)
 
   callCount = 0
   store.setState({ add: 'valueNew' })
-  nodeModuleAssert.equal(callCount, 1)
+  equal(callCount, 1)
   store.setState({ add: 'valueNew' }) // not change second time
-  nodeModuleAssert.equal(callCount, 1)
+  equal(callCount, 1)
 
   store.subscribe(listener) // same will deduplicate
 
   callCount = 0
   store.setState({ add1: 'valueNew1' })
-  nodeModuleAssert.equal(callCount, 1)
+  equal(callCount, 1)
 
   store.subscribe(listenerAlter) // 2 listener
 
   callCount = 0
   store.setState({ add2: 'valueNew2' })
-  nodeModuleAssert.equal(callCount, 2)
+  equal(callCount, 2)
 
   store.unsubscribe(listenerAlter) // 1 listener
 
   callCount = 0
   store.setState({ add3: 'valueNew3' })
-  nodeModuleAssert.equal(callCount, 1)
+  equal(callCount, 1)
 
   store.unsubscribe(listener) // 0 listener
 
   callCount = 0
   store.setState({ add4: 'valueNew4' })
-  nodeModuleAssert.equal(callCount, 0)
+  equal(callCount, 0)
 }
 
 const INITIAL_STATE = { key1: 'value1', sub: { key2: 'value2' } }
@@ -91,14 +91,14 @@ const ACTION = { type: '', payload: {} }
 describe('Common.Immutable.StateStore', () => {
   describe('createStateStore()', () => {
     it('should check arguments', () => {
-      nodeModuleAssert.throws(() => createStateStore())
-      nodeModuleAssert.throws(() => createStateStore(null))
-      nodeModuleAssert.throws(() => createStateStore(undefined))
-      nodeModuleAssert.throws(() => createStateStore(() => {}))
-      nodeModuleAssert.throws(() => createStateStore([]))
-      nodeModuleAssert.throws(() => createStateStore(0))
-      nodeModuleAssert.throws(() => createStateStore('string'))
-      nodeModuleAssert.doesNotThrow(() => createStateStore(INITIAL_STATE))
+      throws(() => createStateStore())
+      throws(() => createStateStore(null))
+      throws(() => createStateStore(undefined))
+      throws(() => createStateStore(() => {}))
+      throws(() => createStateStore([]))
+      throws(() => createStateStore(0))
+      throws(() => createStateStore('string'))
+      doesNotThrow(() => createStateStore(INITIAL_STATE))
     })
 
     it('should pass verifyBasicStateGetSet', () => {
@@ -118,17 +118,17 @@ describe('Common.Immutable.StateStore', () => {
 
   describe('createStateStoreEnhanced()', () => {
     it('should check arguments', () => {
-      nodeModuleAssert.throws(() => createStateStoreEnhanced())
-      nodeModuleAssert.throws(() => createStateStoreEnhanced(null))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced(undefined))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({}))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE }))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ enhancer: ENHANCER }))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, reducer: REDUCER }))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: null, reducer: null }))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: {}, reducer: {} }))
-      nodeModuleAssert.throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: {}, reducer: REDUCER }))
-      nodeModuleAssert.doesNotThrow(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: REDUCER }))
+      throws(() => createStateStoreEnhanced())
+      throws(() => createStateStoreEnhanced(null))
+      throws(() => createStateStoreEnhanced(undefined))
+      throws(() => createStateStoreEnhanced({}))
+      throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE }))
+      throws(() => createStateStoreEnhanced({ enhancer: ENHANCER }))
+      throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, reducer: REDUCER }))
+      throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: null, reducer: null }))
+      throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: {}, reducer: {} }))
+      throws(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: {}, reducer: REDUCER }))
+      doesNotThrow(() => createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: REDUCER }))
     })
 
     it('should pass verifyBasicSubscribeUnsubscribe', () => {
@@ -148,25 +148,25 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: {} })
-      nodeModuleAssert.equal(callCount, 0)
-      nodeModuleAssert.deepStrictEqual(store.getState(), INITIAL_STATE)
+      equal(callCount, 0)
+      deepStrictEqual(store.getState(), INITIAL_STATE)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { new: 'value' } })
-      nodeModuleAssert.equal(callCount, 1)
-      nodeModuleAssert.notEqual(store.getState(), INITIAL_STATE)
+      equal(callCount, 1)
+      notEqual(store.getState(), INITIAL_STATE)
     })
 
     it('should pass sub dispatch', () => {
       const enhancer = (enhancerStore, { type, payload: { count } }) => {
-        nodeModuleAssert.equal(store.getState().count, 10) // not being reduced yet
+        equal(store.getState().count, 10) // not being reduced yet
         count++
         if (count < 10) enhancerStore.dispatch({ type, payload: { count, [ `v${count}` ]: `v${count}` } })
       }
@@ -175,15 +175,15 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
 
-      nodeModuleAssert.equal(callCount, 1) // batched sub dispatch state
-      nodeModuleAssert.deepEqual(store.getState(), {
+      equal(callCount, 1) // batched sub dispatch state
+      deepEqual(store.getState(), {
         v9: 'v9',
         v8: 'v8',
         v7: 'v7',
@@ -208,51 +208,51 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      nodeModuleAssert.deepEqual(store.getState(), { value: 10 })
-      nodeModuleAssert.equal(callCount, 0)
+      deepEqual(store.getState(), { value: 10 })
+      equal(callCount, 0)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { set: 0 } })
-      nodeModuleAssert.deepEqual(store.getState(), { value: 0 })
-      nodeModuleAssert.equal(callCount, 1)
+      deepEqual(store.getState(), { value: 0 })
+      equal(callCount, 1)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { add: 5 } })
-      nodeModuleAssert.deepEqual(store.getState(), { value: 5 })
-      nodeModuleAssert.equal(callCount, 1)
+      deepEqual(store.getState(), { value: 5 })
+      equal(callCount, 1)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { set: 20, add: 100 } })
-      nodeModuleAssert.deepEqual(store.getState(), { value: 120 })
-      nodeModuleAssert.equal(callCount, 1)
+      deepEqual(store.getState(), { value: 120 })
+      equal(callCount, 1)
     })
 
     it('should pass check reducer', () => {
-      nodeModuleAssert.throws(() => {
+      throws(() => {
         const store = createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: (state, action) => null })
         store.dispatch(ACTION)
       })
 
-      nodeModuleAssert.throws(() => {
+      throws(() => {
         const store = createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: (state, action) => undefined })
         store.dispatch(ACTION)
       })
 
-      nodeModuleAssert.throws(() => {
+      throws(() => {
         const store = createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: (state, action) => [] })
         store.dispatch(ACTION)
       })
     })
 
     it('should pass check dispatch in reducer', () => {
-      nodeModuleAssert.throws(() => {
+      throws(() => {
         const store = createStateStoreEnhanced({
           initialState: INITIAL_STATE,
           enhancer: ENHANCER,
@@ -280,19 +280,19 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      nodeModuleAssert.equal(callCount, 1)
-      nodeModuleAssert.deepEqual(store.getState(), { count: 0 })
+      equal(callCount, 1)
+      deepEqual(store.getState(), { count: 0 })
 
       await promise
-      nodeModuleAssert.equal(callCount, 2)
-      nodeModuleAssert.deepEqual(store.getState(), { count: 1, v1: 'v1' })
+      equal(callCount, 2)
+      deepEqual(store.getState(), { count: 1, v1: 'v1' })
     })
 
     it('should pass listener change in dispatch', () => {
@@ -300,12 +300,12 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         store.unsubscribe(listenerAlter)
         callCount++
       }
       const listenerAlter = (state, prevState) => {
-        nodeModuleAssert.notStrictEqual(state, prevState)
+        notStrictEqual(state, prevState)
         store.unsubscribe(listener)
         callCount++
       }
@@ -314,11 +314,11 @@ describe('Common.Immutable.StateStore', () => {
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      nodeModuleAssert.equal(callCount, 2)
+      equal(callCount, 2)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 5 } })
-      nodeModuleAssert.equal(callCount, 0)
+      equal(callCount, 0)
     })
   })
 })

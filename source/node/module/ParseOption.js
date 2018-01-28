@@ -29,6 +29,7 @@ const createOptionGetter = (optionMap) => {
     return argumentList
   }
   return {
+    optionMap,
     getOptionOptional,
     getOption,
     getSingleOptionOptional: (name) => optionMap[ name ] ? optionMap[ name ].argumentList[ 0 ] : undefined,

@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { deepEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
@@ -138,13 +138,13 @@ describe('Common.Function', () => {
     let repeatSum = 0
     let repeatCount = 0
     repeat(5, (looped, count) => {
-      nodeModuleAssert.strictEqual(repeatCount, looped)
-      nodeModuleAssert.strictEqual(5, count)
+      strictEqual(repeatCount, looped)
+      strictEqual(5, count)
       repeatCount++
       repeatSum += looped
     })
-    nodeModuleAssert.strictEqual(repeatSum, 0 + 1 + 2 + 3 + 4)
-    nodeModuleAssert.strictEqual(repeatCount, 5)
+    strictEqual(repeatSum, 0 + 1 + 2 + 3 + 4)
+    strictEqual(repeatCount, 5)
   })
 
   it('createInsideOutPromise() resolve', async () => {
@@ -153,7 +153,7 @@ describe('Common.Function', () => {
     resolve('Bad')
     reject(new Error('should not reject after resolve'))
     reject(new Error('should not reject after reject'))
-    nodeModuleAssert.strictEqual(await promise, 'Good')
+    strictEqual(await promise, 'Good')
   })
 
   it('createInsideOutPromise() reject', async () => {
@@ -164,7 +164,7 @@ describe('Common.Function', () => {
     reject(new Error('should not reject after reject'))
     await promise.then(
       (value) => new Error(`should not resolve with value: ${value}`),
-      (error) => nodeModuleAssert.strictEqual(error.message, 'Good Error')
+      (error) => strictEqual(error.message, 'Good Error')
     )
   })
 
@@ -177,7 +177,7 @@ describe('Common.Function', () => {
     const asyncTaskList = [
       async () => 0,
       async () => {
-        nodeModuleAssert.strictEqual(state, 'Queue started')
+        strictEqual(state, 'Queue started')
         state = 'AsyncTask 1 started'
         await setTimeoutAsync(50)
         return 1
@@ -195,7 +195,7 @@ describe('Common.Function', () => {
 
     const promiseQueuePromise = promiseQueue({ asyncTaskList })
 
-    nodeModuleAssert.strictEqual(state, '')
+    strictEqual(state, '')
     state = 'Queue started'
 
     setTimeoutAsync(100).then(() => reject(new Error(`promiseQueue should finish in time`)))
@@ -205,10 +205,10 @@ describe('Common.Function', () => {
     resolve()
     await promise // time check
 
-    nodeModuleAssert.deepEqual([ ...resultList ], [ 0, 1 ])
-    nodeModuleAssert.deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
-    nodeModuleAssert.deepEqual(endList, asyncTaskList.slice(0, 3))
-    nodeModuleAssert.deepEqual(pendingList, asyncTaskList.slice(3))
+    deepEqual([ ...resultList ], [ 0, 1 ])
+    deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
+    deepEqual(endList, asyncTaskList.slice(0, 3))
+    deepEqual(pendingList, asyncTaskList.slice(3))
   })
 
   it('promiseQueue() shouldContinueOnError', async () => {
@@ -219,14 +219,14 @@ describe('Common.Function', () => {
     const asyncTaskList = [
       async () => 0,
       async () => {
-        nodeModuleAssert.strictEqual(state, 'Queue started')
+        strictEqual(state, 'Queue started')
         state = 'AsyncTask 1 started'
         await setTimeoutAsync(50)
         return 1
       },
       async () => { throw expectedError },
       async () => {
-        nodeModuleAssert.strictEqual(state, 'AsyncTask 1 started')
+        strictEqual(state, 'AsyncTask 1 started')
         state = 'AsyncTask 2 started'
         await setTimeoutAsync(10)
         return 3
@@ -236,7 +236,7 @@ describe('Common.Function', () => {
 
     const promiseQueuePromise = promiseQueue({ asyncTaskList, shouldContinueOnError: true })
 
-    nodeModuleAssert.strictEqual(state, '')
+    strictEqual(state, '')
     state = 'Queue started'
 
     setTimeoutAsync(100).then(() => reject(new Error(`promiseQueue should finish in time`)))
@@ -246,9 +246,9 @@ describe('Common.Function', () => {
     resolve()
     await promise // time check
 
-    nodeModuleAssert.deepEqual([ ...resultList ], [ 0, 1, undefined, 3, 4 ])
-    nodeModuleAssert.deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
-    nodeModuleAssert.deepEqual(endList, asyncTaskList)
-    nodeModuleAssert.deepEqual(pendingList, [])
+    deepEqual([ ...resultList ], [ 0, 1, undefined, 3, 4 ])
+    deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
+    deepEqual(endList, asyncTaskList)
+    deepEqual(pendingList, [])
   })
 })

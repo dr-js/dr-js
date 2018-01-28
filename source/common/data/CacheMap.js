@@ -22,9 +22,7 @@ class CacheMap {
 
   get size () { return this.cacheMap.size }
 
-  clear () {
-    this.cacheMap.forEach(this.cacheDelete, this)
-  }
+  clear () { this.cacheMap.forEach(this.cacheDelete, this) }
 
   cacheAdd (cache) {
     this.cacheMap.set(cache.key, cache)
@@ -42,11 +40,11 @@ class CacheMap {
 
   get (key, time = clock()) {
     const cache = this.cacheMap.get(key)
-    if (!cache) return undefined // miss
+    if (!cache) return // miss
     if (cache.expireAt <= time) { // expire
       __DEV__ && console.log('expired', cache.expireAt, time)
       this.cacheDelete(cache)
-      return undefined
+      return
     }
     this.cacheLinkedList.setFirst(cache) // promote
     return cache.value
@@ -70,6 +68,4 @@ class CacheMap {
   }
 }
 
-export {
-  CacheMap
-}
+export { CacheMap }

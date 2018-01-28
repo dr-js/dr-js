@@ -1,5 +1,5 @@
-import nodeModuleAssert from 'assert'
-import nodeModuleFs from 'fs'
+import { equal, notEqual } from 'assert'
+import { statSync } from 'fs'
 import {
   getEntityTagByContentHash,
   getWeakEntityTagByStat
@@ -9,14 +9,14 @@ const { describe, it } = global
 
 describe('Node.Module.EntityTag', () => {
   it('getEntityTagByContentHash()', () => {
-    nodeModuleAssert.equal(getEntityTagByContentHash(Buffer.from('')), getEntityTagByContentHash(Buffer.from('')))
-    nodeModuleAssert.notEqual(getEntityTagByContentHash(Buffer.from('1')), getEntityTagByContentHash(Buffer.from('')))
+    equal(getEntityTagByContentHash(Buffer.from('')), getEntityTagByContentHash(Buffer.from('')))
+    notEqual(getEntityTagByContentHash(Buffer.from('1')), getEntityTagByContentHash(Buffer.from('')))
   })
 
   it('getWeakEntityTagByStat()', () => {
-    const stat = nodeModuleFs.statSync(__filename)
-    const statDir = nodeModuleFs.statSync(__dirname)
-    nodeModuleAssert.equal(getWeakEntityTagByStat(stat), getWeakEntityTagByStat(stat))
-    nodeModuleAssert.notEqual(getWeakEntityTagByStat(stat), getWeakEntityTagByStat(statDir))
+    const stat = statSync(__filename)
+    const statDir = statSync(__dirname)
+    equal(getWeakEntityTagByStat(stat), getWeakEntityTagByStat(stat))
+    notEqual(getWeakEntityTagByStat(stat), getWeakEntityTagByStat(statDir))
   })
 })

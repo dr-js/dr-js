@@ -1,8 +1,8 @@
-import nodeModuleHttp from 'http'
-import nodeModuleHttps from 'https'
+import { get as getHttp } from 'http'
+import { get as getHttps } from 'https'
 import { URL } from 'url'
 import { clock } from 'source/common/time'
-import { createStateStoreLite } from 'source/common/immutable'
+import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import {
   WEB_SOCKET_EVENT_MAP,
   FRAME_TYPE_CONFIG_MAP,
@@ -46,7 +46,7 @@ const createWebSocketClient = ({ urlString, option = {}, onError, onUpgradeRespo
   option.isSecure = WebSocketClient.SECURE_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)
 
   const { requestOption, requestProtocolString, responseKey } = WebSocketClient.buildUpgradeRequest(url, option)
-  const request = (option.isSecure ? nodeModuleHttps : nodeModuleHttp).get(requestOption)
+  const request = (option.isSecure ? getHttps : getHttp)(requestOption)
 
   request.on('error', (error) => {
     if (request.aborted) return

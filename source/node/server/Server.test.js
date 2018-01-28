@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { deepEqual, strictEqual } from 'assert'
 import { fetch } from '../resource'
 import { createServer, createRequestListener, getUnusedPort } from './Server'
 import {
@@ -31,22 +31,22 @@ describe('Node.Server.Server', () => {
 
     start()
 
-    nodeModuleAssert.deepEqual(
+    deepEqual(
       await fetch(`${option.baseUrl}/test-param/AAA`).then((response) => response.json()),
       { param: 'AAA' }
     )
 
-    nodeModuleAssert.deepEqual(
+    deepEqual(
       await fetch(`${option.baseUrl}/test-param-any/aaa/bbb/ccc`).then((response) => response.json()),
       { param: 'aaa/bbb/ccc' }
     )
 
-    nodeModuleAssert.deepEqual(
+    deepEqual(
       await fetch(`${option.baseUrl}/test-buffer`).then((response) => response.text()),
       'TEST BUFFER'
     )
 
-    nodeModuleAssert.deepEqual(
+    deepEqual(
       await fetch(`${option.baseUrl}/test-json`).then((response) => response.json()),
       { testKey: 'testValue' }
     )
@@ -57,7 +57,7 @@ describe('Node.Server.Server', () => {
   it('getUnusedPort() single', async () => {
     const port = await getUnusedPort()
 
-    nodeModuleAssert.strictEqual(typeof (port), 'number')
+    strictEqual(typeof (port), 'number')
   })
 
   it('getUnusedPort() multiple', async () => {
@@ -72,7 +72,7 @@ describe('Node.Server.Server', () => {
       getUnusedPort()
     ])
 
-    nodeModuleAssert.strictEqual(portList.length, new Set(portList).size)
+    strictEqual(portList.length, new Set(portList).size)
   })
 
   it('getUnusedPort() check', async () => {

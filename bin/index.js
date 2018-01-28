@@ -1,39 +1,38 @@
 #!/usr/bin/env node
 
 import nodeModulePath from 'path'
-import nodeModuleOs from 'os'
+import { cpus } from 'os'
 import { spawnSync } from 'child_process'
-import PackageJSON from '../package.json'
-import { Env, Node } from 'module/Dr.node'
+import { name as packageName, version as packageVersion } from '../package.json'
+import { systemEndianness } from 'dr-js/module/env'
+import { getDefaultOpen } from 'dr-js/module/node/system'
+import { modify, getFileList, createDirectory } from 'dr-js/module/node/file'
 import { parseOption, exitWithError } from './option'
 import { autoTestServerPort, getPathContent, createServerServeStatic, createServerWebSocketGroup } from './server'
 
-const { systemEndianness } = Env
-const { getDefaultOpen } = Node.System
-const { modify, getFileList, createDirectory } = Node.File
-
-const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
-
 const main = async () => {
   const { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional } = await parseOption()
-
   const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
     ? nodeModulePath.dirname(getSingleOption('config'))
     : process.cwd())
-
   const resolveArgumentPath = (path) => nodeModulePath.resolve(argumentRootPath, path)
+  const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
   try {
     const mode = getSingleOption('mode')
     switch (mode) {
       case 'env-info':
       case 'i': {
-        const { name: packageName, version: packageVersion } = PackageJSON
-        const { versions: { node: versionNode, v8: versionV8 } } = process
-        const systemPlatform = process.platform
-        const systemCPUArchitecture = process.arch
-        const systemCPUCoreCount = nodeModuleOs.cpus().length
-        return logJSON({ packageName, packageVersion, versionNode, versionV8, systemEndianness, systemPlatform, systemCPUArchitecture, systemCPUCoreCount })
+        return logJSON({
+          packageName,
+          packageVersion,
+          versionNode: process.versions.node,
+          versionV8: process.versions.v8,
+          systemPlatform: process.platform,
+          systemEndianness,
+          systemCPUArchitecture: process.arch,
+          systemCPUCoreCount: cpus().length
+        })
       }
       case 'open':
       case 'o':

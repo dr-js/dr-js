@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { equal } from 'assert'
 import { CacheMap } from './CacheMap'
 
 const { describe, it } = global
@@ -10,8 +10,8 @@ const getTestData = (valueSizeSumMax) => {
 }
 
 const doSanityTest = (cacheMap, length) => {
-  it('should has matched cacheMap.size', () => nodeModuleAssert.equal(cacheMap.cacheMap.size, length))
-  it('should has matched cacheLinkedList.length', () => nodeModuleAssert.equal(cacheMap.cacheLinkedList.length, length))
+  it('should has matched cacheMap.size', () => equal(cacheMap.cacheMap.size, length))
+  it('should has matched cacheLinkedList.length', () => equal(cacheMap.cacheLinkedList.length, length))
 }
 
 describe('Common.Data.CacheMap', () => {
@@ -35,21 +35,21 @@ describe('Common.Data.CacheMap', () => {
     cacheMap.set(dataList[ 1 ].key, dataList[ 1 ].value)
     cacheMap.set(dataList[ 2 ].key, dataList[ 2 ].value)
     cacheMap.set(dataList[ 2 ].key, dataList[ 2 ].value)
-    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => nodeModuleAssert.equal(cacheMap.get(key), index <= 2 ? value : undefined)))
+    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => equal(cacheMap.get(key), index <= 2 ? value : undefined)))
     doSanityTest(cacheMap, 3) // 2 of 5 busted
   })
 
   describe('CacheMap.get', () => {
     const { cacheMap, dataList } = getTestData()
     dataList.forEach(({ key, value }) => cacheMap.set(key, value))
-    dataList.forEach(({ key, value }) => it('should has matched cacheValue', () => nodeModuleAssert.equal(cacheMap.get(key), value)))
+    dataList.forEach(({ key, value }) => it('should has matched cacheValue', () => equal(cacheMap.get(key), value)))
     doSanityTest(cacheMap, 5)
   })
 
   describe('CacheMap.get expired', () => {
     const { cacheMap, dataList } = getTestData()
     dataList.forEach(({ key, value }, index) => cacheMap.set(key, value, 1, index <= 2 ? -1 : undefined))
-    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => nodeModuleAssert.equal(cacheMap.get(key), index <= 2 ? undefined : value)))
+    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => equal(cacheMap.get(key), index <= 2 ? undefined : value)))
     doSanityTest(cacheMap, 2) // 3 of 5 expired
   })
 

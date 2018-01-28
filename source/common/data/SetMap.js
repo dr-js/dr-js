@@ -1,7 +1,12 @@
-export class SetMap {
-  constructor () {
-    this.map = new Map()
+class SetMap {
+  static getInvertSetMap (sourceSetMap, targetSetMap = new SetMap()) {
+    sourceSetMap.forEach((setKey, mapKey) => targetSetMap.add(setKey, mapKey))
+    return targetSetMap
   }
+
+  constructor () { this.map = new Map() }
+
+  clear () { this.map.clear() }
 
   add (mapKey, setKey) {
     let set = this.map.get(mapKey)
@@ -12,33 +17,21 @@ export class SetMap {
     set.add(setKey)
   }
 
-  clear () {
-    this.map.clear()
-  }
-
-  forEachSet (callback) {
-    this.map.forEach(callback) // set, mapKey
-  }
-
-  forEach (callback) {
-    this.map.forEach((set, mapKey) => set.forEach((setKey) => callback(setKey, mapKey)))
+  delete (mapKey, setKey) {
+    const set = this.map.get(mapKey)
+    if (!set || !set.delete(setKey)) return false
+    set.size === 0 && this.map.delete(mapKey)
+    return true
   }
 
   has (mapKey, setKey) {
     const set = this.map.get(mapKey)
-    if (set === undefined) return false
-    return set.has(setKey)
+    return Boolean(set && set.has(setKey))
   }
 
-  delete (mapKey, setKey) {
-    const set = this.map.get(mapKey)
-    if (set === undefined || !set.delete(setKey)) return false
-    if (set.size === 0) this.map.delete(mapKey)
-    return true
-  }
+  forEach (callback) { this.map.forEach((set, mapKey) => set.forEach((setKey) => callback(setKey, mapKey))) }
 
-  static getInvertSetMap (sourceSetMap, targetSetMap = new SetMap()) {
-    sourceSetMap.forEach((setKey, mapKey) => targetSetMap.add(setKey, mapKey))
-    return targetSetMap
-  }
+  forEachSet (callback) { this.map.forEach(callback) } // set, mapKey
 }
+
+export { SetMap }

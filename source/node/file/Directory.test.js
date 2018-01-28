@@ -1,5 +1,5 @@
-import nodeModuleAssert from 'assert'
 import nodeModulePath from 'path'
+import { equal } from 'assert'
 import {
   FILE_TYPE,
   createDirectory,
@@ -52,11 +52,11 @@ describe('Node.File.Directory', () => {
   it('getDirectoryContentNameList()', async () => {
     let getExpectedError = false
     try { await getDirectoryContentNameList(invalidPath) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     getExpectedError = false
     try { await getDirectoryContentNameList(scriptFilePath0) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await getDirectoryContentNameList(directoryPath0)
     await getDirectoryContentNameList(directoryPath1)
@@ -66,26 +66,26 @@ describe('Node.File.Directory', () => {
   it('getDirectoryContentFileList()', async () => {
     let getExpectedError = false
     try { await getDirectoryContentFileList(invalidPath) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     getExpectedError = false
     try { await getDirectoryContentFileList(scriptFilePath0) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await getDirectoryContentFileList(directoryPath0)
     await getDirectoryContentFileList(directoryPath1)
     const fileList = await getDirectoryContentFileList(TEST_ROOT)
-    nodeModuleAssert.equal(fileList.length, 0)
+    equal(fileList.length, 0)
   })
 
   it('getDirectoryContent()', async () => {
     let getExpectedError = false
     try { await getDirectoryContent(invalidPath) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     getExpectedError = false
     try { await getDirectoryContent(scriptFilePath0) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await getDirectoryContent(directoryPath0)
     await getDirectoryContent(directoryPath1)
@@ -93,10 +93,10 @@ describe('Node.File.Directory', () => {
 
     // console.log(content)
 
-    nodeModuleAssert.equal(content[ FILE_TYPE.Directory ].size, 2)
-    nodeModuleAssert.equal(content[ FILE_TYPE.File ].length, 0)
-    nodeModuleAssert.equal(content[ FILE_TYPE.SymbolicLink ].length, 0)
-    nodeModuleAssert.equal(content[ FILE_TYPE.Other ].length, 0)
+    equal(content[ FILE_TYPE.Directory ].size, 2)
+    equal(content[ FILE_TYPE.File ].length, 0)
+    equal(content[ FILE_TYPE.SymbolicLink ].length, 0)
+    equal(content[ FILE_TYPE.Other ].length, 0)
   })
 
   it('walkDirectoryContent()', async () => {
@@ -105,12 +105,12 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 10)
+    equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryContent(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
       // console.log({ path, name, fileType })
-      nodeModuleAssert.equal(name, checkNameList.shift())
+      equal(name, checkNameList.shift())
     })
   })
 
@@ -120,12 +120,12 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 10)
+    equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryContentBottomUp(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
       // console.log({ path, name, fileType })
-      nodeModuleAssert.equal(name, checkNameList.pop())
+      equal(name, checkNameList.pop())
     })
   })
 
@@ -135,11 +135,11 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 2)
+    equal(callbackCount, 2)
 
     await walkDirectoryContentShallow(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
       // console.log({ path, name, fileType })
-      nodeModuleAssert.equal(name, '2')
+      equal(name, '2')
     })
   })
 
@@ -151,7 +151,7 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 4)
+    equal(callbackCount, 4)
   })
 
   it('moveDirectoryContent()', async () => {
@@ -162,7 +162,7 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 4)
+    equal(callbackCount, 4)
   })
 
   it('deleteDirectoryContent()', async () => {
@@ -173,6 +173,6 @@ describe('Node.File.Directory', () => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
-    nodeModuleAssert.equal(callbackCount, 0)
+    equal(callbackCount, 0)
   })
 })

@@ -1,4 +1,4 @@
-export class IndexBox {
+class IndexBox {
   constructor (min = 0, max = Infinity) {
     this.taken = []
     this.min = min
@@ -21,3 +21,5 @@ export class IndexBox {
     }
   }
 }
+
+export { IndexBox }
