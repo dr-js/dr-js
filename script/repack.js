@@ -1,6 +1,6 @@
-const nodeModuleFs = require('fs')
 const nodeModulePath = require('path')
-const nodeModuleChildProcess = require('child_process')
+const { writeFileSync } = require('fs')
+const { execSync } = require('child_process')
 const { Verify } = require('dr-js/library/common')
 const { createDirectory, modify } = require('dr-js/library/node/file')
 
@@ -31,7 +31,7 @@ const main = async () => {
   const execOptionOutput = { ...DEFAULT_EXEC_OPTION, cwd: fromOutput() }
 
   padLog('run build-clear')
-  nodeModuleChildProcess.execSync('npm run build-clear', execOptionRoot)
+  execSync('npm run build-clear', execOptionRoot)
   await createDirectory(fromOutput())
 
   padLog(`create ${fromOutput('package.json')}`)
@@ -40,7 +40,7 @@ const main = async () => {
   delete packageJSON.scripts
   delete packageJSON.engines
   delete packageJSON.devDependencies
-  nodeModuleFs.writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
+  writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
 
   padLog(`copy LICENSE, README.md`)
   await modify.copy(fromRoot('LICENSE'), fromOutput('LICENSE'))
@@ -49,23 +49,23 @@ const main = async () => {
   if (MODE === 'base-only') return
 
   padLog('run test')
-  nodeModuleChildProcess.execSync('npm run test', execOptionRoot)
+  execSync('npm run test', execOptionRoot)
 
   padLog('run build')
-  nodeModuleChildProcess.execSync('npm run build-bin', execOptionRoot)
-  nodeModuleChildProcess.execSync('npm run build-module', execOptionRoot)
-  nodeModuleChildProcess.execSync('npm run build-library-babel', execOptionRoot)
-  nodeModuleChildProcess.execSync('npm run build-library-webpack', execOptionRoot)
+  execSync('npm run build-bin', execOptionRoot)
+  execSync('npm run build-module', execOptionRoot)
+  execSync('npm run build-library-babel', execOptionRoot)
+  execSync('npm run build-library-webpack', execOptionRoot)
 
   padLog(MODE)
   if (MODE === 'pack-only') {
-    nodeModuleChildProcess.execSync('npm pack', execOptionOutput)
+    execSync('npm pack', execOptionOutput)
     const outputFileName = `${packageJSON.name}-${packageJSON.version}.tgz`
     await modify.move(fromOutput(outputFileName), fromRoot(outputFileName))
   } else if (MODE === 'publish') {
-    nodeModuleChildProcess.execSync('npm publish', execOptionOutput)
+    execSync('npm publish', execOptionOutput)
   } else if (MODE === 'publish-dev') {
-    nodeModuleChildProcess.execSync('npm publish --tag dev', execOptionOutput)
+    execSync('npm publish --tag dev', execOptionOutput)
   }
   padLog(`done`)
 }
