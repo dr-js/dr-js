@@ -3,7 +3,7 @@ import {
   findRouteFromMap,
   getRouteParamAny as getRouteMapParamAny,
   getRouteParam as getRouteMapParam
-} from 'source/common/module'
+} from 'source/common/module/RouteMap'
 
 const METHOD_MAP = {
   GET: '/GET',

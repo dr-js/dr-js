@@ -1,6 +1,6 @@
-import nodeModuleRepl from 'repl'
+import { start } from 'repl'
 
-const startREPL = () => nodeModuleRepl.start({
+const startREPL = () => start({
   prompt: '> ',
   input: process.stdin,
   output: process.stdout,

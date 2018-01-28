@@ -1,7 +1,7 @@
-import nodeModuleChildProcess from 'child_process'
+import { spawn as spawnChildProcess } from 'child_process'
 
 const spawn = (command, argList = [], { cwd = process.cwd(), env = process.env, shell = true, detached = false, stdio = 'inherit' }) => {
-  const childProcess = nodeModuleChildProcess.spawn(command, argList, { cwd, env, shell, detached, stdio })
+  const childProcess = spawnChildProcess(command, argList, { cwd, env, shell, detached, stdio })
   return {
     childProcess,
     childProcessPromise: new Promise((resolve, reject) => {

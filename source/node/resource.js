@@ -1,14 +1,11 @@
-import nodeModuleFs from 'fs'
-import nodeModuleVm from 'vm'
 import nodeModuleHttp from 'http'
 import nodeModuleHttps from 'https'
+import { runInNewContext } from 'vm'
 import { URL } from 'url'
-import { promisify } from 'util'
 
-import { getLocalPath } from 'source/node/system'
 import { clock, setTimeoutAsync } from 'source/common/time'
-
-const readFileAsync = promisify(nodeModuleFs.readFile)
+import { getLocalPath } from 'source/node/system'
+import { readFileAsync } from 'source/node/file/__utils__'
 
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 
@@ -117,7 +114,7 @@ const loadScript = (src, contextObject) => src.includes('://') ? loadRemoteScrip
 const loadJSON = (src) => src.includes('://') ? loadRemoteJSON(src) : loadLocalJSON(src)
 const loadRemoteScript = async (src, contextObject) => {
   const response = await fetch(src)
-  return nodeModuleVm.runInNewContext(await response.text(), contextObject, { filename: src })
+  return runInNewContext(await response.text(), contextObject, { filename: src })
 }
 const loadRemoteJSON = async (src) => {
   const response = await fetch(src)
@@ -125,7 +122,7 @@ const loadRemoteJSON = async (src) => {
 }
 const loadLocalScript = async (src, contextObject) => {
   const filePath = getLocalPath(src)
-  return nodeModuleVm.runInNewContext(await readFileAsync(filePath, 'utf8'), contextObject, { filename: filePath })
+  return runInNewContext(await readFileAsync(filePath, 'utf8'), contextObject, { filename: filePath })
 }
 const loadLocalJSON = async (src) => {
   const filePath = getLocalPath(src)

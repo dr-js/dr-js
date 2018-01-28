@@ -1,11 +1,11 @@
-import nodeModuleNet from 'net'
-import nodeModuleHttp from 'http'
-import nodeModuleHttps from 'https'
 import { constants } from 'crypto'
+import { createServer as createNetServer } from 'net'
+import { createServer as createHttpServer } from 'http'
+import { createServer as createHttpsServer } from 'https'
 
 import { clock } from 'source/common/time'
-import { CacheMap } from 'source/common/data'
-import { createStateStoreLite } from 'source/common/immutable'
+import { CacheMap } from 'source/common/data/CacheMap'
+import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder'
 
 const SSL_SESSION_CACHE_MAX = 5000
@@ -60,7 +60,7 @@ const applyServerSessionCache = (server) => {
 }
 const createServer = ({ protocol, ...option }) => {
   option = getServerOption(protocol, option)
-  const server = option.isSecure ? nodeModuleHttps.createServer(option) : nodeModuleHttp.createServer() // TODO: NOTE: the argument is different for https/http.createServer
+  const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // TODO: NOTE: the argument is different for https/http.createServer
   const { start, stop } = getServerToggle(server, option)
   option.isSecure && applyServerSessionCache(server)
   return { server, start, stop, option }
@@ -93,7 +93,7 @@ const createRequestListener = ({
 
 // set to non-zero to check if that port is available
 const getUnusedPort = (expectPort = 0, host = '0.0.0.0') => new Promise((resolve, reject) => {
-  const server = nodeModuleNet.createServer()
+  const server = createNetServer()
   server.on('error', reject)
   server.listen({ host, port: expectPort, exclusive: true }, (error) => {
     if (error) return reject(error)

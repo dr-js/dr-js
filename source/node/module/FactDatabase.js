@@ -1,13 +1,10 @@
 import nodeModulePath from 'path'
-import nodeModuleFs from 'fs'
-import { promisify } from 'util'
-import { createLogQueue } from 'source/common/data'
-import { createStateStore } from 'source/common/immutable'
+import { createLogQueue } from 'source/common/data/LogQueue'
+import { createStateStore } from 'source/common/immutable/StateStore'
 import { createDirectory, getFileList } from 'source/node/file'
+import { readFileAsync, writeFileAsync } from 'source/node/file/__utils__'
 import { createSafeWriteStream } from './SafeWrite'
 
-const readFileAsync = promisify(nodeModuleFs.readFile)
-const writeFileAsync = promisify(nodeModuleFs.writeFile)
 const FILE_SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // 24hour
 
 // lightweight log-based database

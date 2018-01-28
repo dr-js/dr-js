@@ -1,15 +1,9 @@
-import nodeModuleFs from 'fs'
-import { promisify } from 'util'
-
 import { clock } from 'source/common/time'
-import { CacheMap } from 'source/common/data'
-import { getMIMETypeFromFileName } from 'source/common/module'
-import { getWeakEntityTagByStat } from 'source/node/module'
-
+import { CacheMap } from 'source/common/data/CacheMap'
+import { getMIMETypeFromFileName } from 'source/common/module/MIME'
+import { statAsync, readFileAsync, createReadStream } from 'source/node/file/__utils__'
+import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import { responderSendBuffer, responderSendStream } from './Common'
-
-const statAsync = promisify(nodeModuleFs.stat)
-const readFileAsync = promisify(nodeModuleFs.readFile)
 
 const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
 const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
@@ -39,6 +33,7 @@ const createResponderBufferCache = ({
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
 const REGEXP_ENCODING_GZIP = /gzip/i
 
+// TODO: support range for better media serving
 const createResponderServeStatic = ({
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
@@ -61,7 +56,7 @@ const createResponderServeStatic = ({
     encoding && store.response.setHeader('content-encoding', encoding)
     if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
-      await responderSendStream(store, { stream: nodeModuleFs.createReadStream(filePath), length, type, entityTag })
+      await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })
     } else {
       const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
       serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)

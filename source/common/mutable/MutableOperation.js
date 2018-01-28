@@ -1,4 +1,4 @@
-const objectMergeDeep = (object, merge) => {
+const objectMergeDeep = (object, merge) => { // TODO: DEPRECATED
   for (const [ key, mergeValue ] of Object.entries(merge)) { // check if has new data
     const objectValue = object[ key ]
     if (objectValue === mergeValue) continue
@@ -8,6 +8,6 @@ const objectMergeDeep = (object, merge) => {
   return object
 }
 
-export const MutableOperation = {
-  objectMergeDeep
+export {
+  objectMergeDeep // TODO: DEPRECATED
 }

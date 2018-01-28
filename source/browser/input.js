@@ -1,6 +1,6 @@
 import { clock } from 'source/common/time'
 import { getRandomId } from 'source/common/math'
-import { matchObjectEntry } from 'source/common/data'
+import { isObjectContain } from 'source/common/data/__utils__'
 import { getDist } from 'source/common/geometry/2D/vector'
 import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/2D/boundingRect'
 
@@ -165,7 +165,7 @@ const createKeyCommandListener = (element = window.document) => {
   const keyCommandListener = (event) => keyCommandMap.forEach((keyCommand) => {
     const { target, checkMap, callback } = keyCommand
     if (target && !target.contains(event.target)) return
-    if (!matchObjectEntry(event, checkMap)) return
+    if (!isObjectContain(event, checkMap)) return
     event.preventDefault()
     callback(event, keyCommand)
   })

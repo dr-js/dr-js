@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { equal } from 'assert'
 import { packBufferPacket, parseBufferPacket } from './buffer'
 
 const { describe, it } = global
@@ -9,13 +9,13 @@ describe('Node.Buffer', () => {
 
   it('packBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
-    nodeModuleAssert.equal(packet.length, 2 + Buffer.byteLength(headerString) + payloadBuffer.length)
+    equal(packet.length, 2 + Buffer.byteLength(headerString) + payloadBuffer.length)
   })
 
   it('parseBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
     const [ parsedHeaderString, parsedPayloadBuffer ] = parseBufferPacket(packet)
-    nodeModuleAssert.equal(headerString, parsedHeaderString)
-    nodeModuleAssert.equal(payloadBuffer.compare(parsedPayloadBuffer), 0)
+    equal(headerString, parsedHeaderString)
+    equal(payloadBuffer.compare(parsedPayloadBuffer), 0)
   })
 })

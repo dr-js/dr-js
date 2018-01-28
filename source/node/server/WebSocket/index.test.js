@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { equal, deepStrictEqual } from 'assert'
 import { createServer, getUnusedPort } from '../Server'
 import { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient, enableWebSocketServer } from './index'
 
@@ -21,7 +21,7 @@ describe('Node.Server.WebSocket', () => {
         // console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
         // webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => { console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`) })
         // webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => { console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`) })
-        nodeModuleAssert.deepStrictEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
+        deepStrictEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
         webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async (webSocket, { dataType, dataBuffer }) => {
           // console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
           if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
@@ -48,22 +48,22 @@ describe('Node.Server.WebSocket', () => {
       setTimeout(reject, 500)
     })
 
-    nodeModuleAssert.equal(webSocketSet.size, 1)
+    equal(webSocketSet.size, 1)
 
     // console.log(`>> OPEN`)
 
     {
       webSocket.sendText(TEST_STRING) // big string
       const { dataType, dataBuffer } = await getNextFrame()
-      nodeModuleAssert.equal(dataType, DATA_TYPE_MAP.OPCODE_TEXT)
-      nodeModuleAssert.equal(dataBuffer.toString(), TEST_STRING)
+      equal(dataType, DATA_TYPE_MAP.OPCODE_TEXT)
+      equal(dataBuffer.toString(), TEST_STRING)
     }
 
     {
       webSocket.sendBuffer(TEST_BUFFER) // big buffer
       const { dataType, dataBuffer } = await getNextFrame()
-      nodeModuleAssert.equal(dataType, DATA_TYPE_MAP.OPCODE_BINARY)
-      nodeModuleAssert.equal(dataBuffer.size, TEST_BUFFER.size)
+      equal(dataType, DATA_TYPE_MAP.OPCODE_BINARY)
+      equal(dataBuffer.size, TEST_BUFFER.size)
     }
 
     webSocket.close(1000, 'CLOSE') // close

@@ -1,21 +1,18 @@
 import nodeModulePath from 'path'
-import { Common, Node } from 'module/Dr.node'
+import { clock } from 'dr-js/module/common/time'
+import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import * as Format from 'dr-js/module/common/format'
+import { createGetPathFromRoot } from 'dr-js/module/node/file'
+import { createServer, createRequestListener, Responder } from 'dr-js/module/node/server'
 import { getPathContent, responderSendFavicon, getServerInfo } from './__utils__'
 
-const { Module: { BASIC_EXTENSION_MAP }, Format, Time } = Common
 const {
-  File: { createGetPathFromRoot },
-  Server: {
-    createServer, createRequestListener,
-    Responder: {
-      responderEnd, responderEndWithRedirect,
-      responderSendBuffer,
-      createResponderRouter, createRouteMap, getRouteParamAny,
-      createResponderParseURL,
-      createResponderServeStatic
-    }
-  }
-} = Node
+  responderEnd, responderEndWithRedirect,
+  responderSendBuffer,
+  createResponderRouter, createRouteMap, getRouteParamAny,
+  createResponderParseURL,
+  createResponderServeStatic
+} = Responder
 
 const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe }) => {
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
@@ -37,7 +34,7 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(Time.clock() - time)})`)
+      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(clock() - time)})`)
     }
   }))
   start()

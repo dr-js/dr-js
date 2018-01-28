@@ -1,22 +1,24 @@
-import nodeModuleFs from 'fs'
 import nodeModulePath from 'path'
-import { Common, Node } from 'module/Dr.node'
+import { readFileSync } from 'fs'
+import { clock } from 'dr-js/module/common/time'
+import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import * as Format from 'dr-js/module/common/format'
+import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/buffer'
+import { createServer, createRequestListener, Responder, WebSocket } from 'dr-js/module/node/server'
 import { responderSendFavicon, getServerInfo } from './__utils__'
 
-const { Module: { BASIC_EXTENSION_MAP }, Format, Time } = Common
 const {
-  Buffer: { packBufferPacket, parseBufferPacket },
-  Server: {
-    createServer, createRequestListener,
-    Responder: {
-      responderEnd, responderEndWithRedirect,
-      responderSendBuffer,
-      createResponderRouter, createRouteMap, getRouteParamAny,
-      createResponderParseURL
-    },
-    WebSocket: { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, enableWebSocketServer, createUpdateRequestListener }
-  }
-} = Node
+  responderEnd, responderEndWithRedirect,
+  responderSendBuffer,
+  createResponderRouter, createRouteMap, getRouteParamAny,
+  createResponderParseURL
+} = Responder
+const {
+  WEB_SOCKET_EVENT_MAP,
+  DATA_TYPE_MAP,
+  enableWebSocketServer,
+  createUpdateRequestListener
+} = WebSocket
 
 const wrapFrameBufferPacket = (onData) => async (webSocket, { dataType, dataBuffer }) => {
   __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
@@ -115,7 +117,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const loadTextFile = (path) => nodeModuleFs.readFileSync(nodeModulePath.resolve(__dirname, path), 'utf8')
+const loadTextFile = (path) => readFileSync(nodeModulePath.resolve(__dirname, path), 'utf8')
 
 const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
   const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html').replace(`"{SCRIPT_DR_JS}"`, loadTextFile('../../library/Dr.browser.js')))
@@ -145,7 +147,7 @@ const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(Time.clock() - time)})`)
+      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(clock() - time)})`)
     }
   }))
   start()

@@ -1,11 +1,7 @@
-import { Common, Node } from 'module/Dr.node'
-
-const { Module: { BASIC_EXTENSION_MAP } } = Common
-const {
-  File: { FILE_TYPE, getDirectoryContent },
-  System: { getNetworkIPv4AddressList },
-  Server: { getUnusedPort, Responder: { responderSendBuffer } }
-} = Node
+import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import { FILE_TYPE, getDirectoryContent } from 'dr-js/module/node/file'
+import { getNetworkIPv4AddressList } from 'dr-js/module/node/System'
+import { getUnusedPort, Responder } from 'dr-js/module/node/Server'
 
 const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
   const content = await getDirectoryContent(rootPath, undefined, true) // single level deep
@@ -29,7 +25,7 @@ const autoTestServerPort = async (expectPortList, host) => {
 }
 
 const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }
-const responderSendFavicon = (store) => responderSendBuffer(store, BUFFER_DATA_FAVICON_PNG)
+const responderSendFavicon = (store) => Responder.responderSendBuffer(store, BUFFER_DATA_FAVICON_PNG)
 
 const getServerInfo = (protocol, hostname, port) => [
   'running at:',

@@ -1,19 +1,6 @@
-import nodeModuleFs from 'fs'
 import nodeModulePath from 'path'
-import { promisify } from 'util'
-
-import {
-  FILE_TYPE,
-
-  getPathType,
-  createDirectory,
-
-  deletePath,
-  movePath,
-  copyPath
-} from './File'
-
-const readdirAsync = promisify(nodeModuleFs.readdir)
+import { readdirAsync } from './__utils__'
+import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
 
 const getDirectoryContentNameList = async (path, pathType) => {
   if (pathType === undefined) pathType = await getPathType(path)

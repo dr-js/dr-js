@@ -1,5 +1,5 @@
-import nodeModuleAssert from 'assert'
 import nodeModulePath from 'path'
+import { equal } from 'assert'
 import {
   FILE_TYPE,
 
@@ -46,32 +46,32 @@ after('clear', async () => {
 
 describe('Node.File.File', () => {
   it('getPathType()', async () => {
-    nodeModuleAssert.equal(await getPathType(scriptFilePath0), FILE_TYPE.File)
-    nodeModuleAssert.equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
-    nodeModuleAssert.equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    nodeModuleAssert.equal(await getPathType(invalidPath), FILE_TYPE.Error)
+    equal(await getPathType(scriptFilePath0), FILE_TYPE.File)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
+    equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
+    equal(await getPathType(invalidPath), FILE_TYPE.Error)
   })
 
   it('createDirectory()', async () => {
     await createDirectory(directoryPath4)
     await createDirectory(directoryPath2)
     await createDirectory(directoryPath3)
-    nodeModuleAssert.equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
-    nodeModuleAssert.equal(await getPathType(directoryPath3), FILE_TYPE.Directory)
-    nodeModuleAssert.equal(await getPathType(directoryPath4), FILE_TYPE.Directory)
+    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
+    equal(await getPathType(directoryPath3), FILE_TYPE.Directory)
+    equal(await getPathType(directoryPath4), FILE_TYPE.Directory)
 
     let getExpectedError = false
     try { await createDirectory(scriptFilePath0) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
   })
 
   it('copyPath()', async () => {
     await copyPath(scriptFilePath0, scriptFilePath1)
-    nodeModuleAssert.equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
+    equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
 
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await copyPath(scriptFilePath0, scriptFilePath2)
     await copyPath(scriptFilePath0, scriptFilePath2)
@@ -79,34 +79,34 @@ describe('Node.File.File', () => {
     await copyPath(directoryPath4, directoryPath5)
     await copyPath(directoryPath4, directoryPath5)
 
-    nodeModuleAssert.equal(await getPathType(scriptFilePath2), FILE_TYPE.File)
-    nodeModuleAssert.equal(await getPathType(directoryPath5), FILE_TYPE.Directory)
+    equal(await getPathType(scriptFilePath2), FILE_TYPE.File)
+    equal(await getPathType(directoryPath5), FILE_TYPE.Directory)
   })
 
   it('movePath()', async () => {
     let getExpectedError = false
     try { await movePath(invalidPath, TEST_ROOT) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await movePath(scriptFilePath2, scriptFilePath3)
     await movePath(directoryPath5, directoryPath6)
 
-    nodeModuleAssert.equal(await getPathType(scriptFilePath2), FILE_TYPE.Error)
-    nodeModuleAssert.equal(await getPathType(directoryPath5), FILE_TYPE.Error)
-    nodeModuleAssert.equal(await getPathType(scriptFilePath3), FILE_TYPE.File)
-    nodeModuleAssert.equal(await getPathType(directoryPath6), FILE_TYPE.Directory)
+    equal(await getPathType(scriptFilePath2), FILE_TYPE.Error)
+    equal(await getPathType(directoryPath5), FILE_TYPE.Error)
+    equal(await getPathType(scriptFilePath3), FILE_TYPE.File)
+    equal(await getPathType(directoryPath6), FILE_TYPE.Directory)
   })
 
   it('deletePath()', async () => {
     let getExpectedError = false
     try { await deletePath(TEST_ROOT) } catch (error) { getExpectedError = true }
-    nodeModuleAssert.equal(getExpectedError, true)
+    equal(getExpectedError, true)
 
     await deletePath(directoryPath4)
     await deletePath(directoryPath3)
     await deletePath(directoryPath2)
     await deletePath(scriptFilePath1)
 
-    nodeModuleAssert.equal(await getPathType(scriptFilePath1), FILE_TYPE.Error)
+    equal(await getPathType(scriptFilePath1), FILE_TYPE.Error)
   })
 })

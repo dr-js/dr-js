@@ -1,4 +1,4 @@
-import nodeModuleAssert from 'assert'
+import { equal } from 'assert'
 import { DoublyLinkedList } from './LinkedList'
 
 const { describe, it } = global
@@ -14,9 +14,9 @@ const getTestData = () => {
 }
 
 const doSanityTest = (linkedList, length) => {
-  it('should has head.prev === null', () => nodeModuleAssert.equal(linkedList.head.prev, null))
-  it('should has tail.next === null', () => nodeModuleAssert.equal(linkedList.tail.next, null))
-  it(`should has length === ${length}`, () => nodeModuleAssert.equal(linkedList.length, length))
+  it('should has head.prev === null', () => equal(linkedList.head.prev, null))
+  it('should has tail.next === null', () => equal(linkedList.tail.next, null))
+  it(`should has length === ${length}`, () => equal(linkedList.length, length))
 }
 
 describe('Common.Data.LinkedList', () => {
@@ -28,7 +28,7 @@ describe('Common.Data.LinkedList', () => {
   describe('LinkedList.forEach', () => {
     const { linkedList, nodeList } = getTestData()
     doSanityTest(linkedList, 5)
-    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ index ].value}`, () => nodeModuleAssert.equal(node.value, nodeList[ index ].value)))
+    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ index ].value}`, () => equal(node.value, nodeList[ index ].value)))
   })
 
   describe('LinkedList.remove', () => {
@@ -42,30 +42,30 @@ describe('Common.Data.LinkedList', () => {
     const { linkedList, nodeList } = getTestData()
     linkedList.removeBetween(nodeList[ 1 ], nodeList[ 4 ])
     doSanityTest(linkedList, 1)
-    it(`should has head.next === ${nodeList[ 0 ].value}`, () => nodeModuleAssert.equal(linkedList.head.next, nodeList[ 0 ]))
-    it(`should has tail.prev === ${nodeList[ 0 ].value}`, () => nodeModuleAssert.equal(linkedList.tail.prev, nodeList[ 0 ]))
+    it(`should has head.next === ${nodeList[ 0 ].value}`, () => equal(linkedList.head.next, nodeList[ 0 ]))
+    it(`should has tail.prev === ${nodeList[ 0 ].value}`, () => equal(linkedList.tail.prev, nodeList[ 0 ]))
   })
 
   describe('LinkedList.reverse', () => {
     const { linkedList, nodeList } = getTestData()
     linkedList.reverse()
     doSanityTest(linkedList, 5)
-    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ 4 - index ].value}`, () => nodeModuleAssert.equal(node.value, nodeList[ 4 - index ].value)))
+    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ 4 - index ].value}`, () => equal(node.value, nodeList[ 4 - index ].value)))
   })
 
   describe('LinkedList.setFirst', () => {
     const { linkedList, nodeList } = getTestData()
     linkedList.setFirst(nodeList[ 3 ])
     doSanityTest(linkedList, 5)
-    it(`should has head.next === ${nodeList[ 3 ].value}`, () => nodeModuleAssert.equal(linkedList.head.next, nodeList[ 3 ]))
-    it(`should has tail.prev.prev === ${nodeList[ 2 ].value}`, () => nodeModuleAssert.equal(linkedList.tail.prev.prev, nodeList[ 2 ]))
+    it(`should has head.next === ${nodeList[ 3 ].value}`, () => equal(linkedList.head.next, nodeList[ 3 ]))
+    it(`should has tail.prev.prev === ${nodeList[ 2 ].value}`, () => equal(linkedList.tail.prev.prev, nodeList[ 2 ]))
   })
 
   describe('LinkedList.setLast', () => {
     const { linkedList, nodeList } = getTestData()
     linkedList.setLast(nodeList[ 1 ])
     doSanityTest(linkedList, 5)
-    it(`should has tail.prev === ${nodeList[ 1 ].value}`, () => nodeModuleAssert.equal(linkedList.tail.prev, nodeList[ 1 ]))
-    it(`should has head.next.next === ${nodeList[ 2 ].value}`, () => nodeModuleAssert.equal(linkedList.head.next.next, nodeList[ 2 ]))
+    it(`should has tail.prev === ${nodeList[ 1 ].value}`, () => equal(linkedList.tail.prev, nodeList[ 1 ]))
+    it(`should has head.next.next === ${nodeList[ 2 ].value}`, () => equal(linkedList.head.next.next, nodeList[ 2 ]))
   })
 })

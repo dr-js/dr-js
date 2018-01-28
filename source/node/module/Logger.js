@@ -1,6 +1,6 @@
 import nodeModulePath from 'path'
-import { createLogQueue } from 'source/common/data'
 import { getRandomId } from 'source/common/math'
+import { createLogQueue } from 'source/common/data/LogQueue'
 import { createDirectory } from 'source/node/file'
 import { createSafeWriteStream } from './SafeWrite'
 

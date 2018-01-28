@@ -1,5 +1,5 @@
 import { URL } from 'url'
-import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module'
+import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 import { receiveBufferAsync, sendBufferAsync, pipeStreamAsync } from 'source/node/resource'
 
 const responderEnd = (store) => {
