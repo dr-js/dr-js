@@ -1,8 +1,9 @@
 import {
-  stat, lstat, rename, unlink,
+  stat, lstat, access, rename, unlink,
   readFile, writeFile, copyFile,
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
+  constants as fsConstants,
   open, fstat
 } from 'fs'
 import { promisify } from 'util'
@@ -11,6 +12,10 @@ const statAsync = promisify(stat)
 const lstatAsync = promisify(lstat)
 const renameAsync = promisify(rename)
 const unlinkAsync = promisify(unlink)
+const accessAsync = promisify(access)
+const readableAsync = (path) => new Promise((resolve) => access(path, fsConstants.R_OK, (error) => resolve(!error)))
+const writableAsync = (path) => new Promise((resolve) => access(path, fsConstants.W_OK, (error) => resolve(!error)))
+const executableAsync = (path) => new Promise((resolve) => access(path, fsConstants.X_OK, (error) => resolve(!error)))
 
 const mkdirAsync = promisify(mkdir)
 const rmdirAsync = promisify(rmdir)
@@ -43,6 +48,10 @@ export {
   lstatAsync,
   renameAsync,
   unlinkAsync,
+  accessAsync,
+  readableAsync,
+  writableAsync,
+  executableAsync,
 
   mkdirAsync,
   rmdirAsync,
