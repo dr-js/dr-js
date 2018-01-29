@@ -1,20 +1,21 @@
-import nodeModulePath from 'path'
+import { resolve } from 'path'
 import { equal } from 'assert'
 import { readFileSync } from 'fs'
-import { createSafeWriteStream } from './SafeWrite'
-import { createDirectory, modify } from '../file'
 import { setTimeoutAsync } from 'source/common/time'
+import { createDirectory } from 'source/node/file/File'
+import { modify } from 'source/node/file/Modify'
+import { createSafeWriteStream } from './SafeWrite'
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-write-gitignore/')
+const TEST_ROOT = resolve(__dirname, './test-safe-write-gitignore/')
 
 before('prepare', () => createDirectory(TEST_ROOT))
 after('clear', () => modify.delete(TEST_ROOT))
 
 describe('Node.Module.SafeWrite', () => {
   it('createSafeWriteStream() sync write', () => {
-    const pathOutputFile = nodeModulePath.join(TEST_ROOT, 'log0')
+    const pathOutputFile = resolve(TEST_ROOT, 'log0')
     const { write, end } = createSafeWriteStream({ pathOutputFile })
     write('1')
     write('2')
@@ -26,7 +27,7 @@ describe('Node.Module.SafeWrite', () => {
   })
 
   it('createSafeWriteStream() async write 1', async () => {
-    const pathOutputFile = nodeModulePath.join(TEST_ROOT, 'log1')
+    const pathOutputFile = resolve(TEST_ROOT, 'log1')
     const { write, end } = createSafeWriteStream({ pathOutputFile })
     write('1')
     await setTimeoutAsync(50)
@@ -43,7 +44,7 @@ describe('Node.Module.SafeWrite', () => {
   })
 
   it('createSafeWriteStream() async write 2', async () => {
-    const pathOutputFile = nodeModulePath.join(TEST_ROOT, 'log2')
+    const pathOutputFile = resolve(TEST_ROOT, 'log2')
     const { write, end } = createSafeWriteStream({ pathOutputFile })
     write('1')
     await setTimeoutAsync(50)
@@ -59,7 +60,7 @@ describe('Node.Module.SafeWrite', () => {
   })
 
   it('createSafeWriteStream() async write 3', async () => {
-    const pathOutputFile = nodeModulePath.join(TEST_ROOT, 'log3')
+    const pathOutputFile = resolve(TEST_ROOT, 'log3')
     const { write, end } = createSafeWriteStream({ pathOutputFile })
     write('1')
     write('2')
@@ -73,7 +74,7 @@ describe('Node.Module.SafeWrite', () => {
   })
 
   it('createSafeWriteStream() async write 4', async () => {
-    const pathOutputFile = nodeModulePath.join(TEST_ROOT, 'log4')
+    const pathOutputFile = resolve(TEST_ROOT, 'log4')
     const { write, end } = createSafeWriteStream({ pathOutputFile })
     await setTimeoutAsync(50)
     write('1')

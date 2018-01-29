@@ -1,4 +1,4 @@
-import nodeModulePath from 'path'
+import { dirname } from 'path'
 import {
   lstatAsync,
   mkdirAsync,
@@ -34,7 +34,7 @@ const createDirectory = async (path, pathType) => {
   if (pathType !== FILE_TYPE.Error) throw new Error('[createDirectory] path already taken by non-directory')
 
   // check up
-  const upperPath = nodeModulePath.dirname(path)
+  const upperPath = dirname(path)
   const upperPathType = await getPathType(upperPath)
   if (upperPathType !== FILE_TYPE.Directory) await createDirectory(upperPath, upperPathType)
 

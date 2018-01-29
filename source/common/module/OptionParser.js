@@ -1,5 +1,5 @@
 import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
-export { OPTION_CONFIG_PRESET } from './__utils__'
+export { OPTION_CONFIG_PRESET } from './OptionParserConfigPreset'
 
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',

@@ -1,15 +1,8 @@
 import { deepEqual, strictEqual } from 'assert'
 import { fetch } from '../resource'
 import { createServer, createRequestListener, getUnusedPort } from './Server'
-import {
-  responderSendBuffer,
-  responderSendJSON,
-  createResponderParseURL,
-  createRouteMap,
-  createResponderRouter,
-  getRouteParamAny,
-  getRouteParam
-} from './Responder'
+import { responderSendBuffer, responderSendJSON, createResponderParseURL } from './Responder/Common'
+import { createRouteMap, createResponderRouter, getRouteParamAny, getRouteParam } from './Responder/Router'
 
 const { describe, it } = global
 

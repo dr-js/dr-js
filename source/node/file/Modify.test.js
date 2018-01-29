@@ -1,173 +1,172 @@
-import nodeModulePath from 'path'
+import { join as joinPath, resolve, sep as sepPath } from 'path'
 import { equal, throws } from 'assert'
+import { createGetPathFromRoot } from './__utils__'
 import { FILE_TYPE, getPathType, createDirectory } from './File'
-import {
-  MODIFY_TYPE,
-  modifyFile,
-  modifyDirectory,
-
-  getFileList,
-  extnameFilterFileCollectorCreator,
-  prefixMapperFileCollectorCreator,
-  createGetPathFromRoot
-} from './Modify'
+import { getFileList } from './Directory'
+import { MODIFY_TYPE, modifyFile, modifyDirectory } from './Modify'
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-index-gitignore/')
+const TEST_ROOT = resolve(__dirname, './test-modify-gitignore/')
+const SOURCE_FILE = resolve(__dirname, './__utils__.js')
+const SOURCE_DIRECTORY = resolve(__dirname, '../')
 
-const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/resource/script.js')
-const scriptFilePath1 = nodeModulePath.join(TEST_ROOT, 'script0.js')
-const scriptFilePath2 = nodeModulePath.join(TEST_ROOT, 'script1.js')
-const scriptFilePath3 = nodeModulePath.join(TEST_ROOT, 'script2.js')
+const filePath0 = resolve(TEST_ROOT, 'file0.js')
+const filePath1 = resolve(TEST_ROOT, 'file1.js')
+const filePath2 = resolve(TEST_ROOT, 'file2.js')
 
-const directoryPath0 = nodeModulePath.join(TEST_ROOT, '../example/')
-const directoryPath1 = nodeModulePath.join(TEST_ROOT, 'example0/')
-const directoryPath2 = nodeModulePath.join(TEST_ROOT, 'example1/')
+const directoryPath0 = resolve(TEST_ROOT, 'directory0/')
+const directoryPath1 = resolve(TEST_ROOT, 'directory1/')
 
 before('prepare', async () => {
   await createDirectory(TEST_ROOT)
-  await modifyFile.copy(scriptFilePath0, scriptFilePath3)
+  await modifyFile.copy(SOURCE_FILE, filePath2)
 })
 
 after('clear', async () => {
   await modifyDirectory.delete(TEST_ROOT)
 })
 
+const createSuffixFilterFileCollector = (suffix) => (fileList, path, name) => name.endsWith(suffix) && fileList.push(joinPath(path, name))
+const createPrefixMapperFileCollector = (prefix) => (fileList, path, name) => fileList.push([
+  joinPath(path, name),
+  joinPath(path, prefix + name)
+])
+
 describe('Node.File.Modify', () => {
   it('modifyFile() File', async () => {
-    await modifyFile(MODIFY_TYPE.COPY, scriptFilePath0, scriptFilePath1)
-    equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
-    await modifyFile(MODIFY_TYPE.MOVE, scriptFilePath1, scriptFilePath2)
-    equal(await getPathType(scriptFilePath1), FILE_TYPE.Error)
-    equal(await getPathType(scriptFilePath2), FILE_TYPE.File)
-    await modifyFile(MODIFY_TYPE.DELETE, scriptFilePath2)
-    equal(await getPathType(scriptFilePath2), FILE_TYPE.Error)
+    await modifyFile(MODIFY_TYPE.COPY, SOURCE_FILE, filePath0)
+    equal(await getPathType(filePath0), FILE_TYPE.File)
+    await modifyFile(MODIFY_TYPE.MOVE, filePath0, filePath1)
+    equal(await getPathType(filePath0), FILE_TYPE.Error)
+    equal(await getPathType(filePath1), FILE_TYPE.File)
+    await modifyFile(MODIFY_TYPE.DELETE, filePath1)
+    equal(await getPathType(filePath1), FILE_TYPE.Error)
   })
 
   it('modifyFile() Directory', async () => {
-    await modifyFile(MODIFY_TYPE.COPY, directoryPath0, directoryPath1)
+    await modifyFile(MODIFY_TYPE.COPY, SOURCE_DIRECTORY, directoryPath0)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
+    await modifyFile(MODIFY_TYPE.MOVE, directoryPath0, directoryPath1)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Error)
     equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    await modifyFile(MODIFY_TYPE.MOVE, directoryPath1, directoryPath2)
+    await modifyFile(MODIFY_TYPE.DELETE, directoryPath1)
     equal(await getPathType(directoryPath1), FILE_TYPE.Error)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
-    await modifyFile(MODIFY_TYPE.DELETE, directoryPath2)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Error)
   })
 
   it('modifyFile.copy()/move()/delete() File', async () => {
-    await modifyFile.copy(scriptFilePath0, scriptFilePath1)
-    equal(await getPathType(scriptFilePath1), FILE_TYPE.File)
-    await modifyFile.move(scriptFilePath1, scriptFilePath2)
-    equal(await getPathType(scriptFilePath1), FILE_TYPE.Error)
-    equal(await getPathType(scriptFilePath2), FILE_TYPE.File)
-    await modifyFile.delete(scriptFilePath2)
-    equal(await getPathType(scriptFilePath2), FILE_TYPE.Error)
+    await modifyFile.copy(SOURCE_FILE, filePath0)
+    equal(await getPathType(filePath0), FILE_TYPE.File)
+    await modifyFile.move(filePath0, filePath1)
+    equal(await getPathType(filePath0), FILE_TYPE.Error)
+    equal(await getPathType(filePath1), FILE_TYPE.File)
+    await modifyFile.delete(filePath1)
+    equal(await getPathType(filePath1), FILE_TYPE.Error)
   })
 
   it('modifyFile.copy()/move()/delete() Directory', async () => {
-    await modifyFile.copy(directoryPath0, directoryPath1)
+    await modifyFile.copy(SOURCE_DIRECTORY, directoryPath0)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
+    await modifyFile.move(directoryPath0, directoryPath1)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Error)
     equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    await modifyFile.move(directoryPath1, directoryPath2)
+    await modifyFile.delete(directoryPath1)
     equal(await getPathType(directoryPath1), FILE_TYPE.Error)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
-    await modifyFile.delete(directoryPath2)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Error)
   })
 
   it('modifyDirectory() File', async () => {
     let getExpectedError = false
-    try { await modifyDirectory(MODIFY_TYPE.COPY, scriptFilePath3, scriptFilePath1) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory(MODIFY_TYPE.COPY, filePath2, filePath0) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await modifyDirectory(MODIFY_TYPE.MOVE, scriptFilePath3, scriptFilePath1) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory(MODIFY_TYPE.MOVE, filePath2, filePath0) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await modifyDirectory(MODIFY_TYPE.DELETE, scriptFilePath3) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory(MODIFY_TYPE.DELETE, filePath2) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
   })
 
   it('modifyDirectory() Directory', async () => {
-    await modifyDirectory(MODIFY_TYPE.COPY, directoryPath0, directoryPath1)
+    await modifyDirectory(MODIFY_TYPE.COPY, SOURCE_DIRECTORY, directoryPath0)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
+    await modifyDirectory(MODIFY_TYPE.MOVE, directoryPath0, directoryPath1)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Error)
     equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    await modifyDirectory(MODIFY_TYPE.MOVE, directoryPath1, directoryPath2)
+    await modifyDirectory(MODIFY_TYPE.DELETE, directoryPath1)
     equal(await getPathType(directoryPath1), FILE_TYPE.Error)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
-    await modifyDirectory(MODIFY_TYPE.DELETE, directoryPath2)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Error)
   })
 
   it('modifyDirectory.copy()/move()/delete() File', async () => {
     let getExpectedError = false
-    try { await modifyDirectory.copy(scriptFilePath3, scriptFilePath1) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory.copy(filePath2, filePath0) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await modifyDirectory.move(scriptFilePath3, scriptFilePath1) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory.move(filePath2, filePath0) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await modifyDirectory.delete(scriptFilePath3) } catch (error) { getExpectedError = true }
+    try { await modifyDirectory.delete(filePath2) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
   })
 
   it('modifyDirectory.copy()/move()/delete() Directory', async () => {
-    await modifyDirectory.copy(directoryPath0, directoryPath1)
+    await modifyDirectory.copy(SOURCE_DIRECTORY, directoryPath0)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
+    await modifyDirectory.move(directoryPath0, directoryPath1)
+    equal(await getPathType(directoryPath0), FILE_TYPE.Error)
     equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    await modifyDirectory.move(directoryPath1, directoryPath2)
+    await modifyDirectory.delete(directoryPath1)
     equal(await getPathType(directoryPath1), FILE_TYPE.Error)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
-    await modifyDirectory.delete(directoryPath2)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Error)
   })
 
   it('getFileList() File', async () => {
-    const fileList = await getFileList(scriptFilePath0)
+    const fileList = await getFileList(SOURCE_FILE)
     equal(fileList.length, 1)
-    equal(fileList[ 0 ], scriptFilePath0)
+    equal(fileList[ 0 ], SOURCE_FILE)
   })
 
   it('getFileList() Directory', async () => {
-    const fileList = await getFileList(directoryPath0)
+    const fileList = await getFileList(SOURCE_DIRECTORY)
     equal(fileList.length >= 2, true)
-    equal(fileList.includes(scriptFilePath0), true)
+    equal(fileList.includes(SOURCE_FILE), true)
   })
 
-  it('getFileList(extnameFilterFileCollectorCreator) File', async () => {
-    const jsFileList = await getFileList(scriptFilePath0, extnameFilterFileCollectorCreator('.js'))
-    const abcdefghFileList = await getFileList(scriptFilePath0, extnameFilterFileCollectorCreator('.abcdefgh'))
+  it('getFileList(createSuffixFilterFileCollector) File', async () => {
+    const jsFileList = await getFileList(SOURCE_FILE, createSuffixFilterFileCollector('.js'))
+    const abcdefghFileList = await getFileList(SOURCE_FILE, createSuffixFilterFileCollector('.abcdefgh'))
     equal(jsFileList.length, 1)
-    equal(jsFileList[ 0 ], scriptFilePath0)
+    equal(jsFileList[ 0 ], SOURCE_FILE)
     equal(abcdefghFileList.length, 0)
   })
 
-  it('getFileList(extnameFilterFileCollectorCreator) Directory', async () => {
-    const jsFileList = await getFileList(directoryPath0, extnameFilterFileCollectorCreator('.js'))
-    const abcdefghFileList = await getFileList(directoryPath0, extnameFilterFileCollectorCreator('.abcdefgh'))
+  it('getFileList(createSuffixFilterFileCollector) Directory', async () => {
+    const jsFileList = await getFileList(SOURCE_DIRECTORY, createSuffixFilterFileCollector('.js'))
+    const abcdefghFileList = await getFileList(SOURCE_DIRECTORY, createSuffixFilterFileCollector('.abcdefgh'))
     equal(jsFileList.length >= 2, true)
-    equal(jsFileList.includes(scriptFilePath0), true)
+    equal(jsFileList.includes(SOURCE_FILE), true)
     equal(abcdefghFileList.length, 0)
   })
 
-  it('getFileList(prefixMapperFileCollectorCreator) File', async () => {
-    const fileList = await getFileList(scriptFilePath0, prefixMapperFileCollectorCreator('PREFIX-'))
+  it('getFileList(createPrefixMapperFileCollector) File', async () => {
+    const fileList = await getFileList(SOURCE_FILE, createPrefixMapperFileCollector('PREFIX-'))
     equal(fileList.length, 1)
-    equal(fileList[ 0 ][ 0 ], scriptFilePath0)
+    equal(fileList[ 0 ][ 0 ], SOURCE_FILE)
     equal(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
   })
 
-  it('getFileList(prefixMapperFileCollectorCreator) Directory', async () => {
-    const fileList = await getFileList(directoryPath0, prefixMapperFileCollectorCreator('PREFIX-'))
+  it('getFileList(createPrefixMapperFileCollector) Directory', async () => {
+    const fileList = await getFileList(SOURCE_DIRECTORY, createPrefixMapperFileCollector('PREFIX-'))
     equal(fileList.length >= 2, true)
-    equal(fileList.map((v) => v[ 0 ]).includes(scriptFilePath0), true)
+    equal(fileList.map((v) => v[ 0 ]).includes(SOURCE_FILE), true)
     equal(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
   })
 
   it('createGetPathFromRoot()', () => {
     const checkPath = (getPathFromRoot, rootPath) => {
-      const expectedPath = `${rootPath}/a/b/c`.replace(/\//g, nodeModulePath.sep)
+      const expectedPath = `${rootPath}/a/b/c`.replace(/\//g, sepPath)
       equal(getPathFromRoot('a/b/c'), expectedPath)
       equal(getPathFromRoot('./a/b/c'), expectedPath)
       equal(getPathFromRoot('a/d/../b/c'), expectedPath)

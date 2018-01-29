@@ -1,5 +1,6 @@
-import nodeModuleAssert from 'assert'
-import { createOptionParser, OPTION_CONFIG_PRESET } from './index'
+import { ok } from 'assert'
+import { createOptionParser } from './OptionParser'
+import { OPTION_CONFIG_PRESET } from './OptionParserConfigPreset'
 
 const { describe, it } = global
 
@@ -19,33 +20,33 @@ const optionNameList = optionData.formatList.map(({ name }) => name)
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(optionData)
 
 const checkArgumentList = (optionMap) => {
-  nodeModuleAssert.ok(optionMap[ 'option-name-a' ].argumentList.length === 0)
+  ok(optionMap[ 'option-name-a' ].argumentList.length === 0)
 
-  nodeModuleAssert.ok(optionMap[ 'option-name-b' ].argumentList.length === 1)
-  nodeModuleAssert.ok(optionMap[ 'option-name-b' ].argumentList[ 0 ] === 1)
+  ok(optionMap[ 'option-name-b' ].argumentList.length === 1)
+  ok(optionMap[ 'option-name-b' ].argumentList[ 0 ] === 1)
 
-  nodeModuleAssert.ok(optionMap[ 'option-name-c' ].argumentList.length === 2)
-  nodeModuleAssert.ok(optionMap[ 'option-name-c' ].argumentList[ 0 ] === 1)
-  nodeModuleAssert.ok(optionMap[ 'option-name-c' ].argumentList[ 1 ] === 2.2)
+  ok(optionMap[ 'option-name-c' ].argumentList.length === 2)
+  ok(optionMap[ 'option-name-c' ].argumentList[ 0 ] === 1)
+  ok(optionMap[ 'option-name-c' ].argumentList[ 1 ] === 2.2)
 
-  nodeModuleAssert.ok(optionMap[ 'option-name-aa' ].argumentList.length === 0)
+  ok(optionMap[ 'option-name-aa' ].argumentList.length === 0)
 
-  nodeModuleAssert.ok(optionMap[ 'option-name-bb' ].argumentList.length === 1)
-  nodeModuleAssert.ok(optionMap[ 'option-name-bb' ].argumentList[ 0 ] === '1')
+  ok(optionMap[ 'option-name-bb' ].argumentList.length === 1)
+  ok(optionMap[ 'option-name-bb' ].argumentList[ 0 ] === '1')
 
-  nodeModuleAssert.ok(optionMap[ 'option-name-cc' ].argumentList.length === 4)
-  nodeModuleAssert.ok(optionMap[ 'option-name-cc' ].argumentList[ 0 ] === 1)
-  nodeModuleAssert.ok(optionMap[ 'option-name-cc' ].argumentList[ 1 ] === 2.2)
-  nodeModuleAssert.ok(optionMap[ 'option-name-cc' ].argumentList[ 2 ] === 3.3)
-  nodeModuleAssert.ok(optionMap[ 'option-name-cc' ].argumentList[ 3 ] === 4.4)
+  ok(optionMap[ 'option-name-cc' ].argumentList.length === 4)
+  ok(optionMap[ 'option-name-cc' ].argumentList[ 0 ] === 1)
+  ok(optionMap[ 'option-name-cc' ].argumentList[ 1 ] === 2.2)
+  ok(optionMap[ 'option-name-cc' ].argumentList[ 2 ] === 3.3)
+  ok(optionMap[ 'option-name-cc' ].argumentList[ 3 ] === 4.4)
 }
 
 describe('Common.Module.OptionParser', () => {
   describe('OptionParser.formatUsage', () => {
     const message = 'TEST_MESSAGE'
-    it('should pass formatUsage()', () => nodeModuleAssert.ok(formatUsage().length > 0))
-    it('should pass formatUsage(message)', () => nodeModuleAssert.ok(formatUsage(message).includes(message)))
-    it('should pass formatUsage(error)', () => nodeModuleAssert.ok(formatUsage(new Error(message)).includes(message)))
+    it('should pass formatUsage()', () => ok(formatUsage().length > 0))
+    it('should pass formatUsage(message)', () => ok(formatUsage(message).includes(message)))
+    it('should pass formatUsage(error)', () => ok(formatUsage(new Error(message)).includes(message)))
   })
 
   describe('OptionParser.parseCLI', () => {
@@ -59,7 +60,7 @@ describe('Common.Module.OptionParser', () => {
       '--option-name-bb', '1',
       '--option-name-aa'
     ])
-    it('should pass use name', () => nodeModuleAssert.ok(optionNameList.every((name) => (name in optionMap0))))
+    it('should pass use name', () => ok(optionNameList.every((name) => (name in optionMap0))))
     it('should pass processOptionMap use name', () => processOptionMap(optionMap0))
     it('should pass checkArgumentList use name', () => checkArgumentList(optionMap0))
 
@@ -73,7 +74,7 @@ describe('Common.Module.OptionParser', () => {
       '-B', '1',
       '-C=1', '2.2', '3.3', '4.4'
     ])
-    it('should pass use shortName', () => nodeModuleAssert.ok(optionNameList.every((name) => (name in optionMap1))))
+    it('should pass use shortName', () => ok(optionNameList.every((name) => (name in optionMap1))))
     it('should pass processOptionMap use shortName', () => processOptionMap(optionMap1))
     it('should pass checkArgumentList use shortName', () => checkArgumentList(optionMap1))
 
@@ -85,7 +86,7 @@ describe('Common.Module.OptionParser', () => {
       '-c=1', '2.2',
       '-C=1', '2.2', '3.3', '4.4'
     ])
-    it('should pass use combined shortName', () => nodeModuleAssert.ok(optionNameList.every((name) => (name in optionMap2))))
+    it('should pass use combined shortName', () => ok(optionNameList.every((name) => (name in optionMap2))))
     it('should pass processOptionMap use combined shortName', () => processOptionMap(optionMap2))
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
   })
@@ -99,7 +100,7 @@ describe('Common.Module.OptionParser', () => {
       PREFIX_ENV_OPTION_NAME_BB: '"1"',
       PREFIX_ENV_OPTION_NAME_CC: '[ 1, "2.2", 3.3, "4.4" ]'
     })
-    it('should pass use nameENV', () => nodeModuleAssert.ok(optionNameList.every((name) => (name in optionMap))))
+    it('should pass use nameENV', () => ok(optionNameList.every((name) => (name in optionMap))))
     it('should pass processOptionMap use nameENV', () => processOptionMap(optionMap))
     it('should pass checkArgumentList use nameENV', () => checkArgumentList(optionMap))
   })
@@ -113,7 +114,7 @@ describe('Common.Module.OptionParser', () => {
       prefixJSONOptionNameBb: [ 1 ],
       prefixJSONOptionNameCc: [ 1, '2.2', 3.3, '4.4' ]
     })
-    it('should pass use nameJSON', () => nodeModuleAssert.ok(optionNameList.every((name) => (name in optionMap))))
+    it('should pass use nameJSON', () => ok(optionNameList.every((name) => (name in optionMap))))
     it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
     it('should pass checkArgumentList use nameJSON', () => checkArgumentList(optionMap))
   })
@@ -147,9 +148,9 @@ describe('Common.Module.OptionParser', () => {
     })
 
     const message = 'TEST_MESSAGE'
-    it('should pass formatUsage()', () => nodeModuleAssert.ok(formatUsage().length > 0))
-    it('should pass formatUsage(message)', () => nodeModuleAssert.ok(formatUsage(message).includes(message)))
-    it('should pass formatUsage(error)', () => nodeModuleAssert.ok(formatUsage(new Error(message)).includes(message)))
+    it('should pass formatUsage()', () => ok(formatUsage().length > 0))
+    it('should pass formatUsage(message)', () => ok(formatUsage(message).includes(message)))
+    it('should pass formatUsage(error)', () => ok(formatUsage(new Error(message)).includes(message)))
 
     it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
   })

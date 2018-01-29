@@ -1,4 +1,5 @@
-import { createCanvasElement, canvasElementToCanvasImageData, canvasImageDataToCanvasElement, CANVAS_IMAGE_DATA_OPERATION } from 'source/browser/graphic'
+import { createCanvasElement, canvasElementToCanvasImageData, canvasImageDataToCanvasElement } from 'source/browser/graphic/ImageData'
+import { scale as scaleCanvasImageData } from 'source/browser/graphic/CanvasImageDataOperation'
 
 // intended to be used for single character
 const DEFAULT_GET_SYMBOL_METRICS = () => {
@@ -42,7 +43,7 @@ const createFontGenerator = (getSymbolMetrics = DEFAULT_GET_SYMBOL_METRICS()) =>
       __DEV__ && console.log('cache add', cacheKey)
       const symbolCanvasElement = renderSymbol(symbol, fontConfig)
       const canvasImageData = canvasElementToCanvasImageData(symbolCanvasElement)
-      const scaledCanvasImageData = CANVAS_IMAGE_DATA_OPERATION.scale(canvasImageData, scaleRatio, scaleRatio)
+      const scaledCanvasImageData = scaleCanvasImageData(canvasImageData, scaleRatio, scaleRatio)
       scaledSymbolCanvasElement = canvasImageDataToCanvasElement(scaledCanvasImageData)
       scaledSymbolCanvasElementMap[ cacheKey ] = scaledSymbolCanvasElement
     }

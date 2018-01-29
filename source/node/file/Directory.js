@@ -1,4 +1,4 @@
-import nodeModulePath from 'path'
+import { join as joinPath, dirname, basename } from 'path'
 import { readdirAsync } from './__utils__'
 import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
 
@@ -14,7 +14,7 @@ const getDirectoryContentFileList = async (path, pathType) => {
   const fileList = []
   for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
     const name = subNameList[ index ]
-    const subPath = nodeModulePath.join(path, name)
+    const subPath = joinPath(path, name)
     if (await getPathType(subPath) === FILE_TYPE.File) fileList.push(name)
   }
   return fileList
@@ -35,7 +35,7 @@ const getDirectoryContent = async (path, pathType, isShallow = false) => {
   }
   for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
     const name = subNameList[ index ]
-    const subPath = nodeModulePath.join(path, name)
+    const subPath = joinPath(path, name)
     const subPathType = await getPathType(subPath)
     switch (subPathType) {
       case FILE_TYPE.Directory:
@@ -88,8 +88,8 @@ const copyDirectoryContent = async (content, pathTo) => {
   await createDirectory(pathTo)
   const pathToMap = { [ content.path ]: pathTo }
   return walkDirectoryContent(content, (path, name, pathType) => {
-    const pathFrom = nodeModulePath.join(path, name)
-    const pathTo = nodeModulePath.join(pathToMap[ path ], name)
+    const pathFrom = joinPath(path, name)
+    const pathTo = joinPath(pathToMap[ path ], name)
     pathToMap[ pathFrom ] = pathTo
     return copyPath(pathFrom, pathTo, pathType)
   }, true)
@@ -98,16 +98,36 @@ const copyDirectoryContent = async (content, pathTo) => {
 const moveDirectoryContent = async (contentShallow, pathTo) => {
   await createDirectory(pathTo)
   return walkDirectoryContentShallow(contentShallow, (path, name, pathType) => movePath(
-    nodeModulePath.join(path, name),
-    nodeModulePath.join(pathTo, name),
+    joinPath(path, name),
+    joinPath(pathTo, name),
     pathType
   ))
 }
 
 const deleteDirectoryContent = async (content) => walkDirectoryContentBottomUp(content, (path, name, pathType) => deletePath(
-  nodeModulePath.join(path, name),
+  joinPath(path, name),
   pathType
 ))
+
+const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
+  const fileList = []
+  const pathType = await getPathType(path)
+  switch (pathType) {
+    case FILE_TYPE.File:
+      fileCollector(fileList, dirname(path), basename(path))
+      break
+    case FILE_TYPE.Directory:
+      await walkDirectoryContent(
+        await getDirectoryContent(path, pathType),
+        (path, name, type) => { type === FILE_TYPE.File && fileCollector(fileList, path, name) }
+      )
+      break
+    default:
+      throw new Error(`[getFileList] invalid pathType: ${pathType} for ${path}`)
+  }
+  return fileList
+}
+const DEFAULT_FILE_COLLECTOR = (fileList, path, name) => fileList.push(joinPath(path, name))
 
 export {
   getDirectoryContentNameList,
@@ -120,5 +140,7 @@ export {
 
   copyDirectoryContent,
   moveDirectoryContent,
-  deleteDirectoryContent
+  deleteDirectoryContent,
+
+  getFileList
 }

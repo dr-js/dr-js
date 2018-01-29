@@ -1,4 +1,4 @@
-import { createCanvasElement } from 'source/browser/graphic'
+import { createCanvasElement } from 'source/browser/graphic/ImageData'
 import { createFontMapper } from './FontMapper'
 import { createFontGeneratorBitmap } from './FontGeneratorBitmap'
 

@@ -1,7 +1,3 @@
-import * as G2D from './2D'
 import * as Angle from './angle'
-
-export {
-  G2D,
-  Angle
-}
+import * as D2 from './D2'
+export { Angle, D2 }

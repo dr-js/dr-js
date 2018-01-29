@@ -1,11 +1,3 @@
-import { isObjectContain, arraySplitChunk } from './__utils__'
-
-const getArrayChunk = arraySplitChunk // TODO: DEPRECATED
-const matchObjectEntry = isObjectContain // TODO: DEPRECATED
-
-export { getArrayChunk, matchObjectEntry } // TODO: DEPRECATED
-export { KeySwitch, composeSelectorList, composeKey } from './KeySwitch' // TODO: DEPRECATED
-
 export {
   hashStringToNumber,
   objectMergeDeep,

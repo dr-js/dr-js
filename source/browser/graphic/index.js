@@ -1,4 +1,8 @@
+import * as CanvasImageDataOperation from './CanvasImageDataOperation'
 export {
+  getQuickCanvas,
+  getQuickContext2d,
+
   createImageElement,
   createCanvasElement,
   createCanvasImageData,
@@ -8,9 +12,14 @@ export {
   applyCanvasImageDataExt,
 
   imageElementToCanvasElement,
-  canvasImageDataToCanvasElement,
-  canvasElementToCanvasImageData,
   imageElementToCanvasImageData,
-
-  CANVAS_IMAGE_DATA_OPERATION
-} from './__utils__'
+  canvasElementToCanvasImageData,
+  canvasImageDataToCanvasElement
+} from './ImageData'
+export {
+  getUint32RGBA,
+  getRGBAFromUint32RGBA,
+  getHexFromRGBA,
+  getHexFromRGB
+} from './Color'
+export { CanvasImageDataOperation }

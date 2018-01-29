@@ -1,3 +1,4 @@
+import { join as joinPath, normalize } from 'path'
 import {
   stat, lstat, access, rename, unlink,
   readFile, writeFile, copyFile,
@@ -43,6 +44,15 @@ const copyFileAsync = copyFile
     }
   })()
 
+const createGetPathFromRoot = (rootPath) => {
+  rootPath = normalize(rootPath)
+  return (relativePath) => {
+    const absolutePath = normalize(joinPath(rootPath, relativePath))
+    if (!absolutePath.startsWith(rootPath)) throw new Error(`[getPathFromRoot] relativePath out of rootPath: ${relativePath}`)
+    return absolutePath
+  }
+}
+
 export {
   statAsync,
   lstatAsync,
@@ -62,5 +72,7 @@ export {
   copyFileAsync,
 
   createReadStream,
-  createWriteStream
+  createWriteStream,
+
+  createGetPathFromRoot
 }

@@ -6,7 +6,7 @@ import { createServer as createHttpsServer } from 'https'
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
-import { responderEnd } from './Responder'
+import { responderEnd } from './Responder/Common'
 
 const SSL_SESSION_CACHE_MAX = 5000
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
@@ -60,7 +60,7 @@ const applyServerSessionCache = (server) => {
 }
 const createServer = ({ protocol, ...option }) => {
   option = getServerOption(protocol, option)
-  const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // TODO: NOTE: the argument is different for https/http.createServer
+  const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // NOTE: the argument is different for https/http.createServer
   const { start, stop } = getServerToggle(server, option)
   option.isSecure && applyServerSessionCache(server)
   return { server, start, stop, option }

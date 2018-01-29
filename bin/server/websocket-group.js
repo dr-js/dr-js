@@ -1,24 +1,17 @@
-import nodeModulePath from 'path'
+import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { clock } from 'dr-js/module/common/time'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
-import * as Format from 'dr-js/module/common/format'
+import { time as formatTime, stringIndentLine } from 'dr-js/module/common/format'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/buffer'
-import { createServer, createRequestListener, Responder, WebSocket } from 'dr-js/module/node/server'
+import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
+import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
+import { WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/__utils__'
+import { DATA_TYPE_MAP } from 'dr-js/module/node/server/WebSocket/Frame'
+import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
+import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
 import { responderSendFavicon, getServerInfo } from './__utils__'
-
-const {
-  responderEnd, responderEndWithRedirect,
-  responderSendBuffer,
-  createResponderRouter, createRouteMap, getRouteParamAny,
-  createResponderParseURL
-} = Responder
-const {
-  WEB_SOCKET_EVENT_MAP,
-  DATA_TYPE_MAP,
-  enableWebSocketServer,
-  createUpdateRequestListener
-} = WebSocket
 
 const wrapFrameBufferPacket = (onData) => async (webSocket, { dataType, dataBuffer }) => {
   __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
@@ -101,7 +94,7 @@ const responderWebsocketGroupUpgrade = async (store) => {
   __DEV__ && console.log('[responderWebsocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
   const groupPath = getRouteParamAny(store) // TODO: should verify groupPath
   if (!groupPath) return
-  const id = store.getState().url.searchParams.get('id') // TODO: should verify id
+  const id = store.getState().url.searchParams.get('id')
   if (!id) return
   __DEV__ && console.log('[responderWebsocketGroupUpgrade] pass groupPath', groupPath)
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
@@ -117,7 +110,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const loadTextFile = (path) => readFileSync(nodeModulePath.resolve(__dirname, path), 'utf8')
+const loadTextFile = (path) => readFileSync(resolve(__dirname, path), 'utf8')
 
 const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
   const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html').replace(`"{SCRIPT_DR_JS}"`, loadTextFile('../../library/Dr.browser.js')))
@@ -147,12 +140,12 @@ const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(clock() - time)})`)
+      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
     }
   }))
   start()
   console.log(`[ServerWebSocketGroup]`)
-  console.log(Format.stringIndentLine(getServerInfo(protocol, hostname, port), '  '))
+  console.log(stringIndentLine(getServerInfo(protocol, hostname, port), '  '))
 }
 
 export { createServerWebSocketGroup }
