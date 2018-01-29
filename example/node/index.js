@@ -1,12 +1,11 @@
-const Dr = require('../../output-gitignore/library/Dr.node')
-
-const { System: { startREPL }, Module: { runCommand } } = Dr.Node
+const { runCommand } = require('../../output-gitignore/library/node/module/Command')
+const { startREPL } = require('../../output-gitignore/library/node/system/REPL')
 
 const main = async () => {
   console.log(await runCommand(process.platform === 'win32' ? 'dir' : 'ls -l'))
   console.log('== REPL ========================')
   const replServer = startREPL()
-  replServer.context.Dr = Dr // set global
+  replServer.context.Dr = 'Dr' // set global
 }
 
 main().catch(console.error)

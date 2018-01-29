@@ -1,4 +1,4 @@
-import nodeModulePath from 'path'
+import { join as joinPath } from 'path'
 import { getRandomId } from 'source/common/math'
 import { createLogQueue } from 'source/common/data/LogQueue'
 import { createDirectory } from 'source/node/file'
@@ -25,7 +25,7 @@ const createLogger = async ({
   let logger = null
   const splitLogFile = () => {
     logger && logger.end()
-    logger = createSimpleLogger({ pathOutputFile: nodeModulePath.join(pathLogDirectory, getLogFileName()), queueLengthThreshold, flag, mode, onError })
+    logger = createSimpleLogger({ pathOutputFile: joinPath(pathLogDirectory, getLogFileName()), queueLengthThreshold, flag, mode, onError })
   }
   splitLogFile()
   let intervalToken = setInterval(splitLogFile, fileSplitInterval)

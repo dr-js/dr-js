@@ -1,5 +1,6 @@
-import { createCanvasElement, applyImageElementExt, canvasElementToCanvasImageData, canvasImageDataToCanvasElement, CANVAS_IMAGE_DATA_OPERATION } from 'source/browser/graphic'
 import { loadText, loadImage } from 'source/browser/resource'
+import { createCanvasElement, applyImageElementExt, canvasElementToCanvasImageData, canvasImageDataToCanvasElement } from 'source/browser/graphic/ImageData'
+import { scale as scaleCanvasImageData } from 'source/browser/graphic/CanvasImageDataOperation'
 
 // const SAMPLE_DATA = {
 //   fontImageSrc: 'data:image/png;base64,===', // or "BitmapFont.png",
@@ -43,7 +44,7 @@ const createFontGeneratorBitmap = () => {
       __DEV__ && console.log('cache add', cacheKey)
       const symbolCanvasElement = renderSymbol(symbol)
       const canvasImageData = canvasElementToCanvasImageData(symbolCanvasElement)
-      const scaledCanvasImageData = CANVAS_IMAGE_DATA_OPERATION.scale(canvasImageData, scaleRatio, scaleRatio)
+      const scaledCanvasImageData = scaleCanvasImageData(canvasImageData, scaleRatio, scaleRatio)
       scaledSymbolCanvasElement = canvasImageDataToCanvasElement(scaledCanvasImageData)
       scaledSymbolCanvasElementMap[ cacheKey ] = scaledSymbolCanvasElement
     }

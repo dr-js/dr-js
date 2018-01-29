@@ -1,6 +1,6 @@
-import nodeModulePath from 'path'
+import { dirname } from 'path'
 import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
-import { getDirectoryContent, walkDirectoryContent, copyDirectoryContent, deleteDirectoryContent } from './Directory'
+import { getDirectoryContent, copyDirectoryContent, deleteDirectoryContent } from './Directory'
 
 const MODIFY_TYPE = {
   MOVE: 'MOVE',
@@ -22,12 +22,12 @@ const modifyFile = async (modifyType, pathFrom, pathTo, pathType) => {
 }
 modifyFile.copy = async (pathFrom, pathTo, pathType) => {
   if (pathType === undefined) pathType = await getPathType(pathFrom)
-  await createDirectory(nodeModulePath.dirname(pathTo))
+  await createDirectory(dirname(pathTo))
   return copyPath(pathFrom, pathTo, pathType)
 }
 modifyFile.move = async (pathFrom, pathTo, pathType) => {
   if (pathType === undefined) pathType = await getPathType(pathFrom)
-  await createDirectory(nodeModulePath.dirname(pathTo))
+  await createDirectory(dirname(pathTo))
   return movePath(pathFrom, pathTo, pathType)
 }
 modifyFile.delete = deletePath
@@ -86,52 +86,9 @@ modify.delete = async (path, pathType) => {
   else return modifyFile.delete(path, pathType)
 }
 
-const getFileList = async (path, getFileCollector = defaultFileCollectorCreator) => {
-  const fileList = []
-  const fileCollector = getFileCollector(fileList)
-
-  const pathType = await getPathType(path)
-  switch (pathType) {
-    case FILE_TYPE.File:
-      fileCollector(nodeModulePath.dirname(path), nodeModulePath.basename(path))
-      break
-    case FILE_TYPE.Directory:
-      const content = await getDirectoryContent(path, pathType)
-      await walkDirectoryContent(content, (path, name, type) => { (type === FILE_TYPE.File) && fileCollector(path, name) })
-      break
-    default:
-      throw new Error(`[getFileList] Error pathType: ${pathType} for ${path}`)
-  }
-
-  return fileList
-}
-const defaultFileCollectorCreator = (fileList) => (path, name) => fileList.push(nodeModulePath.join(path, name))
-const extnameFilterFileCollectorCreator = (extname) => (fileList) => (path, name) => { // extname like '.js', mostly as a sample
-  if (extname !== nodeModulePath.extname(name)) return
-  fileList.push(nodeModulePath.join(path, name))
-}
-const prefixMapperFileCollectorCreator = (prefix) => (fileList) => (path, name) => fileList.push([ // mostly as a sample
-  nodeModulePath.join(path, name),
-  nodeModulePath.join(path, prefix + name)
-])
-
-const createGetPathFromRoot = (rootPath) => {
-  rootPath = nodeModulePath.normalize(rootPath)
-  return (relativePath) => {
-    const absolutePath = nodeModulePath.normalize(nodeModulePath.join(rootPath, relativePath))
-    if (!absolutePath.startsWith(rootPath)) throw new Error(`[getPathFromRoot] relativePath out of rootPath: ${relativePath}`)
-    return absolutePath
-  }
-}
-
 export {
   MODIFY_TYPE,
   modify,
   modifyFile,
-  modifyDirectory,
-
-  getFileList,
-  extnameFilterFileCollectorCreator,
-  prefixMapperFileCollectorCreator,
-  createGetPathFromRoot
+  modifyDirectory
 }

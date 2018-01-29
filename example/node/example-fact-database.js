@@ -1,6 +1,5 @@
-const Dr = require('../../output-gitignore/library/Dr.node')
-
-const { System: { setProcessExitListener }, Module: { createFactDatabase } } = Dr.Node
+const { setProcessExitListener } = require('../../output-gitignore/library/node/system/ProcessExitListener')
+const { createFactDatabase } = require('../../output-gitignore/library/node/module/FactDatabase')
 
 const main = async () => {
   const factDB = await createFactDatabase({
@@ -42,7 +41,7 @@ const main = async () => {
   factDB.add({ splitAt: (new Date()).toString() })
   factDB.split()
 
-  factDB.add({ [`IncrementalKey-${Date.now()}`]: 'time' })
+  factDB.add({ [ `IncrementalKey-${Date.now()}` ]: 'time' })
   factDB.add({}) // empty fact
   // factDB.add(null) // will fail
   logFactDBState()

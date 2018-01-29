@@ -1,13 +1,10 @@
-const nodeModuleFs = require('fs')
-const nodeModulePath = require('path')
-const { promisify } = require('util')
-const { Node } = require('../../output-gitignore/library/Dr.node')
+const { resolve } = require('path')
+const { readFileAsync } = require('../../output-gitignore/library/node/file/__utils__')
+const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/__utils__')
+// const { DATA_TYPE_MAP } = require('../../output-gitignore/library/node/server/WebSocket/Frame')
+const { createWebSocketClient } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketClient')
 
-const readFileAsync = promisify(nodeModuleFs.readFile)
-
-const { WEB_SOCKET_EVENT_MAP, /* DATA_TYPE_MAP, */ createWebSocketClient } = Node.Server.WebSocket
-
-const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
+const fromPath = (...args) => resolve(__dirname, ...args)
 
 createWebSocketClient({
   urlString: 'ws://localhost:3000',

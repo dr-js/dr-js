@@ -1,15 +1,15 @@
-import nodeModuleHttp from 'http'
-import nodeModuleHttps from 'https'
+import { resolve, dirname } from 'path'
+import { request as httpRequest } from 'http'
+import { request as httpsRequest } from 'https'
 import { runInNewContext } from 'vm'
 import { URL } from 'url'
 
 import { clock, setTimeoutAsync } from 'source/common/time'
-import { getLocalPath } from 'source/node/system'
 import { readFileAsync } from 'source/node/file/__utils__'
 
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 
-// TODO: native fetch do not have a timeout, yet?
+// TODO: native fetch do not have timeout
 // NOTE:
 //   currently should call one of `buffer, text, json` to receive data.
 //   These method can only be called once.
@@ -54,7 +54,7 @@ const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, u
 }
 
 const requestAsync = (option, body) => new Promise((resolve, reject) => {
-  const request = (option.protocol === 'https:' ? nodeModuleHttps : nodeModuleHttp).request(option, resolve)
+  const request = (option.protocol === 'https:' ? httpsRequest : httpRequest)(option, resolve)
   const endWithError = (error) => {
     request.destroy()
     reject(error)
@@ -109,7 +109,7 @@ const pingRequestAsync = async ({ url, body, timeout = 5000, retryCount = 0, ...
   }
 }
 
-// TODO: check if is needed?
+// TODO: check if is needed, or simplify
 const loadScript = (src, contextObject) => src.includes('://') ? loadRemoteScript(src, contextObject) : loadLocalScript(src, contextObject)
 const loadJSON = (src) => src.includes('://') ? loadRemoteJSON(src) : loadLocalJSON(src)
 const loadRemoteScript = async (src, contextObject) => {
@@ -128,6 +128,8 @@ const loadLocalJSON = async (src) => {
   const filePath = getLocalPath(src)
   return JSON.parse(await readFileAsync(filePath, 'utf8'))
 }
+const PATH_NODE_START_SCRIPT = resolve(process.cwd(), dirname(process.argv[ 1 ] || ''))
+const getLocalPath = (relativePath) => resolve(PATH_NODE_START_SCRIPT, relativePath)
 
 export {
   fetch,

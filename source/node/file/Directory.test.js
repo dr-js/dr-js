@@ -1,19 +1,13 @@
-import nodeModulePath from 'path'
+import { resolve } from 'path'
 import { equal } from 'assert'
-import {
-  FILE_TYPE,
-  createDirectory,
-  deletePath
-} from './File'
+import { FILE_TYPE, createDirectory, deletePath } from './File'
 import {
   getDirectoryContentNameList,
   getDirectoryContentFileList,
-
   getDirectoryContent,
   walkDirectoryContent,
   walkDirectoryContentBottomUp,
   walkDirectoryContentShallow,
-
   copyDirectoryContent,
   moveDirectoryContent,
   deleteDirectoryContent
@@ -21,26 +15,24 @@ import {
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = nodeModulePath.join(__dirname, '../../../test-directory-gitignore/')
+const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/')
+const SOURCE_FILE = resolve(__dirname, './__utils__.js')
+const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
+const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../')
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
-const scriptFilePath0 = nodeModulePath.join(TEST_ROOT, '../example/resource/script.js')
-
-const directoryPath0 = nodeModulePath.join(TEST_ROOT, '../example/node/')
-const directoryPath1 = nodeModulePath.join(TEST_ROOT, '../example/')
-
-const directoryPath2 = nodeModulePath.join(TEST_ROOT, 'a/b/c/d/e/')
-const directoryPath3 = nodeModulePath.join(TEST_ROOT, '1/2/3/4/5/')
-const directoryPath4 = nodeModulePath.join(TEST_ROOT, '1/')
-const directoryPath5 = nodeModulePath.join(TEST_ROOT, 'a/')
-const directoryPath6 = nodeModulePath.join(TEST_ROOT, 'a0/')
-const directoryPath7 = nodeModulePath.join(TEST_ROOT, 'a1/')
+const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/')
+const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/')
+const directoryPath2 = resolve(TEST_ROOT, '1/')
+const directoryPath3 = resolve(TEST_ROOT, 'a/')
+const directoryPath4 = resolve(TEST_ROOT, 'a0/')
+const directoryPath5 = resolve(TEST_ROOT, 'a1/')
 
 before('prepare', async () => {
   await createDirectory(TEST_ROOT)
-  await createDirectory(directoryPath2)
-  await createDirectory(directoryPath3)
+  await createDirectory(directoryPath0)
+  await createDirectory(directoryPath1)
 })
 
 after('clear', async () => {
@@ -55,11 +47,11 @@ describe('Node.File.Directory', () => {
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await getDirectoryContentNameList(scriptFilePath0) } catch (error) { getExpectedError = true }
+    try { await getDirectoryContentNameList(SOURCE_FILE) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
-    await getDirectoryContentNameList(directoryPath0)
-    await getDirectoryContentNameList(directoryPath1)
+    await getDirectoryContentNameList(SOURCE_DIRECTORY)
+    await getDirectoryContentNameList(SOURCE_DIRECTORY_UPPER)
     await getDirectoryContentNameList(TEST_ROOT)
   })
 
@@ -69,11 +61,11 @@ describe('Node.File.Directory', () => {
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await getDirectoryContentFileList(scriptFilePath0) } catch (error) { getExpectedError = true }
+    try { await getDirectoryContentFileList(SOURCE_FILE) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
-    await getDirectoryContentFileList(directoryPath0)
-    await getDirectoryContentFileList(directoryPath1)
+    await getDirectoryContentFileList(SOURCE_DIRECTORY)
+    await getDirectoryContentFileList(SOURCE_DIRECTORY_UPPER)
     const fileList = await getDirectoryContentFileList(TEST_ROOT)
     equal(fileList.length, 0)
   })
@@ -84,11 +76,11 @@ describe('Node.File.Directory', () => {
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await getDirectoryContent(scriptFilePath0) } catch (error) { getExpectedError = true }
+    try { await getDirectoryContent(SOURCE_FILE) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
-    await getDirectoryContent(directoryPath0)
-    await getDirectoryContent(directoryPath1)
+    await getDirectoryContent(SOURCE_DIRECTORY)
+    await getDirectoryContent(SOURCE_DIRECTORY_UPPER)
     const content = await getDirectoryContent(TEST_ROOT)
 
     // console.log(content)
@@ -108,7 +100,7 @@ describe('Node.File.Directory', () => {
     equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
-    await walkDirectoryContent(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
+    await walkDirectoryContent(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       equal(name, checkNameList.shift())
     })
@@ -123,7 +115,7 @@ describe('Node.File.Directory', () => {
     equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
-    await walkDirectoryContentBottomUp(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
+    await walkDirectoryContentBottomUp(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       equal(name, checkNameList.pop())
     })
@@ -137,17 +129,17 @@ describe('Node.File.Directory', () => {
     })
     equal(callbackCount, 2)
 
-    await walkDirectoryContentShallow(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
+    await walkDirectoryContentShallow(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       equal(name, '2')
     })
   })
 
   it('copyDirectoryContent()', async () => {
-    await copyDirectoryContent(await getDirectoryContent(directoryPath5), directoryPath6)
+    await copyDirectoryContent(await getDirectoryContent(directoryPath3), directoryPath4)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath6), (path, name, fileType) => {
+    await walkDirectoryContent(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
@@ -155,10 +147,10 @@ describe('Node.File.Directory', () => {
   })
 
   it('moveDirectoryContent()', async () => {
-    await moveDirectoryContent(await getDirectoryContent(directoryPath6), directoryPath7)
+    await moveDirectoryContent(await getDirectoryContent(directoryPath4), directoryPath5)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath7), (path, name, fileType) => {
+    await walkDirectoryContent(await getDirectoryContent(directoryPath5), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       callbackCount++
     })
@@ -166,10 +158,10 @@ describe('Node.File.Directory', () => {
   })
 
   it('deleteDirectoryContent()', async () => {
-    await deleteDirectoryContent(await getDirectoryContent(directoryPath7), directoryPath7)
+    await deleteDirectoryContent(await getDirectoryContent(directoryPath5), directoryPath5)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath7), (path, name, fileType) => {
+    await walkDirectoryContent(await getDirectoryContent(directoryPath5), (path, name, fileType) => {
       // console.log({ path, name, fileType })
       callbackCount++
     })

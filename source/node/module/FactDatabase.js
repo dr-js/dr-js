@@ -1,8 +1,9 @@
-import nodeModulePath from 'path'
+import { join as joinPath } from 'path'
 import { createLogQueue } from 'source/common/data/LogQueue'
 import { createStateStore } from 'source/common/immutable/StateStore'
-import { createDirectory, getFileList } from 'source/node/file'
 import { readFileAsync, writeFileAsync } from 'source/node/file/__utils__'
+import { createDirectory } from 'source/node/file/File'
+import { getFileList } from 'source/node/file/Directory'
 import { createSafeWriteStream } from './SafeWrite'
 
 const FILE_SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // 24hour
@@ -26,7 +27,7 @@ const createFactDatabase = async ({
   __DEV__ && console.log('[Logger] loaded', factId, factState)
   const store = createStateStore(factState)
   const saveFactState = () => {
-    const factStateFile = nodeModulePath.join(pathFactDirectory, `${nameFactStateFile}.${factId}.json`)
+    const factStateFile = joinPath(pathFactDirectory, `${nameFactStateFile}.${factId}.json`)
     writeFileAsync(factStateFile, JSON.stringify({ factId, factState: store.getState() })) // may not always success finish on progress exit
     __DEV__ && console.log('[Logger] save fact state:', factStateFile)
   }
@@ -34,7 +35,7 @@ const createFactDatabase = async ({
   const splitFactLogFile = () => {
     saveFactState()
     logger && logger.end()
-    const factLogFile = nodeModulePath.join(pathFactDirectory, `${nameFactLogFile}.${factId + 1}.log`)
+    const factLogFile = joinPath(pathFactDirectory, `${nameFactLogFile}.${factId + 1}.log`)
     logger = createLogQueue({ outputStream: createSafeWriteStream({ pathOutputFile: factLogFile, onError }), queueLengthThreshold })
     __DEV__ && console.log('[Logger] open new fact log:', factLogFile)
   }
@@ -65,7 +66,7 @@ const createFactDatabase = async ({
 const regexpLogFileId = /\.(\d+)\.log$/
 const regexpStateFileId = /\.(\d+)\.json$/
 const loadStateFromFile = async ({ applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactStateFile }) => {
-  const filePathList = await getFileList(pathFactDirectory, (fileList) => (path, name) => fileList.push({ filePath: nodeModulePath.join(path, name), path, name }))
+  const filePathList = await getFileList(pathFactDirectory, (fileList) => (path, name) => fileList.push({ filePath: joinPath(path, name), path, name }))
   let { factLogFileList, factStateFileList } = filePathList.reduce((o, { filePath, name }) => {
     name.startsWith(nameFactLogFile) && regexpLogFileId.test(name) && o.factLogFileList.push({ fileId: parseInt(regexpLogFileId.exec(name)[ 1 ]), filePath })
     name.startsWith(nameFactStateFile) && regexpStateFileId.test(name) && o.factStateFileList.push({ fileId: parseInt(regexpStateFileId.exec(name)[ 1 ]), filePath })

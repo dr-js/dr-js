@@ -33,7 +33,7 @@ const createResponderBufferCache = ({
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
 const REGEXP_ENCODING_GZIP = /gzip/i
 
-// TODO: support range for better media serving
+// TODO: support range header for better media serving
 const createResponderServeStatic = ({
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,

@@ -14,7 +14,8 @@ const {
       applyCanvasImageDataExt,
       createCanvasElement,
       canvasElementToCanvasImageData,
-      CANVAS_IMAGE_DATA_OPERATION
+      getUint32RGBA,
+      CanvasImageDataOperation
     }
   }
 } = window.Dr
@@ -156,7 +157,7 @@ window.addEventListener('load', () => {
 
   const testCanvasElementCursor = createCanvasElement(Math.ceil(textLineHeight * textScaleRatio * 0.1), textLineHeight * textScaleRatio)
   const testCanvasImageDataCursor = canvasElementToCanvasImageData(testCanvasElementCursor)
-  CANVAS_IMAGE_DATA_OPERATION.floodFill(testCanvasImageDataCursor, { x: 0, y: 0 }, { r: 255, g: 0, b: 0, a: 255 })
+  CanvasImageDataOperation.floodFill(testCanvasImageDataCursor, { x: 0, y: 0 }, getUint32RGBA(255, 0, 0, 255))
   testCanvasElementCursor.getContext('2d').putImageData(testCanvasImageDataCursor, 0, 0)
   const testCanvasElementExtCursor = applyCanvasElementExt(testCanvasElementCursor)
 

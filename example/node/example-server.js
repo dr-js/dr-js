@@ -1,26 +1,18 @@
-const nodeModulePath = require('path')
-const nodeModuleFs = require('fs')
-const { promisify } = require('util')
-const { Common, Node } = require('../../output-gitignore/library/Dr.node')
+const { resolve } = require('path')
 
-const readFileAsync = promisify(nodeModuleFs.readFile)
+const { clock } = require('../../output-gitignore/library/common/time')
+const { time: formatTime } = require('../../output-gitignore/library/common/format')
 
-const { Time: { clock }, Format } = Common
-const {
-  File: { createGetPathFromRoot },
-  Server: {
-    createServer, createRequestListener,
-    Responder: {
-      responderEnd,
-      createResponderParseURL,
-      createResponderRouter, createRouteMap, getRouteParamAny,
-      createResponderServeStatic
-    },
-    WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
-  }
-} = Node
+const { readFileAsync, createGetPathFromRoot  } = require('../../output-gitignore/library/node/file/__utils__')
+const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
+const { responderEnd, createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
+const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
+const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
+const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/__utils__')
+const { DATA_TYPE_MAP } = require('../../output-gitignore/library/node/server/WebSocket/Frame')
+const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
-const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
+const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
@@ -33,7 +25,7 @@ const responderLogHeader = (store) => {
 const responderLogTimeStep = () => (store) => {
   const state = store.getState()
   const stepTime = clock()
-  console.log(`${new Date().toISOString()} [STEP] ${Format.time(stepTime - (state.stepTime || state.time))}`)
+  console.log(`${new Date().toISOString()} [STEP] ${formatTime(stepTime - (state.stepTime || state.time))}`)
   store.setState({ stepTime })
 }
 const responderLogEnd = (store) => {
@@ -42,7 +34,7 @@ const responderLogEnd = (store) => {
   const errorLog = state.error
     ? `[ERROR] ${store.request.method} ${store.request.url} ${store.response.finished ? 'finished' : 'not-finished'} ${state.error}`
     : ''
-  console.log(`${new Date().toISOString()} [END] ${Format.time(clock() - state.time)} ${store.response.statusCode} ${errorLog}`)
+  console.log(`${new Date().toISOString()} [END] ${formatTime(clock() - state.time)} ${store.response.statusCode} ${errorLog}`)
 }
 const responderServeStatic = createResponderServeStatic({})
 

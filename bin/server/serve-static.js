@@ -1,18 +1,13 @@
-import nodeModulePath from 'path'
+import { relative, dirname, join as joinPath, sep as sepPath } from 'path'
 import { clock } from 'dr-js/module/common/time'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
-import * as Format from 'dr-js/module/common/format'
-import { createGetPathFromRoot } from 'dr-js/module/node/file'
-import { createServer, createRequestListener, Responder } from 'dr-js/module/node/server'
+import { time as formatTime, stringIndentLine, escapeHTML } from 'dr-js/module/common/format'
+import { createGetPathFromRoot } from 'dr-js/module/node/file/__utils__'
+import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
+import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
+import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
 import { getPathContent, responderSendFavicon, getServerInfo } from './__utils__'
-
-const {
-  responderEnd, responderEndWithRedirect,
-  responderSendBuffer,
-  createResponderRouter, createRouteMap, getRouteParamAny,
-  createResponderParseURL,
-  createResponderServeStatic
-} = Responder
 
 const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe }) => {
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
@@ -34,12 +29,12 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${Format.time(clock() - time)})`)
+      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
     }
   }))
   start()
   console.log(`[ServerServeStatic] ${isSimpleServe ? 'no-list' : 'with-list'}`)
-  console.log(Format.stringIndentLine([
+  console.log(stringIndentLine([
     `staticRoot:`,
     `  - '${staticRoot}'`,
     getServerInfo(protocol, hostname, port)
@@ -48,11 +43,11 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {
   const { directoryList, fileList } = await getPathContent(rootPath)
-  const relativeRoot = nodeModulePath.relative(staticRoot, rootPath)
+  const relativeRoot = relative(staticRoot, rootPath)
   const titleHTML = `/${formatPathHTML(relativeRoot)}`
   const contentHTML = [
     `<b>${titleHTML}</b>`,
-    relativeRoot && renderItem('..', '🔙', [ '/list', nodeModulePath.dirname(relativeRoot) ]),
+    relativeRoot && renderItem('..', '🔙', [ '/list', dirname(relativeRoot) ]),
     ...directoryList.map((name) => renderItem(name, '📁', [ '/list', relativeRoot, name ])),
     ...fileList.map((name) => renderItem(name, '📄', [ '/file', relativeRoot, name ]))
   ].join('\n')
@@ -71,8 +66,8 @@ a:hover { background: #eee; }
 </style>
 <pre style="display: flex; flex-flow: column;">${contentHTML}</pre>`
 const renderItem = (text, icon, hrefFragList) => `<a href="${formatPathHref(hrefFragList)}">${icon}|${formatPathHTML(text)}</a>`
-const formatPathHref = (fragList) => encodeURI(normalizePathSeparator(nodeModulePath.join(...fragList)))
-const formatPathHTML = (name) => Format.escapeHTML(normalizePathSeparator(name))
-const normalizePathSeparator = nodeModulePath.sep === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
+const formatPathHref = (fragList) => encodeURI(normalizePathSeparator(joinPath(...fragList)))
+const formatPathHTML = (name) => escapeHTML(normalizePathSeparator(name))
+const normalizePathSeparator = sepPath === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
 
 export { createServerServeStatic }

@@ -1,6 +1,5 @@
 import { createGzip } from 'zlib'
 import { statAsync, unlinkAsync, readableAsync, createReadStream, createWriteStream } from './__utils__'
-import { getFileList } from './Modify'
 
 const compressFile = (inputFile, outputFile, compressStream = createGzip()) => new Promise((resolve, reject) => {
   const readStream = createReadStream(inputFile)
@@ -16,14 +15,19 @@ const compressFile = (inputFile, outputFile, compressStream = createGzip()) => n
   readStream.pipe(compressStream).pipe(writeStream)
 })
 
-const compressPath = async ({ path, deleteBloat = false, bloatRatio = 1 }) => {
-  const fileList = await getFileList(path)
+const compressFileList = async ({
+  fileList,
+  fileSuffix = '.gz',
+  compressStream = createGzip(),
+  deleteBloat = false,
+  bloatRatio = 1
+}) => {
   for (const filePath of fileList) {
-    if (filePath.endsWith('.gz')) continue
-    __DEV__ && console.log('[compressPath]', filePath)
-    const gzFilePath = `${filePath}.gz`
-    await readableAsync(gzFilePath) || await compressFile(filePath, gzFilePath)
-    deleteBloat && await checkBloat(filePath, gzFilePath, bloatRatio) && await unlinkAsync(gzFilePath)
+    if (filePath.endsWith(fileSuffix)) continue
+    __DEV__ && console.log('[compressFileList]', filePath)
+    const compressFilePath = `${filePath}${fileSuffix}`
+    await readableAsync(compressFilePath) || await compressFile(filePath, compressFilePath, compressStream)
+    deleteBloat && await checkBloat(filePath, compressFilePath, bloatRatio) && await unlinkAsync(compressFilePath)
   }
 }
 
@@ -35,6 +39,6 @@ const checkBloat = async (inputFile, outputFile, bloatRatio) => {
 
 export {
   compressFile,
-  compressPath,
+  compressFileList,
   checkBloat
 }

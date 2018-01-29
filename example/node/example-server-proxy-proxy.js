@@ -1,33 +1,24 @@
-const nodeModuleHttp = require('http')
-const nodeModulePath = require('path')
-const nodeModuleFs = require('fs')
-const { promisify } = require('util')
-const Dr = require('../../output-gitignore/library/Dr.node')
+const { resolve } = require('path')
+const { readFileSync } = require('fs')
+const { createServer: createHttpServer } = require('http')
 
-const {
-  File: { createGetPathFromRoot },
-  Resource: { receiveBufferAsync, requestAsync },
-  Server: {
-    createServer, createRequestListener,
-    Responder: {
-      responderSendBuffer,
-      createResponderParseURL,
-      createResponderRouter, createRouteMap, getRouteParamAny,
-      createResponderServeStatic
-    },
-    WebSocket: { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP, enableWebSocketServer }
-  }
-} = Dr.Node
+const { readFileAsync, createGetPathFromRoot } = require('../../output-gitignore/library/node/file/__utils__')
+const { receiveBufferAsync, requestAsync } = require('../../output-gitignore/library/node/resource')
+const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
+const { responderSendBuffer, createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
+const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
+const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
+const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/__utils__')
+const { DATA_TYPE_MAP } = require('../../output-gitignore/library/node/server/WebSocket/Frame')
+const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
 const ServerHost = 'localhost'
 const ServerPort = 3000
 const ProxyHost = 'localhost'
 const ProxyPort = 4000
 
-const readFileAsync = promisify(nodeModuleFs.readFile)
-
-const fromPath = (...args) => nodeModulePath.join(__dirname, ...args)
-const faviconBufferData = { buffer: nodeModuleFs.readFileSync(fromPath('../resource/favicon.ico')), type: 'image/png' }
+const fromPath = (...args) => resolve(__dirname, ...args)
+const faviconBufferData = { buffer: readFileSync(fromPath('../resource/favicon.ico')), type: 'image/png' }
 const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
@@ -85,7 +76,7 @@ const webSocketSet = enableWebSocketServer({
 
 start()
 
-nodeModuleHttp.createServer(async (originalRequest, originalResponse) => {
+createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
   const requestBuffer = await receiveBufferAsync(originalRequest)
   const proxyResponse = await requestAsync({ hostname: ServerHost, port: ServerPort, path: originalRequest.url }, requestBuffer)

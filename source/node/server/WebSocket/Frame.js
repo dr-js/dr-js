@@ -26,31 +26,21 @@ const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less 
 
 const POW_2_32 = Math.pow(2, 32)
 
-const BIT_0000 = 0x0
-const BIT_0001 = 0x1
-const BIT_0010 = 0x2
-const BIT_1000 = 0x8
-const BIT_1001 = 0x9
-const BIT_1010 = 0xa
-const BIT_1111 = 0xf
-const BIT_1000_0000 = 0x80
-const BIT_0111_1111 = 0x7f
-
 // NOTE: these quadbit will also set RSV123 to 0, thus will ignore extension bits RSV1-3
 const FRAME_TYPE_CONFIG_MAP = {
-  FRAME_COMPLETE: { FINQuadBit: BIT_1000, opcodeQuadBitMask: BIT_1111 },
-  FRAME_FIRST: { FINQuadBit: BIT_0000, opcodeQuadBitMask: BIT_1111 },
-  FRAME_MORE: { FINQuadBit: BIT_0000, opcodeQuadBitMask: BIT_0000 },
-  FRAME_LAST: { FINQuadBit: BIT_1000, opcodeQuadBitMask: BIT_0000 }
+  FRAME_COMPLETE: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b1111 },
+  FRAME_FIRST: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b1111 },
+  FRAME_MORE: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b0000 },
+  FRAME_LAST: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b0000 }
 }
 
 const DATA_TYPE_MAP = {
-  OPCODE_CONTINUATION: BIT_0000,
-  OPCODE_TEXT: BIT_0001,
-  OPCODE_BINARY: BIT_0010,
-  OPCODE_CLOSE: BIT_1000,
-  OPCODE_PING: BIT_1001,
-  OPCODE_PONG: BIT_1010
+  OPCODE_CONTINUATION: 0b0000,
+  OPCODE_TEXT: 0b0001,
+  OPCODE_BINARY: 0b0010,
+  OPCODE_CLOSE: 0b1000,
+  OPCODE_PING: 0b1001,
+  OPCODE_PONG: 0b1010
 }
 
 const DO_MASK_DATA = true
@@ -102,7 +92,7 @@ class FrameSender {
     const isMask = (maskType === DO_MASK_DATA)
     const maskOctetCount = isMask ? 4 : 0
     const maskQuadletBuffer = (isMask && length) ? randomBytes(4) : DEFAULT_MASK_QUADLET_BUFFER // 4octets | 32bits
-    if (isMask) maskLengthOctet |= BIT_1000_0000
+    if (isMask) maskLengthOctet |= 0b10000000
 
     this.encodedFrameHeaderBuffer = Buffer.allocUnsafe(2 + extendLengthOctetCount + maskOctetCount) // 2-14octets | 16-112bits
     this.encodedFrameHeaderBuffer.writeUInt16BE((initialOctet << 8) | maskLengthOctet, 0, !__DEV__) // FIN_BIT/RSV/OPCODE/MASK_BIT/LENGTH [2octets]
@@ -293,11 +283,11 @@ const createFrameDecoder = (frameLengthLimit) => {
         if (hasChunkDataBuffer(2)) {
           const chunkDataBuffer = getMergedChunkDataBuffer(2)
           const initialQuadlet = chunkDataBuffer.readUInt16BE(0, !__DEV__)
-          const FINQuadBit = (initialQuadlet >>> 12) & BIT_1000
-          const opcodeQuadBit = (initialQuadlet >>> 8) & BIT_1111
-          const initialLength = initialQuadlet & BIT_0111_1111
+          const FINQuadBit = (initialQuadlet >>> 12) & 0b1000
+          const opcodeQuadBit = (initialQuadlet >>> 8) & 0b1111
+          const initialLength = initialQuadlet & 0b01111111
 
-          decodedFrameTypeConfig = FINQuadBit === BIT_1000
+          decodedFrameTypeConfig = FINQuadBit === 0b1000
             ? opcodeQuadBit === DATA_TYPE_MAP.OPCODE_CONTINUATION
               ? FRAME_TYPE_CONFIG_MAP.FRAME_LAST
               : FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE
@@ -305,7 +295,7 @@ const createFrameDecoder = (frameLengthLimit) => {
               ? FRAME_TYPE_CONFIG_MAP.FRAME_MORE
               : FRAME_TYPE_CONFIG_MAP.FRAME_FIRST
           decodedDataType = opcodeQuadBit
-          decodedIsMask = ((initialQuadlet & BIT_1000_0000) !== 0)
+          decodedIsMask = ((initialQuadlet & 0b10000000) !== 0)
 
           if (initialLength === 0) {
             decodedDataBufferLength = 0
@@ -378,7 +368,7 @@ const createFrameDecoder = (frameLengthLimit) => {
   }
 
   const getDecodeFrame = () => ((decodeStage !== DECODE_STAGE_END_FRAME) ? null : {
-    isFIN: decodedFrameTypeConfig.FINQuadBit === BIT_1000,
+    isFIN: decodedFrameTypeConfig.FINQuadBit === 0b1000,
     dataType: decodedDataType,
     dataBuffer: decodedDataBuffer,
     dataBufferLength: decodedDataBufferLength

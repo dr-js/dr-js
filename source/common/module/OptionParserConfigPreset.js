@@ -1,24 +1,24 @@
-import * as Verify from 'source/common/verify'
+import { string, number, integer, arrayLength, oneOf } from 'source/common/verify'
 
-const verifySingleArray = (argumentList) => Verify.arrayLength(argumentList, 1, 'single argument expected')
+const verifySingleArray = (argumentList) => arrayLength(argumentList, 1, 'single argument expected')
 const verifySingleString = (argumentList) => {
   verifySingleArray(argumentList)
-  Verify.string(argumentList[ 0 ], 'single String argument expected')
+  string(argumentList[ 0 ], 'single String argument expected')
 }
 const verifySingleNumber = (argumentList) => {
   verifySingleArray(argumentList)
-  Verify.number(argumentList[ 0 ], 'single Number argument expected')
+  number(argumentList[ 0 ], 'single Number argument expected')
 }
 const verifySingleInteger = (argumentList) => {
   verifySingleArray(argumentList)
-  Verify.integer(argumentList[ 0 ], 'single Integer argument expected')
+  integer(argumentList[ 0 ], 'single Integer argument expected')
 }
-const verifyAllString = (argumentList) => { argumentList.forEach((v, i) => Verify.string(v, `String expected at #${i}`)) }
-const verifyAllNumber = (argumentList) => { argumentList.forEach((v, i) => Verify.number(v, `Number expected at #${i}`)) }
-const verifyAllInteger = (argumentList) => { argumentList.forEach((v, i) => Verify.integer(v, `Integer expected at #${i}`)) }
+const verifyAllString = (argumentList) => { argumentList.forEach((v, i) => string(v, `String expected at #${i}`)) }
+const verifyAllNumber = (argumentList) => { argumentList.forEach((v, i) => number(v, `Number expected at #${i}`)) }
+const verifyAllInteger = (argumentList) => { argumentList.forEach((v, i) => integer(v, `Integer expected at #${i}`)) }
 const verifyOneOf = (selectList) => (argumentList) => {
   verifySingleArray(argumentList)
-  Verify.oneOf(argumentList[ 0 ], selectList)
+  oneOf(argumentList[ 0 ], selectList)
 }
 
 const normalizeToString = (argumentList) => argumentList.map(String)

@@ -6,13 +6,10 @@ const getEnvironment = () => {
   const { process, window, document } = getGlobal()
   const isNode = (typeof (process) !== 'undefined' && typeof (process.versions) !== 'undefined' && process.versions.node)
   const isBrowser = (typeof (window) !== 'undefined' && typeof (document) !== 'undefined')
-  return {
-    isNode,
-    isBrowser,
-    environmentName: isNode ? 'node'
-      : isBrowser ? 'browser'
-        : 'unknown'
-  }
+  const environmentName = isNode ? 'node'
+    : isBrowser ? 'browser'
+      : 'unknown'
+  return { isNode, isBrowser, environmentName }
 }
 
 const getSystemEndianness = () => {
@@ -30,37 +27,18 @@ const getSystemEndianness = () => {
   return 'unknown'
 }
 
-const getConsoleMethod = (name) => console[ name ].bind ? console[ name ].bind(console)
-  : console[ name ].apply ? (...args) => console[ name ].apply(console, args)
-    : (...args) => console[ name ](args)
+const assert = (assertion, ...args) => { // always Error throw (console.assert in Browser do not throw)
+  if (assertion) return
+  console.error('[ASSERT]', ...args)
+  throw new Error(`[ASSERT] ${args.join(', ')}`)
+}
 
 const GLOBAL = getGlobal()
-const { isNode, isBrowser, environmentName } = getEnvironment()
-const systemEndianness = getSystemEndianness()
-
-const log = getConsoleMethod('log')
-const warn = getConsoleMethod('warn')
-const error = getConsoleMethod('error')
-const assert = (assertion, ...args) => {
-  if (assertion) return
-  error('[ASSERT]', ...args)
-  throw new Error(`[ASSERT] ${args.join(', ')}`) // guaranteed Error throw (console.assert in Browser do not throw)
-}
 
 export {
   getGlobal,
   getEnvironment,
   getSystemEndianness,
-  getConsoleMethod,
-
-  GLOBAL as global,
-  isNode,
-  isBrowser,
-  environmentName,
-  systemEndianness,
-
-  log,
-  warn,
-  error,
-  assert
+  assert,
+  GLOBAL as global
 }

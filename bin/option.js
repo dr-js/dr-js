@@ -6,7 +6,6 @@ import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/Par
 const { SingleString, OneOfString } = OPTION_CONFIG_PRESET
 
 const MODE_OPTION = [
-  'env-info', 'i',
   'open', 'o',
   'file-list', 'ls',
   'file-list-all', 'ls-R',
@@ -18,37 +17,29 @@ const MODE_OPTION = [
   'server-serve-static-simple', 'ssss',
   'server-websocket-group', 'swg'
 ]
+const MODE_DESCRIPTION = `one of:\n${stringIndentLine(arraySplitChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
-  formatList: [ {
-    ...SingleString,
-    optional: true,
-    name: 'config',
-    shortName: 'c',
-    description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
-  }, {
-    ...OneOfString(MODE_OPTION),
-    name: 'mode',
-    shortName: 'm',
-    description: `one of:\n${stringIndentLine(arraySplitChunk(MODE_OPTION, 2).map((v) => v.join(' ')).join('\n'), '  ')}`
-  }, {
-    optional: true,
-    name: 'argument',
-    shortName: 'a',
-    description: `different for each mode`,
-    argumentCount: '0+'
-  } ]
+  formatList: [
+    { optional: true, name: 'help', shortName: 'h' },
+    { optional: true, name: 'version', shortName: 'v' },
+    { ...SingleString, optional: true, name: 'config', shortName: 'c', description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'` },
+    {
+      ...OneOfString(MODE_OPTION),
+      optional: true,
+      name: 'mode',
+      shortName: 'm',
+      description: MODE_DESCRIPTION,
+      extendFormatList: [
+        { optional: true, name: 'argument', shortName: 'a', argumentCount: '0+', description: `different for each mode` }
+      ]
+    }
+  ]
 }
 
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(OPTION_CONFIG)
 
 const parseOption = async () => createOptionGetter(await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap }))
 
-const exitWithError = (error) => {
-  __DEV__ && console.warn(error)
-  !__DEV__ && console.warn(formatUsage(error.message || error.toString()))
-  process.exit(1)
-}
-
-export { parseOption, exitWithError }
+export { parseOption, formatUsage }

@@ -1,6 +1,11 @@
-import nodeModulePath from 'path'
+import { resolve } from 'path'
 import { deepEqual, strictEqual } from 'assert'
+import { unlinkSync, writeFileSync } from 'fs'
 import { URL } from 'url'
+import { createServer, createRequestListener, getUnusedPort } from 'source/node/server/Server'
+import { responderEndWithStatusCode, responderSendBuffer, responderSendJSON, createResponderParseURL } from 'source/node/server/Responder/Common'
+import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
+import { setTimeoutAsync } from 'source/common/time'
 import {
   fetch,
   urlToOption,
@@ -12,19 +17,17 @@ import {
   loadLocalScript,
   loadLocalJSON
 } from './resource'
-import { createServer, createRequestListener, getUnusedPort, Responder } from 'source/node/server'
-import { setTimeoutAsync } from 'source/common/time'
 
-const {
-  responderEndWithStatusCode,
-  responderSendBuffer,
-  responderSendJSON,
-  createResponderParseURL,
-  createRouteMap,
-  createResponderRouter
-} = Responder
+const { describe, it, before, after } = global
 
-const { describe, it } = global
+const BUFFER_SCRIPT = Buffer.from([
+  `// Simple script file, used for js test`,
+  `const a = async (b = 0) => b + 1`,
+  `a().then(console.log)`
+].join('\n'))
+
+const SOURCE_JSON = resolve(__dirname, '../../package.json')
+const SOURCE_SCRIPT = resolve(__dirname, './test-script-gitignore.js')
 
 const withTestServer = (asyncTest) => async () => {
   const { server, start, stop, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
@@ -44,7 +47,7 @@ const withTestServer = (asyncTest) => async () => {
           if ((retryCount % 4) !== 0) return store.response.destroy()
           return responderEndWithStatusCode(store, { statusCode: 200 })
         } ],
-        [ '/test-script', 'GET', async (store) => responderSendBuffer(store, { buffer: Buffer.from(`const a = async (b = 0) => b + 1`) }) ]
+        [ '/test-script', 'GET', async (store) => responderSendBuffer(store, { buffer: BUFFER_SCRIPT }) ]
       ]))
     ]
   }))
@@ -52,6 +55,14 @@ const withTestServer = (asyncTest) => async () => {
   await asyncTest(option.baseUrl)
   stop()
 }
+
+before('prepare', () => {
+  writeFileSync(SOURCE_SCRIPT, BUFFER_SCRIPT)
+})
+
+after('clear', () => {
+  unlinkSync(SOURCE_SCRIPT)
+})
 
 describe('Node.Resource', () => {
   it('urlToOption()', () => {
@@ -141,20 +152,20 @@ describe('Node.Resource', () => {
   }))
 
   it('loadScript()', withTestServer(async (serverUrl) => {
-    await loadScript(nodeModulePath.join(__dirname, '../../example/resource/script.js'))
+    await loadScript(SOURCE_SCRIPT)
     await loadScript(`${serverUrl}/test-script`)
   }))
 
   it('loadJSON()', withTestServer(async (serverUrl) => {
-    await loadJSON(nodeModulePath.join(__dirname, '../../package.json'))
+    await loadJSON(SOURCE_JSON)
     await loadJSON(`${serverUrl}/test-json`)
   }))
 
   it('loadLocalScript()', async () => {
-    await loadLocalScript(nodeModulePath.join(__dirname, '../../example/resource/script.js'))
+    await loadLocalScript(SOURCE_SCRIPT)
   })
   it('loadLocalJSON()', async () => {
-    await loadLocalJSON(nodeModulePath.join(__dirname, '../../package.json'))
+    await loadLocalJSON(SOURCE_JSON)
   })
 
   it('loadRemoteScript()', withTestServer(async (serverUrl) => {
