@@ -8,11 +8,10 @@ const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 
-const getLogger = (title) => {
-  const log = (...args) => console.log(`- ${args.join(' ')}`)
-  const padLog = (...args) => console.log(`## ${args.join(' ')} `.padEnd(160 - title.length, '-') + title)
-  return { log, padLog }
-}
+const getLogger = (title) => ({
+  log: (...args) => console.log(`- ${args.join(' ')}`),
+  padLog: (...args) => console.log(`## ${args.join(' ')} `.padEnd(160 - title.length, '-') + title)
+})
 
 const wrapFileProcessor = (processor, log) => async (filePath) => {
   const inputString = readFileSync(filePath, 'utf8')
@@ -33,7 +32,7 @@ const wrapFileProcessor = (processor, log) => async (filePath) => {
   return inputSize - outputSize
 }
 
-module.exports = {
+export {
   fromRoot,
   fromOutput,
   getLogger,

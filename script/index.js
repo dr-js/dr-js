@@ -54,8 +54,8 @@ const main = async () => {
   if (MODE === 'pack-only') return
 
   padLog(MODE)
-  if (MODE === 'publish') execSync('npm publish', execOptionOutput)
-  if (MODE === 'publish-dev') execSync('npm publish --tag dev', execOptionOutput)
+  MODE === 'publish' && execSync('npm publish', execOptionOutput)
+  MODE === 'publish-dev' && execSync('npm publish --tag dev', execOptionOutput)
 }
 
 const initOutput = async () => {
@@ -63,17 +63,16 @@ const initOutput = async () => {
   await modify.delete(fromOutput()).catch(() => {})
   await createDirectory(fromOutput())
 
-  padLog(`create ${fromOutput('package.json')}`)
+  padLog(`create package.json`)
   const packageJSON = require('../package.json')
-  delete packageJSON.private
-  delete packageJSON.scripts
-  delete packageJSON.engines
-  delete packageJSON.devDependencies
+  const deleteKeyList = [ 'private', 'scripts', 'engines', 'devDependencies' ]
+  log(`delete ${deleteKeyList}`)
+  for (const deleteKey of deleteKeyList) delete packageJSON[ deleteKey ]
   writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
 
-  padLog(`copy LICENSE, README.md`)
-  await modify.copy(fromRoot('LICENSE'), fromOutput('LICENSE'))
-  await modify.copy(fromRoot('README.md'), fromOutput('README.md'))
+  const copyPathList = [ 'LICENSE', 'README.md' ]
+  padLog(`copy ${copyPathList}`)
+  for (const copyPath of copyPathList) await modify.copy(fromRoot(copyPath), fromOutput(copyPath))
 
   return packageJSON
 }
@@ -127,19 +126,18 @@ const processSource = async (packageJSON) => {
     sizeReduceModule +
     sizeReduceLibraryBabel +
     sizeReduceLibraryWebpack
-  )}B (before pack)`)
-}
+  )}B (before pack; test, index file included)`)
 
-const packOutput = async (packageJSON) => {
   padLog('verify output bin working')
   const outputBinTest = execSync('node bin --version', { ...execOptionOutput, stdio: 'pipe' }).toString()
   log(`bin test output: \n${stringIndentLine(outputBinTest, '  ')}`)
-  ok(outputBinTest.includes(packageJSON.name), `should output contain: ${packageJSON.name}`)
-  ok(outputBinTest.includes(packageJSON.version), `should output contain: ${packageJSON.version}`)
-  ok(outputBinTest.includes(process.version), `should output contain: ${process.version}`)
-  ok(outputBinTest.includes(process.platform), `should output contain: ${process.platform}`)
-  ok(outputBinTest.includes(process.arch), `should output contain: ${process.arch}`)
+  for (const testString of [
+    packageJSON.name, packageJSON.version,
+    process.version, process.platform, process.arch
+  ]) ok(outputBinTest.includes(testString), `should output contain: ${testString}`)
+}
 
+const packOutput = async (packageJSON) => {
   padLog('run pack')
   execSync('npm pack', execOptionOutput)
   const outputFileName = `${packageJSON.name}-${packageJSON.version}.tgz`
