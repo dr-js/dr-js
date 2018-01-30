@@ -1,9 +1,9 @@
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { FILE_TYPE } from 'dr-js/module/node/file/File'
 import { getDirectoryContent } from 'dr-js/module/node/file/Directory'
-import { getNetworkIPv4AddressList } from 'dr-js/module/node/System/NetworkAddress'
-import { getUnusedPort } from 'dr-js/module/node/Server/Server'
-import { responderSendBuffer } from 'dr-js/module/node/Server/Responder/Common'
+import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
+import { getUnusedPort } from 'dr-js/module/node/server/Server'
+import { responderSendBuffer } from 'dr-js/module/node/server/Responder/Common'
 
 const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
   const content = await getDirectoryContent(rootPath, undefined, true) // single level deep

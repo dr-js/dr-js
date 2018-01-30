@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.11.0-dev.0",
+  "version": "0.11.0-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -49,6 +49,6 @@
   },
   "devDependencies": {
     "dev-dep-web": "^0.0.12",
-    "dr-js": "^0.10.2-dev.1"
+    "dr-js": "^0.11.0-dev.0"
   }
 }
