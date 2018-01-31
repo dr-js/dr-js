@@ -4,34 +4,45 @@ const describe = (value) => {
   return `<${valueType}> ${valueString}`
 }
 
-const UP_THRESHOLD = 1.5
+const OVER_THRESHOLD = 0.75
 
-const TIME_SEC = 1000
-const TIME_MIN = 60 * TIME_SEC
-const TIME_HOUR = 60 * TIME_MIN
-const TIME_DAY = 24 * TIME_HOUR
-// value should be msec
-const time = (value) => value < TIME_SEC * UP_THRESHOLD ? `${Math.floor(value)}ms`
-  : value < TIME_MIN * UP_THRESHOLD ? `${(value / TIME_SEC).toFixed(2)}s`
-    : value < TIME_HOUR * UP_THRESHOLD ? `${(value / TIME_MIN).toFixed(2)}m`
-      : value < TIME_DAY * UP_THRESHOLD ? `${(value / TIME_HOUR).toFixed(2)}h`
-        : `${(value / TIME_DAY).toFixed(2)}d`
+const TIME_S = 1000
+const TIME_M = 1000 * 60
+const TIME_H = 1000 * 60 * 60
+const TIME_D = 1000 * 60 * 60 * 24
+const time = (value) => { // value should be msec
+  const abs = Math.abs(value) * OVER_THRESHOLD
+  return abs < TIME_S ? `${Math.floor(value)}ms`
+    : abs < TIME_M ? `${(value / TIME_S).toFixed(2)}s`
+      : abs < TIME_H ? `${(value / TIME_M).toFixed(2)}m`
+        : abs < TIME_D ? `${(value / TIME_H).toFixed(2)}h`
+          : `${(value / TIME_D).toFixed(2)}d`
+}
 
 // https://en.wikipedia.org/wiki/Binary_prefix
-const BINARY_KIBI = 1 << 10
-const BINARY_MEBI = 1 << 20
-const BINARY_GIBI = 1 << 30
-const binary = (value) => value < BINARY_KIBI * UP_THRESHOLD ? `${Math.floor(value)}`
-  : value < BINARY_MEBI * UP_THRESHOLD ? `${(value / BINARY_KIBI).toFixed(2)}Ki`
-    : value < BINARY_GIBI * UP_THRESHOLD ? `${(value / BINARY_MEBI).toFixed(2)}Mi`
-      : `${(value / BINARY_GIBI).toFixed(2)}Gi`
+const BINARY_K = 1 << 10 // kibi
+const BINARY_M = 1 << 20 // mebi
+const BINARY_G = 1 << 30 // gibi
+const binary = (value) => {
+  const abs = Math.abs(value) * OVER_THRESHOLD
+  return abs < BINARY_K ? `${Math.floor(value)}`
+    : abs < BINARY_M ? `${(value / BINARY_K).toFixed(2)}K`
+      : abs < BINARY_G ? `${(value / BINARY_M).toFixed(2)}M`
+        : `${(value / BINARY_G).toFixed(2)}G`
+}
 
 const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
-const padTable = ({ table, padFuncList = [], cellPad = '|', rowPad = '\n' }) => {
+const padTable = ({
+  table, // table: list of row, row: list of cell
+  padFuncList = [],
+  cellPad = '|',
+  rowPad = '\n'
+}) => {
   const widthMaxList = [] // get max width for each cell
   table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
-  widthMaxList.forEach((v, index) => { padFuncList[ index ] = padFuncList[ index ] || DEFAULT_PAD_FUNC })
-  return table.map((rowList) => rowList.map((text, index) => (padFuncList[ index ](text, widthMaxList[ index ]))).join(cellPad)).join(rowPad)
+  return table.map((rowList) => rowList.map(
+    (text, index) => (padFuncList[ index ] || DEFAULT_PAD_FUNC)(text, widthMaxList[ index ])
+  ).join(cellPad)).join(rowPad)
 }
 
 const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }

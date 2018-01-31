@@ -1,6 +1,6 @@
 {
   "env": {
-    "// COMMENT: __DEV__ = false, use require(), minify": "",
+    "// __DEV__ = false, use require(), simplify": "",
     "library": {
       "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
       "plugins": [
@@ -16,7 +16,7 @@
       ],
       "comments": false
     },
-    "// COMMENT: __DEV__ = true, use require()": "",
+    "// __DEV__ = true, use require()": "",
     "library-dev": {
       "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
       "plugins": [
@@ -26,7 +26,7 @@
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": true } } ] } ]
       ]
     },
-    "// COMMENT: __DEV__ = false, use import from, remove unused code & comment": "",
+    "// __DEV__ = false, use import from, remove unused code & comment": "",
     "module": {
       "presets": [ [ "env", { "targets": { "node": 8 }, "modules": false } ] ],
       "plugins": [
@@ -41,7 +41,7 @@
       ],
       "comments": false
     },
-    "// COMMENT: __DEV__ = false, use require()": "",
+    "// __DEV__ = false, use require()": "",
     "test": {
       "presets": [ [ "env", { "targets": { "node": 8 } } ] ],
       "plugins": [

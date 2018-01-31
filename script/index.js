@@ -82,11 +82,11 @@ const processSource = async (packageJSON) => {
   execSync('npm run build-bin', execOptionRoot)
 
   padLog(`process bin`)
-  let sizeReduceBin = 0
+  let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) {
-    sizeReduceBin += await babelProcessor(filePath)
+    sizeCodeReduceBin += await babelProcessor(filePath)
   }
-  log(`bin size reduce: ${formatBinary(sizeReduceBin)}B`)
+  log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
   padLog(`build module`)
   execSync('npm run build-module', execOptionRoot)
@@ -95,12 +95,13 @@ const processSource = async (packageJSON) => {
   TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
   padLog(`process module`)
-  let sizeReduceModule = 0
+  let sizeFileReduceModule = 0
+  let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) {
-    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeReduceModule += await deleteProcessor(filePath)
-    else sizeReduceModule += await babelProcessor(filePath)
+    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceModule += await deleteProcessor(filePath)
+    else sizeCodeReduceModule += await babelProcessor(filePath)
   }
-  log(`module size reduce: ${formatBinary(sizeReduceModule)}B`)
+  log(`module size reduce: ${formatBinary(sizeFileReduceModule)}B + ${formatBinary(sizeCodeReduceModule)}B`)
 
   padLog(`build library-babel`)
   execSync('npm run build-library-babel', execOptionRoot)
@@ -109,23 +110,26 @@ const processSource = async (packageJSON) => {
   TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
   padLog(`process library-babel`)
-  let sizeReduceLibraryBabel = 0
+  let sizeFileReduceLibraryBabel = 0
+  let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) {
-    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeReduceLibraryBabel += await deleteProcessor(filePath)
-    else sizeReduceLibraryBabel += await babelProcessor(filePath)
+    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceLibraryBabel += await deleteProcessor(filePath)
+    else sizeCodeReduceLibraryBabel += await babelProcessor(filePath)
   }
-  log(`library-babel size reduce: ${formatBinary(sizeReduceLibraryBabel)}B`)
+  log(`library-babel size reduce: ${formatBinary(sizeFileReduceLibraryBabel)}B + ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
   padLog(`process webpack output`)
   execSync('npm run build-library-webpack', execOptionRoot)
-  const sizeReduceLibraryWebpack = await webpackProcessor(fromOutput('library/Dr.browser.js'))
-  log(`library-webpack size reduce: ${formatBinary(sizeReduceLibraryWebpack)}B`)
+  const sizeCodeReduceLibraryWebpack = await webpackProcessor(fromOutput('library/Dr.browser.js'))
+  log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
   padLog(`total size reduce: ${formatBinary(
-    sizeReduceBin +
-    sizeReduceModule +
-    sizeReduceLibraryBabel +
-    sizeReduceLibraryWebpack
+    sizeCodeReduceBin +
+    sizeFileReduceModule +
+    sizeCodeReduceModule +
+    sizeFileReduceLibraryBabel +
+    sizeCodeReduceLibraryBabel +
+    sizeCodeReduceLibraryWebpack
   )}B (before pack; test, index file included)`)
 
   padLog('verify output bin working')

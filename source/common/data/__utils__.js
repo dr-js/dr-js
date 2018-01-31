@@ -4,18 +4,19 @@ const hashStringToNumber = (string = '', hash = 0) => {
 }
 
 const objectMergeDeep = (object, merge) => {
-  for (const [ key, mergeValue ] of Object.entries(merge)) { // check if has new data
+  for (const [ key, mergeValue ] of Object.entries(merge)) {
     const objectValue = object[ key ]
     if (objectValue === mergeValue) continue
-    if (!(objectValue instanceof Object)) object[ key ] = mergeValue
-    else object[ key ] = objectMergeDeep(objectValue, mergeValue)
+    object[ key ] = (objectValue instanceof Object) && (mergeValue instanceof Object)
+      ? objectMergeDeep(objectValue, mergeValue)
+      : mergeValue
   }
   return object
 }
 const objectSortKey = (object) => {
   Object.keys(object).sort((a, b) => a.localeCompare(b)).forEach((key) => {
     const value = object[ key ]
-    delete object[ key ]
+    delete object[ key ] // change key order by delete & set
     object[ key ] = value
   })
   return object

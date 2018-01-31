@@ -1,6 +1,6 @@
 import { ok } from 'assert'
-import { createOptionParser } from './OptionParser'
-import { OPTION_CONFIG_PRESET } from './OptionParserConfigPreset'
+import { createOptionParser } from './Parser'
+import { ConfigPreset } from './Preset'
 
 const { describe, it } = global
 
@@ -9,11 +9,11 @@ const optionData = {
   prefixJSON: 'prefix-JSON',
   formatList: [
     { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
-    { name: 'option-name-b', shortName: 'b', optional: true, ...OPTION_CONFIG_PRESET.SingleInteger },
-    { name: 'option-name-c', shortName: 'c', ...OPTION_CONFIG_PRESET.AllNumber, argumentCount: 2 },
+    { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
+    { name: 'option-name-c', shortName: 'c', ...ConfigPreset.AllNumber, argumentCount: 2 },
     { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0+', description: 'TEST DESCRIPTION A' },
-    { name: 'option-name-bb', shortName: 'B', optional: true, ...OPTION_CONFIG_PRESET.AllString, argumentCount: '1+', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
-    { name: 'option-name-cc', shortName: 'C', optional: true, ...OPTION_CONFIG_PRESET.AllNumber, argumentCount: '2+', description: 'TEST DESCRIPTION C\n' }
+    { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1+', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
+    { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2+', description: 'TEST DESCRIPTION C\n' }
   ]
 }
 const optionNameList = optionData.formatList.map(({ name }) => name)
@@ -51,8 +51,8 @@ describe('Common.Module.OptionParser', () => {
 
   describe('OptionParser.parseCLI', () => {
     const optionMap0 = parseCLI([
-      'NODE',
-      'SCRIPT.js',
+      // 'NODE',
+      // 'SCRIPT.js',
       '--option-name-a',
       '--option-name-b=1',
       '--option-name-c=1', '2.2',
@@ -65,8 +65,8 @@ describe('Common.Module.OptionParser', () => {
     it('should pass checkArgumentList use name', () => checkArgumentList(optionMap0))
 
     const optionMap1 = parseCLI([
-      'NODE',
-      'SCRIPT.js',
+      // 'NODE',
+      // 'SCRIPT.js',
       '-a',
       '-b=1',
       '-c=1', '2.2',
@@ -79,8 +79,8 @@ describe('Common.Module.OptionParser', () => {
     it('should pass checkArgumentList use shortName', () => checkArgumentList(optionMap1))
 
     const optionMap2 = parseCLI([
-      'NODE',
-      'SCRIPT.js',
+      // 'NODE',
+      // 'SCRIPT.js',
       '-ab=1',
       '-AB', '1',
       '-c=1', '2.2',
@@ -124,15 +124,15 @@ describe('Common.Module.OptionParser', () => {
       prefixENV: 'prefix-ENV',
       prefixJSON: 'prefix-JSON',
       formatList: [
-        { name: 'option-name-check-target', optional: true, ...OPTION_CONFIG_PRESET.SingleInteger },
+        { name: 'option-name-check-target', optional: true, ...ConfigPreset.SingleInteger },
         { name: 'option-with-check-optional', optional: (optionMap, optionFormatSet, format) => optionMap[ 'option-name-check-target' ].argumentList[ 0 ] !== 1 },
         {
           name: 'option-with-extend',
           optional: true,
           extendFormatList: [
             { name: 'extend-option-name-a', argumentCount: 0 },
-            { name: 'extend-option-name-b', optional: true, ...OPTION_CONFIG_PRESET.SingleInteger },
-            { name: 'extend-option-name-c', ...OPTION_CONFIG_PRESET.AllNumber, argumentCount: 2 }
+            { name: 'extend-option-name-b', optional: true, ...ConfigPreset.SingleInteger },
+            { name: 'extend-option-name-c', ...ConfigPreset.AllNumber, argumentCount: 2 }
           ]
         }
       ]
