@@ -42,7 +42,7 @@ const UNESCAPE_HTML_MAP = { '&amp;': '&', '&lt;': '<', '&gt;': '>' }
 const replaceUnescapeHTML = (substring) => UNESCAPE_HTML_MAP[ substring ] || substring
 const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replaceUnescapeHTML)
 
-const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.split('\n').join(`\n${indentString}`)}`
+const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.replace(/\n/g, `\n${indentString}`)}`
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
   (o, string, index) => (index >= fromIndex)
     ? o + string[ 0 ].toUpperCase() + string.slice(1)

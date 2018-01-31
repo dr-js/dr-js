@@ -1,7 +1,7 @@
 import { join as joinPath } from 'path'
-import { getRandomId } from 'source/common/math'
+import { getRandomId } from 'source/common/math/random'
 import { createLogQueue } from 'source/common/data/LogQueue'
-import { createDirectory } from 'source/node/file'
+import { createDirectory } from 'source/node/file/File'
 import { createSafeWriteStream } from './SafeWrite'
 
 const createSimpleLogger = ({ pathOutputFile, queueLengthThreshold, flag, mode, onError }) => createLogQueue({
