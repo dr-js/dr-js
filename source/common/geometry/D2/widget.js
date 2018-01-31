@@ -1,6 +1,6 @@
 // 2D rectangle: { center: 2D.vector, size: 2D.vector, rotate: angle }
 
-import { roundFloat } from 'source/common/math'
+import { roundFloat } from 'source/common/math/base'
 import { getDist, getRotate, round as roundVector } from './vector'
 
 const fromPoint = (pointA, pointB) => ({

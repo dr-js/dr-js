@@ -113,7 +113,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
 const loadTextFile = (path) => readFileSync(resolve(__dirname, path), 'utf8')
 
 const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
-  const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html').replace(`"{SCRIPT_DR_JS}"`, loadTextFile('../../library/Dr.browser.js')))
+  const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html').replace(`"{SCRIPT_DR_BROWSER_JS}"`, loadTextFile('../../library/Dr.browser.js')))
 
   const { server, start, option } = createServer({ protocol, hostname, port })
 

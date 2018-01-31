@@ -17,7 +17,7 @@ const TEST = !SKIP_TEST || [ 'test-only', 'publish', 'publish-dev' ].includes(MO
 
 const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
 const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
-const { log, padLog } = getLogger(`[dr-js|${MODE}]`)
+const { log, padLog } = getLogger(` [dr-js|${MODE}]`)
 
 const REGEXP_DELETE_FILE_PATH = /(\.test|index|Dr|Dr\.node|Dr\.browser)\.js$/
 const deleteProcessor = async (filePath) => {
