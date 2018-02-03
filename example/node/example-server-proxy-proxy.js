@@ -79,8 +79,18 @@ start()
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
   const requestBuffer = await receiveBufferAsync(originalRequest)
-  const proxyResponse = await requestAsync({ hostname: ServerHost, port: ServerPort, path: originalRequest.url }, requestBuffer)
+  const proxyResponse = await requestAsync({
+    hostname: ServerHost,
+    port: ServerPort,
+    path: originalRequest.url,
+    method: originalRequest.method,
+    headers: originalRequest.headers
+  }, requestBuffer)
   const responseBuffer = await receiveBufferAsync(proxyResponse)
+  Object.entries(proxyResponse.headers).forEach(([ name, value ]) => originalResponse.setHeader(name, value))
+  originalResponse.statusCode = proxyResponse.statusCode
+  originalResponse.statusMessage = proxyResponse.statusMessage
   originalResponse.end(responseBuffer)
 }).listen(ProxyPort, ProxyHost)
+
 console.log(`Proxy running at: 'http://${ProxyHost}:${ProxyPort}'`)

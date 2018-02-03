@@ -47,18 +47,13 @@ const ConfigPreset = {
   OneOfInteger: getOneOfPreset(normalizeToInteger, verifyAllInteger),
 
   BooleanFlag: getPreset('0+', () => ([ true ]), undefined, 'set to enable', true),
-  Any: getPreset('0+', undefined, undefined, 'optional', true)
+  Any: getPreset('0+', undefined, undefined, 'optional', true),
+
+  // common config preset
+  Config: { ...getPreset(1, normalizeToString, getVerifySingle(string, 'String'), `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`, true), name: 'config', shortName: 'c' }
 }
 
-ConfigPreset.Config = { // add common config preset
-  ...ConfigPreset.SingleString,
-  optional: true,
-  name: 'config',
-  shortName: 'c',
-  description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`
-}
-
-const getOptionalFormatFlag = (formatName) => (optionMap) => Boolean(optionMap[ formatName ]) // not option if the format has been set
+const getOptionalFormatFlag = (...formatNameList) => (optionMap) => !formatNameList.some((formatName) => Boolean(optionMap[ formatName ])) // not option if the format has been set
 const getOptionalFormatValue = (formatName, ...valueList) => (optionMap) => {
   const format = optionMap[ formatName ]
   return format && !valueList.includes(format.argumentList[ 0 ]) // not option if the format has been set && value match

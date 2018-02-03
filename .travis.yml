@@ -8,7 +8,7 @@ install:
   - yarn
 
 script:
-  - npm run script-test-only
+  - npm run script-test
 
 cache:
   yarn: true
