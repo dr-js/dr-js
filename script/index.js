@@ -2,10 +2,10 @@ import { ok } from 'assert'
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { runMain } from 'dev-dep-tool/tool/__utils__'
-import { getLogger } from 'dev-dep-tool/tool/logger'
-import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/tool/fileProcessor'
-import { initOutput, packOutput } from 'dev-dep-tool/tool/commonOutput'
+import { runMain } from 'dev-dep-tool/library/__utils__'
+import { getLogger } from 'dev-dep-tool/library/logger'
+import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
+import { initOutput, packOutput } from 'dev-dep-tool/library/commonOutput'
 
 import { binary as formatBinary, stringIndentLine } from 'source/common/format'
 import { getFileList } from 'source/node/file/Directory'
@@ -21,7 +21,7 @@ const argvList = process.argv.slice(2)
 const logger = getLogger([ 'dr-js', ...argvList ].join('|'))
 const { padLog, log } = logger
 
-const TEST = [ 'test', 'publish', 'publish-dev' ].some((v) => argvList.includes(v))
+const RUN_TEST = [ 'test', 'publish', 'publish-dev' ].some((v) => argvList.includes(v))
 
 const REGEXP_DELETE_FILE_PATH = /(\.test|index|Dr|Dr\.node|Dr\.browser)\.js$/
 const processSource = async ({ packageJSON }) => {
@@ -42,8 +42,8 @@ const processSource = async ({ packageJSON }) => {
   padLog(`build module`)
   execSync('npm run build-module', execOptionRoot)
 
-  TEST && padLog(`test module`)
-  TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
+  RUN_TEST && padLog(`test module`)
+  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
   padLog(`process module`)
   let sizeFileReduceModule = 0
@@ -52,13 +52,13 @@ const processSource = async ({ packageJSON }) => {
     if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceModule += await processDelete(filePath)
     else sizeCodeReduceModule += await processBabel(filePath)
   }
-  log(`module size reduce: ${formatBinary(sizeFileReduceModule)}B + ${formatBinary(sizeCodeReduceModule)}B`)
+  log(`module size reduce: ${formatBinary(sizeFileReduceModule)}B, ${formatBinary(sizeCodeReduceModule)}B`)
 
   padLog(`build library-babel`)
   execSync('npm run build-library-babel', execOptionRoot)
 
-  TEST && padLog('test library-babel')
-  TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
+  RUN_TEST && padLog('test library-babel')
+  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
   padLog(`process library-babel`)
   let sizeFileReduceLibraryBabel = 0
@@ -67,7 +67,7 @@ const processSource = async ({ packageJSON }) => {
     if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceLibraryBabel += await processDelete(filePath)
     else sizeCodeReduceLibraryBabel += await processBabel(filePath)
   }
-  log(`library-babel size reduce: ${formatBinary(sizeFileReduceLibraryBabel)}B + ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
+  log(`library-babel size reduce: ${formatBinary(sizeFileReduceLibraryBabel)}B, ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
   padLog(`process webpack output`)
   execSync('npm run build-library-webpack', execOptionRoot)
@@ -76,10 +76,8 @@ const processSource = async ({ packageJSON }) => {
 
   padLog(`total size reduce: ${formatBinary(
     sizeCodeReduceBin +
-    sizeFileReduceModule +
-    sizeCodeReduceModule +
-    sizeFileReduceLibraryBabel +
-    sizeCodeReduceLibraryBabel +
+    sizeFileReduceModule + sizeCodeReduceModule +
+    sizeFileReduceLibraryBabel + sizeCodeReduceLibraryBabel +
     sizeCodeReduceLibraryWebpack
   )}B (before pack; test, index file included)`)
 
@@ -93,8 +91,8 @@ const processSource = async ({ packageJSON }) => {
 }
 
 runMain(async () => {
-  TEST && padLog('run source test')
-  TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "source/**/*.test.js"`, execOptionRoot)
+  RUN_TEST && padLog('run source test')
+  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "source/**/*.test.js"`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
