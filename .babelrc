@@ -9,7 +9,7 @@
         [ "module-resolver", { "root": [ "./" ], "alias": { "dr-js/module/(.+)": "./library/" } } ],
         [ "minify-replace", { "replacements": [ { "identifierName": "__DEV__", "replacement": { "type": "booleanLiteral", "value": false } } ] } ],
         [ "minify-simplify" ],
-        [ "minify-mangle-names" ],
+        [ "minify-mangle-names", { "topLevel": true } ],
         [ "minify-constant-folding" ],
         [ "minify-guarded-expressions" ],
         [ "minify-dead-code-elimination" ]

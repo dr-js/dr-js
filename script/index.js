@@ -1,90 +1,41 @@
 import { ok } from 'assert'
-import { statSync, writeFileSync } from 'fs'
+import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { oneOf } from 'source/common/verify'
+import { runMain } from 'dev-dep-tool/tool/__utils__'
+import { getLogger } from 'dev-dep-tool/tool/logger'
+import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/tool/fileProcessor'
+import { initOutput, packOutput } from 'dev-dep-tool/tool/commonOutput'
+
 import { binary as formatBinary, stringIndentLine } from 'source/common/format'
-import { createDirectory } from 'source/node/file/File'
 import { getFileList } from 'source/node/file/Directory'
-import { modify } from 'source/node/file/Modify'
 
-import { fromRoot, fromOutput, getLogger, wrapFileProcessor } from './__utils__'
-
-const [ , , MODE = 'init-only', SKIP_TEST = false ] = process.argv
-oneOf(MODE, [ 'init-only', 'pack-only', 'test-only', 'publish', 'publish-dev' ])
-
-const TEST = !SKIP_TEST || [ 'test-only', 'publish', 'publish-dev' ].includes(MODE)
-
+const PATH_ROOT = resolve(__dirname, '..')
+const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
+const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
+const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
 const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
-const { log, padLog } = getLogger(` [dr-js|${MODE}]`)
+
+const argvList = process.argv.slice(2)
+const logger = getLogger([ 'dr-js', ...argvList ].join('|'))
+const { padLog, log } = logger
+
+const TEST = [ 'test', 'publish', 'publish-dev' ].some((v) => argvList.includes(v))
 
 const REGEXP_DELETE_FILE_PATH = /(\.test|index|Dr|Dr\.node|Dr\.browser)\.js$/
-const deleteProcessor = async (filePath) => {
-  const { size } = statSync(filePath)
-  await modify.delete(filePath)
-  log(`delete [-${formatBinary(size)}B] | ${filePath}`)
-  return size
-}
-const babelProcessor = wrapFileProcessor(
-  (inputString) => inputString
-    .replace(/['"]use strict['"];\s+/g, '')
-    .replace(/Object\.defineProperty\(exports, ['"]__esModule['"], {\s+value: true\s+}\);\s+/g, '') // .replace(/{\s+value: true\s+}/g, '{value:true}')
-    .replace(/(exports\.\w+ = )+undefined;\s+/g, '')
-    .replace(/[\n\r]{2,}/g, '\n'),
-  log
-)
-const webpackProcessor = wrapFileProcessor(
-  (inputString) => inputString
-    .replace(/function\(\){return (\w+)}/g, '()=>$1'),
-  log
-)
+const processSource = async ({ packageJSON }) => {
+  const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
+  const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
+  const processDelete = wrapFileProcessor({ processor: () => '', logger })
 
-const main = async () => {
-  TEST && padLog('run source test')
-  TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "source/**/*.test.js"`, execOptionRoot)
-
-  const packageJSON = await initOutput()
-  if (MODE === 'init-only') return
-
-  await processSource(packageJSON)
-  if (MODE === 'test-only') return
-
-  await packOutput(packageJSON)
-  if (MODE === 'pack-only') return
-
-  padLog(MODE)
-  MODE === 'publish' && execSync('npm publish', execOptionOutput)
-  MODE === 'publish-dev' && execSync('npm publish --tag dev', execOptionOutput)
-}
-
-const initOutput = async () => {
-  padLog('reset output')
-  await modify.delete(fromOutput()).catch(() => {})
-  await createDirectory(fromOutput())
-
-  padLog(`create package.json`)
-  const packageJSON = require('../package.json')
-  const deleteKeyList = [ 'private', 'scripts', 'engines', 'devDependencies' ]
-  log(`delete ${deleteKeyList}`)
-  for (const deleteKey of deleteKeyList) delete packageJSON[ deleteKey ]
-  writeFileSync(fromOutput('package.json'), JSON.stringify(packageJSON))
-
-  const copyPathList = [ 'LICENSE', 'README.md' ]
-  padLog(`copy ${copyPathList}`)
-  for (const copyPath of copyPathList) await modify.copy(fromRoot(copyPath), fromOutput(copyPath))
-
-  return packageJSON
-}
-
-const processSource = async (packageJSON) => {
   padLog(`build bin`)
   execSync('npm run build-bin', execOptionRoot)
 
   padLog(`process bin`)
   let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) {
-    sizeCodeReduceBin += await babelProcessor(filePath)
+    sizeCodeReduceBin += await processBabel(filePath)
   }
   log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
@@ -98,8 +49,8 @@ const processSource = async (packageJSON) => {
   let sizeFileReduceModule = 0
   let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) {
-    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceModule += await deleteProcessor(filePath)
-    else sizeCodeReduceModule += await babelProcessor(filePath)
+    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceModule += await processDelete(filePath)
+    else sizeCodeReduceModule += await processBabel(filePath)
   }
   log(`module size reduce: ${formatBinary(sizeFileReduceModule)}B + ${formatBinary(sizeCodeReduceModule)}B`)
 
@@ -113,14 +64,14 @@ const processSource = async (packageJSON) => {
   let sizeFileReduceLibraryBabel = 0
   let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) {
-    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceLibraryBabel += await deleteProcessor(filePath)
-    else sizeCodeReduceLibraryBabel += await babelProcessor(filePath)
+    if (REGEXP_DELETE_FILE_PATH.test(filePath)) sizeFileReduceLibraryBabel += await processDelete(filePath)
+    else sizeCodeReduceLibraryBabel += await processBabel(filePath)
   }
   log(`library-babel size reduce: ${formatBinary(sizeFileReduceLibraryBabel)}B + ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
   padLog(`process webpack output`)
   execSync('npm run build-library-webpack', execOptionRoot)
-  const sizeCodeReduceLibraryWebpack = await webpackProcessor(fromOutput('library/Dr.browser.js'))
+  const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
   log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
   padLog(`total size reduce: ${formatBinary(
@@ -141,18 +92,16 @@ const processSource = async (packageJSON) => {
   ]) ok(outputBinTest.includes(testString), `should output contain: ${testString}`)
 }
 
-const packOutput = async (packageJSON) => {
-  padLog('run pack')
-  execSync('npm pack', execOptionOutput)
-  const outputFileName = `${packageJSON.name}-${packageJSON.version}.tgz`
-  await modify.move(fromOutput(outputFileName), fromRoot(outputFileName))
-  log(`pack size: ${formatBinary(statSync(fromRoot(outputFileName)).size)}B`)
-}
+runMain(async () => {
+  TEST && padLog('run source test')
+  TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "source/**/*.test.js"`, execOptionRoot)
 
-main().then(() => {
-  padLog(`done`)
-}, (error) => {
-  padLog(`error`)
-  console.warn(error)
-  process.exit(-1)
-})
+  const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
+
+  if (!argvList.includes('pack')) return
+  await processSource({ packageJSON })
+  await packOutput({ fromRoot, fromOutput, logger })
+
+  argvList.includes('publish') && execSync('npm publish', execOptionOutput)
+  argvList.includes('publish-dev') && execSync('npm publish --tag dev', execOptionOutput)
+}, logger)
