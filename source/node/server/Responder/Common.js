@@ -22,12 +22,14 @@ const responderEndWithRedirect = (store, { statusCode = 302, redirectUrl }) => {
 }
 
 const responderSendBuffer = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }) => setResponseContent(store, entityTag, type, length) &&
-  length &&
-  sendBufferAsync(store.response, buffer)
+  length && sendBufferAsync(store.response, buffer)
+const responderSendBufferRange = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }, [ start, end ]) => setResponseContent(store, entityTag, type, length, start, end) &&
+  length && sendBufferAsync(store.response, buffer.slice(start, end + 1))
 
 const responderSendStream = (store, { stream, entityTag, type = DEFAULT_MIME, length }) => setResponseContent(store, entityTag, type, length) &&
-  length &&
-  pipeStreamAsync(store.response, stream)
+  length && pipeStreamAsync(store.response, stream)
+const responderSendStreamRange = (store, { stream, entityTag, type = DEFAULT_MIME, length }, [ start, end ]) => setResponseContentRange(store, entityTag, type, length, start, end) &&
+  length && pipeStreamAsync(store.response, stream)
 
 const responderSendJSON = (store, { object, entityTag }) => responderSendBuffer(store, { buffer: Buffer.from(JSON.stringify(object)), type: BASIC_EXTENSION_MAP.json, entityTag })
 
@@ -39,6 +41,11 @@ const setResponseContent = (store, entityTag, type, length) => {
     : store.response.writeHead(304, { 'content-type': type })
   return shouldSendContent
 }
+const setResponseContentRange = (store, entityTag, type, length, start, end) => {
+  entityTag && store.response.setHeader('etag', entityTag)
+  store.response.writeHead(206, { 'content-type': type, 'content-length': end - start + 1, 'content-range': `bytes ${start}-${end}/${length}` })
+  return true
+}
 
 const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl) }) => (store) => {
   const { url: urlString, method } = store.request
@@ -49,7 +56,7 @@ const createResponderReceiveBuffer = (setBufferData = AccessorMap.bufferData.set
 
 const createStoreStateAccessor = (key) => ({
   get: (store) => store.getState()[ key ],
-  set: (store, value) => store.setState({ [key]: value })
+  set: (store, value) => store.setState({ [ key ]: value })
 })
 
 const AccessorMap = {
@@ -66,7 +73,9 @@ export {
   responderEndWithRedirect,
 
   responderSendBuffer,
+  responderSendBufferRange,
   responderSendStream,
+  responderSendStreamRange,
   responderSendJSON,
 
   createResponderParseURL,

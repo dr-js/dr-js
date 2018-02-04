@@ -1653,6 +1653,10 @@ domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
+dr-js@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.11.0.tgz#8178f766c32442d06bc70cf2e08002b8de32655a"
+
 dr-js@^0.11.0-dev.4:
   version "0.11.0-dev.4"
   resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.11.0-dev.4.tgz#d93db7c919471f2259574c05a53bf8917ff8f17f"

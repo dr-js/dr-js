@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.11.0",
+  "version": "0.11.1-dev.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -41,6 +41,7 @@
     "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
     "test-mocha-node": "cross-env BABEL_ENV=test mocha --require babel-register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
+    "// =============================": "",
     "prepack": "echo \"Error: should run pack with script-*\" && exit 1"
   },
   "engines": {
@@ -50,6 +51,6 @@
   "devDependencies": {
     "dev-dep-tool": "^0.0.13",
     "dev-dep-web": "^0.0.13",
-    "dr-js": "^0.11.0-dev.4"
+    "dr-js": "^0.11.0"
   }
 }

@@ -4,7 +4,9 @@ export {
   responderEndWithRedirect,
 
   responderSendBuffer,
+  responderSendBufferRange,
   responderSendStream,
+  responderSendStreamRange,
   responderSendJSON,
 
   createResponderParseURL,

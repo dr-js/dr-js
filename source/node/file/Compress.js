@@ -18,7 +18,7 @@ const compressFile = (inputFile, outputFile, compressStream = createGzip()) => n
 const compressFileList = async ({
   fileList,
   fileSuffix = '.gz',
-  compressStream = createGzip(),
+  createCompressStream = createGzip,
   deleteBloat = false,
   bloatRatio = 1
 }) => {
@@ -26,7 +26,7 @@ const compressFileList = async ({
     if (filePath.endsWith(fileSuffix)) continue
     __DEV__ && console.log('[compressFileList]', filePath)
     const compressFilePath = `${filePath}${fileSuffix}`
-    await readableAsync(compressFilePath) || await compressFile(filePath, compressFilePath, compressStream)
+    await readableAsync(compressFilePath) || await compressFile(filePath, compressFilePath, createCompressStream())
     deleteBloat && await checkBloat(filePath, compressFilePath, bloatRatio) && await unlinkAsync(compressFilePath)
   }
 }
