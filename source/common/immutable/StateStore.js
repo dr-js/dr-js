@@ -71,25 +71,54 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
   return { subscribe, unsubscribe, getState, dispatch }
 }
 
-// merge unsubscribe into subscribe
-const makeReduxLikeListener = (store) => {
+const toReduxStore = (store) => {
   const { subscribe: subscribeStore, unsubscribe } = store
+  verifyBasicFunction(subscribeStore, '[toReduxStore] store.subscribe required')
+  verifyBasicFunction(unsubscribe, '[toReduxStore] store.unsubscribe required')
+  const subscribe = (listener) => { // merge unsubscribe into subscribe
+    subscribeStore(listener)
+    return () => unsubscribe(listener)
+  }
+  return { ...store, subscribe }
+}
 
-  verifyBasicFunction(subscribeStore, '[makeReduxLikeListener] subscribe function required')
-  verifyBasicFunction(unsubscribe, '[makeReduxLikeListener] unsubscribe function required')
-
-  return {
-    ...store,
-    subscribe: (listener) => {
-      subscribeStore(listener)
-      return () => unsubscribe(listener)
+const reducerFromMap = (reducerMap) => { // redux combineReducers
+  const keyList = Object.keys(reducerMap)
+  const keyListLength = keyList.length
+  return (state, action) => {
+    const nextState = {}
+    let isChanged = false
+    for (let index = 0; index < keyListLength; index++) {
+      const key = keyList[ index ]
+      const keyState = state[ key ]
+      const nextKeyState = reducerMap[ key ](keyState, action)
+      nextState[ key ] = nextKeyState
+      isChanged = isChanged || (nextKeyState !== keyState)
     }
+    return isChanged ? nextState : state
   }
 }
+
+const createEntryEnhancer = (entryMap) => (enhancerStore, action) => { // redux-entry like enhancer
+  const entryFunction = entryMap[ action.type ]
+  return entryFunction && entryFunction(enhancerStore, action)
+}
+
+const createStoreStateSyncReducer = (actionType, { getState, setState }) => (state, { type, payload }) => {
+  type === actionType && setState({ ...getState(), ...payload })
+  return getState()
+}
+
+const makeReduxLikeListener = toReduxStore // TODO: DEPRECATED
 
 export {
   createStateStore,
   createStateStoreLite,
   createStateStoreEnhanced,
-  makeReduxLikeListener
+  toReduxStore,
+  reducerFromMap,
+  createEntryEnhancer,
+  createStoreStateSyncReducer,
+
+  makeReduxLikeListener // TODO: DEPRECATED
 }

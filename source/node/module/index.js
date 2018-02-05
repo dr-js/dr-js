@@ -1,4 +1,9 @@
-export { spawn, runCommand, withCwd } from './Command'
+export {
+  spawn,
+  exec,
+  withCwd,
+  runCommand // TODO: DEPRECATED
+} from './Command'
 export { getEntityTagByContentHash, getWeakEntityTagByStat } from './EntityTag'
 export { createSafeWriteStream } from './SafeWrite'
 export { createLogger, createSimpleLogger } from './Logger'
