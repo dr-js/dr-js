@@ -127,7 +127,10 @@ window.addEventListener('load', () => {
         log(x.toFixed(2), y.toFixed(2))
         return false
       }, 'test-canvas-ext:draw-touch-position') // once
-    }
+    },
+    isGlobal: true,
+    isCancel: false,
+    isCancelOnOutOfBound: false
   })
 
   applyPointerEnhancedEventListener({

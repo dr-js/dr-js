@@ -2,6 +2,13 @@
 
 const fromEmpty = () => ({ left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity })
 
+const fromPoint = (a, b) => ({
+  left: Math.min(a.x, b.x),
+  right: Math.max(a.x, b.x),
+  top: Math.min(a.y, b.y),
+  bottom: Math.max(a.y, b.y)
+})
+
 const fromWidget = ({ center, size, rotate }) => {
   const cos = Math.cos(rotate)
   const sin = Math.sin(rotate)
@@ -27,6 +34,11 @@ const fromWidgetList = (widgetList) => widgetList.reduce((boundingRect, { center
   return boundingRect
 }, fromEmpty())
 
+const getCenter = ({ left, right, top, bottom }) => ({
+  x: (left + right) * 0.5,
+  y: (top + bottom) * 0.5
+})
+
 const getUnion = (a, b) => ({
   left: Math.min(a.left, b.left),
   right: Math.max(a.right, b.right),
@@ -46,8 +58,11 @@ const isContainPoint = ({ left, right, top, bottom }, { x, y }) =>
   y >= top && y <= bottom
 
 export {
+  fromEmpty,
+  fromPoint,
   fromWidget,
   fromWidgetList,
+  getCenter,
   getUnion,
   isIntersect,
   isContainPoint

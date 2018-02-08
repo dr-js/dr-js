@@ -8,7 +8,7 @@ const getVersion = () => ({
   systemNodeVersion: process.version,
   systemPlatform: process.platform,
   systemCPUArchitecture: process.arch,
-  systemCPUCoreCount: cpus().length,
+  systemCPUCoreCount: (cpus() || [ 'TERMUX FIX' ]).length,
   systemEndianness: getSystemEndianness
 })
 

@@ -71,7 +71,7 @@ const processOutput = async ({ packageJSON, logger }) => {
     sizeFileReduceModule + sizeCodeReduceModule +
     sizeFileReduceLibraryBabel + sizeCodeReduceLibraryBabel +
     sizeCodeReduceLibraryWebpack
-  )}B (before pack; test, index file included)`)
+  )}B`)
 }
 
 const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {

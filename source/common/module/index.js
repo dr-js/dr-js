@@ -8,4 +8,4 @@ export { createObjectSchema, createArraySchema, ObjectAs, ArrayOf } from './Stat
 export { DEFAULT_MIME, BASIC_MIME_MAP, BASIC_EXTENSION_MAP, getMIMETypeFromFileName } from './MIME'
 export { getLevenshteinDistance } from './LevenshteinDistance'
 export { parseRouteToMap, findRouteFromMap, appendRouteMap, createRouteMap, parseRouteUrl, getRouteParamAny, getRouteParam } from './RouteMap'
-export { concatKeyFrag, reduceKeySelector } from './KeySelector'
+export { concatKeyFrag, reduceKeySelector, createMultiKeySwitch } from './KeySelector'

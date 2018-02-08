@@ -22,7 +22,7 @@ const immutableTransformCache = (transformFunc) => {
 const createImmutableTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOutputInfo = DEFAULT_SHOULD_OUTPUT_INFO) => {
   const infoArray = []
 
-  const checkInfo = (info, infoArray) => {
+  const checkInfo = (info) => {
     if (!shouldOutputInfo(info, infoArray)) return
     outputInfo(info, infoArray)
     info.sumHitCount += info.hitCount
