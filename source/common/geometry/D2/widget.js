@@ -1,9 +1,12 @@
-// 2D rectangle: { center: 2D.vector, size: 2D.vector, rotate: angle }
+// 2D rectangle: { center: 2D.vector, size: 2D.vector, rotate: angle, ...data: any }
 
 import { roundFloat } from 'source/common/math/base'
 import { getDist, getRotate, round as roundVector } from './vector'
 
-const fromPoint = (pointA, pointB) => ({
+const PI_HALF = Math.PI * 0.5
+
+const fromPoint = (pointA, pointB, data) => ({
+  ...data,
   center: {
     x: (pointA.x + pointB.x) * 0.5,
     y: (pointA.y + pointB.y) * 0.5
@@ -15,8 +18,9 @@ const fromPoint = (pointA, pointB) => ({
   rotate: 0
 })
 
-const fromLine = ({ begin, end }, width) => ({
-  position: {
+const fromLine = ({ begin, end }, width, data) => ({
+  ...data,
+  center: {
     x: (begin.x + end.x) * 0.5,
     y: (begin.y + end.y) * 0.5
   },
@@ -24,7 +28,20 @@ const fromLine = ({ begin, end }, width) => ({
     x: width,
     y: getDist(end, begin)
   },
-  rotate: getRotate(end, begin) - Math.PI * 0.5
+  rotate: getRotate(end, begin) - PI_HALF
+})
+
+const fromBoundingRect = ({ left, right, top, bottom }, data) => ({
+  ...data,
+  center: {
+    x: (left + right) * 0.5,
+    y: (top + bottom) * 0.5
+  },
+  size: {
+    x: right - left,
+    y: bottom - top
+  },
+  rotate: 0
 })
 
 const getBoundingSize = ({ size: { x, y }, rotate }) => {
@@ -50,10 +67,11 @@ const getBoundingTop = (widget) =>
 const getBoundingBottom = (widget) =>
   widget.center.y + getBoundingHeight(widget) * 0.5
 
-const round = ({ center, size, rotate }) => ({
-  center: roundVector(center),
-  size: roundVector(size),
-  rotate: roundFloat(rotate)
+const round = (widget) => ({
+  ...widget,
+  center: roundVector(widget.center),
+  size: roundVector(widget.size),
+  rotate: roundFloat(widget.rotate)
 })
 
 const localPoint = ({ center, rotate }, { x, y }) => {
@@ -75,14 +93,8 @@ const localBoundingRect = ({ center, rotate }, targetWidget) => {
   const sin = Math.sin(offsetRotate)
   const x = offsetX * cos - offsetY * sin
   const y = offsetX * sin + offsetY * cos
-  const halfBoundingWidth = (
-    targetWidget.size.x * cos -
-    targetWidget.size.y * sin
-  ) * 0.5
-  const halfBoundingHeight = (
-    targetWidget.size.x * sin +
-    targetWidget.size.y * cos
-  ) * 0.5
+  const halfBoundingWidth = (targetWidget.size.x * cos - targetWidget.size.y * sin) * 0.5
+  const halfBoundingHeight = (targetWidget.size.x * sin + targetWidget.size.y * cos) * 0.5
   return { // for targetWidget
     left: x - halfBoundingWidth,
     right: x + halfBoundingWidth,
@@ -108,6 +120,7 @@ const isInterceptBoundingRect = ({ center, size }, boundingRect) => !(
 export {
   fromPoint,
   fromLine,
+  fromBoundingRect,
   getBoundingSize,
   getBoundingWidth,
   getBoundingHeight,

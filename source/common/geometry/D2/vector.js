@@ -1,6 +1,8 @@
 // mostly modified from: https://github.com/mrdoob/three.js/tree/dev/src/math
 // 2D vector: { x: float, y: float }
 
+const PI_DOUBLE = Math.PI * 2
+
 const fromOrigin = () => ({ x: 0, y: 0 })
 const fromAngleLength = (angle, length) => ({
   x: length * Math.cos(angle),
@@ -20,17 +22,17 @@ const getDistSq = (a, b) => {
 // from axis x+(0) to y+(PI/2)
 const getAngle = ({ x, y }) => {
   const radian = Math.atan2(y, x)
-  return radian >= 0 ? radian : radian + 2 * Math.PI
+  return radian >= 0 ? radian : radian + PI_DOUBLE
 }
 const getRotate = (a, b) => {
   const radian = Math.atan2(a.y - b.y, a.x - b.x)
-  return radian >= 0 ? radian : radian + 2 * Math.PI
+  return radian >= 0 ? radian : radian + PI_DOUBLE
 }
 const getRotateDelta = (anchor, from, to) => {
   const radian =
     Math.atan2(anchor.y - to.y, anchor.x - to.x) -
     Math.atan2(anchor.y - from.y, anchor.x - from.x)
-  return radian >= 0 ? radian : radian + 2 * Math.PI
+  return radian >= 0 ? radian : radian + PI_DOUBLE
 }
 
 const add = (a, b) => ({
@@ -73,6 +75,11 @@ const clamp = ({ x, y }, min, max) => ({
   y: Math.max(Math.min(y, max.y), min.y)
 })
 
+const abs = ({ x, y }) => ({
+  x: Math.abs(x),
+  y: Math.abs(y)
+})
+
 const round = ({ x, y }) => ({
   x: Math.round(x),
   y: Math.round(y)
@@ -96,5 +103,6 @@ export {
   min,
   max,
   clamp,
+  abs,
   round
 }
