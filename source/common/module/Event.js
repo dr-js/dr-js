@@ -3,7 +3,7 @@
 // removeEventListener(type, callback)
 // dispatchEvent(event)
 
-export class EventTarget {
+class EventTarget {
   constructor () {
     this.listenerSetMap = new Map()
   }
@@ -35,7 +35,7 @@ export class EventTarget {
 // emitter.emit(eventName[, ...args])
 // emitter.on(eventName, listener)
 
-export class EventEmitter {
+class EventEmitter {
   constructor () {
     this.listenerSetMap = new Map()
 
@@ -69,3 +69,5 @@ export class EventEmitter {
     listenerSet.forEach((listener) => listener(...args))
   }
 }
+
+export { EventTarget, EventEmitter }
