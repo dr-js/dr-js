@@ -18,15 +18,14 @@ module.exports = {
     library: 'Dr',
     libraryTarget: 'umd'
   },
-  entry: { // why Array? check: https://github.com/webpack/webpack/issues/300
-    'Dr.browser': [ 'source/Dr.browser' ]
-  },
+  entry: { 'Dr.browser': 'source/Dr.browser' },
   resolve: { alias: { source: resolve(__dirname, './source/') } },
-  target: 'node', // support node main modules like 'fs'
   module: {
-    rules: [
-      { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: BABEL_OPTIONS } }
-    ]
+    rules: [ {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: { loader: 'babel-loader', options: BABEL_OPTIONS }
+    } ]
   },
   plugins: [
     new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(NODE_ENV), '__DEV__': !IS_PRODUCTION }),

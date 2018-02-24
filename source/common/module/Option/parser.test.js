@@ -1,6 +1,6 @@
 import { ok } from 'assert'
-import { createOptionParser } from './Parser'
-import { ConfigPreset } from './Preset'
+import { createOptionParser } from './parser'
+import { ConfigPreset } from './preset'
 
 const { describe, it } = global
 

@@ -1,5 +1,7 @@
 import { deepEqual, strictEqual, notStrictEqual, throws } from 'assert'
-import { ObjectAs, ArrayOf } from './index'
+
+import { ObjectAs } from './ObjectAs'
+import { ArrayOf } from './ArrayOf'
 
 const { describe, it } = global
 

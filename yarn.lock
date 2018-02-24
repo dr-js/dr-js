@@ -1512,9 +1512,9 @@ dr-js@^0.11.1-dev.1:
   version "0.11.1-dev.1"
   resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.11.1-dev.1.tgz#eca2c5b34c68016c0149cde4f7f61c5509260087"
 
-dr-js@~0.11.1-dev.2:
-  version "0.11.1-dev.2"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.11.1-dev.2.tgz#a90d4567b6735aadad8524e6251bd9c8bf78901e"
+dr-js@~0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.11.1.tgz#ddfb579e3e7c08afe98166345c04b7bfe3344d78"
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"

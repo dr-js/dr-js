@@ -1,1 +1,0 @@
-export { createHistoryStateStore } from './HistoryStateStore'

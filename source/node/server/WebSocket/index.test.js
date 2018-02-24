@@ -1,6 +1,10 @@
 import { equal, deepStrictEqual } from 'assert'
+
 import { createServer, getUnusedPort } from '../Server'
-import { WEB_SOCKET_EVENT_MAP, DATA_TYPE_MAP, createWebSocketClient, enableWebSocketServer } from './index'
+import { WEB_SOCKET_EVENT_MAP } from './__utils__'
+import { DATA_TYPE_MAP } from './Frame'
+import { enableWebSocketServer } from './WebSocketServer'
+import { createWebSocketClient } from './WebSocketClient'
 
 const { describe, it } = global
 

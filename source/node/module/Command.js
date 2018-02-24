@@ -11,9 +11,7 @@ const spawn = (command, argList = [], option) => {
   })
   return {
     subProcess,
-    promise,
-    childProcess: subProcess, // TODO: DEPRECATED
-    childProcessPromise: promise // TODO: DEPRECATED
+    promise
   }
 }
 
@@ -27,8 +25,6 @@ const exec = (command, option) => {
   const onProcessEnd = (result) => { // result can be also be error with { command, argList, code, signal }
     result.stdout = Buffer.concat(stdoutChunkList).toString()
     result.stderr = Buffer.concat(stderrChunkList).toString()
-    result.stdoutString = result.stdout // TODO: DEPRECATED
-    result.stderrString = result.stderr // TODO: DEPRECATED
     if (result.code === 0) return result // will throw non 0 exit code as error
     const { command, argList, code, signal, stderr, stdout, message } = result
     throw Object.assign(new Error([
@@ -57,7 +53,5 @@ const withCwd = (cwd, taskAsync) => async (...args) => {
 export {
   spawn,
   exec,
-  withCwd,
-
-  exec as runCommand // TODO: DEPRECATED
+  withCwd
 }

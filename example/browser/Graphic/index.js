@@ -1,20 +1,25 @@
 const {
   Common: {
     Time: { now },
-    Data: { createToggle },
-    Module: { createUpdateLoop, EventEmitter }
+    Data: { Toggle: { createToggle } },
+    Module: {
+      UpdateLoop: { createUpdateLoop },
+      Event: { EventEmitter }
+    }
   },
   Browser: {
     DOM: { bindLogElement, bindFPSElement },
     Font: { createFontRender, createFontRenderBitmap },
     Input: { applyPointerEventListener, applyPointerEnhancedEventListener },
     Graphic: {
-      applyImageElementExt,
-      applyCanvasElementExt,
-      applyCanvasImageDataExt,
-      createCanvasElement,
-      canvasElementToCanvasImageData,
-      getUint32RGBA,
+      ImageData: {
+        applyImageElementExt,
+        applyCanvasElementExt,
+        applyCanvasImageDataExt,
+        createCanvasElement,
+        canvasElementToCanvasImageData
+      },
+      Color: { getUint32RGBA },
       CanvasImageDataOperation
     }
   }

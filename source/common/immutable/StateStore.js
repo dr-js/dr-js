@@ -109,8 +109,6 @@ const createStoreStateSyncReducer = (actionType, { getState, setState }) => (sta
   return getState()
 }
 
-const makeReduxLikeListener = toReduxStore // TODO: DEPRECATED
-
 export {
   createStateStore,
   createStateStoreLite,
@@ -118,7 +116,5 @@ export {
   toReduxStore,
   reducerFromMap,
   createEntryEnhancer,
-  createStoreStateSyncReducer,
-
-  makeReduxLikeListener // TODO: DEPRECATED
+  createStoreStateSyncReducer
 }
