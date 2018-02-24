@@ -1,6 +1,6 @@
 import { createCanvasElement } from 'source/browser/graphic/ImageData'
-import { createFontMapper } from './FontMapper'
-import { createFontGeneratorBitmap } from './FontGeneratorBitmap'
+import { createFontMapper } from './fontMapper'
+import { createFontGeneratorBitmap } from './fontGeneratorBitmap'
 
 const createFontRenderBitmap = (fontMapper = createFontMapper(), fontGenerator = createFontGeneratorBitmap()) => {
   fontMapper.setOnMissingRequest((symbol) => { // link request to create

@@ -1,8 +1,8 @@
 import { clock } from 'source/common/time'
 import { getRandomId } from 'source/common/math/random'
 import { isObjectContain } from 'source/common/data/__utils__'
-import { getDist } from 'source/common/geometry/D2/vector'
-import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/boundingRect'
+import { getDist } from 'source/common/geometry/D2/Vector'
+import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/BoundingRect'
 
 const POINTER_EVENT_TYPE = {
   START: 'START',

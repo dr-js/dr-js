@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.11.1",
+  "version": "0.12.0-dev.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -26,6 +26,8 @@
     "script-test": "cross-env BABEL_ENV=test babel-node ./script pack test",
     "script-publish": "cross-env BABEL_ENV=test babel-node ./script pack publish",
     "script-publish-dev": "cross-env BABEL_ENV=test babel-node ./script pack publish-dev",
+    "script-generate-index": "cross-env BABEL_ENV=test babel-node ./script/generateIndex",
+    "script-delete-temp-build-file": "dr-js -c ./tempFileDelete.config.json",
     "// build-dev ===================": "",
     "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./source-bin --out-dir ./output-gitignore/bin --ignore test.js --copy-files --watch",
     "build-library-babel-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./source --out-dir ./output-gitignore/library --ignore test.js,browser/**,Dr.browser.js --watch",
@@ -49,6 +51,6 @@
   "devDependencies": {
     "dev-dep-tool": "^0.0.14-dev.2",
     "dev-dep-web": "^0.0.14-dev.2",
-    "dr-js": "~0.11.1-dev.2"
+    "dr-js": "~0.11.1"
   }
 }

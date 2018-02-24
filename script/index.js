@@ -20,12 +20,21 @@ const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
 const buildOutput = async ({ logger: { padLog } }) => {
   padLog(`build bin`)
   execSync('npm run build-bin', execOptionRoot)
+
   padLog(`build module`)
   execSync('npm run build-module', execOptionRoot)
+
   padLog(`build library-babel`)
   execSync('npm run build-library-babel', execOptionRoot)
+
+  padLog(`generate index.js & export doc`)
+  execSync('npm run script-generate-index', execOptionRoot)
+
   padLog(`build library-webpack`)
   execSync('npm run build-library-webpack', execOptionRoot)
+
+  padLog(`delete temp build file`)
+  execSync('npm run script-delete-temp-build-file', execOptionRoot)
 }
 
 const processOutput = async ({ packageJSON, logger }) => {

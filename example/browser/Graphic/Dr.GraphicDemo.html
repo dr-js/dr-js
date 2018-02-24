@@ -6,7 +6,7 @@
   <link rel="icon" href="../../resource/favicon.ico">
   <link rel="stylesheet" href="../../resource/reset.css">
   <style>
-    canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; }
+    canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-rendering: pixelated; }
 
     .box, .flex-row, .flex-column { max-width: 100%; max-height: 100%; }
 
@@ -15,8 +15,6 @@
     .flex-row { display: flex; flex-flow: row wrap; }
 
     .flex-column { display: flex; flex-flow: column wrap; }
-
-    .pixelated { image-rendering: optimizeSpeed; /* Legal fallback */ image-rendering: pixelated; /* CSS4 Proposed */ }
 
     #root { overflow: auto; width: 100vw; min-height: 100vh; align-items: center; font-family: monospace; }
 
@@ -45,19 +43,19 @@
 
   <div class="flex-row box">
     <div class="box">
-      <canvas id="Dr.Canvas" class="pixelated" width="300" height="600"></canvas>
+      <canvas id="Dr.Canvas" width="300" height="600"></canvas>
     </div>
 
     <div class="flex-column box">
       <img id="testImageElement" src="" />
-      <canvas id="testCanvasElement" class="pixelated" width="300" height="50"></canvas>
-      <canvas id="testCanvasImageData" class="pixelated" width="300" height="50"></canvas>
+      <canvas id="testCanvasElement" width="300" height="50"></canvas>
+      <canvas id="testCanvasImageData" width="300" height="50"></canvas>
     </div>
   </div>
 
   <textarea id="textSoftKeyboardTextarea" style="position: absolute; z-index: -1; width: 1px; height: 1px;"></textarea>
-  <canvas id="testFont" class="pixelated" width="400" height="200"></canvas>
-  <canvas id="testFontBitmap" class="pixelated" width="400" height="200"></canvas>
+  <canvas id="testFont" width="400" height="200"></canvas>
+  <canvas id="testFontBitmap" width="400" height="200"></canvas>
 </div>
 <div style="position: fixed; top: 0; left: 0; width: 100%; z-index: -1;">
   <pre id="FPS">FPS</pre>

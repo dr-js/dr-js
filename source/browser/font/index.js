@@ -1,5 +1,0 @@
-export { createFontMapper } from './FontMapper'
-export { createFontRender } from './FontRender'
-export { createFontRenderBitmap } from './FontRenderBitmap'
-export { createFontGenerator } from './FontGenerator'
-export { createFontGeneratorBitmap } from './FontGeneratorBitmap'

@@ -1,6 +1,6 @@
 import { createCanvasElement } from 'source/browser/graphic/ImageData'
-import { createFontMapper } from './FontMapper'
-import { createFontGenerator } from './FontGenerator'
+import { createFontMapper } from './fontMapper'
+import { createFontGenerator } from './fontGenerator'
 
 const createFontRender = (fontMapper = createFontMapper(), fontGenerator = createFontGenerator()) => {
   let fontConfig
