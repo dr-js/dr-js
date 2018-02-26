@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.12.0-dev.0",
+  "version": "0.12.0-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -19,6 +19,7 @@
     "url": "https://github.com/dr-js/dr-js/issues"
   },
   "bin": "bin/index.js",
+  "sideEffects": false,
   "scripts": {
     "// script ======================": "",
     "script-base": "cross-env BABEL_ENV=test babel-node ./script",
@@ -29,18 +30,21 @@
     "script-generate-index": "cross-env BABEL_ENV=test babel-node ./script/generateIndex",
     "script-delete-temp-build-file": "dr-js -c ./tempFileDelete.config.json",
     "// build-dev ===================": "",
-    "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./source-bin --out-dir ./output-gitignore/bin --ignore test.js --copy-files --watch",
-    "build-library-babel-dev": "cross-env NODE_ENV=development BABEL_ENV=library-dev babel ./source --out-dir ./output-gitignore/library --ignore test.js,browser/**,Dr.browser.js --watch",
-    "build-library-webpack-dev": "cross-env NODE_ENV=development webpack --config .webpackrc.js --watch",
+    "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=dev babel ./source-bin --out-dir ./output-gitignore/bin --ignore test.js --copy-files --watch",
+    "build-library-babel-dev": "cross-env NODE_ENV=development BABEL_ENV=dev babel ./source --out-dir ./output-gitignore/library --ignore test.js,Dr.browser.js,source/browser/** --watch",
+    "build-library-webpack-dev": "cross-env BABEL_ENV=test babel-node ./script/webpack development",
     "// build =======================": "",
     "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
-    "build-library-babel": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source --out-dir ./output-gitignore/library --ignore browser/**,Dr.browser.js",
-    "build-library-webpack": "cross-env NODE_ENV=production webpack --config .webpackrc.js",
+    "build-library-babel": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source --out-dir ./output-gitignore/library --ignore Dr.browser.js,source/browser/**",
+    "build-library-webpack": "cross-env BABEL_ENV=test babel-node ./script/webpack production",
+    "// minify =======================": "",
+    "minify-library": "cross-env BABEL_ENV=test babel-node ./script/uglify library",
+    "minify-module": "cross-env BABEL_ENV=test babel-node ./script/uglify module",
     "// test ========================": "",
-    "test-mocha-common": "cross-env BABEL_ENV=test mocha --require babel-register \"source/common/**/*.test.js\"",
-    "test-mocha-node": "cross-env BABEL_ENV=test mocha --require babel-register \"source/node/**/*.test.js\"",
-    "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require babel-register \"source/browser/**/*.test.js\"",
+    "test-mocha-common": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/browser/**/*.test.js\"",
     "// =============================": "",
     "prepack": "echo \"Error: should run pack with script-*\" && exit 1"
   },
@@ -49,8 +53,8 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "dev-dep-tool": "^0.0.14-dev.2",
-    "dev-dep-web": "^0.0.14-dev.2",
-    "dr-js": "~0.11.1"
+    "dev-dep-tool": "^0.0.14-dev.3",
+    "dev-dep-web": "^0.0.14-dev.3",
+    "dr-js": "^0.12.0-dev.0"
   }
 }

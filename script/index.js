@@ -8,6 +8,7 @@ import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev
 import { initOutput, packOutput } from 'dev-dep-tool/library/commonOutput'
 
 import { binary as formatBinary, stringIndentLine } from 'source/common/format'
+import { modify } from 'source/node/file/Modify'
 import { getFileList } from 'source/node/file/Directory'
 
 const PATH_ROOT = resolve(__dirname, '..')
@@ -38,49 +39,49 @@ const buildOutput = async ({ logger: { padLog } }) => {
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
+  const { padLog, log } = logger
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
-  const processDelete = wrapFileProcessor({ processor: () => '', logger })
 
-  const { padLog, log } = logger
+  padLog(`process minify-module`)
+  execSync('npm run minify-module', execOptionRoot)
 
-  padLog(`process bin`)
+  padLog(`process minify-library`)
+  execSync('npm run minify-library', execOptionRoot)
+
+  log(`process bin`)
   let sizeCodeReduceBin = 0
-  for (const filePath of await getFileList(fromOutput('bin'))) {
-    sizeCodeReduceBin += await processBabel(filePath)
-  }
+  for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
   log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
-  padLog(`process module`)
-  let sizeFileReduceModule = 0
+  log(`process module`)
   let sizeCodeReduceModule = 0
-  for (const filePath of await getFileList(fromOutput('module'))) {
-    if (/(\.test|index|Dr|Dr\.node|Dr\.browser)\.js$/.test(filePath)) {
-      sizeFileReduceModule += await processDelete(filePath)
-    } else sizeCodeReduceModule += await processBabel(filePath)
-  }
-  log(`module size reduce: ${formatBinary(sizeFileReduceModule)}B, ${formatBinary(sizeCodeReduceModule)}B`)
+  for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
+  log(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
 
-  padLog(`process library-babel`)
-  let sizeFileReduceLibraryBabel = 0
+  log(`process library-babel`)
   let sizeCodeReduceLibraryBabel = 0
-  for (const filePath of await getFileList(fromOutput('library'))) {
-    if (/(\.test|index|Dr|Dr\.node)\.js$/.test(filePath)) {
-      sizeFileReduceLibraryBabel += await processDelete(filePath)
-    } else sizeCodeReduceLibraryBabel += await processBabel(filePath)
-  }
-  log(`library-babel size reduce: ${formatBinary(sizeFileReduceLibraryBabel)}B, ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
+  for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
+  log(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
-  padLog(`process library-webpack`)
+  log(`process library-webpack`)
   const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
   log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
   padLog(`total size reduce: ${formatBinary(
     sizeCodeReduceBin +
-    sizeFileReduceModule + sizeCodeReduceModule +
-    sizeFileReduceLibraryBabel + sizeCodeReduceLibraryBabel +
+    sizeCodeReduceModule +
+    sizeCodeReduceLibraryBabel +
     sizeCodeReduceLibraryWebpack
   )}B`)
+}
+
+const clearOutput = async ({ packageJSON, logger: { log } }) => {
+  log(`clear module test`)
+  for (const filePath of await getFileList(fromOutput('module'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
+
+  log(`clear library test`)
+  for (const filePath of await getFileList(fromOutput('library'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 }
 
 const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
@@ -100,22 +101,22 @@ runMain(async (logger) => {
   const RUN_TEST = Boolean(checkFlag(FLAG_LIST, [ 'test', 'publish', 'publish-dev' ]))
 
   RUN_TEST && logger.padLog('test source')
-  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "source/**/*.test.js"`, execOptionRoot)
+  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "source/**/*.test.js"`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
   if (!hasFlag('pack')) return
 
   await buildOutput({ logger })
+  await processOutput({ packageJSON, logger })
 
   RUN_TEST && logger.padLog(`test output`)
-  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require babel-register "output-gitignore/**/*.test.js"`, execOptionRoot)
+  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
-  await processOutput({ packageJSON, logger })
+  await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })
-
   await packOutput({ fromRoot, fromOutput, logger })
 
   hasFlag('publish') && execSync('npm publish', execOptionOutput)
   hasFlag('publish-dev') && execSync('npm publish --tag dev', execOptionOutput)
-}, getLogger([ 'dr-js', ...FLAG_LIST ].join('|')))
+}, getLogger(FLAG_LIST.join('+')))
