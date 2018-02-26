@@ -1,5 +1,6 @@
 import { resolve, relative, sep } from 'path'
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { execSync } from 'child_process'
 
 import { runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
@@ -9,6 +10,8 @@ import { getDirectoryContent, walkDirectoryContent } from 'source/node/file/Dire
 
 const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
+
+const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
 
 const isUpperCaseName = (name) => {
   const leadCharCode = name.charCodeAt(0)
@@ -42,7 +45,7 @@ const collectSourceRouteMap = async ({ logger }) => {
     const routeList = relative(PATH_ROOT, path).split(sep)
     if (FILE_TYPE.Directory === fileType) {
       getRoute(routeList).directoryList.push(name)
-      logger.log(`[directory] ${routeList.join('/')}/${name}`)
+      logger.devLog(`[directory] ${routeList.join('/')}/${name}`)
     } else if (FILE_TYPE.File === fileType && name.endsWith('.js') && !name.endsWith('.test.js')) {
       const fileString = readFileSync(resolve(path, name), { encoding: 'utf8' })
       const [ , exportString ] = REGEXP_EXPORT.exec(fileString)
@@ -53,8 +56,8 @@ const collectSourceRouteMap = async ({ logger }) => {
         .replace(/\s+/g, '')
         .split(',')
       getRoute(routeList).fileList.push({ name: name.slice(0, -3), exportList }) // remove `.js` from name
-      logger.log(`[file]      ${routeList.join('/')}/${name}`)
-      logger.log(` - export #${exportList.length}: ${JSON.stringify(exportList)}`)
+      logger.devLog(`[file]      ${routeList.join('/')}/${name}`)
+      logger.devLog(` - export #${exportList.length}: ${JSON.stringify(exportList)}`)
     } else {
       logger.log(`[skipped]   ${routeList.join('/')}/${name} (${fileType})`)
     }
@@ -121,7 +124,7 @@ const generateExportInfo = ({ sourceRouteMap, logger }) => {
 const generateTempFile = ({ sourceRouteMap, logger }) => {
   const tempFileList = []
   const writeTempFile = (path, data) => {
-    logger.log(`[tempFile] ${path}`)
+    logger.devLog(`[tempFile] ${path}`)
     writeFileSync(path, data)
     tempFileList.push(path)
   }
@@ -200,6 +203,11 @@ const parseExportPath = (exportInfoMap) => {
 }
 
 runMain(async (logger) => {
+  if (existsSync(fromRoot('tempFileDelete.config.json'))) {
+    logger.padLog(`[clear-leftover] delete temp build file`)
+    execSync('npm run script-delete-temp-build-file', execOptionRoot)
+  }
+
   logger.padLog(`collect sourceRouteMap`)
   const { sourceRouteMap } = await collectSourceRouteMap({ logger })
 
