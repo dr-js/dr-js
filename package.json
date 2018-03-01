@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.12.0-dev.1",
+  "version": "0.12.0-dev.2",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -27,12 +27,12 @@
     "script-test": "cross-env BABEL_ENV=test babel-node ./script pack test",
     "script-publish": "cross-env BABEL_ENV=test babel-node ./script pack publish",
     "script-publish-dev": "cross-env BABEL_ENV=test babel-node ./script pack publish-dev",
-    "script-generate-index": "cross-env BABEL_ENV=test babel-node ./script/generateIndex",
+    "script-generate-export": "cross-env BABEL_ENV=test babel-node ./script/generateExport",
     "script-delete-temp-build-file": "dr-js -c ./tempFileDelete.config.json",
     "// build-dev ===================": "",
     "build-bin-dev": "cross-env NODE_ENV=development BABEL_ENV=dev babel ./source-bin --out-dir ./output-gitignore/bin --ignore test.js --copy-files --watch",
     "build-library-babel-dev": "cross-env NODE_ENV=development BABEL_ENV=dev babel ./source --out-dir ./output-gitignore/library --ignore test.js,Dr.browser.js,source/browser/** --watch",
-    "build-library-webpack-dev": "cross-env BABEL_ENV=test babel-node ./script/webpack development",
+    "build-library-webpack-dev": "cross-env BABEL_ENV=test babel-node ./script/webpack development watch",
     "// build =======================": "",
     "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
@@ -53,8 +53,8 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "dev-dep-tool": "^0.0.14-dev.3",
+    "dev-dep-tool": "^0.0.14-dev.5",
     "dev-dep-web": "^0.0.14-dev.3",
-    "dr-js": "^0.12.0-dev.0"
+    "dr-js": "^0.12.0-dev.1"
   }
 }

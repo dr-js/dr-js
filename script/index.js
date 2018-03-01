@@ -5,7 +5,7 @@ import { execSync } from 'child_process'
 import { loadFlag, checkFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
-import { initOutput, packOutput } from 'dev-dep-tool/library/commonOutput'
+import { initOutput, packOutput, publishOutput } from 'dev-dep-tool/library/commonOutput'
 
 import { binary as formatBinary, stringIndentLine } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
@@ -19,23 +19,23 @@ const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
 const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
 
 const buildOutput = async ({ logger: { padLog } }) => {
-  padLog(`build bin`)
-  execSync('npm run build-bin', execOptionRoot)
-
-  padLog(`build module`)
-  execSync('npm run build-module', execOptionRoot)
-
-  padLog(`build library-babel`)
-  execSync('npm run build-library-babel', execOptionRoot)
-
   padLog(`generate index.js & export doc`)
-  execSync('npm run script-generate-index', execOptionRoot)
+  execSync('npm run script-generate-export', execOptionRoot)
 
   padLog(`build library-webpack`)
   execSync('npm run build-library-webpack', execOptionRoot)
 
   padLog(`delete temp build file`)
   execSync('npm run script-delete-temp-build-file', execOptionRoot)
+
+  padLog(`build library-babel`)
+  execSync('npm run build-library-babel', execOptionRoot)
+
+  padLog(`build module`)
+  execSync('npm run build-module', execOptionRoot)
+
+  padLog(`build bin`)
+  execSync('npm run build-bin', execOptionRoot)
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
@@ -95,7 +95,6 @@ const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
 }
 
 const FLAG_LIST = loadFlag([ 'pack', 'test', 'publish', 'publish-dev' ])
-const hasFlag = (flag) => FLAG_LIST.includes(flag)
 
 runMain(async (logger) => {
   const RUN_TEST = Boolean(checkFlag(FLAG_LIST, [ 'test', 'publish', 'publish-dev' ]))
@@ -105,7 +104,7 @@ runMain(async (logger) => {
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
-  if (!hasFlag('pack')) return
+  if (!checkFlag(FLAG_LIST, [ 'pack' ])) return
 
   await buildOutput({ logger })
   await processOutput({ packageJSON, logger })
@@ -116,7 +115,5 @@ runMain(async (logger) => {
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })
   await packOutput({ fromRoot, fromOutput, logger })
-
-  hasFlag('publish') && execSync('npm publish', execOptionOutput)
-  hasFlag('publish-dev') && execSync('npm publish --tag dev', execOptionOutput)
+  await publishOutput({ flagList: FLAG_LIST, packageJSON, fromOutput, logger })
 }, getLogger(FLAG_LIST.join('+')))
