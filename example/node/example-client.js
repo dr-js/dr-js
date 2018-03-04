@@ -21,8 +21,8 @@ createWebSocketClient({
     webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
       console.log(`>> OPEN`)
       webSocket.sendText('WebSocketClient open message: 123ABC!@#')
-      setTimeout(async () => webSocket.sendText(await readFileAsync(fromPath('../Dr.node.js'), 'utf8')), 1000) // big string
-      setTimeout(async () => webSocket.sendBuffer(await readFileAsync(fromPath('../Dr.node.js'))), 2000) // big buffer
+      setTimeout(async () => webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8')), 1000) // big string
+      setTimeout(async () => webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico'))), 2000) // big buffer
       setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
     })
     webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, (webSocket, { dataType, dataBuffer }) => {

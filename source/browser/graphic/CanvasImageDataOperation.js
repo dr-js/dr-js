@@ -115,7 +115,7 @@ const floodFill = (imageData, { x, y }, toColor) => {
 }
 const floodFillStackLoop = (markPointList, data, width, height, fromColor, toColor) => { // stack loop
   const checkPixelColor = (x, y, color) => data[ y * width + x ] === color
-  const putPixel = (x, y, color) => data[ y * width + x ] = color
+  const putPixel = (x, y, color) => (data[ y * width + x ] = color)
 
   const comboPush = (xLeft, xRight, checkY) => {
     let checkX = xLeft + 1

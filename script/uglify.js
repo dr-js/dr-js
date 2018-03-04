@@ -1,16 +1,17 @@
 import { resolve as resolvePath } from 'path'
-import { loadFlag, checkFlag, runMain } from 'dev-dep-tool/library/__utils__'
+import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { MODULE_OPTION, LIBRARY_OPTION, minifyWithUglifyEs } from 'dev-dep-tool/library/uglify'
 
 import { binary, time, padTable } from 'source/common/format'
+import { clock } from 'source/common/time'
 import { getFileList } from 'source/node/file/Directory'
 
 const PATH_OUTPUT = resolvePath(__dirname, '../output-gitignore')
 const fromOutput = (...args) => resolvePath(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
-  const MODE = checkFlag(loadFlag([ 'module', 'library' ]), [ 'module', 'library' ], 'library')
+  const MODE = argvFlag('module', 'library') || 'library'
   logger.padLog(`minify with uglify-es, Mode: ${MODE}`)
 
   const minifyFileList = MODE === 'module'
@@ -23,6 +24,9 @@ runMain(async (logger) => {
   logger.log(`file count: ${minifyFileList.length}`)
 
   const resultTable = []
+  let totalTimeStart = clock()
+  let totalSizeSource = 0
+  let totalSizeDelta = 0
   for (const filePath of minifyFileList) {
     const { sizeSource, sizeOutput, timeStart, timeEnd } = minifyWithUglifyEs({ filePath, option: MODE === 'module' ? MODULE_OPTION : LIBRARY_OPTION, logger })
     const sizeDelta = sizeOutput - sizeSource
@@ -31,7 +35,15 @@ runMain(async (logger) => {
       time(timeEnd - timeStart),
       `${filePath}`
     ])
+    totalSizeSource += sizeSource
+    totalSizeDelta += sizeDelta
   }
+  resultTable.push([
+    `∆ ${(100 * totalSizeDelta / totalSizeSource).toFixed(2)}% (${binary(totalSizeDelta)}B)`,
+    time(clock() - totalTimeStart),
+    `TOTAL of ${minifyFileList.length} file (${binary(totalSizeSource)}B)`
+  ])
+
   logger.log(`\n  ${padTable({
     table: resultTable,
     cellPad: ' | ',

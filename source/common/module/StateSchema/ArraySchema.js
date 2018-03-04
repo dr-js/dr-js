@@ -12,7 +12,7 @@ const getArrayStructReducer = (schema) => (arrayState, action) => {
   }
   if (action.index !== undefined) reduceItem(arrayState[ action.index ], action.payload, action.index) // for specific single item
   else if (action.filter !== undefined) reduceWithArrayFilter(action, arrayState, reduceItem) // for every item
-  return nextArrayState || arrayState
+  return nextArrayState !== undefined ? nextArrayState : arrayState
 }
 
 const reduceWithArrayFilter = (action, arrayState, reduceItem) => { // TODO: add more filters
