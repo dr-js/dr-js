@@ -2,7 +2,7 @@ import { ok } from 'assert'
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { loadFlag, checkFlag, runMain } from 'dev-dep-tool/library/__utils__'
+import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
 import { initOutput, packOutput, publishOutput } from 'dev-dep-tool/library/commonOutput'
@@ -94,17 +94,15 @@ const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   ]) ok(outputBinTest.includes(testString), `should output contain: ${testString}`)
 }
 
-const FLAG_LIST = loadFlag([ 'pack', 'test', 'publish', 'publish-dev' ])
-
 runMain(async (logger) => {
-  const RUN_TEST = Boolean(checkFlag(FLAG_LIST, [ 'test', 'publish', 'publish-dev' ]))
+  const RUN_TEST = argvFlag('test', 'publish', 'publish-dev')
 
   RUN_TEST && logger.padLog('test source')
   RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "source/**/*.test.js"`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
-  if (!checkFlag(FLAG_LIST, [ 'pack' ])) return
+  if (!argvFlag('pack')) return
 
   await buildOutput({ logger })
   await processOutput({ packageJSON, logger })
@@ -115,5 +113,5 @@ runMain(async (logger) => {
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })
   await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: FLAG_LIST, packageJSON, fromOutput, logger })
-}, getLogger(FLAG_LIST.join('+')))
+  await publishOutput({ flagList: process.argv, packageJSON, fromOutput, logger })
+}, getLogger(process.argv.slice(2).join('+')))

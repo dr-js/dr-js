@@ -3,7 +3,7 @@ const { resolve } = require('path')
 const { clock } = require('../../output-gitignore/library/common/time')
 const { time: formatTime } = require('../../output-gitignore/library/common/format')
 
-const { readFileAsync, createGetPathFromRoot  } = require('../../output-gitignore/library/node/file/__utils__')
+const { readFileAsync, createGetPathFromRoot } = require('../../output-gitignore/library/node/file/__utils__')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { responderEnd, createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
@@ -15,6 +15,9 @@ const { enableWebSocketServer } = require('../../output-gitignore/library/node/s
 const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
+
+const ServerHost = 'localhost'
+const ServerPort = 3000
 
 const responderLogHeader = (store) => {
   const { url, method, headers, socket: { remoteAddress, remotePort } } = store.request
@@ -30,7 +33,7 @@ const responderLogTimeStep = () => (store) => {
 }
 const responderLogEnd = (store) => {
   const state = store.getState()
-  __DEV__ && state.error && console.error(state.error)
+  state.error && console.error(state.error)
   const errorLog = state.error
     ? `[ERROR] ${store.request.method} ${store.request.url} ${store.response.finished ? 'finished' : 'not-finished'} ${state.error}`
     : ''
@@ -38,7 +41,7 @@ const responderLogEnd = (store) => {
 }
 const responderServeStatic = createResponderServeStatic({})
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: 'localhost', port: 3000 })
+const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     responderLogHeader,
@@ -71,8 +74,8 @@ const webSocketSet = enableWebSocketServer({
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
 
       if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../Dr.node.js'), 'utf8'))
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../Dr.node.js')))
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8'))
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico')))
 
       // echo back
       dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())
@@ -87,3 +90,4 @@ const webSocketSet = enableWebSocketServer({
 })
 
 start()
+console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
