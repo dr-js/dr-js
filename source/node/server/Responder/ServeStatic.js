@@ -60,9 +60,8 @@ const createResponderServeStatic = ({
     return true
   }
 
-  // TODO: consider include encoding & range to bufferData/streamData
   const serve = async (store, filePath, type, encoding, range) => {
-    const stat = await (statAsync(filePath).catch((error) => { __DEV__ && console.log(`[MISS] CACHE: ${filePath}(GZ)`, error) }))
+    const stat = await (statAsync(filePath).catch((error) => { __DEV__ && console.log(`[serve] no file: ${filePath}`, error) }))
     if (!stat || !stat.isFile()) return false
     const length = stat.size
     const entityTag = getWeakEntityTagByStat(stat)
@@ -73,7 +72,7 @@ const createResponderServeStatic = ({
     } else if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
       await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })
-    } else {
+    } else { // right size, cache
       const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
       serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePath}`)

@@ -26,6 +26,8 @@
   - `ListMap`
 + 📄 [source/common/data/LogQueue.js](source/common/data/LogQueue.js)
   - `createLogQueue`
++ 📄 [source/common/data/SemVer.js](source/common/data/SemVer.js)
+  - `parseSemVer`, `compareSemVer`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
   - `SetMap`
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
@@ -182,6 +184,8 @@
       - `ListMap`
     - **LogQueue**
       - `createLogQueue`
+    - **SemVer**
+      - `parseSemVer`, `compareSemVer`
     - **SetMap**
       - `SetMap`
     - **Toggle**
