@@ -1,14 +1,12 @@
-import { resolve, relative, sep } from 'path'
+import { resolve, sep } from 'path'
 import { writeFileSync, existsSync } from 'fs'
 import { execSync } from 'child_process'
 
 import { runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { createExportParser } from 'dev-dep-tool/library/ExportIndex/parseExport'
-import {
-  generateIndexScript,
-  HOIST_LIST_KEY, EXPORT_LIST_KEY, EXPORT_HOIST_LIST_KEY, generateExportInfo
-} from 'dev-dep-tool/library/ExportIndex/generateInfo'
+import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
+import { renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
 
 import { getDirectoryContent, walkDirectoryContent } from 'source/node/file/Directory'
 
@@ -54,26 +52,6 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
     argument: [ ...tempFileList, 'tempFileDelete.config.json' ]
   }))
 }
-const renderExportPath = (exportInfoMap) => Object.entries(exportInfoMap).reduce((textList, [ path, value ]) => {
-  path = relative(PATH_ROOT, path).split(sep).join('/')
-  value[ EXPORT_LIST_KEY ] && textList.push(
-    `+ 📄 [${path.replace(/_/g, '\\_')}.js](${path}.js)`,
-    `  - ${value[ EXPORT_LIST_KEY ].map((text) => `\`${text}\``).join(', ')}`
-  )
-  return textList
-}, [])
-
-const renderExportTree = (exportInfo, routeList) => Object.entries(exportInfo).reduce((textList, [ key, value ]) => {
-  if (key === HOIST_LIST_KEY) {
-    // skip
-  } else if (key === EXPORT_LIST_KEY || key === EXPORT_HOIST_LIST_KEY) {
-    textList.push(`- ${value.map((text) => `\`${text}\``).join(', ')}`)
-  } else {
-    const childTextList = renderExportTree(value, [ ...routeList, key ])
-    childTextList.length && textList.push(`- **${key}**`, ...childTextList.map((text) => `  ${text}`))
-  }
-  return textList
-}, [])
 
 runMain(async (logger) => {
   if (existsSync(fromRoot('tempFileDelete.config.json'))) {
@@ -96,10 +74,10 @@ runMain(async (logger) => {
     '* [Export Tree](#export-tree)',
     '',
     '#### Export Path',
-    ...renderExportPath(exportInfoMap),
+    ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
     '',
     '#### Export Tree',
-    ...renderExportTree(exportInfoMap[ initRouteList.join('/') ], initRouteList)
+    ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList })
   ].join('\n'))
 
   logger.log(`output: tempFileDelete.config.json`)

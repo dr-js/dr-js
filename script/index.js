@@ -6,8 +6,9 @@ import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
 import { initOutput, packOutput, publishOutput } from 'dev-dep-tool/library/commonOutput'
+import { MODULE_OPTION, LIBRARY_OPTION, minifyFileListWithUglifyEs } from 'dev-dep-tool/library/uglify'
 
-import { binary as formatBinary, stringIndentLine } from 'source/common/format'
+import { binary as formatBinary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
 import { getFileList } from 'source/node/file/Directory'
 
@@ -43,32 +44,42 @@ const processOutput = async ({ packageJSON, logger }) => {
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
 
-  padLog(`process minify-module`)
-  execSync('npm run minify-module', execOptionRoot)
+  padLog(`minify module`)
+  await minifyFileListWithUglifyEs({
+    fileList: (await getFileList(fromOutput('module'))).filter((path) => path.endsWith('.js') && !path.endsWith('.test.js')),
+    option: MODULE_OPTION,
+    rootPath: PATH_OUTPUT,
+    logger
+  })
 
-  padLog(`process minify-library`)
-  execSync('npm run minify-library', execOptionRoot)
+  padLog(`minify library`)
+  await minifyFileListWithUglifyEs({
+    fileList: [
+      ...await getFileList(fromOutput('bin')),
+      ...await getFileList(fromOutput('library'))
+    ].filter((path) => path.endsWith('.js') && !path.endsWith('.test.js') && !path.endsWith('Dr.browser.js')),
+    option: LIBRARY_OPTION,
+    rootPath: PATH_OUTPUT,
+    logger
+  })
 
-  log(`process bin`)
+  padLog(`process code`)
   let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
   log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
-  log(`process module`)
   let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
   log(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
 
-  log(`process library-babel`)
   let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
   log(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
-  log(`process library-webpack`)
   const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
   log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
-  padLog(`total size reduce: ${formatBinary(
+  log(`total size reduce: ${formatBinary(
     sizeCodeReduceBin +
     sizeCodeReduceModule +
     sizeCodeReduceLibraryBabel +
@@ -76,7 +87,9 @@ const processOutput = async ({ packageJSON, logger }) => {
   )}B`)
 }
 
-const clearOutput = async ({ packageJSON, logger: { log } }) => {
+const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
+  padLog(`clear output`)
+
   log(`clear module test`)
   for (const filePath of await getFileList(fromOutput('module'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 
@@ -87,7 +100,7 @@ const clearOutput = async ({ packageJSON, logger: { log } }) => {
 const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   padLog('verify output bin working')
   const outputBinTest = execSync('node bin --version', { ...execOptionOutput, stdio: 'pipe' }).toString()
-  log(`bin test output: \n${stringIndentLine(outputBinTest, '  ')}`)
+  log(`bin test output: ${outputBinTest}`)
   for (const testString of [
     packageJSON.name, packageJSON.version,
     process.version, process.platform, process.arch
@@ -95,10 +108,10 @@ const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
 }
 
 runMain(async (logger) => {
-  const RUN_TEST = argvFlag('test', 'publish', 'publish-dev')
+  const isTest = argvFlag('test', 'publish', 'publish-dev')
 
-  RUN_TEST && logger.padLog('test source')
-  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "source/**/*.test.js"`, execOptionRoot)
+  isTest && logger.padLog('test source')
+  isTest && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "source/**/*.test.js"`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
@@ -107,8 +120,8 @@ runMain(async (logger) => {
   await buildOutput({ logger })
   await processOutput({ packageJSON, logger })
 
-  RUN_TEST && logger.padLog(`test output`)
-  RUN_TEST && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "output-gitignore/**/*.test.js"`, execOptionRoot)
+  isTest && logger.padLog(`test output`)
+  isTest && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "output-gitignore/**/*.test.js"`, execOptionRoot)
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })

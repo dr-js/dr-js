@@ -1,5 +1,5 @@
 import { resolve as resolvePath } from 'path'
-import { DefinePlugin } from 'webpack'
+import { DefinePlugin, HashedModuleIdsPlugin } from 'webpack'
 
 import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { compileWithWebpack } from 'dev-dep-tool/library/webpack'
@@ -11,23 +11,31 @@ const fromRoot = (...args) => resolvePath(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolvePath(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
-  const MODE = argvFlag('development', 'production') || 'production'
+  const mode = argvFlag('development', 'production') || 'production'
+  const profileOutput = argvFlag('profile') ? fromRoot('profile-stat-gitignore.json') : null
   const isWatch = argvFlag('watch')
-  const BABEL_OPTIONS = {
+  const isProduction = mode === 'production'
+
+  const babelOption = {
     babelrc: false,
+    cacheDirectory: isProduction,
     presets: [ [ '@babel/env', { targets: { node: 8 }, modules: false } ] ],
     plugins: [ [ '@babel/proposal-class-properties' ], [ '@babel/proposal-object-rest-spread', { useBuiltIns: true } ] ]
   }
 
   const config = {
-    mode: MODE,
+    mode,
+    bail: isProduction,
     output: { path: fromOutput('library'), filename: '[name].js', library: 'Dr', libraryTarget: 'umd' },
     entry: { 'Dr.browser': 'source/Dr.browser' },
     resolve: { alias: { source: fromRoot('source') } },
-    module: { rules: [ { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: BABEL_OPTIONS } } ] },
-    plugins: [ new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(MODE), __DEV__: MODE !== 'production' }) ]
+    module: { rules: [ { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: babelOption } } ] },
+    plugins: [
+      new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode), __DEV__: !isProduction }),
+      new HashedModuleIdsPlugin()
+    ]
   }
 
-  logger.padLog(`compile with webpack mode: ${MODE}, isWatch: ${isWatch}`)
-  await compileWithWebpack({ config, isWatch, logger })
+  logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
+  await compileWithWebpack({ config, isWatch, profileOutput, logger })
 }, getLogger(`webpack`))

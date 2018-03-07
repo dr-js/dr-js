@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.12.0",
+  "version": "0.12.1-dev.0",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -10,16 +10,10 @@
     "Dr-js",
     "JavaScript"
   ],
+  "repository": "https://github.com/dr-js/dr-js.git",
   "homepage": "https://github.com/dr-js/dr-js#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dr-js/dr-js.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dr-js/dr-js/issues"
-  },
+  "bugs": "https://github.com/dr-js/dr-js/issues",
   "bin": "bin/index.js",
-  "sideEffects": false,
   "scripts": {
     "// script ======================": "",
     "script-base": "cross-env BABEL_ENV=test babel-node ./script",
@@ -37,15 +31,13 @@
     "build-bin": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-module": "cross-env NODE_ENV=production BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "build-library-babel": "cross-env NODE_ENV=production BABEL_ENV=library babel ./source --out-dir ./output-gitignore/library --ignore Dr.browser.js,source/browser/**",
-    "build-library-webpack": "cross-env BABEL_ENV=test babel-node ./script/webpack production",
-    "// minify =======================": "",
-    "minify-library": "cross-env BABEL_ENV=test babel-node ./script/uglify library",
-    "minify-module": "cross-env BABEL_ENV=test babel-node ./script/uglify module",
+    "build-library-webpack": "cross-env BABEL_ENV=test babel-node ./script/webpack production profile",
     "// test ========================": "",
     "test-mocha-common": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "cross-env BABEL_ENV=test mocha --require @babel/register \"source/browser/**/*.test.js\"",
     "// =============================": "",
+    "analyze-stat": "webpack-bundle-analyzer ./profile-stat-gitignore.json",
     "prepack": "echo \"Error: should run pack with script-*\" && exit 1"
   },
   "engines": {
@@ -53,8 +45,10 @@
     "npm": ">=5.5.0"
   },
   "devDependencies": {
-    "dev-dep-tool": "^0.0.14-dev.7",
-    "dev-dep-web": "^0.0.14-dev.6",
-    "dr-js": "^0.12.0-dev.2"
-  }
+    "dev-dep-tool": "^0.0.14-dev.9",
+    "dev-dep-web": "^0.0.14-dev.8",
+    "dr-js": "^0.12.1-dev.0",
+    "webpack-bundle-analyzer": "^2.11.1"
+  },
+  "sideEffects": false
 }
