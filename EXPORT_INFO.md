@@ -95,7 +95,7 @@
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `compressFile`, `compressFileList`, `checkBloat`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+  - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
 + 📄 [source/node/file/File.js](source/node/file/File.js)
   - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -107,7 +107,7 @@
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
-  - `createFactDatabase`
+  - `createFactDatabase`, `tryDeleteExtraCache`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/Option.js](source/node/module/Option.js)
@@ -255,7 +255,7 @@
     - **Compress**
       - `compressFile`, `compressFileList`, `checkBloat`
     - **Directory**
-      - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+      - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
     - **File**
       - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
     - **Modify**
@@ -267,7 +267,7 @@
     - **EntityTag**
       - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
     - **FactDatabase**
-      - `createFactDatabase`
+      - `createFactDatabase`, `tryDeleteExtraCache`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **Option**

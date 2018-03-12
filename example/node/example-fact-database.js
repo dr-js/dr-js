@@ -1,15 +1,13 @@
 const { setProcessExitListener } = require('../../output-gitignore/library/node/system/ProcessExitListener')
-const { createFactDatabase } = require('../../output-gitignore/library/node/module/FactDatabase')
+const { createFactDatabase, tryDeleteExtraCache } = require('../../output-gitignore/library/node/module/FactDatabase')
 
 const main = async () => {
   const factDB = await createFactDatabase({
-    applyFact: (state, fact) => ({ ...state, ...fact }),
-    encodeFact: JSON.stringify, // (fact) => factText
-    decodeFact: JSON.parse, // (factText) => fact
     pathFactDirectory: `${__dirname}/fact-gitignore`,
-    // queueLengthThreshold: 100,
     onError: console.error
   })
+
+  await tryDeleteExtraCache({ pathFactDirectory: `${__dirname}/fact-gitignore` })
 
   const logFactDBState = () => console.log('state:', JSON.stringify(factDB.getState()))
 

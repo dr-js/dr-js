@@ -5,6 +5,7 @@ import {
   getDirectoryContentNameList,
   getDirectoryContentFileList,
   getDirectoryContent,
+  getDirectoryContentShallow,
   walkDirectoryContent,
   walkDirectoryContentBottomUp,
   walkDirectoryContentShallow,
@@ -91,6 +92,27 @@ describe('Node.File.Directory', () => {
     equal(content[ FILE_TYPE.Other ].length, 0)
   })
 
+  it('getDirectoryContentShallow()', async () => {
+    let getExpectedError = false
+    try { await getDirectoryContentShallow(invalidPath) } catch (error) { getExpectedError = true }
+    equal(getExpectedError, true)
+
+    getExpectedError = false
+    try { await getDirectoryContentShallow(SOURCE_FILE) } catch (error) { getExpectedError = true }
+    equal(getExpectedError, true)
+
+    await getDirectoryContentShallow(SOURCE_DIRECTORY)
+    await getDirectoryContentShallow(SOURCE_DIRECTORY_UPPER)
+    const content = await getDirectoryContentShallow(TEST_ROOT)
+
+    // console.log(content)
+
+    equal(content[ FILE_TYPE.Directory ].size, 2)
+    equal(content[ FILE_TYPE.File ].length, 0)
+    equal(content[ FILE_TYPE.SymbolicLink ].length, 0)
+    equal(content[ FILE_TYPE.Other ].length, 0)
+  })
+
   it('walkDirectoryContent()', async () => {
     let callbackCount = 0
     await walkDirectoryContent(await getDirectoryContent(TEST_ROOT), (path, name, fileType) => {
@@ -147,7 +169,7 @@ describe('Node.File.Directory', () => {
   })
 
   it('moveDirectoryContent()', async () => {
-    await moveDirectoryContent(await getDirectoryContent(directoryPath4), directoryPath5)
+    await moveDirectoryContent(await getDirectoryContentShallow(directoryPath4), directoryPath5)
 
     let callbackCount = 0
     await walkDirectoryContent(await getDirectoryContent(directoryPath5), (path, name, fileType) => {

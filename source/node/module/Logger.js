@@ -22,13 +22,16 @@ const createLogger = async ({
   onError
 }) => {
   await createDirectory(pathLogDirectory)
+
   let logger = null
   const splitLogFile = () => {
     logger && logger.end()
     logger = createSimpleLogger({ pathOutputFile: joinPath(pathLogDirectory, getLogFileName()), queueLengthThreshold, flag, mode, onError })
   }
+
   splitLogFile()
   let intervalToken = setInterval(splitLogFile, fileSplitInterval)
+
   return {
     add: (...args) => logger && logger.add(...args),
     save: () => logger && logger.save(),

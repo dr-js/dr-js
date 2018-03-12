@@ -48,6 +48,7 @@ const getDirectoryContent = async (path, pathType, isShallow = false) => {
   }
   return content
 }
+const getDirectoryContentShallow = (path, pathType) => getDirectoryContent(path, pathType, true)
 
 const WALK_FILE_TYPE_LIST = [ FILE_TYPE.File, FILE_TYPE.SymbolicLink, FILE_TYPE.Other ]
 
@@ -95,9 +96,9 @@ const copyDirectoryContent = async (content, pathTo) => {
   }, true)
 }
 
-const moveDirectoryContent = async (contentShallow, pathTo) => {
+const moveDirectoryContent = async (content, pathTo) => {
   await createDirectory(pathTo)
-  return walkDirectoryContentShallow(contentShallow, (path, name, pathType) => movePath(
+  return walkDirectoryContentShallow(content, (path, name, pathType) => movePath(
     joinPath(path, name),
     joinPath(pathTo, name),
     pathType
@@ -134,6 +135,8 @@ export {
   getDirectoryContentFileList,
 
   getDirectoryContent,
+  getDirectoryContentShallow,
+
   walkDirectoryContent,
   walkDirectoryContentBottomUp,
   walkDirectoryContentShallow,
