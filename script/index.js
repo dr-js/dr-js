@@ -6,7 +6,7 @@ import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
 import { initOutput, packOutput, publishOutput } from 'dev-dep-tool/library/commonOutput'
-import { MODULE_OPTION, LIBRARY_OPTION, minifyFileListWithUglifyEs } from 'dev-dep-tool/library/uglify'
+import { getUglifyESOption, minifyFileListWithUglifyEs } from 'dev-dep-tool/library/uglify'
 
 import { binary as formatBinary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
@@ -47,7 +47,7 @@ const processOutput = async ({ packageJSON, logger }) => {
   padLog(`minify module`)
   await minifyFileListWithUglifyEs({
     fileList: (await getFileList(fromOutput('module'))).filter((path) => path.endsWith('.js') && !path.endsWith('.test.js')),
-    option: MODULE_OPTION,
+    option: getUglifyESOption({ isDevelopment: false, isModule: true }),
     rootPath: PATH_OUTPUT,
     logger
   })
@@ -58,7 +58,7 @@ const processOutput = async ({ packageJSON, logger }) => {
       ...await getFileList(fromOutput('bin')),
       ...await getFileList(fromOutput('library'))
     ].filter((path) => path.endsWith('.js') && !path.endsWith('.test.js') && !path.endsWith('Dr.browser.js')),
-    option: LIBRARY_OPTION,
+    option: getUglifyESOption({ isDevelopment: false, isModule: false }),
     rootPath: PATH_OUTPUT,
     logger
   })
@@ -111,7 +111,7 @@ runMain(async (logger) => {
   const isTest = argvFlag('test', 'publish', 'publish-dev')
 
   isTest && logger.padLog('test source')
-  isTest && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "source/**/*.test.js"`, execOptionRoot)
+  isTest && execSync(`npm run test-mocha-source`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
@@ -121,7 +121,7 @@ runMain(async (logger) => {
   await processOutput({ packageJSON, logger })
 
   isTest && logger.padLog(`test output`)
-  isTest && execSync(`cross-env BABEL_ENV=test mocha --require @babel/register "output-gitignore/**/*.test.js"`, execOptionRoot)
+  isTest && execSync(`npm run test-mocha-output`, execOptionRoot)
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })

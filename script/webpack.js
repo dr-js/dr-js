@@ -1,5 +1,5 @@
 import { resolve as resolvePath } from 'path'
-import { DefinePlugin, HashedModuleIdsPlugin } from 'webpack'
+import { DefinePlugin } from 'webpack'
 
 import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { compileWithWebpack } from 'dev-dep-tool/library/webpack'
@@ -30,10 +30,7 @@ runMain(async (logger) => {
     entry: { 'Dr.browser': 'source/Dr.browser' },
     resolve: { alias: { source: fromRoot('source') } },
     module: { rules: [ { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: babelOption } } ] },
-    plugins: [
-      new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode), __DEV__: !isProduction }),
-      new HashedModuleIdsPlugin()
-    ]
+    plugins: [ new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode), __DEV__: !isProduction }) ]
   }
 
   logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
