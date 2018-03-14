@@ -4,9 +4,9 @@
 // dispatchEvent(event)
 
 class EventTarget {
-  constructor () {
-    this.listenerSetMap = new Map()
-  }
+  constructor () { this.listenerSetMap = new Map() }
+
+  clear () { this.listenerSetMap.clear() }
 
   addEventListener (type, listener) {
     if (!this.listenerSetMap.has(type)) this.listenerSetMap.set(type, new Set([ listener ]))
@@ -41,6 +41,8 @@ class EventEmitter {
 
     this.on = this.addListener // alias
   }
+
+  clear () { this.listenerSetMap.clear() }
 
   addListener (eventName, listener) {
     if (!this.listenerSetMap.has(eventName)) this.listenerSetMap.set(eventName, new Set([ listener ]))

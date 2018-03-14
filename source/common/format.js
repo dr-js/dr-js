@@ -31,19 +31,23 @@ const binary = (value) => {
         : `${(value / BINARY_G).toFixed(2)}G`
 }
 
-const DEFAULT_PAD_FUNC = (text, maxWidth) => text.padStart(maxWidth)
 const padTable = ({
-  table, // table: list of row, row: list of cell
+  table, // table: list of row, row: list of cell, like: [ [], [] ]
   padFuncList = [],
   cellPad = '|',
   rowPad = '\n'
 }) => {
   const widthMaxList = [] // get max width for each cell
-  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(text.length, widthMaxList[ index ] || 0))))
-  return table.map((rowList) => rowList.map(
-    (text, index) => (padFuncList[ index ] || DEFAULT_PAD_FUNC)(text, widthMaxList[ index ])
-  ).join(cellPad)).join(rowPad)
+  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(String(text).length, widthMaxList[ index ] || 0))))
+  return table.map(
+    (rowList) => rowList.map(
+      (text, index) => applyCellPad(String(text), widthMaxList[ index ], padFuncList[ index ])
+    ).join(cellPad)
+  ).join(rowPad)
 }
+const applyCellPad = (text, maxWidth, padFunc) => (!padFunc || padFunc === 'R') ? text.padStart(maxWidth) // right align
+  : padFunc === 'L' ? text.padEnd(maxWidth) // left align
+    : padFunc(text, maxWidth)
 
 const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }
 const replaceEscapeHTML = (substring) => ESCAPE_HTML_MAP[ substring ] || substring

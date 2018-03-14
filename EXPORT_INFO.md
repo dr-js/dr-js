@@ -9,7 +9,7 @@
 + 📄 [source/common/format.js](source/common/format.js)
   - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `debounce`, `throttle`, `repeat`, `createInsideOutPromise`, `promiseQueue`
+  - `debounce`, `throttle`, `createDelayArgvQueue`, `repeat`, `createInsideOutPromise`, `promiseQueue`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -143,7 +143,7 @@
 + 📄 [source/node/system/REPL.js](source/node/system/REPL.js)
   - `startREPL`
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
-  - `debounceByAnimationFrame`, `addDragFileListListenerToElement`, `bindLogElement`, `bindFPSElement`
+  - `throttleByAnimationFrame`, `addDragFileListListenerToElement`, `bindLogElement`, `bindFPSElement`, `debounceByAnimationFrame`
 + 📄 [source/browser/blob.js](source/browser/blob.js)
   - `parseBlobAsText`, `parseBlobAsDataURL`, `parseBlobAsArrayBuffer`, `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
 + 📄 [source/browser/input.js](source/browser/input.js)
@@ -245,7 +245,7 @@
   - **Format**
     - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
   - **Function**
-    - `debounce`, `throttle`, `repeat`, `createInsideOutPromise`, `promiseQueue`
+    - `debounce`, `throttle`, `createDelayArgvQueue`, `repeat`, `createInsideOutPromise`, `promiseQueue`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
   - **Verify**
@@ -323,7 +323,7 @@
     - **HistoryStateStore**
       - `createHistoryStateStore`
   - **DOM**
-    - `debounceByAnimationFrame`, `addDragFileListListenerToElement`, `bindLogElement`, `bindFPSElement`
+    - `throttleByAnimationFrame`, `addDragFileListListenerToElement`, `bindLogElement`, `bindFPSElement`, `debounceByAnimationFrame`
   - **Blob**
     - `parseBlobAsText`, `parseBlobAsDataURL`, `parseBlobAsArrayBuffer`, `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
   - **Input**

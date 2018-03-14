@@ -1,14 +1,15 @@
 import { now } from 'source/common/time'
 
-const debounceByAnimationFrame = (func) => {
-  const argvQueue = []
+const throttleByAnimationFrame = (func) => {
+  let callArgs = null
   const frameFunc = () => {
-    func(argvQueue)
-    argvQueue.length = 0
+    const currentCallArgs = callArgs
+    callArgs = null
+    func.apply(null, currentCallArgs)
   }
-  return (...argv) => {
-    argvQueue.length === 0 && window.requestAnimationFrame(frameFunc) // prevent 'Uncaught TypeError: Illegal invocation' after babel
-    argvQueue.push(argv)
+  return (...args) => {
+    !callArgs && window.requestAnimationFrame(frameFunc)
+    callArgs = args
   }
 }
 
@@ -60,11 +61,25 @@ const bindFPSElement = (element) => {
   return { step, output }
 }
 
+const debounceByAnimationFrame = (func) => { // TODO: deprecated
+  const argvQueue = []
+  const frameFunc = () => {
+    func(argvQueue)
+    argvQueue.length = 0
+  }
+  return (...argv) => {
+    argvQueue.length === 0 && window.requestAnimationFrame(frameFunc) // prevent 'Uncaught TypeError: Illegal invocation' after babel
+    argvQueue.push(argv)
+  }
+}
+
 export {
-  debounceByAnimationFrame,
+  throttleByAnimationFrame,
 
   addDragFileListListenerToElement,
 
   bindLogElement,
-  bindFPSElement
+  bindFPSElement,
+
+  debounceByAnimationFrame // TODO: deprecated
 }

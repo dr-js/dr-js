@@ -2,6 +2,7 @@ import { deepEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
+  createDelayArgvQueue,
   repeat,
   createInsideOutPromise,
   promiseQueue
@@ -126,6 +127,69 @@ describe('Common.Function', () => {
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
       await setTimeoutAsync(100)
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+    }
+
+    await test() // 1st try
+    await test() // 2nd try
+    resolve() // done
+    return promise
+  })
+
+  it('createDelayArgvQueue() debounce', async () => {
+    const { promise, resolve, reject } = createInsideOutPromise()
+
+    let delayedValue = null
+    const delayedFunc = createDelayArgvQueue((value) => {
+      delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
+      delayedValue = value
+    }, debounce, 50)
+
+    const test = async () => {
+      delayedValue = null
+      delayedFunc('Not 1')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Not 2')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      await setTimeoutAsync(10)
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Not 3')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Good')
+      await setTimeoutAsync(100)
+      !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
+      deepEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
+    }
+
+    await test() // 1st try
+    await test() // 2nd try
+    resolve() // done
+    return promise
+  })
+
+  it('createDelayArgvQueue() throttle', async () => {
+    const { promise, resolve, reject } = createInsideOutPromise()
+
+    let delayedValue = null
+    const delayedFunc = createDelayArgvQueue((value) => {
+      delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
+      delayedValue = value
+    }, throttle, 50)
+
+    const test = async () => {
+      delayedValue = null
+      delayedFunc('Good')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Not 1')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Not 2')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      await setTimeoutAsync(10)
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedFunc('Not 3')
+      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      await setTimeoutAsync(100)
+      !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
+      deepEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
     }
 
     await test() // 1st try
