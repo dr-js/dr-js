@@ -31,6 +31,19 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
+const createDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
+  let argvQueue = []
+  const delayFunc = delayWrapper(() => {
+    const currentArgvQueue = argvQueue
+    argvQueue = []
+    func(currentArgvQueue)
+  }, ...args)
+  return (...argv) => {
+    argvQueue.push(argv)
+    delayFunc()
+  }
+}
+
 // control flow
 const repeat = (count, func) => {
   let looped = 0
@@ -90,6 +103,7 @@ const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) =>
 export {
   debounce,
   throttle,
+  createDelayArgvQueue,
   repeat,
   createInsideOutPromise,
   promiseQueue

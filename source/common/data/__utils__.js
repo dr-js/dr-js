@@ -3,6 +3,7 @@ const hashStringToNumber = (string = '', hash = 0) => {
   return hash >>> 0 // drop the sign bit (for +/-), so result range will be: [0, 2^32-1]
 }
 
+// TODO: separate to one data type per-file like `common/mutable/Object`
 const objectMergeDeep = (object, merge) => {
   for (const [ key, mergeValue ] of Object.entries(merge)) {
     const objectValue = object[ key ]

@@ -9,7 +9,7 @@ module.exports = {
   plugins: [
     [ '@babel/proposal-class-properties' ],
     [ '@babel/proposal-object-rest-spread', { useBuiltIns: true } ],
-    [ 'module-resolver', { root: [ './' ], alias: { 'dr-js/module/(.+)': './library/' } } ],
+    [ 'module-resolver', { root: [ './' ], alias: isRawModule ? undefined : { 'dr-js/module/(.+)': './library/' } } ],
     [ 'minify-replace', { replacements: [ { identifierName: '__DEV__', replacement: { type: 'booleanLiteral', value: isDev } } ] } ]
   ],
   comments: false

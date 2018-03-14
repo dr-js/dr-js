@@ -1,3 +1,4 @@
+// TODO: separate to one data type per-file like `common/immutable/Object`
 // Operation for Immutable operate Data Structure
 // use only Object and Array for JSON support
 // NOTE: all method do not check if the value is valid
