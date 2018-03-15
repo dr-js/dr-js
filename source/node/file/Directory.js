@@ -9,7 +9,7 @@ const getDirectoryContentNameList = async (path, pathType) => {
 }
 
 // one level only
-const getDirectoryContentFileList = async (path, pathType) => {
+const getDirectoryContentFileList = async (path, pathType) => { // TODO: deprecated
   const subNameList = await getDirectoryContentNameList(path, pathType)
   const fileList = []
   for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
@@ -132,7 +132,6 @@ const DEFAULT_FILE_COLLECTOR = (fileList, path, name) => fileList.push(joinPath(
 
 export {
   getDirectoryContentNameList,
-  getDirectoryContentFileList,
 
   getDirectoryContent,
   getDirectoryContentShallow,
@@ -145,5 +144,7 @@ export {
   moveDirectoryContent,
   deleteDirectoryContent,
 
-  getFileList
+  getFileList,
+
+  getDirectoryContentFileList // TODO: deprecated
 }

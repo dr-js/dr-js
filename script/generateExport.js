@@ -49,14 +49,15 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
 
   writeFileSync(fromRoot('tempFileDelete.config.json'), JSON.stringify({
     mode: 'file-modify-delete',
-    argument: [ ...tempFileList, 'tempFileDelete.config.json' ]
+    argument: [ ...tempFileList, 'tempFileDelete.config.json' ],
+    quiet: true
   }))
 }
 
 runMain(async (logger) => {
   if (existsSync(fromRoot('tempFileDelete.config.json'))) {
     logger.log(`[clear] delete previous temp build file`)
-    execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
+    execSync('yarn script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
   }
 
   logger.log(`collect sourceRouteMap`)

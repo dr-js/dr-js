@@ -8,7 +8,7 @@ const getEntityTagByContentHash = (buffer) => {
 
 const getWeakEntityTagByStat = (stat) => {
   const size = stat.size.toString(16)
-  const modifyTime = stat.mtime.getTime().toString(16)
+  const modifyTime = stat.mtimeMs.toString(16)
   return `W/"${size}-${modifyTime}"`
 }
 

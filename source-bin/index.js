@@ -18,20 +18,15 @@ import { createServerWebSocketGroup } from './server/websocket-group'
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
 const main = async () => {
-  const { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional } = await parseOption()
-
-  const mode = getSingleOptionOptional('mode')
+  const optionData = await parseOption()
+  const mode = optionData.getSingleOptionOptional('mode')
   if (mode) {
-    await runMode(mode, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }).catch((error) => {
+    runMode(mode, optionData).catch((error) => {
       console.warn(`[Error] in mode: ${mode}:`, error)
       process.exit(2)
     })
-    return
-  }
-
-  if (getOptionOptional('version')) return logJSON(getVersion())
-
-  console.log(formatUsage())
+  } else if (optionData.getOptionOptional('version')) logJSON(getVersion())
+  else console.log(formatUsage())
 }
 
 const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
@@ -40,6 +35,10 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     : process.cwd())
 
   const resolveArgumentPath = (path) => resolve(argumentRootPath, path)
+
+  const log = getOptionOptional('quiet')
+    ? () => {}
+    : console.log
 
   switch (mode) {
     case 'open':
@@ -55,8 +54,8 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     case 'mkdir':
       for (const path of getOption('argument').map(resolveArgumentPath)) {
         await createDirectory(path).then(
-          () => console.log(`[CREATE-DONE] ${path}`),
-          (error) => console.warn(`[CREATE-ERROR] ${path}\n  ${error}`)
+          () => log(`[CREATE-DONE] ${path}`),
+          (error) => log(`[CREATE-ERROR] ${path}\n  ${error}`)
         )
       }
       return
@@ -70,8 +69,8 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     case 'rm':
       for (const path of getOption('argument').map(resolveArgumentPath)) {
         await modify.delete(path).then(
-          () => console.log(`[DELETE-DONE] ${path}`),
-          (error) => console.warn(`[DELETE-ERROR] ${path}\n  ${error}`)
+          () => log(`[DELETE-DONE] ${path}`),
+          (error) => log(`[DELETE-ERROR] ${path}\n  ${error}`)
         )
       }
       return
@@ -85,7 +84,7 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
         port = await autoTestServerPort([ 80, 8080 ], hostname)
       ] = getOptionOptional('argument') || []
       const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-      return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe })
+      return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe, log })
     }
     case 'server-websocket-group':
     case 'swg': {
@@ -93,12 +92,12 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
         hostname = '0.0.0.0',
         port = await autoTestServerPort([ 80, 8080 ], hostname)
       ] = getOptionOptional('argument') || []
-      return createServerWebSocketGroup({ protocol: 'http:', hostname, port: Number(port) })
+      return createServerWebSocketGroup({ protocol: 'http:', hostname, port: Number(port), log })
     }
   }
 }
 
 main().catch((error) => {
-  console.warn(formatUsage(error.stack || error.message || error.toString()))
+  console.warn(formatUsage(error.stack || error, 'simple'))
   process.exit(1)
 })

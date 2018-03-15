@@ -2,6 +2,7 @@ import { relative, dirname, join as joinPath, sep as sepPath } from 'path'
 import { clock } from 'dr-js/module/common/time'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { time as formatTime, stringIndentLine, escapeHTML } from 'dr-js/module/common/format'
+import { compareString } from 'dr-js/module/common/compare'
 import { createGetPathFromRoot } from 'dr-js/module/node/file/__utils__'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
@@ -9,10 +10,10 @@ import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/m
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
 import { getPathContent, responderSendFavicon, getServerInfo } from './__utils__'
 
-const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe }) => {
+const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createGetPathFromRoot(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
-  const responderServeStatic = createResponderServeStatic({})
+  const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
   const { server, start, option } = createServer({ protocol, hostname, port })
   server.on('request', createRequestListener({
     responderList: [
@@ -29,16 +30,15 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
+      log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
     }
   }))
   start()
-  console.log(`[ServerServeStatic] ${isSimpleServe ? 'no-list' : 'with-list'}`)
-  console.log(stringIndentLine([
+  log(`[ServerServeStatic] ${isSimpleServe ? 'no-list' : 'with-list'}\n${stringIndentLine([
     `staticRoot:`,
     `  - '${staticRoot}'`,
     getServerInfo(protocol, hostname, port)
-  ].join('\n'), '  '))
+  ].join('\n'), '  ')}`)
 }
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {
@@ -48,8 +48,8 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
   const contentHTML = [
     `<b>${titleHTML}</b>`,
     relativeRoot && renderItem('..', '🔙', [ '/list', dirname(relativeRoot) ]),
-    ...directoryList.map((name) => renderItem(name, '📁', [ '/list', relativeRoot, name ])),
-    ...fileList.map((name) => renderItem(name, '📄', [ '/file', relativeRoot, name ]))
+    ...directoryList.sort(compareString).map((name) => renderItem(name, '📁', [ '/list', relativeRoot, name ])),
+    ...fileList.sort(compareString).map((name) => renderItem(name, '📄', [ '/file', relativeRoot, name ]))
   ].join('\n')
   return responderSendBuffer(store, { buffer: Buffer.from(renderHTML(titleHTML, contentHTML)), type: BASIC_EXTENSION_MAP.html })
 }

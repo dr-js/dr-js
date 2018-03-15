@@ -19,24 +19,27 @@ const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
 const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
 
-const buildOutput = async ({ logger: { padLog } }) => {
+const buildOutput = async ({ logger: { padLog, log } }) => {
+  log(`verify no gitignore file left`)
+  ok((await getFileList(fromRoot('source'))).every((path) => !path.includes('gitignore')))
+
   padLog(`generate index.js & export doc`)
-  execSync('npm run script-generate-export', execOptionRoot)
+  execSync('yarn script-generate-export', execOptionRoot)
 
   padLog(`build library-webpack`)
-  execSync('npm run build-library-webpack', execOptionRoot)
+  execSync('yarn build-library-webpack', execOptionRoot)
 
   padLog(`delete temp build file`)
-  execSync('npm run script-delete-temp-build-file', execOptionRoot)
+  execSync('yarn script-delete-temp-build-file', execOptionRoot)
 
   padLog(`build library-babel`)
-  execSync('npm run build-library-babel', execOptionRoot)
+  execSync('yarn build-library-babel', execOptionRoot)
 
   padLog(`build module`)
-  execSync('npm run build-module', execOptionRoot)
+  execSync('yarn build-module', execOptionRoot)
 
   padLog(`build bin`)
-  execSync('npm run build-bin', execOptionRoot)
+  execSync('yarn build-bin', execOptionRoot)
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
@@ -111,7 +114,7 @@ runMain(async (logger) => {
   const isTest = argvFlag('test', 'publish', 'publish-dev')
 
   isTest && logger.padLog('test source')
-  isTest && execSync(`npm run test-mocha-source`, execOptionRoot)
+  isTest && execSync(`yarn test-mocha-source`, execOptionRoot)
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
@@ -121,7 +124,7 @@ runMain(async (logger) => {
   await processOutput({ packageJSON, logger })
 
   isTest && logger.padLog(`test output`)
-  isTest && execSync(`npm run test-mocha-output`, execOptionRoot)
+  isTest && execSync(`yarn test-mocha-output`, execOptionRoot)
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })

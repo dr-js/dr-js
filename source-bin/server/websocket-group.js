@@ -112,7 +112,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
 
 const loadTextFile = (path) => readFileSync(resolve(__dirname, path), 'utf8')
 
-const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
+const createServerWebSocketGroup = ({ protocol, hostname, port, log }) => {
   const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html').replace(`"{SCRIPT_DR_BROWSER_JS}"`, loadTextFile('../../library/Dr.browser.js')))
 
   const { server, start, option } = createServer({ protocol, hostname, port })
@@ -140,12 +140,11 @@ const createServerWebSocketGroup = ({ protocol, hostname, port }) => {
     responderEnd: async (store) => {
       await responderEnd(store)
       const { time, method } = store.getState()
-      console.log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
+      log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
     }
   }))
   start()
-  console.log(`[ServerWebSocketGroup]`)
-  console.log(stringIndentLine(getServerInfo(protocol, hostname, port), '  '))
+  log(`[ServerWebSocketGroup]\n${stringIndentLine(getServerInfo(protocol, hostname, port), '  ')}`)
 }
 
 export { createServerWebSocketGroup }

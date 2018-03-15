@@ -31,7 +31,7 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
-const createDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
+const withDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
   let argvQueue = []
   const delayFunc = delayWrapper(() => {
     const currentArgvQueue = argvQueue
@@ -44,12 +44,21 @@ const createDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
   }
 }
 
-// control flow
-const repeat = (count, func) => {
+const withRepeat = (func, count = 0) => {
   let looped = 0
   while (count > looped) {
     func(looped, count)
     looped++
+  }
+}
+
+const withRetryAsync = async (func, maxRetry = Infinity) => {
+  let failed = 0
+  while (true) {
+    try { return func(failed, maxRetry) } catch (error) {
+      if (maxRetry > failed) failed++
+      else throw error
+    }
   }
 }
 
@@ -100,11 +109,24 @@ const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) =>
   }
 }
 
+const createDelayArgvQueue = withDelayArgvQueue // TODO: deprecate
+const repeat = (count, func) => { // TODO: deprecate
+  let looped = 0
+  while (count > looped) {
+    func(looped, count)
+    looped++
+  }
+}
+
 export {
   debounce,
   throttle,
-  createDelayArgvQueue,
-  repeat,
+  withDelayArgvQueue,
+  withRepeat,
+  withRetryAsync,
   createInsideOutPromise,
-  promiseQueue
+  promiseQueue,
+
+  createDelayArgvQueue, // TODO: deprecate
+  repeat // TODO: deprecate
 }

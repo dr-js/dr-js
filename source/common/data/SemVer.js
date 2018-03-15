@@ -23,6 +23,6 @@ const compareSemVer = (stringA, stringB) => { // basically (a - b)
 const compareSemVerLabel = (a, b) => (a === b) ? 0
   : a === '' ? 1
     : b === '' ? -1
-      : a.localeCompare(b)
+      : a.localeCompare(b) // TODO: may be too simple
 
 export { parseSemVer, compareSemVer }

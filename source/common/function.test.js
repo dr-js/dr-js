@@ -2,8 +2,9 @@ import { deepEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
-  createDelayArgvQueue,
-  repeat,
+  withDelayArgvQueue,
+  withRepeat,
+  withRetryAsync,
   createInsideOutPromise,
   promiseQueue
 } from './function'
@@ -135,11 +136,11 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('createDelayArgvQueue() debounce', async () => {
+  it('withDelayArgvQueue() debounce', async () => {
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let delayedValue = null
-    const delayedFunc = createDelayArgvQueue((value) => {
+    const delayedFunc = withDelayArgvQueue((value) => {
       delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
       delayedValue = value
     }, debounce, 50)
@@ -166,11 +167,11 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('createDelayArgvQueue() throttle', async () => {
+  it('withDelayArgvQueue() throttle', async () => {
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let delayedValue = null
-    const delayedFunc = createDelayArgvQueue((value) => {
+    const delayedFunc = withDelayArgvQueue((value) => {
       delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
       delayedValue = value
     }, throttle, 50)
@@ -198,17 +199,58 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('repeat()', () => {
+  it('withRepeat()', () => {
     let repeatSum = 0
     let repeatCount = 0
-    repeat(5, (looped, count) => {
+    withRepeat((looped, count) => {
       strictEqual(repeatCount, looped)
       strictEqual(5, count)
       repeatCount++
       repeatSum += looped
-    })
+    }, 5)
     strictEqual(repeatSum, 0 + 1 + 2 + 3 + 4)
     strictEqual(repeatCount, 5)
+  })
+
+  it('withRetryAsync()', async () => {
+    const createCallCheck = ({ expectFail, expectMaxRetry }) => {
+      const { promise, resolve, reject } = createInsideOutPromise()
+      let called = 0
+      return {
+        checkFunc: (failed, maxRetry) => {
+          if (expectMaxRetry !== maxRetry) reject(new Error(`[createCallCheck] expectMaxRetry: ${expectMaxRetry}, maxRetry: ${maxRetry}`))
+          if (called !== failed) reject(new Error(`[createCallCheck] called: ${called}, failed: ${failed}`))
+          if (called > expectFail) reject(new Error(`[createCallCheck] called: ${called}, expectFail: ${expectFail}`))
+          if (called === expectFail) { // done
+            setTimeout(resolve, 10) // check if has more calls
+          } else {
+            called++
+            throw new Error(`[createCallCheck] called: ${called}`)
+          }
+        },
+        promise
+      }
+    }
+
+    {
+      const { checkFunc, promise } = createCallCheck({ expectFail: 4, expectMaxRetry: Infinity })
+      await withRetryAsync(checkFunc)
+      await promise
+    }
+
+    {
+      const { checkFunc, promise } = createCallCheck({ expectFail: 4, expectMaxRetry: 5 })
+      await withRetryAsync(checkFunc, 5)
+      await promise
+    }
+
+    {
+      const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 3 })
+      await withRetryAsync(checkFunc, 3).then(
+        () => { throw new Error(`error expected when maxRetry is reached`) },
+        (error) => `Expected Error: ${error}`
+      )
+    }
   })
 
   it('createInsideOutPromise() resolve', async () => {

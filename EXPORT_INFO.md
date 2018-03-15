@@ -6,10 +6,12 @@
 #### Export Path
 + 📄 [source/env.js](source/env.js)
   - `getGlobal`, `getEnvironment`, `getSystemEndianness`, `assert`, `global`
++ 📄 [source/common/compare.js](source/common/compare.js)
+  - `compareString`, `compareStringLocale`
 + 📄 [source/common/format.js](source/common/format.js)
   - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `debounce`, `throttle`, `createDelayArgvQueue`, `repeat`, `createInsideOutPromise`, `promiseQueue`
+  - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`, `createDelayArgvQueue`, `repeat`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -95,13 +97,15 @@
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `compressFile`, `compressFileList`, `checkBloat`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+  - `getDirectoryContentNameList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`, `getDirectoryContentFileList`
 + 📄 [source/node/file/File.js](source/node/file/File.js)
   - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
   - `MODIFY_TYPE`, `modify`, `modifyFile`, `modifyDirectory`
++ 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
+  - `createFileWatcher`
 + 📄 [source/node/file/\_\_utils\_\_.js](source/node/file/__utils__.js)
-  - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `createGetPathFromRoot`
+  - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createGetPathFromRoot`
 + 📄 [source/node/module/Command.js](source/node/module/Command.js)
   - `spawn`, `exec`, `withCwd`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
@@ -242,10 +246,12 @@
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **UpdateLoop**
       - `createUpdateLoop`
+  - **Compare**
+    - `compareString`, `compareStringLocale`
   - **Format**
     - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
   - **Function**
-    - `debounce`, `throttle`, `createDelayArgvQueue`, `repeat`, `createInsideOutPromise`, `promiseQueue`
+    - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`, `createDelayArgvQueue`, `repeat`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
   - **Verify**
@@ -255,12 +261,14 @@
     - **Compress**
       - `compressFile`, `compressFileList`, `checkBloat`
     - **Directory**
-      - `getDirectoryContentNameList`, `getDirectoryContentFileList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+      - `getDirectoryContentNameList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`, `getDirectoryContentFileList`
     - **File**
       - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
     - **Modify**
       - `MODIFY_TYPE`, `modify`, `modifyFile`, `modifyDirectory`
-    - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `createGetPathFromRoot`
+    - **Watch**
+      - `createFileWatcher`
+    - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createGetPathFromRoot`
   - **Module**
     - **Command**
       - `spawn`, `exec`, `withCwd`

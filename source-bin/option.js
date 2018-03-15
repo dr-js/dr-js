@@ -29,7 +29,8 @@ const OPTION_CONFIG = {
       name: 'mode',
       shortName: 'm',
       extendFormatList: [
-        { ...Any, name: 'argument', shortName: 'a', description: `different for each mode` }
+        { ...Any, name: 'argument', shortName: 'a', description: `different for each mode` },
+        { ...BooleanFlag, name: 'quiet', shortName: 'q' }
       ]
     }
   ]

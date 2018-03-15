@@ -3,7 +3,6 @@ import { equal } from 'assert'
 import { FILE_TYPE, createDirectory, deletePath } from './File'
 import {
   getDirectoryContentNameList,
-  getDirectoryContentFileList,
   getDirectoryContent,
   getDirectoryContentShallow,
   walkDirectoryContent,
@@ -54,21 +53,6 @@ describe('Node.File.Directory', () => {
     await getDirectoryContentNameList(SOURCE_DIRECTORY)
     await getDirectoryContentNameList(SOURCE_DIRECTORY_UPPER)
     await getDirectoryContentNameList(TEST_ROOT)
-  })
-
-  it('getDirectoryContentFileList()', async () => {
-    let getExpectedError = false
-    try { await getDirectoryContentFileList(invalidPath) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirectoryContentFileList(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
-
-    await getDirectoryContentFileList(SOURCE_DIRECTORY)
-    await getDirectoryContentFileList(SOURCE_DIRECTORY_UPPER)
-    const fileList = await getDirectoryContentFileList(TEST_ROOT)
-    equal(fileList.length, 0)
   })
 
   it('getDirectoryContent()', async () => {

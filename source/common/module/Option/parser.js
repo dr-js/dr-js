@@ -71,11 +71,15 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
     parseENV: getParseENV(ENVNameMap),
     parseJSON: getParseJSON(JSONNameMap),
     processOptionMap: getProcessOptionMap(nonOptionalFormatSet, optionalFormatCheckSet),
-    formatUsage: (message) => [
-      ...(message ? [ 'Message:', stringIndentLine(message.toString(), '  ') ] : []),
+    formatUsage: (message, isSimple = false) => [
+      ...(message ? [
+        'Message:', stringIndentLine(message.toString(), '  ')
+      ] : []),
       'CLI Usage:', stringIndentLine(usageCLI(formatList), '  '),
-      'ENV Usage:', stringIndentLine(usageENV(formatList), '  '),
-      'JSON Usage:', stringIndentLine(usageJSON(formatList), '  ')
+      ...(isSimple ? [] : [
+        'ENV Usage:', stringIndentLine(usageENV(formatList), '  '),
+        'JSON Usage:', stringIndentLine(usageJSON(formatList), '  ')
+      ])
     ].join('\n')
   }
 }
