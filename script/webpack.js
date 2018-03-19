@@ -35,4 +35,4 @@ runMain(async (logger) => {
 
   logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
   await compileWithWebpack({ config, isWatch, profileOutput, logger })
-}, getLogger(`webpack`))
+}, getLogger(`webpack`, argvFlag('quiet')))

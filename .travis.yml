@@ -4,11 +4,15 @@ node_js:
   - "node"
   - "8"
 
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH="$HOME/.yarn/bin:$PATH"
+
 install:
   - yarn
 
 script:
-  - yarn script-pack-test
+  - yarn test
 
 cache:
   yarn: true

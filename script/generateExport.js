@@ -2,7 +2,7 @@ import { resolve, sep } from 'path'
 import { writeFileSync, existsSync } from 'fs'
 import { execSync } from 'child_process'
 
-import { runMain } from 'dev-dep-tool/library/__utils__'
+import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { createExportParser } from 'dev-dep-tool/library/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
@@ -56,14 +56,14 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
 
 runMain(async (logger) => {
   if (existsSync(fromRoot('tempFileDelete.config.json'))) {
-    logger.log(`[clear] delete previous temp build file`)
+    logger.padLog(`[clear] delete previous temp build file`)
     execSync('yarn script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
   }
 
-  logger.log(`collect sourceRouteMap`)
+  logger.padLog(`collect sourceRouteMap`)
   const sourceRouteMap = await collectSourceRouteMap({ logger })
 
-  logger.log(`generate exportInfo`)
+  logger.padLog(`generate exportInfo`)
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
 
   logger.log(`output: EXPORT_INFO.md`)
@@ -83,4 +83,4 @@ runMain(async (logger) => {
 
   logger.log(`output: tempFileDelete.config.json`)
   generateTempFile({ sourceRouteMap, logger })
-}, getLogger('generate-export'))
+}, getLogger('generate-export', argvFlag('quiet')))

@@ -16,11 +16,11 @@ const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
-const execOptionRoot = { cwd: fromRoot(), stdio: 'inherit', shell: true }
-const execOptionOutput = { cwd: fromOutput(), stdio: 'inherit', shell: true }
+const execOptionRoot = { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore' ] : 'inherit', shell: true }
+const execOptionOutput = { cwd: fromOutput(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore' ] : 'inherit', shell: true }
 
-const buildOutput = async ({ logger: { padLog, log } }) => {
-  log(`verify no gitignore file left`)
+const buildOutput = async ({ logger: { padLog } }) => {
+  padLog(`verify no gitignore file left`)
   ok((await getFileList(fromRoot('source'))).every((path) => !path.includes('gitignore')))
 
   padLog(`generate index.js & export doc`)
@@ -43,7 +43,7 @@ const buildOutput = async ({ logger: { padLog, log } }) => {
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
-  const { padLog, log } = logger
+  const { padLog, devLog } = logger
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
 
@@ -69,20 +69,20 @@ const processOutput = async ({ packageJSON, logger }) => {
   padLog(`process code`)
   let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
+  devLog(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
   let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
+  devLog(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
 
   let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
+  devLog(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
   const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
-  log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
+  devLog(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
-  log(`total size reduce: ${formatBinary(
+  padLog(`total size reduce: ${formatBinary(
     sizeCodeReduceBin +
     sizeCodeReduceModule +
     sizeCodeReduceLibraryBabel +
@@ -90,20 +90,20 @@ const processOutput = async ({ packageJSON, logger }) => {
   )}B`)
 }
 
-const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
+const clearOutput = async ({ packageJSON, logger: { padLog, devLog } }) => {
   padLog(`clear output`)
 
-  log(`clear module test`)
+  devLog(`clear module test`)
   for (const filePath of await getFileList(fromOutput('module'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 
-  log(`clear library test`)
+  devLog(`clear library test`)
   for (const filePath of await getFileList(fromOutput('library'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 }
 
-const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
+const verifyOutput = async ({ packageJSON, logger: { padLog, devLog } }) => {
   padLog('verify output bin working')
   const outputBinTest = execSync('node bin --version', { ...execOptionOutput, stdio: 'pipe' }).toString()
-  log(`bin test output: ${outputBinTest}`)
+  devLog(`bin test output: ${outputBinTest}`)
   for (const testString of [
     packageJSON.name, packageJSON.version,
     process.version, process.platform, process.arch
@@ -130,4 +130,4 @@ runMain(async (logger) => {
   await verifyOutput({ packageJSON, logger })
   await packOutput({ fromRoot, fromOutput, logger })
   await publishOutput({ flagList: process.argv, packageJSON, fromOutput, logger })
-}, getLogger(process.argv.slice(2).join('+')))
+}, getLogger(process.argv.slice(2).join('+'), argvFlag('quiet')))
