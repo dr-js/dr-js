@@ -1,4 +1,4 @@
-import { SCHEMA_MARK, isSchemaObject, toStructJSONWithCheck, getActionReducer, getReducer } from './__utils__'
+import { SCHEMA_MARK, isSchemaObject, toStructJSONWithCheck, getActionReducer, getReducer } from './function'
 
 const DEFAULT_ARRAY_REDUCER = (state, action) => { throw new Error(`[DEFAULT_ARRAY_REDUCER] unexpected action: ${JSON.stringify(action)}`) }
 

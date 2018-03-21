@@ -1,13 +1,13 @@
-import { EventEmitter } from 'source/common/module/Event'
-import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, FrameSender, FrameReceiver } from './Frame'
-import { WEB_SOCKET_EVENT_MAP } from './__utils__'
+import { createEventEmitter } from 'source/common/module/Event'
+import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from './type'
+import { FrameSender, FrameReceiver } from './Frame'
 
 const WEB_SOCKET_PING_PONG_TIMEOUT = __DEV__ ? 5 * 1000 : 60 * 1000 // in msec, 60sec
 const WEB_SOCKET_CLOSE_TIMEOUT = __DEV__ ? 0.5 * 1000 : 5 * 1000 // in msec, 5sec
 
 const NULL_ERROR_LISTENER = (error) => { __DEV__ && error && console.log('[NULL_ERROR_LISTENER] get error', error) }
 
-class WebSocketBase extends EventEmitter {
+class WebSocketBase {
   static CONNECTING = 0 // The connection is not yet open.
   static OPEN = 1 // The connection is open and ready to communicate.
   static CLOSING = 2 // The connection is in the process of closing.
@@ -16,7 +16,7 @@ class WebSocketBase extends EventEmitter {
   static isWebSocketClosed = (webSocket) => (webSocket.readyState === WebSocketBase.CLOSED || !webSocket.socket || webSocket.socket.destroyed)
 
   constructor (socket, frameLengthLimit) {
-    super()
+    Object.assign(this, createEventEmitter())
 
     this.socket = socket
     this.frameSender = new FrameSender(frameLengthLimit)

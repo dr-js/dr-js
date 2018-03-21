@@ -1,5 +1,5 @@
-import { resolve } from 'path'
 import { equal } from 'assert'
+import { join as joinPath, resolve } from 'path'
 import { FILE_TYPE, createDirectory, deletePath } from './File'
 import {
   getDirectoryContentNameList,
@@ -10,13 +10,14 @@ import {
   walkDirectoryContentShallow,
   copyDirectoryContent,
   moveDirectoryContent,
-  deleteDirectoryContent
+  deleteDirectoryContent,
+  getFileList
 } from './Directory'
 
 const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/')
-const SOURCE_FILE = resolve(__dirname, './__utils__.js')
+const SOURCE_FILE = resolve(__dirname, './function.js')
 const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
 const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../')
 
@@ -172,5 +173,58 @@ describe('Node.File.Directory', () => {
       callbackCount++
     })
     equal(callbackCount, 0)
+  })
+
+  describe('getFileList()', () => {
+    const LIST_FILE = resolve(__dirname, './function.js')
+    const LIST_DIRECTORY = resolve(__dirname, '../')
+
+    const createSuffixFilterFileCollector = (suffix) => (fileList, path, name) => name.endsWith(suffix) && fileList.push(joinPath(path, name))
+    const createPrefixMapperFileCollector = (prefix) => (fileList, path, name) => fileList.push([
+      joinPath(path, name),
+      joinPath(path, prefix + name)
+    ])
+
+    it('getFileList() File', async () => {
+      const fileList = await getFileList(LIST_FILE)
+      equal(fileList.length, 1)
+      equal(fileList[ 0 ], LIST_FILE)
+    })
+
+    it('getFileList() Directory', async () => {
+      const fileList = await getFileList(LIST_DIRECTORY)
+      equal(fileList.length >= 2, true)
+      equal(fileList.includes(LIST_FILE), true)
+    })
+
+    it('getFileList(createSuffixFilterFileCollector) File', async () => {
+      const jsFileList = await getFileList(LIST_FILE, createSuffixFilterFileCollector('.js'))
+      const abcdefghFileList = await getFileList(LIST_FILE, createSuffixFilterFileCollector('.abcdefgh'))
+      equal(jsFileList.length, 1)
+      equal(jsFileList[ 0 ], LIST_FILE)
+      equal(abcdefghFileList.length, 0)
+    })
+
+    it('getFileList(createSuffixFilterFileCollector) Directory', async () => {
+      const jsFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.js'))
+      const abcdefghFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.abcdefgh'))
+      equal(jsFileList.length >= 2, true)
+      equal(jsFileList.includes(LIST_FILE), true)
+      equal(abcdefghFileList.length, 0)
+    })
+
+    it('getFileList(createPrefixMapperFileCollector) File', async () => {
+      const fileList = await getFileList(LIST_FILE, createPrefixMapperFileCollector('PREFIX-'))
+      equal(fileList.length, 1)
+      equal(fileList[ 0 ][ 0 ], LIST_FILE)
+      equal(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
+    })
+
+    it('getFileList(createPrefixMapperFileCollector) Directory', async () => {
+      const fileList = await getFileList(LIST_DIRECTORY, createPrefixMapperFileCollector('PREFIX-'))
+      equal(fileList.length >= 2, true)
+      equal(fileList.map((v) => v[ 0 ]).includes(LIST_FILE), true)
+      equal(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
+    })
   })
 })

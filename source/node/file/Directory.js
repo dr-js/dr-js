@@ -1,23 +1,11 @@
 import { join as joinPath, dirname, basename } from 'path'
-import { readdirAsync } from './__utils__'
+import { readdirAsync } from './function'
 import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
 
 const getDirectoryContentNameList = async (path, pathType) => {
   if (pathType === undefined) pathType = await getPathType(path)
   if (pathType !== FILE_TYPE.Directory) throw new Error(`[getDirectoryContent] error pathType: ${pathType} for ${path}`)
   return readdirAsync(path)
-}
-
-// one level only
-const getDirectoryContentFileList = async (path, pathType) => { // TODO: deprecated
-  const subNameList = await getDirectoryContentNameList(path, pathType)
-  const fileList = []
-  for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
-    const name = subNameList[ index ]
-    const subPath = joinPath(path, name)
-    if (await getPathType(subPath) === FILE_TYPE.File) fileList.push(name)
-  }
-  return fileList
 }
 
 // will check recursively
@@ -144,7 +132,5 @@ export {
   moveDirectoryContent,
   deleteDirectoryContent,
 
-  getFileList,
-
-  getDirectoryContentFileList // TODO: deprecated
+  getFileList
 }

@@ -1,5 +1,5 @@
 import { equal, deepEqual, deepStrictEqual, notEqual, notStrictEqual, throws, doesNotThrow } from 'assert'
-import { objectMerge } from './ImmutableOperation'
+import { objectMerge } from './Object'
 import { createInsideOutPromise } from 'source/common/function'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
 

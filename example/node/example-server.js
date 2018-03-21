@@ -3,17 +3,16 @@ const { resolve } = require('path')
 const { clock } = require('../../output-gitignore/library/common/time')
 const { time: formatTime } = require('../../output-gitignore/library/common/format')
 
-const { readFileAsync, createGetPathFromRoot } = require('../../output-gitignore/library/node/file/__utils__')
+const { readFileAsync, createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { responderEnd, createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
-const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/__utils__')
-const { DATA_TYPE_MAP } = require('../../output-gitignore/library/node/server/WebSocket/Frame')
+const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
 const fromPath = (...args) => resolve(__dirname, ...args)
-const fromStaticRoot = createGetPathFromRoot(fromPath('../'))
+const fromStaticRoot = createPathPrefixLock(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
 const ServerHost = 'localhost'

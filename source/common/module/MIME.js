@@ -1,6 +1,6 @@
 const DEFAULT_MIME = 'application/octet-stream'
 
-const BASIC_MIME_MAP = {
+const BASIC_MIME_LIST_MAP = {
   'application/javascript': [ 'js', 'mjs' ],
   'application/json': [ 'json' ],
   'application/json5': [ 'json5' ],
@@ -45,7 +45,7 @@ const BASIC_MIME_MAP = {
   'video/x-matroska': [ 'mkv', 'mk3d', 'mks' ]
 }
 
-const BASIC_EXTENSION_MAP = Object.entries(BASIC_MIME_MAP).reduce((o, [ mime, extensionList ]) => {
+const BASIC_EXTENSION_MAP = Object.entries(BASIC_MIME_LIST_MAP).reduce((o, [ mime, extensionList ]) => {
   extensionList.forEach((extension) => (o[ extension ] = mime))
   return o
 }, {})
@@ -58,7 +58,7 @@ const REGEXP_EXTENSION = /\.(\w+)$/
 
 export {
   DEFAULT_MIME,
-  BASIC_MIME_MAP,
+  BASIC_MIME_LIST_MAP,
   BASIC_EXTENSION_MAP,
   getMIMETypeFromFileName
 }

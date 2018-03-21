@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { deepEqual } from 'assert'
-import { writeFileAsync, renameAsync, mkdirAsync } from './__utils__'
+import { writeFileAsync, renameAsync, mkdirAsync } from './function'
 
 import { createFileWatcher } from './Watch'
 import { createDirectory } from './File'

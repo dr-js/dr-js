@@ -43,7 +43,7 @@ const buildOutput = async ({ logger: { padLog } }) => {
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
-  const { padLog, devLog } = logger
+  const { padLog, log } = logger
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
 
@@ -69,20 +69,20 @@ const processOutput = async ({ packageJSON, logger }) => {
   padLog(`process code`)
   let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  devLog(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
+  log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
 
   let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  devLog(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
+  log(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
 
   let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  devLog(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
+  log(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
 
   const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
-  devLog(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
+  log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
 
-  padLog(`total size reduce: ${formatBinary(
+  log(`total size reduce: ${formatBinary(
     sizeCodeReduceBin +
     sizeCodeReduceModule +
     sizeCodeReduceLibraryBabel +
@@ -90,20 +90,20 @@ const processOutput = async ({ packageJSON, logger }) => {
   )}B`)
 }
 
-const clearOutput = async ({ packageJSON, logger: { padLog, devLog } }) => {
+const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   padLog(`clear output`)
 
-  devLog(`clear module test`)
+  log(`clear module test`)
   for (const filePath of await getFileList(fromOutput('module'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 
-  devLog(`clear library test`)
+  log(`clear library test`)
   for (const filePath of await getFileList(fromOutput('library'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
 }
 
-const verifyOutput = async ({ packageJSON, logger: { padLog, devLog } }) => {
+const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   padLog('verify output bin working')
   const outputBinTest = execSync('node bin --version', { ...execOptionOutput, stdio: 'pipe' }).toString()
-  devLog(`bin test output: ${outputBinTest}`)
+  log(`bin test output: ${outputBinTest}`)
   for (const testString of [
     packageJSON.name, packageJSON.version,
     process.version, process.platform, process.arch

@@ -1,6 +1,6 @@
 const { resolve } = require('path')
 const { createFileWatcher } = require('../../output-gitignore/library/node/file/Watch')
-const { writeFileAsync } = require('../../output-gitignore/library/node/file/__utils__')
+const { writeFileAsync } = require('../../output-gitignore/library/node/file/function')
 const { createDirectory } = require('../../output-gitignore/library/node/file/File')
 const { modify } = require('../../output-gitignore/library/node/file/Modify')
 

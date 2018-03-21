@@ -1,8 +1,9 @@
 import {
   objectSet,
   objectDelete,
-  objectMerge,
-
+  objectMerge
+} from 'source/common/immutable/Object'
+import {
   arraySet,
   arrayDelete,
   arrayInsert,
@@ -18,7 +19,7 @@ import {
   arrayFindDelete,
   arrayFindMove,
   arrayFindSet
-} from 'source/common/immutable/ImmutableOperation'
+} from 'source/common/immutable/Array'
 
 const replace = (state, payload) => payload
 

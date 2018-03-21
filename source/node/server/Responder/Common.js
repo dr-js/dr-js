@@ -1,6 +1,7 @@
 import { URL } from 'url'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { receiveBufferAsync, sendBufferAsync, pipeStreamAsync } from 'source/node/resource'
+import { receiveBufferAsync, sendBufferAsync } from 'source/node/data/Buffer'
+import { pipeStreamAsync } from 'source/node/data/Stream'
 
 const responderEnd = (store) => {
   if (store.response.finished) return store // NOTE: normally this should be it, the request is handled and response ended

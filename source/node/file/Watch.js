@@ -1,8 +1,8 @@
 import { dirname } from 'path'
 import { watch } from 'fs'
 import { throttle } from 'source/common/function'
-import { EventEmitter } from 'source/common/module/Event'
-import { lstatAsync, nearestExistAsync } from './__utils__'
+import { createHub } from 'source/common/module/Event'
+import { lstatAsync, nearestExistAsync } from './function'
 
 // single node only: a file, or one level of directory
 // will throttle event
@@ -23,7 +23,7 @@ const createFileWatcher = ({
   // once set, should call clear for process to unref and exit
   persistent = false
 }) => {
-  const eventEmitter = new EventEmitter()
+  const hub = createHub()
 
   let watcherPath // the nearest existing path, may be upper path
   let watcherPathStat
@@ -47,7 +47,7 @@ const createFileWatcher = ({
 
     const changeState = { targetPath, isPathChange, isContentChange, targetStat }
     prevTargetStat = targetStat
-    eventEmitter.emit('change', changeState)
+    hub.send(changeState)
   }, wait)
 
   const onErrorEvent = async (...args) => {
@@ -106,7 +106,7 @@ const createFileWatcher = ({
   return {
     clear: () => {
       clearWatch()
-      eventEmitter.clear()
+      hub.clear()
       prevTargetStat = null
     },
     setup: async (path) => {
@@ -116,8 +116,8 @@ const createFileWatcher = ({
       await setupWatch()
       prevTargetStat = watcherPath === targetPath ? watcherPathStat : null
     },
-    subscribe: (listener) => eventEmitter.addListener('change', listener),
-    unsubscribe: (listener) => eventEmitter.removeListener('change', listener)
+    subscribe: (listener) => hub.subscribe(listener),
+    unsubscribe: (listener) => hub.unsubscribe(listener)
   }
 }
 

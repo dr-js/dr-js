@@ -6,7 +6,7 @@ import {
   renameAsync,
   unlinkAsync,
   copyFileAsync
-} from './__utils__'
+} from './function'
 
 const FILE_TYPE = {
   File: 'File',

@@ -1,3 +1,5 @@
+import { clock, setTimeoutAsync } from 'source/common/time'
+
 // https://davidwalsh.name/javascript-debounce-function
 // https://gist.github.com/nmsdvid/8807205
 // Returns a function, that, as long as it continues to be invoked, will not
@@ -52,12 +54,16 @@ const withRepeat = (func, count = 0) => {
   }
 }
 
-const withRetryAsync = async (func, maxRetry = Infinity) => {
+// if maxRetry is always 0, should just skip this wrap
+const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
   let failed = 0
   while (true) {
-    try { return func(failed, maxRetry) } catch (error) {
-      if (maxRetry > failed) failed++
-      else throw error
+    const startTime = clock()
+    try { return await func(failed, maxRetry) } catch (error) { // NOTE: this is not the same as `try { return func(failed, maxRetry) } catch (error) {`
+      failed++
+      if (maxRetry < failed) throw error
+      const remainingTime = wait - (clock() - startTime)
+      if (remainingTime > 0) await setTimeoutAsync(remainingTime)
     }
   }
 }
@@ -70,16 +76,14 @@ const createInsideOutPromise = () => {
       promiseReject = reject
     }),
     resolve: (value) => {
-      if (promiseResolve === undefined) return
       const resolve = promiseResolve
       promiseResolve = promiseReject = undefined
-      return resolve(value)
+      resolve && resolve(value)
     },
     reject: (error) => {
-      if (promiseReject === undefined) return
       const reject = promiseReject
       promiseResolve = promiseReject = undefined
-      return reject(error)
+      reject && reject(error)
     }
   }
 }
@@ -94,9 +98,7 @@ const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) =>
     const index = endList.length
     const asyncTask = pendingList.shift()
     endList.push(asyncTask) // this asyncTask will end either way
-    try {
-      resultList[ index ] = await asyncTask()
-    } catch (error) {
+    try { resultList[ index ] = await asyncTask() } catch (error) {
       errorList[ index ] = error
       if (!shouldContinueOnError) break
     }
@@ -109,15 +111,6 @@ const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) =>
   }
 }
 
-const createDelayArgvQueue = withDelayArgvQueue // TODO: deprecate
-const repeat = (count, func) => { // TODO: deprecate
-  let looped = 0
-  while (count > looped) {
-    func(looped, count)
-    looped++
-  }
-}
-
 export {
   debounce,
   throttle,
@@ -125,8 +118,5 @@ export {
   withRepeat,
   withRetryAsync,
   createInsideOutPromise,
-  promiseQueue,
-
-  createDelayArgvQueue, // TODO: deprecate
-  repeat // TODO: deprecate
+  promiseQueue
 }

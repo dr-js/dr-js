@@ -12,7 +12,7 @@ import {
 const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-file-gitignore/')
-const SOURCE_FILE = resolve(__dirname, './__utils__.js')
+const SOURCE_FILE = resolve(__dirname, './function.js')
 const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
 const SOURCE_DIRECTORY_TRIM = resolve(__dirname, '../module')
 

@@ -1,12 +1,10 @@
+import { isBasicObject, isObjectKey } from 'source/common/check'
+
 const SCHEMA_MARK = '@@SCHEMA_MARK'
 
-const isSchemaObject = (value) => (
-  typeof (value) === 'object' &&
-  value !== null &&
-  value.SCHEMA_MARK === SCHEMA_MARK
-)
+const isSchemaObject = (value) => isBasicObject(value) && value.SCHEMA_MARK === SCHEMA_MARK
 
-const toStructJSONWithCheck = (value) => (value instanceof Object && 'toStructJSON' in value) ? value.toStructJSON() : value
+const toStructJSONWithCheck = (value) => isObjectKey(value, 'toStructJSON') ? value.toStructJSON() : value
 
 const getActionReducer = ({ actMap }) => (state, { type, payload }) => {
   const actionReducer = actMap[ type ]

@@ -1,7 +1,6 @@
 const { resolve } = require('path')
-const { readFileAsync } = require('../../output-gitignore/library/node/file/__utils__')
-const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/__utils__')
-// const { DATA_TYPE_MAP } = require('../../output-gitignore/library/node/server/WebSocket/Frame')
+const { readFileAsync } = require('../../output-gitignore/library/node/file/function')
+const { /* DATA_TYPE_MAP, */ WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { createWebSocketClient } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketClient')
 
 const fromPath = (...args) => resolve(__dirname, ...args)

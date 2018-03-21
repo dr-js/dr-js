@@ -1,17 +1,17 @@
-import { relative, dirname, join as joinPath, sep as sepPath } from 'path'
+import { relative, dirname, join as joinPath } from 'path'
 import { clock } from 'dr-js/module/common/time'
-import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
-import { time as formatTime, stringIndentLine, escapeHTML } from 'dr-js/module/common/format'
 import { compareString } from 'dr-js/module/common/compare'
-import { createGetPathFromRoot } from 'dr-js/module/node/file/__utils__'
+import { time as formatTime, stringIndentLine, escapeHTML } from 'dr-js/module/common/format'
+import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { getPathContent, responderSendFavicon, getServerInfo } from './__utils__'
+import { getPathContent, responderSendFavicon, getServerInfo } from './function'
 
 const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe, log }) => {
-  const fromStaticRoot = createGetPathFromRoot(staticRoot)
+  const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
   const { server, start, option } = createServer({ protocol, hostname, port })
@@ -66,8 +66,7 @@ a:hover { background: #eee; }
 </style>
 <pre style="display: flex; flex-flow: column;">${contentHTML}</pre>`
 const renderItem = (text, icon, hrefFragList) => `<a href="${formatPathHref(hrefFragList)}">${icon}|${formatPathHTML(text)}</a>`
-const formatPathHref = (fragList) => encodeURI(normalizePathSeparator(joinPath(...fragList)))
-const formatPathHTML = (name) => escapeHTML(normalizePathSeparator(name))
-const normalizePathSeparator = sepPath === '\\' ? (path) => path.replace(/\\/g, '/') : (path) => path
+const formatPathHref = (fragList) => encodeURI(toPosixPath(joinPath(...fragList)))
+const formatPathHTML = (name) => escapeHTML(toPosixPath(name))
 
 export { createServerServeStatic }

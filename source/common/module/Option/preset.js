@@ -1,5 +1,5 @@
 import { string, number, integer, arrayLength, oneOf } from 'source/common/verify'
-import { arraySplitChunk } from 'source/common/data/__utils__'
+import { arraySplitChunk } from 'source/common/immutable/Array'
 
 const verifySingleArray = (argumentList) => arrayLength(argumentList, 1, 'single argument expected')
 const verifyOneOf = (selectList) => (argumentList) => {

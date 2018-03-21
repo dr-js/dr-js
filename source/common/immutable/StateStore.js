@@ -1,5 +1,6 @@
 import { basicObject as verifyBasicObject, basicFunction as verifyBasicFunction } from 'source/common/verify'
-import { objectMerge, arrayMatchPush, arrayMatchDelete } from './ImmutableOperation'
+import { objectMerge } from './Object'
+import { arrayMatchPush, arrayMatchDelete } from './Array'
 
 const createStateStore = (state) => {
   verifyBasicObject(state, '[createStateStore] initialState should be basic Object')

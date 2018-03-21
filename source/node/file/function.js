@@ -1,4 +1,4 @@
-import { join as joinPath, normalize, dirname } from 'path'
+import { resolve, normalize, dirname, sep } from 'path'
 import {
   stat, lstat, access, rename, unlink,
   readFile, writeFile, copyFile,
@@ -50,14 +50,19 @@ const nearestExistAsync = async (path) => {
   return path
 }
 
-const createGetPathFromRoot = (rootPath) => {
-  rootPath = normalize(rootPath)
+const createPathPrefixLock = (rootPath) => {
+  rootPath = resolve(rootPath)
   return (relativePath) => {
-    const absolutePath = normalize(joinPath(rootPath, relativePath))
-    if (!absolutePath.startsWith(rootPath)) throw new Error(`[getPathFromRoot] relativePath out of rootPath: ${relativePath}`)
+    const absolutePath = resolve(rootPath, relativePath)
+    if (!absolutePath.startsWith(rootPath)) throw new Error(`[PathPrefixLock] invalid relativePath: ${relativePath}`)
     return absolutePath
   }
 }
+
+const trimPathDepth = (path, depth) => normalize(path).split(sep).slice(0, depth).join(sep)
+const toPosixPath = sep === '\\'
+  ? (path) => path.replace(/\\/g, '/')
+  : (path) => path
 
 export {
   statAsync,
@@ -69,19 +74,18 @@ export {
   readableAsync,
   writableAsync,
   executableAsync,
-
   mkdirAsync,
   rmdirAsync,
   readdirAsync,
-
   readFileAsync,
   writeFileAsync,
   copyFileAsync,
-
   nearestExistAsync,
 
   createReadStream,
   createWriteStream,
+  createPathPrefixLock,
 
-  createGetPathFromRoot
+  toPosixPath,
+  trimPathDepth
 }

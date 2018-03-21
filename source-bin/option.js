@@ -12,6 +12,7 @@ const MODE_OPTION = [
   'file-modify-copy', 'cp',
   'file-modify-move', 'mv',
   'file-modify-delete', 'rm',
+  'server-test-connection', 'stc',
   'server-serve-static', 'sss',
   'server-serve-static-simple', 'ssss',
   'server-websocket-group', 'swg'

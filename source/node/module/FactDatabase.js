@@ -1,7 +1,7 @@
 import { join as joinPath } from 'path'
 import { createStateStore } from 'source/common/immutable/StateStore'
 
-import { readFileAsync, writeFileAsync, unlinkAsync } from 'source/node/file/__utils__'
+import { readFileAsync, writeFileAsync, unlinkAsync } from 'source/node/file/function'
 import { getDirectoryContentShallow, walkDirectoryContent } from 'source/node/file/Directory'
 import { createLogger } from './Logger'
 

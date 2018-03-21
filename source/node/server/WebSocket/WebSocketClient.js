@@ -1,10 +1,9 @@
 import { URL } from 'url'
 import { get as httpGet } from 'http'
 import { get as httpsGet } from 'https'
-import { urlToOption } from 'source/node/resource'
-import { DO_MASK_DATA } from './Frame'
+import { urlToOption } from 'source/node/net'
+import { DO_MASK_DATA, DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRequestKey, getRespondKey } from './type'
 import { WebSocketBase } from './WebSocketBase'
-import { DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRequestKey, getRespondKey } from './__utils__'
 
 class WebSocketClient extends WebSocketBase {
   static VALID_WEB_SOCKET_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])

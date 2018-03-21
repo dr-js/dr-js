@@ -1,14 +1,4 @@
-const { Blob, FileReader } = window
-
-const createParseBlob = (methodName) => (blob) => new Promise((resolve, reject) => {
-  const fileReader = new FileReader()
-  fileReader.addEventListener('error', reject)
-  fileReader.addEventListener('load', () => resolve(fileReader.result))
-  fileReader[ methodName ](blob)
-})
-const parseBlobAsText = createParseBlob('readAsText')
-const parseBlobAsDataURL = createParseBlob('readAsDataURL')
-const parseBlobAsArrayBuffer = createParseBlob('readAsArrayBuffer')
+import { Blob, parseBlobAsText, parseBlobAsArrayBuffer } from './Blob'
 
 const EMPTY_BLOB = new Blob()
 const MAX_BLOB_PACKET_SIZE = (1 << 16) - 1
@@ -29,10 +19,6 @@ const parseBlobPacket = async (blobPacket) => {
 }
 
 export {
-  parseBlobAsText,
-  parseBlobAsDataURL,
-  parseBlobAsArrayBuffer,
-
   MAX_BLOB_PACKET_SIZE,
   packBlobPacket,
   parseBlobPacket

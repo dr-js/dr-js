@@ -1,9 +1,9 @@
 import { equal } from 'assert'
-import { packBufferPacket, parseBufferPacket } from './buffer'
+import { packBufferPacket, parseBufferPacket } from './BufferPacket'
 
 const { describe, it } = global
 
-describe('Node.Buffer', () => {
+describe('Node.Data.BufferPacket', () => {
   const headerString = 'headerString'
   const payloadBuffer = Buffer.from('payloadBuffer')
 

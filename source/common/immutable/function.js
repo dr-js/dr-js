@@ -6,7 +6,7 @@ const shallowEqualArguments = (prev, next) => {
 }
 
 // memorize expensive immutable transform
-const immutableTransformCache = (transformFunc) => {
+const transformCache = (transformFunc) => {
   let cacheResult = null
   let cacheArgs = null
   return (...args) => { // drop context for immutable transform should not need <this>
@@ -19,7 +19,7 @@ const immutableTransformCache = (transformFunc) => {
 }
 
 // memorize expensive immutable transform, with info output, mostly for debug
-const createImmutableTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOutputInfo = DEFAULT_SHOULD_OUTPUT_INFO) => {
+const createTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOutputInfo = DEFAULT_SHOULD_OUTPUT_INFO) => {
   const infoArray = []
 
   const checkInfo = (info) => {
@@ -67,7 +67,7 @@ const DEFAULT_SHOULD_OUTPUT_INFO = (info, infoArray) => (
 const DEFAULT_OUTPUT_INFO = (info, infoArray) => {
   const isBadCache = info.hitCount <= info.missCount && info.sumHitCount <= info.sumMissCount
   console[ isBadCache ? 'warn' : 'log' ](
-    `[DEBUG][immutableTransformCache] ${isBadCache ? 'bad' : 'good'} cache with` +
+    `[DEBUG][transformCache] ${isBadCache ? 'bad' : 'good'} cache with` +
     ` HIT[${info.hitCount}/${info.hitCount + info.missCount}]` +
     ` SUM[${info.sumHitCount}/${info.sumHitCount + info.sumMissCount}]` +
     `\n[${info.id} of ${infoArray.length}] ${info.stackInfo}`
@@ -75,6 +75,6 @@ const DEFAULT_OUTPUT_INFO = (info, infoArray) => {
 }
 
 export {
-  immutableTransformCache,
-  createImmutableTransformCacheWithInfo
+  transformCache,
+  createTransformCacheWithInfo
 }

@@ -1,10 +1,10 @@
-const { exec } = require('../../output-gitignore/library/node/module/Command')
+const { runQuiet } = require('../../output-gitignore/library/node/system/Run')
 const { startREPL } = require('../../output-gitignore/library/node/system/REPL')
 
 const main = async () => {
   console.log('== exec ========================')
-  const { stdout } = await exec(process.platform === 'win32' ? 'dir' : 'ls -l')
-  console.warn(stdout)
+  const { stdoutBufferPromise } = await runQuiet(process.platform === 'win32' ? 'dir' : 'ls -l')
+  console.warn((await stdoutBufferPromise).toString())
 
   console.log('== REPL ========================')
   const replServer = startREPL()

@@ -28,7 +28,6 @@ const createDownload = (fileName, url) => {
   element.click()
   document.body.removeChild(element)
 }
-
 const createDownloadText = (fileName, text) => createDownload(fileName, `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`)
 const createDownloadBlob = (fileName, dataArray, dataType = DEFAULT_MIME) => {
   const objectUrl = window.URL.createObjectURL(new window.Blob(dataArray, { type: dataType }))

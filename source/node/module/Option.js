@@ -1,5 +1,5 @@
 import { resolve, dirname } from 'path'
-import { readFileAsync } from 'source/node/file/__utils__'
+import { readFileAsync } from 'source/node/file/function'
 
 const parseOptionMap = async ({ parseCLI, parseENV, parseJSON, processOptionMap }) => {
   const optionMapCLI = optionMapResolvePath(parseCLI(process.argv.slice(2)), process.cwd()) // NOTE: slice(2) to drop [node executable] [script file]

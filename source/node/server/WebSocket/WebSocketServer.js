@@ -1,6 +1,5 @@
-import { DO_NOT_MASK_DATA } from './Frame'
+import { DO_NOT_MASK_DATA, DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRespondKey } from './type'
 import { WebSocketBase } from './WebSocketBase'
-import { DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRespondKey } from './__utils__'
 
 class WebSocketServer extends WebSocketBase {
   static DEFAULT_ON_UPGRADE_REQUEST = (webSocket, request, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket

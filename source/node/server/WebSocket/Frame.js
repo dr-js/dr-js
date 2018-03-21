@@ -1,55 +1,22 @@
 import { randomBytes } from 'crypto'
 import { constants as bufferConstants } from 'buffer'
 
+import {
+  FRAME_TYPE_CONFIG_MAP,
+  DATA_TYPE_MAP,
+  DO_MASK_DATA,
+  DO_NOT_MASK_DATA,
+  DEFAULT_FRAME_LENGTH_LIMIT
+} from './type'
+
 const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
 
-// Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
-// Frame format:
-//      0                   1                   2                   3
-//      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//     +-+-+-+-+-------+-+-------------+-------------------------------+
-//     |F|R|R|R| opcode|M| Payload len |    Extended payload length    |
-//     |I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
-//     |N|V|V|V|       |S|             |   (if payload len==126/127)   |
-//     | |1|2|3|       |K|             |                               |
-//     +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
-//     |     Extended payload length continued, if payload len == 127  |
-//     + - - - - - - - - - - - - - - - +-------------------------------+
-//     |     if payload len == 127     |Masking-key, if MASK set to 1  |
-//     +-------------------------------+-------------------------------+
-//     | Masking-key (continued)       |          Payload Data         |
-//     +-------------------------------- - - - - - - - - - - - - - - - +
-//     :                     Payload Data continued ...                :
-//     + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
-//     |                     Payload Data continued ...                |
-//     +---------------------------------------------------------------+
-
 const POW_2_32 = Math.pow(2, 32)
-
-// NOTE: these quadbit will also set RSV123 to 0, thus will ignore extension bits RSV1-3
-const FRAME_TYPE_CONFIG_MAP = {
-  FRAME_COMPLETE: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b1111 },
-  FRAME_FIRST: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b1111 },
-  FRAME_MORE: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b0000 },
-  FRAME_LAST: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b0000 }
-}
-
-const DATA_TYPE_MAP = {
-  OPCODE_CONTINUATION: 0b0000,
-  OPCODE_TEXT: 0b0001,
-  OPCODE_BINARY: 0b0010,
-  OPCODE_CLOSE: 0b1000,
-  OPCODE_PING: 0b1001,
-  OPCODE_PONG: 0b1010
-}
-
-const DO_MASK_DATA = true
-const DO_NOT_MASK_DATA = false
 
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
 class FrameSender {
-  constructor (frameLengthLimit) {
+  constructor (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) {
     this.frameLengthLimit = frameLengthLimit
     this.clear = this.clear.bind(this)
     this.clear()
@@ -388,10 +355,6 @@ const applyBufferMaskQuadlet = (buffer, maskQuadletBuffer) => {
 }
 
 export {
-  FRAME_TYPE_CONFIG_MAP,
-  DATA_TYPE_MAP,
-  DO_MASK_DATA,
-  DO_NOT_MASK_DATA,
   FrameSender,
   FrameReceiver
 }

@@ -11,7 +11,8 @@ import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { getVersion } from './version'
 import { parseOption, formatUsage } from './option'
 
-import { autoTestServerPort, getPathContent } from './server/__utils__'
+import { autoTestServerPort, getPathContent } from './server/function'
+import { createServerTestConnection } from './server/test-connection'
 import { createServerServeStatic } from './server/serve-static'
 import { createServerWebSocketGroup } from './server/websocket-group'
 
@@ -62,6 +63,14 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
         )
       }
       return
+    case 'server-test-connection':
+    case 'stc': {
+      const [
+        hostname = '0.0.0.0',
+        port = await autoTestServerPort([ 80, 8080 ], hostname)
+      ] = getOptionOptional('argument') || []
+      return createServerTestConnection({ protocol: 'http:', hostname, port: Number(port), log })
+    }
     case 'server-serve-static':
     case 'sss':
     case 'server-serve-static-simple':

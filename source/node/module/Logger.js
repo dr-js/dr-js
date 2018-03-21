@@ -1,6 +1,6 @@
 import { join as joinPath } from 'path'
 import { getRandomId } from 'source/common/math/random'
-import { createLogQueue } from 'source/common/data/LogQueue'
+import { createLogQueue } from 'source/node/data/LogQueue'
 import { createDirectory } from 'source/node/file/File'
 import { createSafeWriteStream } from './SafeWrite'
 

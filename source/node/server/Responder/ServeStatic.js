@@ -1,7 +1,7 @@
 import { clock } from 'source/common/time'
 import { CacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
-import { statAsync, readFileAsync, createReadStream } from 'source/node/file/__utils__'
+import { statAsync, readFileAsync, createReadStream } from 'source/node/file/function'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import {
   responderSendBuffer,

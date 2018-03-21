@@ -1,33 +1,38 @@
+import {
+  isString,
+  isNumber,
+  isInteger,
+  isBasicObject, isObjectKey, isObjectContain,
+  isBasicArray, isArrayLength,
+  isBasicFunction,
+  isOneOf
+} from './check'
+
 import { describe } from './format'
 
 const throwError = (title, message, detail) => { throw new Error(`[verify|${title}]${message ? ` ${message};` : ''} ${detail}`) }
-const throwValueError = (title, message, value) => throwError(title, message, `get: ${describe(value)}`)
+const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) || throwError(title, message, `get: ${describe(value)}`)
 
-const string = (value, message) => typeof (value) !== 'string' && throwValueError('String', message, value)
-const number = (value, message) => typeof (value) !== 'number' && throwValueError('Number', message, value)
-const integer = (value, message) => !Number.isInteger(value) && throwValueError('Integer', message, value)
+const string = createVerify('String', isString)
+const number = createVerify('Number', isNumber)
+const integer = createVerify('Integer', isInteger)
 
-const basicObject = (value, message) => (typeof (value) !== 'object' || value === null || Array.isArray(value)) && throwValueError('BasicObject', message, value)
-const objectKey = (value, key, message) => {
-  basicObject(value, message)
-  !value.hasOwnProperty(key) && throwError('ObjectKey', message, `expect to have key: ${key}`)
-}
+const basicObject = createVerify('BasicObject', isBasicObject)
+const objectKey = (value, key, message) => isObjectKey(value, key) || throwError('ObjectKey', message, `expect to have key: ${key}`)
+const objectContain = (value, target, message) => isObjectContain(value, target) || throwError('ObjectContain', message, `expect to contain: ${describe(target)}`)
 
-const basicArray = (value, message) => !Array.isArray(value) && throwValueError('Array', message, value)
-const arrayLength = (value, length, message) => {
-  basicArray(value, message)
-  value.length !== length && throwError('ArrayLength', message, `expect length: ${length}, get: ${value.length}`)
-}
+const basicArray = createVerify('Array', isBasicArray)
+const arrayLength = (value, length, message) => isArrayLength(value, length) || throwError('ArrayLength', message, `expect length: ${length}, get: ${value.length}`)
 
-const basicFunction = (value, message) => typeof (value) !== 'function' && throwValueError('Function', message, value)
+const basicFunction = createVerify('Function', isBasicFunction)
 
-const oneOf = (value, validList, message) => !validList.includes(value) && throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
+const oneOf = (value, validList, message) => isOneOf(value, validList) || throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
 
 export {
   string,
   number,
   integer,
-  basicObject, objectKey,
+  basicObject, objectKey, objectContain,
   basicArray, arrayLength,
   basicFunction,
   oneOf

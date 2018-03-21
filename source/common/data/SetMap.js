@@ -24,14 +24,21 @@ class SetMap {
     return true
   }
 
-  has (mapKey, setKey) {
+  get (mapKey, setKey) {
     const set = this.map.get(mapKey)
-    return Boolean(set && set.has(setKey))
+    return set && set.get(setKey)
   }
+
+  has (mapKey, setKey) { return Boolean(this.get(mapKey, setKey)) }
 
   forEach (callback) { this.map.forEach((set, mapKey) => set.forEach((setKey) => callback(setKey, mapKey))) }
 
   forEachSet (callback) { this.map.forEach(callback) } // set, mapKey
+
+  forEachMap (mapKey, callback) {
+    const set = this.map.get(mapKey)
+    set && set.forEach(callback)
+  }
 }
 
 export { SetMap }

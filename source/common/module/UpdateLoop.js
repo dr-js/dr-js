@@ -1,5 +1,6 @@
 import { now, onNextProperUpdate } from 'source/common/time'
 
+// TODO: reduce code
 const createUpdateLoop = () => {
   let isActive = false
   let updateFuncList = [] // index non-constant, will be refreshed on every update

@@ -57,9 +57,9 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
   ].join('\n'))
 
   writeFileSync(fromRoot('tempFileDelete.config.json'), JSON.stringify({
-    mode: 'file-modify-delete',
-    argument: [ ...tempFileList, 'tempFileDelete.config.json' ],
-    quiet: true
+    drJsMode: 'file-modify-delete',
+    drJsArgument: [ ...tempFileList, 'tempFileDelete.config.json' ],
+    drJsQuiet: true
   }))
 }
 
@@ -97,4 +97,4 @@ runMain(async (logger) => {
 
   logger.log(`output: tempFileDelete.config.json`)
   generateTempFile({ sourceRouteMap, logger })
-}, getLogger('generate-export', argvFlag('quiet')))
+}, getLogger('generate-spec', argvFlag('quiet')))

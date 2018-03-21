@@ -1,26 +1,5 @@
-// TODO: separate to one data type per-file like `common/immutable/Object`
-// Operation for Immutable operate Data Structure
-// use only Object and Array for JSON support
 // NOTE: all method do not check if the value is valid
 
-// Object
-const objectSet = (object, key, value) => (object[ key ] !== value)
-  ? { ...object, [ key ]: value }
-  : object
-const objectDelete = (object, key) => {
-  if (!object.hasOwnProperty(key)) return object
-  const result = { ...object }
-  delete result[ key ]
-  return result
-}
-const objectMerge = (object, merge) => {
-  for (const [ key, value ] of Object.entries(merge)) { // check if has new data
-    if (object[ key ] !== value) return { ...object, ...merge }
-  }
-  return object
-}
-
-// array
 const arraySet = (array, index, value) => {
   if (array[ index ] === value) return array
   const result = [ ...array ]
@@ -91,11 +70,13 @@ const arrayFindSet = (array, find, value) => {
   return result
 }
 
-export {
-  objectSet,
-  objectDelete,
-  objectMerge,
+const arraySplitChunk = (array, chunkLength) => {
+  const result = []
+  for (let index = 0, indexMax = array.length; index < indexMax; index += chunkLength) result.push(array.slice(index, index + chunkLength))
+  return result
+}
 
+export {
   arraySet,
   arrayDelete,
   arrayInsert,
@@ -111,5 +92,6 @@ export {
   arrayFindPush,
   arrayFindDelete,
   arrayFindMove,
-  arrayFindSet
+  arrayFindSet,
+  arraySplitChunk
 }
