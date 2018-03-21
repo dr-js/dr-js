@@ -23,8 +23,8 @@ const buildOutput = async ({ logger: { padLog } }) => {
   padLog(`verify no gitignore file left`)
   ok((await getFileList(fromRoot('source'))).every((path) => !path.includes('gitignore')))
 
-  padLog(`generate index.js & export doc`)
-  execSync('yarn script-generate-export', execOptionRoot)
+  padLog(`generate index.js & spec doc`)
+  execSync('yarn script-generate-spec', execOptionRoot)
 
   padLog(`build library-webpack`)
   execSync('yarn build-library-webpack', execOptionRoot)

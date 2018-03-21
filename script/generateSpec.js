@@ -6,9 +6,11 @@ import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { createExportParser } from 'dev-dep-tool/library/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
-import { renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
+import { renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
 
+import { stringIndentLine } from 'source/common/format'
 import { getDirectoryContent, walkDirectoryContent } from 'source/node/file/Directory'
+import { formatUsage } from 'source-bin/option'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
@@ -28,6 +30,13 @@ const collectSourceRouteMap = async ({ logger }) => {
 
   return getSourceRouteMap()
 }
+
+const renderMarkdownBinOptionFormat = () => [
+  renderMarkdownFileLink('source-bin/option.js'),
+  '> ```',
+  stringIndentLine(formatUsage(), '> '),
+  '> ```'
+]
 
 const generateTempFile = ({ sourceRouteMap, logger }) => {
   const tempFileList = []
@@ -66,19 +75,24 @@ runMain(async (logger) => {
   logger.padLog(`generate exportInfo`)
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
 
-  logger.log(`output: EXPORT_INFO.md`)
+  logger.log(`output: SPEC.md`)
   const initRouteList = fromRoot('source').split(sep)
-  writeFileSync(fromRoot('EXPORT_INFO.md'), [
-    '# Export Info',
+  writeFileSync(fromRoot('SPEC.md'), [
+    '# Specification',
     '',
     '* [Export Path](#export-path)',
     '* [Export Tree](#export-tree)',
+    '* [Bin Option Format](#bin-option-format)',
     '',
     '#### Export Path',
     ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
     '',
     '#### Export Tree',
-    ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList })
+    ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList }),
+    '',
+    '#### Bin Option Format',
+    ...renderMarkdownBinOptionFormat(),
+    ''
   ].join('\n'))
 
   logger.log(`output: tempFileDelete.config.json`)

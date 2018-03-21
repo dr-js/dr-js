@@ -1,7 +1,8 @@
-# Export Info
+# Specification
 
 * [Export Path](#export-path)
 * [Export Tree](#export-tree)
+* [Bin Option Format](#bin-option-format)
 
 #### Export Path
 + 📄 [source/env.js](source/env.js)
@@ -340,3 +341,51 @@
     - `loadText`, `loadImage`, `loadScript`, `createDownload`, `createDownloadText`, `createDownloadBlob`
 - **Env**
   - `getGlobal`, `getEnvironment`, `getSystemEndianness`, `assert`, `global`
+
+#### Bin Option Format
+📄 [source-bin/option.js](source-bin/option.js)
+> ```
+> CLI Usage:
+>   --config -c [OPTIONAL] [ARGUMENT=1]:
+>       # from JSON: set to 'path/to/config.json'
+>       # from ENV: set to 'env'
+>   --help -h [OPTIONAL]:
+>       set to enable
+>   --version -v [OPTIONAL]:
+>       set to enable
+>   --mode -m [OPTIONAL] [ARGUMENT=1]:
+>       one of:
+>         open o
+>         file-list ls
+>         file-list-all ls-R
+>         file-create-directory mkdir
+>         file-modify-copy cp
+>         file-modify-move mv
+>         file-modify-delete rm
+>         server-serve-static sss
+>         server-serve-static-simple ssss
+>         server-websocket-group swg
+>     --argument -a [OPTIONAL-CHECK]:
+>         different for each mode
+>     --quiet -q [OPTIONAL-CHECK]:
+>         set to enable
+> ENV Usage:
+>   "
+>     #!/usr/bin/env bash
+>     export DR_JS_CONFIG="config [OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_HELP="help [OPTIONAL]"
+>     export DR_JS_VERSION="version [OPTIONAL]"
+>     export DR_JS_MODE="mode [OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ARGUMENT="argument [OPTIONAL-CHECK]"
+>     export DR_JS_QUIET="quiet [OPTIONAL-CHECK]"
+>   "
+> JSON Usage:
+>   {
+>     "drJsConfig": [ "config [OPTIONAL] [ARGUMENT=1]" ]
+>     "drJsHelp": [ "help [OPTIONAL]" ]
+>     "drJsVersion": [ "version [OPTIONAL]" ]
+>     "drJsMode": [ "mode [OPTIONAL] [ARGUMENT=1]" ]
+>     "drJsArgument": [ "argument [OPTIONAL-CHECK]" ]
+>     "drJsQuiet": [ "quiet [OPTIONAL-CHECK]" ]
+>   }
+> ```

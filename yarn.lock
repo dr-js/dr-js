@@ -1547,9 +1547,9 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-tool@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.1.0.tgz#b4b6c1bdda7be98800aa0b0b8424d3e31d04c94d"
+dev-dep-tool@^0.1.1-dev.0:
+  version "0.1.1-dev.0"
+  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.1.1-dev.0.tgz#1a8d10518dbd09449e9c6b03a94a0cbec04b3026"
   dependencies:
     dr-js "^0.12.1"
 

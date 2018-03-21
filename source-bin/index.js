@@ -17,18 +17,6 @@ import { createServerWebSocketGroup } from './server/websocket-group'
 
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
-const main = async () => {
-  const optionData = await parseOption()
-  const mode = optionData.getSingleOptionOptional('mode')
-  if (mode) {
-    runMode(mode, optionData).catch((error) => {
-      console.warn(`[Error] in mode: ${mode}:`, error)
-      process.exit(2)
-    })
-  } else if (optionData.getOptionOptional('version')) logJSON(getVersion())
-  else console.log(formatUsage())
-}
-
 const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
     ? dirname(getSingleOption('config'))
@@ -95,6 +83,18 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return createServerWebSocketGroup({ protocol: 'http:', hostname, port: Number(port), log })
     }
   }
+}
+
+const main = async () => {
+  const optionData = await parseOption()
+  const mode = optionData.getSingleOptionOptional('mode')
+
+  if (mode) {
+    await runMode(mode, optionData).catch((error) => {
+      console.warn(`[Error] in mode: ${mode}:`, error.stack || error)
+      process.exit(2)
+    })
+  } else optionData.getOptionOptional('version') ? logJSON(getVersion()) : console.log(formatUsage())
 }
 
 main().catch((error) => {
