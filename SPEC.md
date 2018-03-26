@@ -16,7 +16,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `requestFrameUpdate`, `cancelFrameUpdate`, `createTimer`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `string`, `number`, `integer`, `basicObject`, `objectKey`, `objectContain`, `basicArray`, `arrayLength`, `basicFunction`, `oneOf`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
@@ -29,6 +29,8 @@
   - `DoublyLinkedList`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
   - `ListMap`
++ 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
+  - `createSaveQueue`
 + 📄 [source/common/data/SemVer.js](source/common/data/SemVer.js)
   - `parseSemVer`, `compareSemVer`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
@@ -36,7 +38,7 @@
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
-  - `hashStringToNumber`
+  - `hashStringToNumber`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
   - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
 + 📄 [source/common/geometry/D2/BoundingRect.js](source/common/geometry/D2/BoundingRect.js)
@@ -76,7 +78,7 @@
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
-  - `createUpdateLoop`
+  - `createUpdater`, `createUpdateLoop`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
   - `createOptionParser`
 + 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
@@ -163,6 +165,8 @@
   - `throttleByAnimationFrame`, `applyDragFileListListener`
 + 📄 [source/browser/input.js](source/browser/input.js)
   - `POINTER_EVENT_TYPE`, `applyPointerEventListener`, `ENHANCED_POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `createKeyCommandListener`
++ 📄 [source/browser/net.js](source/browser/net.js)
+  - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
   - `loadText`, `loadImage`, `loadScript`, `createDownload`, `createDownloadText`, `createDownloadBlob`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
@@ -201,13 +205,15 @@
       - `DoublyLinkedList`
     - **ListMap**
       - `ListMap`
+    - **SaveQueue**
+      - `createSaveQueue`
     - **SemVer**
       - `parseSemVer`, `compareSemVer`
     - **SetMap**
       - `SetMap`
     - **Toggle**
       - `createToggle`
-    - `hashStringToNumber`
+    - `hashStringToNumber`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
       - **BoundingRect**
@@ -260,7 +266,7 @@
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **UpdateLoop**
-      - `createUpdateLoop`
+      - `createUpdater`, `createUpdateLoop`
   - **Mutable**
     - **Object**
       - `objectMergeDeep`, `objectSortKey`
@@ -273,7 +279,7 @@
   - **Function**
     - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `onNextProperUpdate`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `requestFrameUpdate`, `cancelFrameUpdate`, `createTimer`
   - **Verify**
     - `string`, `number`, `integer`, `basicObject`, `objectKey`, `objectContain`, `basicArray`, `arrayLength`, `basicFunction`, `oneOf`
 - **Node**
@@ -368,6 +374,8 @@
     - `throttleByAnimationFrame`, `applyDragFileListListener`
   - **Input**
     - `POINTER_EVENT_TYPE`, `applyPointerEventListener`, `ENHANCED_POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `createKeyCommandListener`
+  - **Net**
+    - `fetchLikeRequest`
   - **Resource**
     - `loadText`, `loadImage`, `loadScript`, `createDownload`, `createDownloadText`, `createDownloadBlob`
 - **Env**
@@ -377,14 +385,14 @@
 📄 [source-bin/option.js](source-bin/option.js)
 > ```
 > CLI Usage:
->   --config -c [OPTIONAL] [ARGUMENT=1]:
+>   --config -c [OPTIONAL] [ARGUMENT=1]
 >       # from JSON: set to 'path/to/config.json'
 >       # from ENV: set to 'env'
->   --help -h [OPTIONAL]:
+>   --help -h [OPTIONAL]
 >       set to enable
->   --version -v [OPTIONAL]:
+>   --version -v [OPTIONAL]
 >       set to enable
->   --mode -m [OPTIONAL] [ARGUMENT=1]:
+>   --mode -m [OPTIONAL] [ARGUMENT=1]
 >       one of:
 >         open o
 >         file-list ls
@@ -397,27 +405,27 @@
 >         server-serve-static sss
 >         server-serve-static-simple ssss
 >         server-websocket-group swg
->     --argument -a [OPTIONAL-CHECK]:
+>     --argument -a [OPTIONAL-CHECK]
 >         different for each mode
->     --quiet -q [OPTIONAL-CHECK]:
+>     --quiet -q [OPTIONAL-CHECK]
 >         set to enable
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
->     export DR_JS_CONFIG="config [OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_HELP="help [OPTIONAL]"
->     export DR_JS_VERSION="version [OPTIONAL]"
->     export DR_JS_MODE="mode [OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_ARGUMENT="argument [OPTIONAL-CHECK]"
->     export DR_JS_QUIET="quiet [OPTIONAL-CHECK]"
+>     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_HELP="[OPTIONAL]"
+>     export DR_JS_VERSION="[OPTIONAL]"
+>     export DR_JS_MODE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ARGUMENT="[OPTIONAL-CHECK]"
+>     export DR_JS_QUIET="[OPTIONAL-CHECK]"
 >   "
 > JSON Usage:
 >   {
->     "drJsConfig": [ "config [OPTIONAL] [ARGUMENT=1]" ]
->     "drJsHelp": [ "help [OPTIONAL]" ]
->     "drJsVersion": [ "version [OPTIONAL]" ]
->     "drJsMode": [ "mode [OPTIONAL] [ARGUMENT=1]" ]
->     "drJsArgument": [ "argument [OPTIONAL-CHECK]" ]
->     "drJsQuiet": [ "quiet [OPTIONAL-CHECK]" ]
+>     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsHelp": [ "[OPTIONAL]" ],
+>     "drJsVersion": [ "[OPTIONAL]" ],
+>     "drJsMode": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsArgument": [ "[OPTIONAL-CHECK]" ],
+>     "drJsQuiet": [ "[OPTIONAL-CHECK]" ],
 >   }
 > ```

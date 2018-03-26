@@ -1,7 +1,7 @@
 import { relative, dirname, join as joinPath } from 'path'
 import { clock } from 'dr-js/module/common/time'
 import { compareString } from 'dr-js/module/common/compare'
-import { time as formatTime, stringIndentLine, escapeHTML } from 'dr-js/module/common/format'
+import { time as formatTime, escapeHTML } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
@@ -33,12 +33,10 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
       log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
     }
   }))
+
   start()
-  log(`[ServerServeStatic] ${isSimpleServe ? 'no-list' : 'with-list'}\n${stringIndentLine([
-    `staticRoot:`,
-    `  - '${staticRoot}'`,
-    getServerInfo(protocol, hostname, port)
-  ].join('\n'), '  ')}`)
+
+  log(getServerInfo(`ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`, protocol, hostname, port, [ `staticRoot:`, `  - '${staticRoot}'` ]))
 }
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {

@@ -27,7 +27,7 @@ const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
 const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 
 const clock = getClock() // return running time in milliseconds
-const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // return running time in seconds
+const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: needed? return running time in seconds
 const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 
 // Usage:
@@ -43,15 +43,27 @@ const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolv
 //   .then((result) => {}) // result === 'DATA'
 const setTimeoutPromise = (wait = 0) => (data) => new Promise((resolve) => setTimeout(() => resolve(data), wait))
 
-const onNextProperUpdate = global.requestAnimationFrame
-  ? (callback) => {
-    const token = global.requestAnimationFrame(callback)
-    return () => global.cancelAnimationFrame(token)
+const [ requestFrameUpdate, cancelFrameUpdate ] = global.requestAnimationFrame
+  ? [ global.requestAnimationFrame, global.cancelAnimationFrame ]
+  : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
+
+const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTimeout }) => {
+  let token = null
+  const update = () => {
+    if (!token) return
+    func()
+    token = queueTask(update, delay)
   }
-  : (callback) => {
-    const token = setTimeout(callback, 1000 / 60)
-    return () => clearTimeout(token)
+  const start = () => {
+    stop()
+    token = queueTask(update, delay)
   }
+  const stop = () => {
+    token && cancelTask(token)
+    token = null
+  }
+  return { start, stop }
+}
 
 export {
   CLOCK_PER_SECOND,
@@ -62,5 +74,7 @@ export {
   getTimestamp,
   setTimeoutAsync,
   setTimeoutPromise,
-  onNextProperUpdate
+  requestFrameUpdate,
+  cancelFrameUpdate,
+  createTimer
 }

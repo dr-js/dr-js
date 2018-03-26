@@ -1,5 +1,5 @@
 import { clock, setTimeoutAsync } from 'dr-js/module/common/time'
-import { time as formatTime, stringIndentLine } from 'dr-js/module/common/format'
+import { time as formatTime } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
@@ -56,7 +56,7 @@ const createServerTestConnection = ({ protocol, hostname, port, log }) => {
 
   start()
 
-  log(`[ServerTestConnection]\n${stringIndentLine(getServerInfo(protocol, hostname, port), '  ')}`)
+  log(getServerInfo('ServerTestConnection', protocol, hostname, port))
 }
 
 export { createServerTestConnection }

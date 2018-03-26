@@ -4,7 +4,7 @@ const {
     Data: { Toggle: { createToggle } },
     Module: {
       UpdateLoop: { createUpdateLoop },
-      Event: { EventEmitter }
+      Event: { createEventEmitter }
     }
   },
   Browser: {
@@ -66,10 +66,9 @@ window.addEventListener('load', () => {
 
   const updateLoop = createUpdateLoop()
   updateLoop.start()
-  updateLoop.add(() => {
+  updateLoop.setFunc('fps', () => {
     FPS.step()
     FPS.output()
-    return true
   })
 
   log(`init at: ${now()}`)
@@ -139,11 +138,10 @@ window.addEventListener('load', () => {
     if (Toggle.get('DRAW_CANVAS_ELEMENT')) canvasElementExt.draw(mainContext2d, x, y2)
     if (Toggle.get('DRAW_CANVAS_IMAGE_DATA')) canvasImageDataExt.draw(mainContext2d, x, y3)
   }
-  updateLoop.add((deltaTime) => {
+  updateLoop.setFunc('draw-image', (deltaTime) => {
     sumTime += deltaTime * 120
     let count = 0
     while (count++ <= Toggle.get('DRAW_COUNT')) drawFunc(count)
-    return true
   })
 
   // =========================================================================================
@@ -155,7 +153,7 @@ window.addEventListener('load', () => {
     onEvent: (type, event) => {
       if (type !== 'MOVE') return
       event.preventDefault()
-      updateLoop.add(() => {
+      updateLoop.pushFunc(() => {
         const MARKER_HALF_SIZE = 2
         const { clientX, clientY } = event
         const { left, top } = mainCanvas.getBoundingClientRect()
@@ -163,7 +161,6 @@ window.addEventListener('load', () => {
         const y = clientY - top
         mainContext2d.fillRect(x - MARKER_HALF_SIZE, y - MARKER_HALF_SIZE, MARKER_HALF_SIZE * 2, MARKER_HALF_SIZE * 2)
         log(x.toFixed(2), y.toFixed(2))
-        return false
       }, 'test-canvas-ext:draw-touch-position') // once
     },
     isGlobal: true,
@@ -243,7 +240,7 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const testEventEmitter = new EventEmitter()
+  const testEventEmitter = createEventEmitter()
 
   testEventEmitter.on('TEXT_CONTENT', (nextTextValue) => {
     textValue = nextTextValue

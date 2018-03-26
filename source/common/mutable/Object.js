@@ -1,4 +1,5 @@
-// TODO: separate to one data type per-file like `common/mutable/Object`
+import { compareStringLocale } from 'source/common/compare'
+
 const objectMergeDeep = (object, merge) => {
   for (const [ key, mergeValue ] of Object.entries(merge)) {
     const objectValue = object[ key ]
@@ -10,12 +11,14 @@ const objectMergeDeep = (object, merge) => {
   return object
 }
 
-const objectSortKey = (object) => {
-  Object.keys(object).sort((a, b) => a.localeCompare(b)).forEach((key) => {
-    const value = object[ key ]
-    delete object[ key ] // change key order by delete & set
-    object[ key ] = value
-  })
+const objectSortKey = (object, compare = compareStringLocale) => {
+  Object.keys(object)
+    .sort(compare)
+    .forEach((key) => {
+      const value = object[ key ]
+      delete object[ key ] // change key order by delete & set
+      object[ key ] = value
+    })
   return object
 }
 

@@ -17,7 +17,7 @@ const clearProcessExitListener = () => {
   wrappedListenerList = []
 }
 
-// TODO: this does not provide a way to prevent soft exit
+// TODO: this does not provide a way to cancel soft exit
 const setProcessExitListener = ({ listenerAsync = EMPTY_FUNC, listenerSync = EMPTY_FUNC }) => {
   if (wrappedListenerList.length) throw new Error('[ProcessExitListener] listener already set')
 

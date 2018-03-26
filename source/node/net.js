@@ -16,9 +16,10 @@ const requestAsync = (option, body) => new Promise((resolve, reject) => {
   const request = (option.protocol === 'https:' ? httpsRequest : httpRequest)(option, resolve)
   const endWithError = (error) => {
     request.destroy()
+    error.option = option
     reject(error)
   }
-  request.on('timeout', endWithError)
+  request.on('timeout', () => endWithError(new Error(`request timeout`)))
   request.on('error', endWithError)
   request.end(body)
 })

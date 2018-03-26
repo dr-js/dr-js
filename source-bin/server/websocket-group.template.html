@@ -16,7 +16,7 @@
 
     button { text-decoration: none; border: 0; background: #ddd; }
 
-    button:hover { background: #eee; }
+    button:hover { background: #eee; box-shadow: inset 0 0 0 1px #aaa; }
 
     @media (pointer: coarse) {
       input, button { min-height: 32px; line-height: 32px; font-size: 18px; }
@@ -53,10 +53,21 @@
   <label for="payload-text">Message Text: </label>
   <textarea id="payload-text" style="min-height: 6em;"></textarea>
   <label>Message File: <input id="payload-file" type="file" /></label>
-  <b id="info"></b>
   <button id="button-send"></button>
 </div>
-<script>
+<script>window.onload = () => {
+  const {
+    Common: {
+      Math: { getRandomInt, getRandomId },
+      Format: { binary }
+    },
+    Browser: {
+      Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
+      Resource: { createDownloadBlob },
+      Input: { createKeyCommandListener }
+    }
+  } = window.Dr
+
   const qS = (selector) => document.querySelector(selector)
   const qSS = (selector, innerHTML) => (qS(selector).innerHTML = innerHTML)
   const cT = (tagName, attributeMap, ...childTagList) => {
@@ -70,17 +81,21 @@
 
   const appendLog = (innerHTML, ...extraTagList) => {
     const log = qS('#log')
-    log.appendChild(cT('p', { innerHTML }, ...extraTagList))
+    const item = cT('p', { innerHTML, id: getRandomId() }, ...extraTagList)
+    log.appendChild(item)
     log.scrollTop = log.scrollHeight
+    return item
   }
 
-  const addLog = ({ id, text, className }) => appendLog('',
-    cT('pre', { innerText: text }),
+  const addLog = ({ id, text, className }) => appendLog(
+    '',
+    cT('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.parentNode.querySelector('pre')) }),
     idTag(id, className),
     timeTag()
   )
-  const addLogWithFile = ({ id, fileName, isSend, className }) => appendLog(isSend ? `send 📄${fileName}` : 'get ',
-    onclick && cT('button', { innerHTML: `📄${fileName}`, onclick }),
+  const addLogWithFile = ({ isSend, id, fileName, fileSize, fileId, className }) => appendLog(
+    isSend ? 'sharing: ' : 'share: ',
+    cT(isSend ? 'b' : 'button', { innerHTML: `📄 ${fileName} (${binary(fileSize)}B)`, onclick: isSend ? null : () => requestFile(id, fileId) }),
     idTag(id, className),
     timeTag()
   )
@@ -92,13 +107,13 @@
     return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURI(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
-  const STATE = {}
+  const STATE = { fileWeakMap: new WeakMap() } // DOM - file-blob
   const onCloseWebSocket = () => {
     addLogAlert(`-- left group: ${STATE.groupPath} --`)
     qS('#setup').style.display = ''
     qS('#main').style.display = 'none'
     qS('#group-path').focus()
-    qSS('#button-toggle', 'Open [Ctrl+d]')
+    qSS('#button-toggle', 'Enter Group [Ctrl+d]')
     document.title = `WebSocket Group`
     STATE.websocket = null
     STATE.groupPath = null
@@ -106,11 +121,11 @@
     STATE.groupInfo = []
   }
   const onOpenWebSocket = ({ websocket, groupPath, id }) => {
-    addLogAlert(`-- joined group: ${groupPath}, as id: ${id} --`)
+    addLogAlert(`-- joined group: ${groupPath}, as: ${id} --`)
     qS('#setup').style.display = 'none'
     qS('#main').style.display = ''
     qS('#payload-text').focus()
-    qSS('#button-toggle', `Close [Ctrl+d]`)
+    qSS('#button-toggle', `Exit Group: ${groupPath} [Ctrl+d]`)
     document.title = `[${groupPath}/${id}]`
     STATE.websocket = websocket
     STATE.groupPath = groupPath
@@ -118,46 +133,72 @@
     STATE.groupInfo = []
   }
 
-  onCloseWebSocket()
+  onCloseWebSocket() // reset STATE
   clearLog()
-</script>
-<script>window.onload = () => {
-  const {
-    Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
-    Resource: { createDownloadBlob },
-    Input: { createKeyCommandListener }
-  } = window.Dr.Browser
+
+  const requestFile = (id, fileId) => {
+    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { fileId, intent: 'request' } })))
+  }
 
   const toggleWebSocket = () => {
     if (STATE.websocket) {
-      STATE.websocket.send(packBlobPacket(JSON.stringify({ type: 'close' })))
+      STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_CLOSE })))
       return
     }
     const groupPath = qS('#group-path').value.trim() || 'public'
-    const id = qS('#id').value.trim() || 'User'
+    const id = qS('#id').value.trim() || getRandomUserId()
     const websocket = new window.WebSocket(getWebSocketGroupUrl(groupPath, id), 'group-binary-packet')
-    websocket.addEventListener('close', onCloseWebSocket)
+    const onOpenInfo = (id) => {
+      qS('#group-path').value = groupPath
+      qS('#id').value = id
+      onOpenWebSocket({ websocket, groupPath, id })
+    }
     websocket.addEventListener('error', onCloseWebSocket)
-    websocket.addEventListener('message', async ({ data }) => {
-      const [ headerString, payloadBlob ] = await parseBlobPacket(data)
-      const { type, payload } = JSON.parse(headerString)
-      if (type === 'buffer') {
-        const { id, text, fileName, fileType } = payload
-        text && addLog({ id, text })
-        fileName && addLogWithFile({ id, fileName, onclick: () => createDownloadBlob(fileName, [ payloadBlob ], fileType) })
-      } else if (type === 'groupInfo') {
-        addLogAlert(`-- group user: ${payload.length}, ${JSON.stringify(payload)} --`)
-        qS('#button-send').disabled = payload.length <= 1
-        qSS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
-        qSS('#info', `group: ${groupPath}, id: ${id}, user: ${payload.length}`)
-        STATE.groupInfo = payload
-      } else if (type === 'userInfo') {
-        const { id } = payload
-        qS('#group-path').value = groupPath
-        qS('#id').value = id
-        onOpenWebSocket({ websocket, groupPath, id })
+    websocket.addEventListener('close', onCloseWebSocket)
+    websocket.addEventListener('message', ({ data }) => onMessage(data, onOpenInfo))
+  }
+
+  const getRandomUserId = () => {
+    const tagList = Object.keys(window)
+    return `User-${tagList[ getRandomInt(tagList.length - 1) ]}`
+  }
+
+  const onMessage = async (data, onOpenInfo) => {
+    const [ headerString, payloadBlob ] = await parseBlobPacket(data)
+    const { type, targetId, payload } = JSON.parse(headerString)
+    if (type === TYPE_INFO_USER) {
+      onOpenInfo(payload.id)
+    } else if (type === TYPE_INFO_GROUP) {
+      addLogAlert(`-- group user[${payload.length}]: ${payload.join(', ')} --`)
+      qS('#button-send').disabled = payload.length <= 1
+      qSS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
+      STATE.groupInfo = payload
+    } else if (type === TYPE_BUFFER_GROUP) {
+      const { id, text, fileName, fileSize, fileId } = payload
+      text && addLog({ id, text })
+      fileName && addLogWithFile({ id, fileName, fileSize, fileId })
+    } else if (type === TYPE_BUFFER_SINGLE) {
+      if (targetId !== STATE.id) throw new Error(`Strange mismatch`) // TODO: test, should not mis send
+      const { id, intent } = payload
+      if (intent === 'request') {
+        const { fileId } = payload
+        const file = STATE.fileWeakMap.get(qS(`#${fileId}`))
+        const fileName = file && file.name
+        const fileType = file && file.type
+        STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { intent: 'response', ok: Boolean(file), fileName, fileType } }), file))
+        addLogAlert(file
+          ? `-- send file: ${fileName} to ${id} --`
+          : `-- missing file request from ${id} --`
+        )
+      } else if (intent === 'response') {
+        const { ok, fileName, fileType } = payload
+        ok && createDownloadBlob(fileName, [ payloadBlob ], fileType)
+        addLogAlert(ok
+          ? `-- get file: ${fileName} from ${id} --`
+          : `-- missing file response from ${id} --`
+        )
       }
-    })
+    }
   }
 
   const sendPayload = () => {
@@ -166,11 +207,13 @@
     const file = qS('#payload-file').files[ 0 ]
     qS('#payload-text').value = ''
     qS('#payload-file').value = ''
+    if (!text && !file) return
     const fileName = file && file.name
-    const fileType = file && file.type
+    const fileSize = file && file.size
     text && addLog({ id: STATE.id, text, className: 'color-self' })
-    fileName && addLogWithFile({ id: STATE.id, fileName, isSend: true, className: 'color-self' })
-    if (text || fileName) STATE.websocket.send(packBlobPacket(JSON.stringify({ type: 'buffer', payload: { text, fileName, fileType } }), file))
+    const fileTag = fileName && addLogWithFile({ isSend: true, id: STATE.id, fileName, fileSize, className: 'color-self' })
+    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
+    fileName && STATE.fileWeakMap.set(fileTag, file)
   }
 
   qS('#button-log-clear').onclick = clearLog
@@ -184,6 +227,7 @@
   addKeyCommand({ target: qS('#group-path'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
   addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
 }</script>
+<script>const [ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE ] = "{TYPE_LIST}"</script>
 <script>"{SCRIPT_DR_BROWSER_JS}"</script>
 </body>
 </html>

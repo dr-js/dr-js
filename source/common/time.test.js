@@ -1,8 +1,5 @@
 import { notEqual } from 'assert'
-import {
-  clock,
-  onNextProperUpdate
-} from './time'
+import { clock, requestFrameUpdate } from './time'
 
 const { describe, it } = global
 
@@ -11,8 +8,8 @@ describe('Common.Time', () => {
     notEqual(clock() - clock(), 0)
   })
 
-  it('onNextProperUpdate() should invoke under 500 msec', () => new Promise((resolve, reject) => {
-    onNextProperUpdate(resolve)
-    setTimeout(() => reject(new Error('onNextProperUpdate did not call after 500msec')), 500)
+  it('requestFrameUpdate() should invoke under 500 msec', () => new Promise((resolve, reject) => {
+    requestFrameUpdate(resolve)
+    setTimeout(() => reject(new Error('requestFrameUpdate did not call after 500msec')), 500)
   }))
 })

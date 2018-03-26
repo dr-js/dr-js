@@ -29,14 +29,16 @@ const autoTestServerPort = async (expectPortList, host) => {
 const BUFFER_DATA_FAVICON_PNG = { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjrv/wbTZJAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==', 'base64'), type: BASIC_EXTENSION_MAP.png }
 const responderSendFavicon = (store) => responderSendBuffer(store, BUFFER_DATA_FAVICON_PNG)
 
-const getServerInfo = (protocol, hostname, port) => [
+const getServerInfo = (title, protocol, hostname, port, extra = []) => `[${title}]${[
+  '',
+  ...extra,
   'running at:',
   `  - '${protocol}//${hostname}:${port}'`,
   ...(hostname === '0.0.0.0' ? [
     'connect at:',
     ...getNetworkIPv4AddressList().map(({ address }) => `  - '${protocol}//${address}:${port}'`)
   ] : [])
-].join('\n')
+].join('\n  ')}`
 
 export {
   getPathContent,

@@ -1,47 +1,35 @@
-import { now, onNextProperUpdate } from 'source/common/time'
+import { now, requestFrameUpdate, cancelFrameUpdate, createTimer } from 'source/common/time'
+import { objectSet, objectDelete } from 'source/common/immutable/Object'
 
-// TODO: reduce code
-const createUpdateLoop = () => {
-  let isActive = false
-  let updateFuncList = [] // index non-constant, will be refreshed on every update
-  let updateFuncMap = new Map() // key constant, will be refreshed on every update
-  let lastUpdateTime = now()
-  let clearUpdate
-
-  const start = () => {
-    isActive = true
-    clearUpdate = onNextProperUpdate(update)
-  }
-
-  const stop = () => {
-    isActive = false
-    clearUpdate()
-  }
+const createUpdater = () => {
+  let funcList = [] // prefer drop, index non-constant, will be refreshed on every update
+  let funcMap = {} // prefer keep, key constant, will be refreshed on every update
+  let prevTime = now()
 
   const clear = () => {
-    updateFuncList = [] // index non-constant, will be refreshed on every update
-    updateFuncMap = new Map() // key constant, will be refreshed on every update
+    funcList = []
+    funcMap = {}
   }
-
-  const add = (updateFunc, key) => key ? updateFuncMap.set(key, updateFunc) : updateFuncList.push(updateFunc)
-
+  const pushFunc = (func) => { funcList.push(func) }
+  const setFunc = (key, func) => { funcMap = objectSet(funcMap, key, func) } // will replace
+  const deleteFunc = (key) => { funcMap = objectDelete(funcMap, key) }
   const update = () => {
-    const currentUpdateTime = now()
-    const deltaTime = currentUpdateTime - lastUpdateTime
-    lastUpdateTime = currentUpdateTime
-
-    const nextUpdateFuncList = []
-    updateFuncList.forEach((updateFunc) => updateFunc(deltaTime) && nextUpdateFuncList.push(updateFunc))
-    updateFuncList = nextUpdateFuncList
-
-    const nextUpdateFuncMap = new Map()
-    updateFuncMap.forEach((updateFunc, key) => updateFunc(deltaTime) && nextUpdateFuncMap.set(key, updateFunc))
-    updateFuncMap = nextUpdateFuncMap
-
-    if (isActive) clearUpdate = onNextProperUpdate(update)
+    const time = now()
+    const deltaTime = time - prevTime
+    const doUpdate = (func) => func(deltaTime)
+    prevTime = time
+    if (funcList.length) funcList = funcList.filter(doUpdate) // return true to quit update
+    Object.values(funcMap).forEach(doUpdate)
   }
 
-  return { start, stop, clear, add }
+  return { clear, pushFunc, setFunc, deleteFunc, update }
 }
 
-export { createUpdateLoop }
+const createUpdateLoop = (option = {}) => {
+  const { queueTask = requestFrameUpdate, cancelTask = cancelFrameUpdate, delay } = option
+  const { clear, pushFunc, setFunc, deleteFunc, update } = createUpdater()
+  const { start, stop } = createTimer({ func: update, queueTask, cancelTask, delay })
+  return { start, stop, clear, pushFunc, setFunc, deleteFunc }
+}
+
+export { createUpdater, createUpdateLoop }
