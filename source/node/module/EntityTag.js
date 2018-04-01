@@ -1,9 +1,19 @@
 import { createHash } from 'crypto'
+import { receiveBufferAsync } from 'source/node/data/Buffer'
 
 const getEntityTagByContentHash = (buffer) => {
   const length = buffer.length.toString(16)
-  const hash = createHash('sha1').update(buffer).digest('base64') // TODO: this is sync code
-  return `"${length}-${hash}"`
+  const hashString = createHash('sha1').update(buffer).digest('base64') // TODO: this is sync code
+  return `"${length}-${hashString}"`
+}
+
+const getEntityTagByContentHashAsync = async (buffer) => {
+  const length = buffer.length.toString(16)
+  const hash = createHash('sha1')
+  hash.write(buffer)
+  hash.end()
+  const hashBuffer = await receiveBufferAsync(hash)
+  return `"${length}-${hashBuffer.toString('base64')}"`
 }
 
 const getWeakEntityTagByStat = (stat) => {
@@ -14,5 +24,6 @@ const getWeakEntityTagByStat = (stat) => {
 
 export {
   getEntityTagByContentHash,
+  getEntityTagByContentHashAsync,
   getWeakEntityTagByStat
 }

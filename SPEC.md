@@ -11,6 +11,8 @@
   - `isString`, `isNumber`, `isInteger`, `isBasicObject`, `isObjectKey`, `isObjectContain`, `isBasicArray`, `isArrayLength`, `isBasicFunction`, `isOneOf`
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
++ 📄 [source/common/error.js](source/common/error.js)
+  - `throwInfo`, `catchSync`, `catchAsync`
 + 📄 [source/common/format.js](source/common/format.js)
   - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -31,8 +33,6 @@
   - `ListMap`
 + 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
   - `createSaveQueue`
-+ 📄 [source/common/data/SemVer.js](source/common/data/SemVer.js)
-  - `parseSemVer`, `compareSemVer`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
   - `SetMap`
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
@@ -75,6 +75,8 @@
   - `DEFAULT_MIME`, `BASIC_MIME_LIST_MAP`, `BASIC_EXTENSION_MAP`, `getMIMETypeFromFileName`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `parseRouteToMap`, `findRouteFromMap`, `appendRouteMap`, `createRouteMap`, `parseRouteUrl`, `getRouteParamAny`, `getRouteParam`
++ 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
+  - `parseSemVer`, `compareSemVer`
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
@@ -122,7 +124,7 @@
 + 📄 [source/node/file/function.js](source/node/file/function.js)
   - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createPathPrefixLock`, `toPosixPath`, `trimPathDepth`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
-  - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
+  - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
   - `createFactDatabase`, `tryDeleteExtraCache`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
@@ -207,8 +209,6 @@
       - `ListMap`
     - **SaveQueue**
       - `createSaveQueue`
-    - **SemVer**
-      - `parseSemVer`, `compareSemVer`
     - **SetMap**
       - `SetMap`
     - **Toggle**
@@ -263,6 +263,8 @@
       - `DEFAULT_MIME`, `BASIC_MIME_LIST_MAP`, `BASIC_EXTENSION_MAP`, `getMIMETypeFromFileName`
     - **RouteMap**
       - `parseRouteToMap`, `findRouteFromMap`, `appendRouteMap`, `createRouteMap`, `parseRouteUrl`, `getRouteParamAny`, `getRouteParam`
+    - **SemVer**
+      - `parseSemVer`, `compareSemVer`
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **UpdateLoop**
@@ -274,6 +276,8 @@
     - `isString`, `isNumber`, `isInteger`, `isBasicObject`, `isObjectKey`, `isObjectContain`, `isBasicArray`, `isArrayLength`, `isBasicFunction`, `isOneOf`
   - **Compare**
     - `compareString`, `compareStringLocale`
+  - **Error**
+    - `throwInfo`, `catchSync`, `catchAsync`
   - **Format**
     - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
   - **Function**
@@ -306,7 +310,7 @@
     - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createPathPrefixLock`, `toPosixPath`, `trimPathDepth`
   - **Module**
     - **EntityTag**
-      - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
+      - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **FactDatabase**
       - `createFactDatabase`, `tryDeleteExtraCache`
     - **Logger**

@@ -1547,7 +1547,7 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-tool@^0.1.1-dev.1:
+dev-dep-tool@0.1.1-dev.1:
   version "0.1.1-dev.1"
   resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.1.1-dev.1.tgz#1f6006987558ac9eaad9ff5f55338f1f053253e0"
   dependencies:
@@ -1608,9 +1608,9 @@ domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
-dr-js@^0.13.0-dev.0:
-  version "0.13.0-dev.0"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0-dev.0.tgz#43e3b659c266d1d341188a2c22b9970137f99bc2"
+dr-js@^0.13.0-dev.0, dr-js@^0.13.0-dev.1:
+  version "0.13.0-dev.1"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0-dev.1.tgz#c455c3d7f323c650b0d9295575c67de3dc8dca29"
 
 duplexer@^0.1.1:
   version "0.1.1"

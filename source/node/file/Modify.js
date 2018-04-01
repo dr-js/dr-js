@@ -1,4 +1,5 @@
 import { resolve, relative, dirname } from 'path'
+import { catchAsync } from 'source/common/error'
 import { nearestExistAsync, trimPathDepth } from './function'
 import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
 import { getDirectoryContent, copyDirectoryContent, deleteDirectoryContent } from './Directory'
@@ -52,18 +53,12 @@ const withTempDirectory = async (tempPath, asyncTask) => {
   const existPath = await nearestExistAsync(tempPath)
   await createDirectory(tempPath) // also check tempPath is Directory
   if (existPath === tempPath) return asyncTask()
-
   const deletePath = resolve(existPath, trimPathDepth(relative(existPath, tempPath), 1))
   __DEV__ && console.log('[withTempDirectory]', { tempPath, deletePath })
-
-  try {
-    const result = await asyncTask()
-    await deleteDirectory(deletePath)
-    return result
-  } catch (error) {
-    await deleteDirectory(deletePath)
-    throw error
-  }
+  const { result, error } = await catchAsync(asyncTask)
+  await deleteDirectory(deletePath)
+  if (error) throw error
+  return result
 }
 
 export {

@@ -1,3 +1,5 @@
+import { catchAsync } from 'source/common/error'
+
 const createSaveQueue = ({ beforeSave, doSave, afterSave, onError }) => {
   let dataQueue = []
   let isSaving = false
@@ -6,18 +8,14 @@ const createSaveQueue = ({ beforeSave, doSave, afterSave, onError }) => {
     if (isSaving) throw new Error(`[saveAsync] already saving`)
     if (!dataQueue.length) return
     const savingDataQueue = dataQueue
-    clear()
+    dataQueue = []
     isSaving = true
-    beforeSave()
-    try {
-      const result = await doSave(savingDataQueue)
-      isSaving = false
-      afterSave()
-      return result
-    } catch (error) {
-      isSaving = false
-      onError(error)
-    }
+    beforeSave && beforeSave()
+    const { result, error } = await catchAsync(doSave, savingDataQueue)
+    isSaving = false
+    afterSave && afterSave()
+    if (error) onError(error)
+    else return result
   }
 
   const getLength = () => dataQueue.length

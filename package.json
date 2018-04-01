@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.13.0-dev.1",
+  "version": "0.13.0-dev.2",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -33,11 +33,11 @@
     "build-library-babel-dev": "cross-env BABEL_ENV=dev yarn build-library-babel --watch",
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "// test ========================": "",
-    "test-mocha-common": "mocha --require @babel/register source/common/**/*.test.js",
-    "test-mocha-node": "mocha --require @babel/register source/node/**/*.test.js",
-    "test-mocha-browser": "mocha --require @babel/register source/browser/**/*.test.js",
-    "test-mocha-source": "mocha --require @babel/register source/**/*.test.js",
-    "test-mocha-output": "mocha --require @babel/register output-gitignore/**/*.test.js",
+    "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
+    "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
+    "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
+    "test-mocha-source": "mocha --require @babel/register \"source/**/*.test.js\"",
+    "test-mocha-output": "mocha --require @babel/register \"output-gitignore/**/*.test.js\"",
     "// =============================": "",
     "analyze-stat": "webpack-bundle-analyzer ./profile-stat-gitignore.json",
     "test": "yarn script-pack-test",
@@ -49,9 +49,9 @@
     "yarn": ">=1.5.0"
   },
   "devDependencies": {
-    "dev-dep-tool": "^0.1.1-dev.1",
+    "dev-dep-tool": "0.1.1-dev.1",
     "dev-dep-web": "^0.1.1-dev.1",
-    "dr-js": "^0.13.0-dev.0",
+    "dr-js": "^0.13.0-dev.1",
     "webpack-bundle-analyzer": "^2.11.1"
   },
   "sideEffects": false

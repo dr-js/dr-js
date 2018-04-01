@@ -38,14 +38,12 @@ const createFileWatcher = ({
     // content change: path-change/file-content/directory-file-list
     const targetStat = await lstatAsync(targetPath).catch(getNull)
     const isPathChange = Boolean(prevTargetStat) !== Boolean(targetStat)
-    const isContentChange = isPathChange || Boolean(targetStat && targetStat.mtimeMs !== prevTargetStat.mtimeMs)
 
     if (!targetStat && targetPath === watcherPath) await setupWatch() // renamed, not the target any more
 
-    __DEV__ && console.log(`emitThrottled`, { isPathChange, isContentChange }, Boolean(prevTargetStat), Boolean(targetStat))
-    if (!isPathChange && !isContentChange) return
+    __DEV__ && console.log(`emitThrottled`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
 
-    const changeState = { targetPath, isPathChange, isContentChange, targetStat }
+    const changeState = { targetPath, isPathChange, targetStat }
     prevTargetStat = targetStat
     hub.send(changeState)
   }, wait)

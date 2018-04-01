@@ -25,7 +25,9 @@ const createUpdateRequestListener = ({
   stateStore.response = { finished: true } // disabled response
   stateStore.webSocket = webSocket
   stateStore.bodyHeadBuffer = bodyHeadBuffer
-  try { for (const responder of responderList) await responder(stateStore) } catch (error) { responderError(stateStore, error) }
+  try {
+    for (const responder of responderList) await responder(stateStore)
+  } catch (error) { responderError(stateStore, error) }
   return stateStore.getState().protocol
 }
 

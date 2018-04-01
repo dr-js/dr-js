@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from 'child_process'
+import { catchAsync } from 'source/common/error'
 import { receiveBufferAsync } from 'source/node/data/Buffer'
 
 const getExitError = (error, exitData) => Object.assign(
@@ -37,14 +38,10 @@ const runQuiet = (runConfig) => {
 const withCwd = (pathCwd, taskAsync) => async (...args) => {
   const prevCwd = process.cwd()
   process.chdir(pathCwd)
-  try {
-    const result = await taskAsync(...args)
-    process.chdir(prevCwd)
-    return result
-  } catch (error) {
-    process.chdir(prevCwd)
-    throw error
-  }
+  const { result, error } = await catchAsync(taskAsync, ...args)
+  process.chdir(prevCwd)
+  if (error) throw error
+  return result
 }
 
 export {
