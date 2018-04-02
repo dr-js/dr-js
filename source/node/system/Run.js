@@ -25,7 +25,7 @@ const runSync = ({ command, argList = [], option }) => {
 }
 
 const runQuiet = (runConfig) => {
-  runConfig.config = { stdio: [ 'ignore', 'pipe', 'pipe' ], ...runConfig.config }
+  runConfig.option = { stdio: [ 'ignore', 'pipe', 'pipe' ], ...runConfig.option }
   const { subProcess: { stdout, stderr }, promise } = run(runConfig)
   const stdoutBufferPromise = receiveBufferAsync(stdout)
   const stderrBufferPromise = receiveBufferAsync(stderr)
