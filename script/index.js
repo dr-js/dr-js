@@ -128,6 +128,6 @@ runMain(async (logger) => {
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })
-  await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: process.argv, packageJSON, fromOutput, logger })
+  const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
+  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
 }, getLogger(process.argv.slice(2).join('+'), argvFlag('quiet')))

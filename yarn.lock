@@ -1458,11 +1458,11 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-tool@0.1.1-dev.1:
-  version "0.1.1-dev.1"
-  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.1.1-dev.1.tgz#1f6006987558ac9eaad9ff5f55338f1f053253e0"
+dev-dep-tool@0.2.0-dev.0:
+  version "0.2.0-dev.0"
+  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.2.0-dev.0.tgz#2b270b378f92b1757d4bc088274ccfd354fbc3cb"
   dependencies:
-    dr-js "^0.13.0-dev.0"
+    dr-js "0.13.0-dev.2"
 
 dev-dep-web@0.2.0-dev.0:
   version "0.2.0-dev.0"
@@ -1519,9 +1519,13 @@ domain-browser@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
 
-dr-js@0.13.0-dev.2, dr-js@^0.13.0-dev.0:
+dr-js@0.13.0-dev.2:
   version "0.13.0-dev.2"
   resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0-dev.2.tgz#d0a054b49f162e9834d09265ebd6998c8551f22e"
+
+dr-js@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0.tgz#b8886eb422fd21a735a5da519b583fdb26c38b33"
 
 duplexer@^0.1.1:
   version "0.1.1"

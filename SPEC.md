@@ -6,21 +6,51 @@
 
 #### Export Path
 + 📄 [source/env.js](source/env.js)
-  - `getGlobal`, `getEnvironment`, `getSystemEndianness`, `assert`, `global`
+  - `assert`, `getEnvironment`, `getGlobal`, `getSystemEndianness`, `global`
++ 📄 [source/browser/DOM.js](source/browser/DOM.js)
+  - `applyDragFileListListener`, `throttleByAnimationFrame`
++ 📄 [source/browser/input.js](source/browser/input.js)
+  - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `applyPointerEventListener`, `createKeyCommandListener`
++ 📄 [source/browser/net.js](source/browser/net.js)
+  - `fetchLikeRequest`
++ 📄 [source/browser/resource.js](source/browser/resource.js)
+  - `createDownload`, `createDownloadBlob`, `createDownloadText`, `loadImage`, `loadScript`, `loadText`
++ 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
+  - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
++ 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
+  - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
++ 📄 [source/browser/font/fontGenerator.js](source/browser/font/fontGenerator.js)
+  - `createFontGenerator`
++ 📄 [source/browser/font/fontGeneratorBitmap.js](source/browser/font/fontGeneratorBitmap.js)
+  - `createFontGeneratorBitmap`
++ 📄 [source/browser/font/fontMapper.js](source/browser/font/fontMapper.js)
+  - `createFontMapper`
++ 📄 [source/browser/font/fontRender.js](source/browser/font/fontRender.js)
+  - `createFontRender`
++ 📄 [source/browser/font/fontRenderBitmap.js](source/browser/font/fontRenderBitmap.js)
+  - `createFontRenderBitmap`
++ 📄 [source/browser/graphic/CanvasImageDataOperation.js](source/browser/graphic/CanvasImageDataOperation.js)
+  - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
++ 📄 [source/browser/graphic/Color.js](source/browser/graphic/Color.js)
+  - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
++ 📄 [source/browser/graphic/ImageData.js](source/browser/graphic/ImageData.js)
+  - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
++ 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
+  - `createHistoryStateStore`
 + 📄 [source/common/check.js](source/common/check.js)
-  - `isString`, `isNumber`, `isInteger`, `isBasicObject`, `isObjectKey`, `isObjectContain`, `isBasicArray`, `isArrayLength`, `isBasicFunction`, `isOneOf`
+  - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `throwInfo`, `catchSync`, `catchAsync`
+  - `catchAsync`, `catchSync`, `throwInfo`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
+  - `binary`, `describe`, `escapeHTML`, `padTable`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`
+  - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `requestFrameUpdate`, `cancelFrameUpdate`, `createTimer`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
-  - `string`, `number`, `integer`, `basicObject`, `objectKey`, `objectContain`, `basicArray`, `arrayLength`, `basicFunction`, `oneOf`
+  - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `CacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
@@ -42,45 +72,45 @@
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
   - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
 + 📄 [source/common/geometry/D2/BoundingRect.js](source/common/geometry/D2/BoundingRect.js)
-  - `fromEmpty`, `fromPoint`, `fromWidget`, `fromWidgetList`, `getCenter`, `getUnion`, `isIntersect`, `isContainPoint`
+  - `fromEmpty`, `fromPoint`, `fromWidget`, `fromWidgetList`, `getCenter`, `getUnion`, `isContainPoint`, `isIntersect`
 + 📄 [source/common/geometry/D2/Line.js](source/common/geometry/D2/Line.js)
   - `fromWidget`
 + 📄 [source/common/geometry/D2/Rect.js](source/common/geometry/D2/Rect.js)
-  - `fromEmpty`, `fromPoint`, `fromBoundingRect`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isEmpty`, `isIntersect`, `isContain`, `isContainPoint`
+  - `fromBoundingRect`, `fromEmpty`, `fromPoint`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isContain`, `isContainPoint`, `isEmpty`, `isIntersect`
 + 📄 [source/common/geometry/D2/Vector.js](source/common/geometry/D2/Vector.js)
-  - `fromOrigin`, `fromAngleLength`, `getLength`, `getLengthSq`, `getDist`, `getDistSq`, `getAngle`, `getRotate`, `getRotateDelta`, `add`, `sub`, `multiply`, `divide`, `scale`, `min`, `max`, `clamp`, `abs`, `round`
+  - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
 + 📄 [source/common/geometry/D2/Widget.js](source/common/geometry/D2/Widget.js)
-  - `fromPoint`, `fromLine`, `fromBoundingRect`, `getBoundingSize`, `getBoundingWidth`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingTop`, `getBoundingBottom`, `round`, `localPoint`, `localBoundingRect`, `isContainBoundingRect`, `isInterceptBoundingRect`
+  - `fromBoundingRect`, `fromLine`, `fromPoint`, `getBoundingBottom`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingSize`, `getBoundingTop`, `getBoundingWidth`, `isContainBoundingRect`, `isInterceptBoundingRect`, `localBoundingRect`, `localPoint`, `round`
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
-  - `arraySet`, `arrayDelete`, `arrayInsert`, `arrayMove`, `arrayPush`, `arrayUnshift`, `arrayPop`, `arrayShift`, `arrayConcat`, `arrayMatchPush`, `arrayMatchDelete`, `arrayMatchMove`, `arrayFindPush`, `arrayFindDelete`, `arrayFindMove`, `arrayFindSet`, `arraySplitChunk`
+  - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectSet`, `objectDelete`, `objectMerge`
+  - `objectDelete`, `objectMerge`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
-  - `createStateStore`, `createStateStoreLite`, `createStateStoreEnhanced`, `toReduxStore`, `reducerFromMap`, `createEntryEnhancer`, `createStoreStateSyncReducer`
+  - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/function.js](source/common/immutable/function.js)
-  - `transformCache`, `createTransformCacheWithInfo`
+  - `createTransformCacheWithInfo`, `transformCache`
 + 📄 [source/common/math/base.js](source/common/math/base.js)
-  - `roundFloat`, `clamp`, `euclideanModulo`, `smoothstep`
+  - `clamp`, `euclideanModulo`, `roundFloat`, `smoothstep`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
-  - `getRandomInt`, `getRandomIntList`, `getRandomId`
+  - `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
   - `createAsyncTaskQueue`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
-  - `createHub`, `createEventTarget`, `createEventEmitter`
+  - `createEventEmitter`, `createEventTarget`, `createHub`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
-  - `concatKeyFrag`, `reduceKeySelector`, `createMultiKeySwitch`
+  - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
 + 📄 [source/common/module/LevenshteinDistance.js](source/common/module/LevenshteinDistance.js)
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
-  - `DEFAULT_MIME`, `BASIC_MIME_LIST_MAP`, `BASIC_EXTENSION_MAP`, `getMIMETypeFromFileName`
+  - `BASIC_EXTENSION_MAP`, `BASIC_MIME_LIST_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
-  - `parseRouteToMap`, `findRouteFromMap`, `appendRouteMap`, `createRouteMap`, `parseRouteUrl`, `getRouteParamAny`, `getRouteParam`
+  - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
-  - `parseSemVer`, `compareSemVer`
+  - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
-  - `createUpdater`, `createUpdateLoop`
+  - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
   - `createOptionParser`
 + 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
@@ -94,15 +124,15 @@
 + 📄 [source/common/module/StateSchema/ObjectSchema.js](source/common/module/StateSchema/ObjectSchema.js)
   - `createObjectSchema`
 + 📄 [source/common/module/StateSchema/actMap.js](source/common/module/StateSchema/actMap.js)
-  - `objectActMap`, `arrayActMap`
+  - `arrayActMap`, `objectActMap`
 + 📄 [source/common/module/StateSchema/function.js](source/common/module/StateSchema/function.js)
-  - `SCHEMA_MARK`, `isSchemaObject`, `toStructJSONWithCheck`, `getActionReducer`, `getReducer`
+  - `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
   - `objectMergeDeep`, `objectSortKey`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `urlToOption`, `requestAsync`, `fetch`, `ping`
+  - `fetch`, `ping`, `requestAsync`, `urlToOption`
 + 📄 [source/node/resource.js](source/node/resource.js)
-  - `loadRemoteScript`, `loadLocalScript`, `loadScript`, `loadRemoteJSON`, `loadLocalJSON`, `loadJSON`
+  - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
   - `receiveBufferAsync`, `sendBufferAsync`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
@@ -112,17 +142,17 @@
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `pipeStreamAsync`
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
-  - `compressFile`, `compressFileList`, `checkBloat`
+  - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `getDirectoryContentNameList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+  - `copyDirectoryContent`, `deleteDirectoryContent`, `getDirectoryContent`, `getDirectoryContentNameList`, `getDirectoryContentShallow`, `getFileList`, `moveDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`
 + 📄 [source/node/file/File.js](source/node/file/File.js)
-  - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
+  - `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathType`, `movePath`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
-  - `copyFile`, `moveFile`, `deleteFile`, `copyDirectory`, `moveDirectory`, `deleteDirectory`, `modify`, `withTempDirectory`
+  - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `moveDirectory`, `moveFile`, `withTempDirectory`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createPathPrefixLock`, `toPosixPath`, `trimPathDepth`
+  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -130,19 +160,19 @@
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/Option.js](source/node/module/Option.js)
-  - `parseOptionMap`, `createOptionGetter`
+  - `createOptionGetter`, `parseOptionMap`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
-  - `createServer`, `createRequestListener`, `getUnusedPort`
+  - `createRequestListener`, `createServer`, `getUnusedPort`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
-  - `responderEnd`, `responderEndWithStatusCode`, `responderEndWithRedirect`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendStream`, `responderSendStreamRange`, `responderSendJSON`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `AccessorMap`
+  - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `createRouteMap`, `createResponderRouter`, `appendRouteMap`, `getRouteParamAny`, `getRouteParam`
+  - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
-  - `FrameSender`, `FrameReceiver`
+  - `FrameReceiver`, `FrameSender`
 + 📄 [source/node/server/WebSocket/WebSocketBase.js](source/node/server/WebSocket/WebSocketBase.js)
   - `WebSocketBase`
 + 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
@@ -152,7 +182,7 @@
 + 📄 [source/node/server/WebSocket/WebSocketUpgradeRequest.js](source/node/server/WebSocket/WebSocketUpgradeRequest.js)
   - `createUpdateRequestListener`
 + 📄 [source/node/server/WebSocket/type.js](source/node/server/WebSocket/type.js)
-  - `FRAME_TYPE_CONFIG_MAP`, `DATA_TYPE_MAP`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `DEFAULT_FRAME_LENGTH_LIMIT`, `WEB_SOCKET_VERSION`, `WEB_SOCKET_EVENT_MAP`, `getRequestKey`, `getRespondKey`
+  - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
 + 📄 [source/node/system/DefaultOpen.js](source/node/system/DefaultOpen.js)
   - `getDefaultOpen`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
@@ -162,39 +192,35 @@
 + 📄 [source/node/system/REPL.js](source/node/system/REPL.js)
   - `startREPL`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
-  - `run`, `runSync`, `runQuiet`, `withCwd`
-+ 📄 [source/browser/DOM.js](source/browser/DOM.js)
-  - `throttleByAnimationFrame`, `applyDragFileListListener`
-+ 📄 [source/browser/input.js](source/browser/input.js)
-  - `POINTER_EVENT_TYPE`, `applyPointerEventListener`, `ENHANCED_POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `createKeyCommandListener`
-+ 📄 [source/browser/net.js](source/browser/net.js)
-  - `fetchLikeRequest`
-+ 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `loadText`, `loadImage`, `loadScript`, `createDownload`, `createDownloadText`, `createDownloadBlob`
-+ 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
-  - `Blob`, `parseBlobAsText`, `parseBlobAsDataURL`, `parseBlobAsArrayBuffer`
-+ 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
-  - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
-+ 📄 [source/browser/font/fontGenerator.js](source/browser/font/fontGenerator.js)
-  - `createFontGenerator`
-+ 📄 [source/browser/font/fontGeneratorBitmap.js](source/browser/font/fontGeneratorBitmap.js)
-  - `createFontGeneratorBitmap`
-+ 📄 [source/browser/font/fontMapper.js](source/browser/font/fontMapper.js)
-  - `createFontMapper`
-+ 📄 [source/browser/font/fontRender.js](source/browser/font/fontRender.js)
-  - `createFontRender`
-+ 📄 [source/browser/font/fontRenderBitmap.js](source/browser/font/fontRenderBitmap.js)
-  - `createFontRenderBitmap`
-+ 📄 [source/browser/graphic/CanvasImageDataOperation.js](source/browser/graphic/CanvasImageDataOperation.js)
-  - `getPixelColor`, `replacePixelColor`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `scale`, `crop`, `floodFill`
-+ 📄 [source/browser/graphic/Color.js](source/browser/graphic/Color.js)
-  - `getUint32RGBA`, `getRGBAFromUint32RGBA`, `getHexFromRGBA`, `getHexFromRGB`
-+ 📄 [source/browser/graphic/ImageData.js](source/browser/graphic/ImageData.js)
-  - `getQuickCanvas`, `getQuickContext2d`, `createImageElement`, `createCanvasElement`, `createCanvasImageData`, `applyImageElementExt`, `applyCanvasElementExt`, `applyCanvasImageDataExt`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`
-+ 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
-  - `createHistoryStateStore`
+  - `run`, `runQuiet`, `runSync`, `withCwd`
 
 #### Export Tree
+- **Browser**
+  - **Data**
+    - **Blob**
+      - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
+    - **BlobPacket**
+      - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
+  - **Font**
+    - `createFontGenerator`, `createFontGeneratorBitmap`, `createFontMapper`, `createFontRender`, `createFontRenderBitmap`
+  - **Graphic**
+    - **CanvasImageDataOperation**
+      - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
+    - **Color**
+      - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
+    - **ImageData**
+      - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
+  - **Module**
+    - **HistoryStateStore**
+      - `createHistoryStateStore`
+  - **DOM**
+    - `applyDragFileListListener`, `throttleByAnimationFrame`
+  - **Input**
+    - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `applyPointerEventListener`, `createKeyCommandListener`
+  - **Net**
+    - `fetchLikeRequest`
+  - **Resource**
+    - `createDownload`, `createDownloadBlob`, `createDownloadText`, `loadImage`, `loadScript`, `loadText`
 - **Common**
   - **Data**
     - **CacheMap**
@@ -217,27 +243,27 @@
   - **Geometry**
     - **D2**
       - **BoundingRect**
-        - `fromEmpty`, `fromPoint`, `fromWidget`, `fromWidgetList`, `getCenter`, `getUnion`, `isIntersect`, `isContainPoint`
+        - `fromEmpty`, `fromPoint`, `fromWidget`, `fromWidgetList`, `getCenter`, `getUnion`, `isContainPoint`, `isIntersect`
       - **Line**
         - `fromWidget`
       - **Rect**
-        - `fromEmpty`, `fromPoint`, `fromBoundingRect`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isEmpty`, `isIntersect`, `isContain`, `isContainPoint`
+        - `fromBoundingRect`, `fromEmpty`, `fromPoint`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isContain`, `isContainPoint`, `isEmpty`, `isIntersect`
       - **Vector**
-        - `fromOrigin`, `fromAngleLength`, `getLength`, `getLengthSq`, `getDist`, `getDistSq`, `getAngle`, `getRotate`, `getRotateDelta`, `add`, `sub`, `multiply`, `divide`, `scale`, `min`, `max`, `clamp`, `abs`, `round`
+        - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
       - **Widget**
-        - `fromPoint`, `fromLine`, `fromBoundingRect`, `getBoundingSize`, `getBoundingWidth`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingTop`, `getBoundingBottom`, `round`, `localPoint`, `localBoundingRect`, `isContainBoundingRect`, `isInterceptBoundingRect`
+        - `fromBoundingRect`, `fromLine`, `fromPoint`, `getBoundingBottom`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingSize`, `getBoundingTop`, `getBoundingWidth`, `isContainBoundingRect`, `isInterceptBoundingRect`, `localBoundingRect`, `localPoint`, `round`
     - **Angle**
       - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
   - **Immutable**
     - **Array**
-      - `arraySet`, `arrayDelete`, `arrayInsert`, `arrayMove`, `arrayPush`, `arrayUnshift`, `arrayPop`, `arrayShift`, `arrayConcat`, `arrayMatchPush`, `arrayMatchDelete`, `arrayMatchMove`, `arrayFindPush`, `arrayFindDelete`, `arrayFindMove`, `arrayFindSet`, `arraySplitChunk`
+      - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectSet`, `objectDelete`, `objectMerge`
+      - `objectDelete`, `objectMerge`, `objectSet`
     - **StateStore**
-      - `createStateStore`, `createStateStoreLite`, `createStateStoreEnhanced`, `toReduxStore`, `reducerFromMap`, `createEntryEnhancer`, `createStoreStateSyncReducer`
-    - `transformCache`, `createTransformCacheWithInfo`
+      - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
+    - `createTransformCacheWithInfo`, `transformCache`
   - **Math**
-    - `roundFloat`, `clamp`, `euclideanModulo`, `smoothstep`, `getRandomInt`, `getRandomIntList`, `getRandomId`
+    - `clamp`, `euclideanModulo`, `roundFloat`, `smoothstep`, `getRandomId`, `getRandomInt`, `getRandomIntList`
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
@@ -250,42 +276,42 @@
         - `ObjectAs`
       - **ObjectSchema**
         - `createObjectSchema`
-      - `objectActMap`, `arrayActMap`, `SCHEMA_MARK`, `isSchemaObject`, `toStructJSONWithCheck`, `getActionReducer`, `getReducer`
+      - `arrayActMap`, `objectActMap`, `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
     - **AsyncTaskQueue**
       - `createAsyncTaskQueue`
     - **Event**
-      - `createHub`, `createEventTarget`, `createEventEmitter`
+      - `createEventEmitter`, `createEventTarget`, `createHub`
     - **KeySelector**
-      - `concatKeyFrag`, `reduceKeySelector`, `createMultiKeySwitch`
+      - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
     - **LevenshteinDistance**
       - `getLevenshteinDistance`
     - **MIME**
-      - `DEFAULT_MIME`, `BASIC_MIME_LIST_MAP`, `BASIC_EXTENSION_MAP`, `getMIMETypeFromFileName`
+      - `BASIC_EXTENSION_MAP`, `BASIC_MIME_LIST_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
     - **RouteMap**
-      - `parseRouteToMap`, `findRouteFromMap`, `appendRouteMap`, `createRouteMap`, `parseRouteUrl`, `getRouteParamAny`, `getRouteParam`
+      - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **SemVer**
-      - `parseSemVer`, `compareSemVer`
+      - `compareSemVer`, `parseSemVer`
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **UpdateLoop**
-      - `createUpdater`, `createUpdateLoop`
+      - `createUpdateLoop`, `createUpdater`
   - **Mutable**
     - **Object**
       - `objectMergeDeep`, `objectSortKey`
   - **Check**
-    - `isString`, `isNumber`, `isInteger`, `isBasicObject`, `isObjectKey`, `isObjectContain`, `isBasicArray`, `isArrayLength`, `isBasicFunction`, `isOneOf`
+    - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
   - **Compare**
     - `compareString`, `compareStringLocale`
   - **Error**
-    - `throwInfo`, `catchSync`, `catchAsync`
+    - `catchAsync`, `catchSync`, `throwInfo`
   - **Format**
-    - `describe`, `time`, `binary`, `padTable`, `escapeHTML`, `unescapeHTML`, `stringIndentLine`, `stringListJoinCamelCase`
+    - `binary`, `describe`, `escapeHTML`, `padTable`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
-    - `debounce`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`, `createInsideOutPromise`, `promiseQueue`
+    - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `clock`, `now`, `getTimestamp`, `setTimeoutAsync`, `setTimeoutPromise`, `requestFrameUpdate`, `cancelFrameUpdate`, `createTimer`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
-    - `string`, `number`, `integer`, `basicObject`, `objectKey`, `objectContain`, `basicArray`, `arrayLength`, `basicFunction`, `oneOf`
+    - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 - **Node**
   - **Data**
     - **Buffer**
@@ -298,16 +324,16 @@
       - `pipeStreamAsync`
   - **File**
     - **Compress**
-      - `compressFile`, `compressFileList`, `checkBloat`
+      - `checkBloat`, `compressFile`, `compressFileList`
     - **Directory**
-      - `getDirectoryContentNameList`, `getDirectoryContent`, `getDirectoryContentShallow`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`, `copyDirectoryContent`, `moveDirectoryContent`, `deleteDirectoryContent`, `getFileList`
+      - `copyDirectoryContent`, `deleteDirectoryContent`, `getDirectoryContent`, `getDirectoryContentNameList`, `getDirectoryContentShallow`, `getFileList`, `moveDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`
     - **File**
-      - `FILE_TYPE`, `getPathType`, `createDirectory`, `deletePath`, `movePath`, `copyPath`
+      - `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathType`, `movePath`
     - **Modify**
-      - `copyFile`, `moveFile`, `deleteFile`, `copyDirectory`, `moveDirectory`, `deleteDirectory`, `modify`, `withTempDirectory`
+      - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `moveDirectory`, `moveFile`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `statAsync`, `lstatAsync`, `renameAsync`, `unlinkAsync`, `accessAsync`, `visibleAsync`, `readableAsync`, `writableAsync`, `executableAsync`, `mkdirAsync`, `rmdirAsync`, `readdirAsync`, `readFileAsync`, `writeFileAsync`, `copyFileAsync`, `nearestExistAsync`, `createReadStream`, `createWriteStream`, `createPathPrefixLock`, `toPosixPath`, `trimPathDepth`
+    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -316,20 +342,20 @@
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **Option**
-      - `parseOptionMap`, `createOptionGetter`
+      - `createOptionGetter`, `parseOptionMap`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
     - **Responder**
       - **Common**
-        - `responderEnd`, `responderEndWithStatusCode`, `responderEndWithRedirect`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendStream`, `responderSendStreamRange`, `responderSendJSON`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `AccessorMap`
+        - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
       - **Router**
-        - `createRouteMap`, `createResponderRouter`, `appendRouteMap`, `getRouteParamAny`, `getRouteParam`
+        - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**
       - **Frame**
-        - `FrameSender`, `FrameReceiver`
+        - `FrameReceiver`, `FrameSender`
       - **WebSocketBase**
         - `WebSocketBase`
       - **WebSocketClient**
@@ -338,9 +364,9 @@
         - `WebSocketServer`, `enableWebSocketServer`
       - **WebSocketUpgradeRequest**
         - `createUpdateRequestListener`
-      - `FRAME_TYPE_CONFIG_MAP`, `DATA_TYPE_MAP`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `DEFAULT_FRAME_LENGTH_LIMIT`, `WEB_SOCKET_VERSION`, `WEB_SOCKET_EVENT_MAP`, `getRequestKey`, `getRespondKey`
+      - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
     - **Server**
-      - `createServer`, `createRequestListener`, `getUnusedPort`
+      - `createRequestListener`, `createServer`, `getUnusedPort`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpen`
@@ -351,39 +377,13 @@
     - **REPL**
       - `startREPL`
     - **Run**
-      - `run`, `runSync`, `runQuiet`, `withCwd`
+      - `run`, `runQuiet`, `runSync`, `withCwd`
   - **Net**
-    - `urlToOption`, `requestAsync`, `fetch`, `ping`
+    - `fetch`, `ping`, `requestAsync`, `urlToOption`
   - **Resource**
-    - `loadRemoteScript`, `loadLocalScript`, `loadScript`, `loadRemoteJSON`, `loadLocalJSON`, `loadJSON`
-- **Browser**
-  - **Data**
-    - **Blob**
-      - `Blob`, `parseBlobAsText`, `parseBlobAsDataURL`, `parseBlobAsArrayBuffer`
-    - **BlobPacket**
-      - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
-  - **Font**
-    - `createFontGenerator`, `createFontGeneratorBitmap`, `createFontMapper`, `createFontRender`, `createFontRenderBitmap`
-  - **Graphic**
-    - **CanvasImageDataOperation**
-      - `getPixelColor`, `replacePixelColor`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `scale`, `crop`, `floodFill`
-    - **Color**
-      - `getUint32RGBA`, `getRGBAFromUint32RGBA`, `getHexFromRGBA`, `getHexFromRGB`
-    - **ImageData**
-      - `getQuickCanvas`, `getQuickContext2d`, `createImageElement`, `createCanvasElement`, `createCanvasImageData`, `applyImageElementExt`, `applyCanvasElementExt`, `applyCanvasImageDataExt`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`
-  - **Module**
-    - **HistoryStateStore**
-      - `createHistoryStateStore`
-  - **DOM**
-    - `throttleByAnimationFrame`, `applyDragFileListListener`
-  - **Input**
-    - `POINTER_EVENT_TYPE`, `applyPointerEventListener`, `ENHANCED_POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `createKeyCommandListener`
-  - **Net**
-    - `fetchLikeRequest`
-  - **Resource**
-    - `loadText`, `loadImage`, `loadScript`, `createDownload`, `createDownloadText`, `createDownloadBlob`
+    - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 - **Env**
-  - `getGlobal`, `getEnvironment`, `getSystemEndianness`, `assert`, `global`
+  - `assert`, `getEnvironment`, `getGlobal`, `getSystemEndianness`, `global`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)
