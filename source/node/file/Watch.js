@@ -41,8 +41,10 @@ const createFileWatcher = ({
 
     if (!targetStat && targetPath === watcherPath) await setupWatch() // renamed, not the target any more
 
-    __DEV__ && console.log(`emitThrottled`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
+    __DEV__ && !isPathChange && !targetStat && console.log(`emitThrottled dropped`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
+    if (!isPathChange && !targetStat) return
 
+    __DEV__ && console.log(`emitThrottled send`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
     const changeState = { targetPath, isPathChange, targetStat }
     prevTargetStat = targetStat
     hub.send(changeState)
