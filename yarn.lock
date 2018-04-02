@@ -1523,9 +1523,9 @@ dr-js@0.13.0-dev.2:
   version "0.13.0-dev.2"
   resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0-dev.2.tgz#d0a054b49f162e9834d09265ebd6998c8551f22e"
 
-dr-js@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.0.tgz#b8886eb422fd21a735a5da519b583fdb26c38b33"
+dr-js@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.1.tgz#6537755d8d28bf69cc3dec2742c9a9d29ff754c7"
 
 duplexer@^0.1.1:
   version "0.1.1"

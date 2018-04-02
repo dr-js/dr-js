@@ -33,7 +33,7 @@ const createLogger = async ({
   let intervalToken = setInterval(splitLogFile, fileSplitInterval)
 
   return {
-    add: (...args) => logger && logger.add(...args),
+    add: (...args) => logger && logger.add(args.join(' ')),
     save: () => logger && logger.save(),
     split: splitLogFile,
     end: () => {
