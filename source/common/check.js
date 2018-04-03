@@ -1,3 +1,5 @@
+// function that returns boolean
+
 const isString = (value) => typeof (value) === 'string'
 const isNumber = (value) => typeof (value) === 'number'
 const isInteger = Number.isInteger

@@ -1,16 +1,11 @@
-// only good for full array (no holes) like arguments
-const shallowEqualArguments = (prev, next) => {
-  if (!prev || prev.length !== next.length) return false
-  for (let i = 0, length = prev.length; i < length; i++) if (prev[ i ] !== next[ i ]) return false
-  return true
-}
+import { isCompactArrayShallowEqual } from './check'
 
 // memorize expensive immutable transform
 const transformCache = (transformFunc) => {
   let cacheResult = null
   let cacheArgs = null
   return (...args) => { // drop context for immutable transform should not need <this>
-    if (!shallowEqualArguments(cacheArgs, args)) {
+    if (!cacheArgs || !isCompactArrayShallowEqual(cacheArgs, args)) {
       cacheResult = transformFunc.apply(null, args)
       cacheArgs = args
     }
@@ -47,7 +42,7 @@ const createTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOu
     infoArray.push(info, infoArray)
 
     return (...args) => { // drop context for immutable transform should not need <this>
-      if (!shallowEqualArguments(cacheArgs, args)) {
+      if (!cacheArgs || !isCompactArrayShallowEqual(cacheArgs, args)) {
         cacheResult = transformFunc.apply(null, args)
         cacheArgs = args
         info.missCount++

@@ -87,6 +87,8 @@
   - `objectDelete`, `objectMerge`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
++ 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
+  - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`
 + 📄 [source/common/immutable/function.js](source/common/immutable/function.js)
   - `createTransformCacheWithInfo`, `transformCache`
 + 📄 [source/common/math/base.js](source/common/math/base.js)
@@ -261,7 +263,7 @@
       - `objectDelete`, `objectMerge`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
-    - `createTransformCacheWithInfo`, `transformCache`
+    - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
   - **Math**
     - `clamp`, `euclideanModulo`, `roundFloat`, `smoothstep`, `getRandomId`, `getRandomInt`, `getRandomIntList`
   - **Module**
