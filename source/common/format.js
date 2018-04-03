@@ -57,6 +57,9 @@ const UNESCAPE_HTML_MAP = { '&amp;': '&', '&lt;': '<', '&gt;': '>' }
 const replaceUnescapeHTML = (substring) => UNESCAPE_HTML_MAP[ substring ] || substring
 const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replaceUnescapeHTML)
 
+/* eslint no-control-regex: "off" */
+const removeInvalidCharXML = (text) => text.replace(/[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm, '') // remove XML invalid Char
+
 const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.replace(/\n/g, `\n${indentString}`)}`
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
   (o, string, index) => (index >= fromIndex)
@@ -74,6 +77,7 @@ export {
 
   escapeHTML,
   unescapeHTML,
+  removeInvalidCharXML,
 
   stringIndentLine,
   stringListJoinCamelCase

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import { resolve, dirname } from 'path'
+import { createReadStream, createWriteStream } from 'fs'
 import { spawnSync } from 'child_process'
 
+import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
@@ -30,15 +32,25 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     : console.log
 
   switch (mode) {
+    case 'echo':
+      return logJSON(getOption('argument'))
+    case 'cat':
+      for (const path of getOption('argument').map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
+      return
+    case 'write':
+    case 'append':
+      if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
+      const flags = mode === 'write' ? 'w' : 'a'
+      return pipeStreamAsync(createWriteStream(resolveArgumentPath(getSingleOption('argument')), { flags }), process.stdin)
     case 'open':
     case 'o':
-      return spawnSync(getDefaultOpen(), getOptionOptional('argument') || [ '.' ], { cwd: argumentRootPath, stdio: 'inherit', shell: true })
+      return spawnSync(getDefaultOpen(), resolveArgumentPath(getOptionOptional('argument') || [ '.' ]), { cwd: argumentRootPath, stdio: 'inherit', shell: true })
     case 'file-list':
     case 'ls':
-      return logJSON(await getPathContent(getSingleOptionOptional('argument') || '.'))
+      return logJSON(await getPathContent(resolveArgumentPath(getSingleOptionOptional('argument') || '.')))
     case 'file-list-all':
     case 'ls-R':
-      return logJSON(await getFileList(getSingleOptionOptional('argument') || '.'))
+      return logJSON(await getFileList(resolveArgumentPath(getSingleOptionOptional('argument') || '.')))
     case 'file-create-directory':
     case 'mkdir':
       for (const path of getOption('argument').map(resolveArgumentPath)) {
@@ -50,10 +62,10 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return
     case 'file-modify-copy':
     case 'cp':
-      return modify.copy(...getOption('argument', 2))
+      return modify.copy(...getOption('argument', 2).map(resolveArgumentPath))
     case 'file-modify-move':
     case 'mv':
-      return modify.move(...getOption('argument', 2))
+      return modify.move(...getOption('argument', 2).map(resolveArgumentPath))
     case 'file-modify-delete':
     case 'rm':
       for (const path of getOption('argument').map(resolveArgumentPath)) {
@@ -63,6 +75,14 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
         )
       }
       return
+    case 'file-merge':
+    case 'merge': {
+      const fileList = getOption('argument').map(resolveArgumentPath)
+      if (fileList.length < 2) return console.log(`[skipped] minimum 2 file, get ${fileList.length}`)
+      const outputFile = fileList.shift()
+      for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
+      return
+    }
     case 'server-test-connection':
     case 'stc': {
       const [

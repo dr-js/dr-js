@@ -1,3 +1,5 @@
+import { global } from 'source/env'
+
 const DEFAULT_TIMEOUT = 20 * 1000 // 20sec, in millisecond
 
 // TODO: later replace with fetch + AbortController
@@ -6,7 +8,7 @@ const DEFAULT_TIMEOUT = 20 * 1000 // 20sec, in millisecond
 const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => {
   const { method = 'GET', headers, body, credentials, timeout = DEFAULT_TIMEOUT } = option
   const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
-  const request = new window.XMLHttpRequest()
+  const request = new global.XMLHttpRequest()
   request.open(method, url)
   headers && Object.entries(headers).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.withCredentials = credentials === 'include'

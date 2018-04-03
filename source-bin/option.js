@@ -5,6 +5,8 @@ import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/Opt
 const { OneOfString, BooleanFlag, Any, Config } = ConfigPreset
 
 const MODE_OPTION = [
+  'echo', 'cat',
+  'write', 'append',
   'open', 'o',
   'file-list', 'ls',
   'file-list-all', 'ls-R',
@@ -12,6 +14,7 @@ const MODE_OPTION = [
   'file-modify-copy', 'cp',
   'file-modify-move', 'mv',
   'file-modify-delete', 'rm',
+  'file-merge', 'merge',
   'server-test-connection', 'stc',
   'server-serve-static', 'sss',
   'server-serve-static-simple', 'ssss',

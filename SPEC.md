@@ -44,7 +44,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `throwInfo`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `describe`, `escapeHTML`, `padTable`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `describe`, `escapeHTML`, `padTable`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -307,7 +307,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `throwInfo`
   - **Format**
-    - `binary`, `describe`, `escapeHTML`, `padTable`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `describe`, `escapeHTML`, `padTable`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
@@ -400,6 +400,8 @@
 >       set to enable
 >   --mode -m [OPTIONAL] [ARGUMENT=1]
 >       one of:
+>         echo cat
+>         write append
 >         open o
 >         file-list ls
 >         file-list-all ls-R
@@ -407,6 +409,7 @@
 >         file-modify-copy cp
 >         file-modify-move mv
 >         file-modify-delete rm
+>         file-merge merge
 >         server-test-connection stc
 >         server-serve-static sss
 >         server-serve-static-simple ssss
