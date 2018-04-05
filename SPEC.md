@@ -130,7 +130,7 @@
 + 📄 [source/common/module/StateSchema/function.js](source/common/module/StateSchema/function.js)
   - `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
-  - `objectMergeDeep`, `objectSortKey`
+  - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetch`, `ping`, `requestAsync`, `urlToOption`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -170,7 +170,7 @@
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `getRouteParam`, `getRouteParamAny`
+  - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
@@ -299,7 +299,7 @@
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
     - **Object**
-      - `objectMergeDeep`, `objectSortKey`
+      - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
   - **Check**
     - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
   - **Compare**
@@ -352,7 +352,7 @@
       - **Common**
         - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
       - **Router**
-        - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `getRouteParam`, `getRouteParamAny`
+        - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**
@@ -410,10 +410,10 @@
 >         file-modify-move mv
 >         file-modify-delete rm
 >         file-merge merge
->         server-test-connection stc
 >         server-serve-static sss
 >         server-serve-static-simple ssss
 >         server-websocket-group swg
+>         server-test-connection stc
 >     --argument -a [OPTIONAL-CHECK]
 >         different for each mode
 >     --quiet -q [OPTIONAL-CHECK]

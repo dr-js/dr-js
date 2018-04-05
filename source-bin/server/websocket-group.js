@@ -1,16 +1,14 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
-import { clock } from 'dr-js/module/common/time'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
-import { time as formatTime } from 'dr-js/module/common/format'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
-import { responderSendFavicon, getServerInfo } from './function'
+import { getServerInfo, responderSendFavicon, createResponderLogEnd } from './function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
@@ -120,7 +118,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
 
 const loadTextFile = (path) => readFileSync(resolve(__dirname, path), 'utf8')
 
-const createServerWebSocketGroup = ({ protocol, hostname, port, log }) => {
+const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log }) => {
   const BUFFER_HTML = Buffer.from(loadTextFile('./websocket-group.template.html')
     .replace(`"{SCRIPT_DR_BROWSER_JS}"`, loadTextFile('../../library/Dr.browser.js'))
     .replace(`"{TYPE_LIST}"`, JSON.stringify([ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE ]))
@@ -148,11 +146,7 @@ const createServerWebSocketGroup = ({ protocol, hostname, port, log }) => {
         [ '/favicon.ico', 'GET', responderSendFavicon ]
       ]))
     ],
-    responderEnd: async (store) => {
-      await responderEnd(store)
-      const { time, method } = store.getState()
-      log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
-    }
+    responderEnd: createResponderLogEnd(log)
   }))
 
   start()

@@ -1,3 +1,4 @@
+import { objectDepthFirstSearch } from 'source/common/mutable/Object'
 import {
   parseRouteToMap,
   findRouteFromMap,
@@ -47,6 +48,13 @@ const createResponderRouter = (routeMap) => (store) => {
 const getRouteParamAny = (store) => getRouteMapParamAny(store.getState())
 const getRouteParam = (store, paramName) => getRouteMapParam(store.getState(), paramName)
 
+const describeRouteMap = (routeMap) => {
+  const routeInfoList = [ /* { method, route } */ ]
+  const methodValueSet = new Set(Object.values(METHOD_MAP))
+  objectDepthFirstSearch(routeMap, (value, key) => { methodValueSet.has(key) && routeInfoList.push({ method: key, route: value.route }) })
+  return routeInfoList
+}
+
 // const SAMPLE_ROUTE_RESPONDER = (store, { url, route, method, paramMap }) => {}
 // const SAMPLE_RESULT_ROUTE_MAP = {
 //   '': {
@@ -72,5 +80,6 @@ export {
   createResponderRouter,
   appendRouteMap,
   getRouteParamAny,
-  getRouteParam
+  getRouteParam,
+  describeRouteMap
 }

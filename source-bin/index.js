@@ -2,13 +2,13 @@
 
 import { resolve, dirname } from 'path'
 import { createReadStream, createWriteStream } from 'fs'
-import { spawnSync } from 'child_process'
 
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
+import { runSync } from 'dr-js/module/node/system/Run'
 
 import { getVersion } from './version'
 import { parseOption, formatUsage } from './option'
@@ -24,12 +24,24 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
   const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
     ? dirname(getSingleOption('config'))
     : process.cwd())
-
   const resolveArgumentPath = (path) => resolve(argumentRootPath, path)
+  const singleArgumentPath = () => resolveArgumentPath(getSingleOptionOptional('argument') || '.')
 
   const log = getOptionOptional('quiet')
     ? () => {}
     : console.log
+  const logTaskResult = (task, path) => task(path).then(
+    () => log(`[${mode}] done: ${path}`),
+    (error) => log(`[${mode}] error: ${path}\n${error.stack || error}`)
+  )
+
+  const getServerConfig = async (argumentList = getOptionOptional('argument')) => {
+    const [
+      hostname = '0.0.0.0',
+      port = await autoTestServerPort([ 80, 8080 ], hostname)
+    ] = argumentList || []
+    return { hostname, port: Number(port) }
+  }
 
   switch (mode) {
     case 'echo':
@@ -44,21 +56,16 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return pipeStreamAsync(createWriteStream(resolveArgumentPath(getSingleOption('argument')), { flags }), process.stdin)
     case 'open':
     case 'o':
-      return spawnSync(getDefaultOpen(), resolveArgumentPath(getOptionOptional('argument') || [ '.' ]), { cwd: argumentRootPath, stdio: 'inherit', shell: true })
+      return runSync({ command: getDefaultOpen(), argList: [ singleArgumentPath() ] })
     case 'file-list':
     case 'ls':
-      return logJSON(await getPathContent(resolveArgumentPath(getSingleOptionOptional('argument') || '.')))
+      return logJSON(await getPathContent(singleArgumentPath()))
     case 'file-list-all':
     case 'ls-R':
-      return logJSON(await getFileList(resolveArgumentPath(getSingleOptionOptional('argument') || '.')))
+      return logJSON(await getFileList(singleArgumentPath()))
     case 'file-create-directory':
     case 'mkdir':
-      for (const path of getOption('argument').map(resolveArgumentPath)) {
-        await createDirectory(path).then(
-          () => log(`[CREATE-DONE] ${path}`),
-          (error) => log(`[CREATE-ERROR] ${path}\n  ${error}`)
-        )
-      }
+      for (const path of getOption('argument').map(resolveArgumentPath)) await logTaskResult(createDirectory, path)
       return
     case 'file-modify-copy':
     case 'cp':
@@ -68,12 +75,7 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return modify.move(...getOption('argument', 2).map(resolveArgumentPath))
     case 'file-modify-delete':
     case 'rm':
-      for (const path of getOption('argument').map(resolveArgumentPath)) {
-        await modify.delete(path).then(
-          () => log(`[DELETE-DONE] ${path}`),
-          (error) => log(`[DELETE-ERROR] ${path}\n  ${error}`)
-        )
-      }
+      for (const path of getOption('argument').map(resolveArgumentPath)) await logTaskResult(modify.delete, path)
       return
     case 'file-merge':
     case 'merge': {
@@ -83,34 +85,21 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
       return
     }
-    case 'server-test-connection':
-    case 'stc': {
-      const [
-        hostname = '0.0.0.0',
-        port = await autoTestServerPort([ 80, 8080 ], hostname)
-      ] = getOptionOptional('argument') || []
-      return createServerTestConnection({ protocol: 'http:', hostname, port: Number(port), log })
-    }
     case 'server-serve-static':
     case 'sss':
     case 'server-serve-static-simple':
     case 'ssss': {
-      const [
-        relativeStaticRoot = '.',
-        hostname = '0.0.0.0',
-        port = await autoTestServerPort([ 80, 8080 ], hostname)
-      ] = getOptionOptional('argument') || []
+      const [ relativeStaticRoot = '.', ...argumentList ] = getOptionOptional('argument') || []
+      const staticRoot = resolveArgumentPath(relativeStaticRoot)
       const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-      return createServerServeStatic({ staticRoot: resolveArgumentPath(relativeStaticRoot), protocol: 'http:', hostname, port: Number(port), isSimpleServe, log })
+      return createServerServeStatic({ staticRoot, isSimpleServe, log, ...(await getServerConfig(argumentList)) })
     }
     case 'server-websocket-group':
-    case 'swg': {
-      const [
-        hostname = '0.0.0.0',
-        port = await autoTestServerPort([ 80, 8080 ], hostname)
-      ] = getOptionOptional('argument') || []
-      return createServerWebSocketGroup({ protocol: 'http:', hostname, port: Number(port), log })
-    }
+    case 'swg':
+      return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
+    case 'server-test-connection':
+    case 'stc':
+      return createServerTestConnection({ log, ...(await getServerConfig()) })
   }
 }
 

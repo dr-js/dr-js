@@ -1,3 +1,4 @@
+import { isBasicObject } from 'source/common/check'
 import { compareStringLocale } from 'source/common/compare'
 
 const objectMergeDeep = (object, merge) => {
@@ -22,7 +23,19 @@ const objectSortKey = (object, compare = compareStringLocale) => {
   return object
 }
 
+const objectDepthFirstSearch = (object, func) => {
+  const stack = []
+  unshiftStack(stack, object, 0)
+  while (stack.length) {
+    const [ key, value, index, level ] = stack.shift()
+    if (func(value, key, index, level)) return { value, key, index, level }
+    unshiftStack(stack, value, level + 1)
+  }
+}
+const unshiftStack = (stack, object, level) => isBasicObject(object) && stack.unshift(...Object.entries(object).map(([ key, value ], index) => [ key, value, index, level ]))
+
 export {
   objectMergeDeep,
-  objectSortKey
+  objectSortKey,
+  objectDepthFirstSearch
 }

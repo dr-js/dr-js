@@ -15,10 +15,10 @@ const MODE_OPTION = [
   'file-modify-move', 'mv',
   'file-modify-delete', 'rm',
   'file-merge', 'merge',
-  'server-test-connection', 'stc',
   'server-serve-static', 'sss',
   'server-serve-static-simple', 'ssss',
-  'server-websocket-group', 'swg'
+  'server-websocket-group', 'swg',
+  'server-test-connection', 'stc'
 ]
 
 const OPTION_CONFIG = {

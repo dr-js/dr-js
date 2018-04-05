@@ -1,16 +1,15 @@
 import { relative, dirname, join as joinPath } from 'path'
-import { clock } from 'dr-js/module/common/time'
 import { compareString } from 'dr-js/module/common/compare'
-import { time as formatTime, escapeHTML } from 'dr-js/module/common/format'
+import { escapeHTML } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderEnd, responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { getPathContent, responderSendFavicon, getServerInfo } from './function'
+import { getPathContent, getServerInfo, responderSendFavicon, createResponderLogEnd } from './function'
 
-const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpleServe, log }) => {
+const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
@@ -27,11 +26,7 @@ const createServerServeStatic = ({ staticRoot, protocol, hostname, port, isSimpl
         [ '/favicon.ico', 'GET', responderSendFavicon ]
       ]))
     ],
-    responderEnd: async (store) => {
-      await responderEnd(store)
-      const { time, method } = store.getState()
-      log(`[${new Date().toISOString()}|${method}] ${store.request.url} (${formatTime(clock() - time)})`)
-    }
+    responderEnd: createResponderLogEnd(log)
   }))
 
   start()
