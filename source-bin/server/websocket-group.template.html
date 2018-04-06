@@ -6,11 +6,17 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+
+    ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.3); }
+
     label { display: flex; align-items: center; }
 
-    p { position: relative; padding: 12px 4px 4px; border-top: 1px solid #ddd; word-break: break-all; }
+    p { position: relative; padding: 14px 4px 2px; border-top: 1px solid #ddd; word-break: break-all; }
 
     p:hover { background: #f5f5f5; }
+
+    pre { overflow: auto; padding: 0 2px; max-height: 10em; border-left: 1px solid #ddd; color: #666; }
 
     input { flex: 1; }
 
@@ -32,13 +38,13 @@
 
     .time-tag, .id-tag { position: absolute; top: 0; font-size: 12px; line-height: 12px; }
 
-    .time-tag { right: 0; color: #f99 }
+    .time-tag { right: 0; color: #aaa }
 
-    .id-tag { left: 0; color: #22a }
+    .id-tag { left: 0; }
 
-    .color-self { color: #2a2 }
+    .color-self { color: #63aeff }
 
-    .color-alert { color: #a22 }
+    .color-system { color: #aaa }
   </style>
 </head>
 <body class="flex-column" style="overflow: hidden; width: 100vw; height: 100vh; font-family: monospace;">
@@ -79,27 +85,30 @@
   const idTag = (id, className = '') => cT('span', { innerHTML: `[${id}]`, className: `id-tag ${className}` })
   const timeTag = () => cT('span', { innerHTML: new Date().toLocaleString(), className: 'time-tag' })
 
-  const appendLog = (innerHTML, ...extraTagList) => {
+  const appendLog = (...extraTagList) => {
     const log = qS('#log')
-    const item = cT('p', { innerHTML, id: getRandomId() }, ...extraTagList)
+    const item = cT('p', { id: getRandomId() }, ...extraTagList)
     log.appendChild(item)
     log.scrollTop = log.scrollHeight
     return item
   }
 
   const addLog = ({ id, text, className }) => appendLog(
-    '',
-    cT('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.parentNode.querySelector('pre')) }),
+    cT('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.querySelector('pre')) }),
     idTag(id, className),
     timeTag()
   )
   const addLogWithFile = ({ isSend, id, fileName, fileSize, fileId, className }) => appendLog(
-    isSend ? 'sharing: ' : 'share: ',
+    cT('pre', { innerText: isSend ? 'sharing: ' : 'share: ' }),
     cT(isSend ? 'b' : 'button', { innerHTML: `📄 ${fileName} (${binary(fileSize)}B)`, onclick: isSend ? null : () => requestFile(id, fileId) }),
     idTag(id, className),
     timeTag()
   )
-  const addLogAlert = (text) => appendLog(text, idTag('Alert', 'color-alert'), timeTag())
+  const addLogSystem = (text) => appendLog(
+    cT('pre', { innerText: text, className: 'color-system' }),
+    idTag('System', 'color-system'),
+    timeTag()
+  )
   const clearLog = () => qSS('#log', '')
 
   const getWebSocketGroupUrl = (groupPath, id) => {
@@ -109,7 +118,7 @@
 
   const STATE = { fileWeakMap: new WeakMap() } // DOM - file-blob
   const onCloseWebSocket = () => {
-    addLogAlert(`-- left group: ${STATE.groupPath} --`)
+    addLogSystem(`Left group: ${STATE.groupPath}`)
     qS('#setup').style.display = ''
     qS('#main').style.display = 'none'
     qS('#group-path').focus()
@@ -121,7 +130,7 @@
     STATE.groupInfo = []
   }
   const onOpenWebSocket = ({ websocket, groupPath, id }) => {
-    addLogAlert(`-- joined group: ${groupPath}, as: ${id} --`)
+    addLogSystem(`Join group: ${groupPath}, as: ${id}`)
     qS('#setup').style.display = 'none'
     qS('#main').style.display = ''
     qS('#payload-text').focus()
@@ -169,7 +178,7 @@
     if (type === TYPE_INFO_USER) {
       onOpenInfo(payload.id)
     } else if (type === TYPE_INFO_GROUP) {
-      addLogAlert(`-- group user[${payload.length}]: ${payload.join(', ')} --`)
+      addLogSystem(`Current ${payload.length} user: ${payload.join(', ')}`)
       qS('#button-send').disabled = payload.length <= 1
       qSS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
       STATE.groupInfo = payload
@@ -186,16 +195,16 @@
         const fileName = file && file.name
         const fileType = file && file.type
         STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { intent: 'response', ok: Boolean(file), fileName, fileType } }), file))
-        addLogAlert(file
-          ? `-- send file: ${fileName} to ${id} --`
-          : `-- missing file request from ${id} --`
+        addLogSystem(file
+          ? `Send file: ${fileName} to ${id}`
+          : `Miss file request from ${id}`
         )
       } else if (intent === 'response') {
         const { ok, fileName, fileType } = payload
         ok && createDownloadBlob(fileName, [ payloadBlob ], fileType)
-        addLogAlert(ok
-          ? `-- get file: ${fileName} from ${id} --`
-          : `-- missing file response from ${id} --`
+        addLogSystem(ok
+          ? `Get file: ${fileName} from ${id}`
+          : `Miss file response from ${id}`
         )
       }
     }
