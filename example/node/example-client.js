@@ -1,6 +1,6 @@
 const { resolve } = require('path')
 const { readFileAsync } = require('../../output-gitignore/library/node/file/function')
-const { /* DATA_TYPE_MAP, */ WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
+const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { createWebSocketClient } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketClient')
 
 const fromPath = (...args) => resolve(__dirname, ...args)
@@ -26,10 +26,6 @@ createWebSocketClient({
     })
     webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, (webSocket, { dataType, dataBuffer }) => {
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
-
-      // echo back, do not use with a echo server
-      // dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())
-      // dataType === DATA_TYPE_MAP.OPCODE_BINARY && webSocket.sendBuffer(dataBuffer)
     })
     webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
       console.log(`>> CLOSE`)

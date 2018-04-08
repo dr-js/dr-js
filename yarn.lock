@@ -800,9 +800,9 @@ babel-loader@^8.0.0-beta.2:
     loader-utils "^1.0.2"
     mkdirp "^0.5.1"
 
-babel-plugin-minify-replace@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.3.0.tgz#980125bbf7cbb5a637439de9d0b1b030a4693893"
+babel-plugin-minify-replace@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.4.0.tgz#3bb80494dc340b2c19ebd8fbb1431691d8d34429"
 
 babel-plugin-module-resolver@^3.1.1:
   version "3.1.1"
@@ -1458,15 +1458,15 @@ detect-libc@^1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-1.0.3.tgz#fa137c4bd698edf55cd5cd02ac559f91a4c4ba9b"
 
-dev-dep-tool@0.2.0-dev.3:
-  version "0.2.0-dev.3"
-  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.2.0-dev.3.tgz#30cb51ca8dcd2547c3384a6b32d7e459c4b59c10"
+dev-dep-tool@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/dev-dep-tool/-/dev-dep-tool-0.2.0.tgz#a9cdf4afad85d0cecb5078ef2f2f99868d282972"
   dependencies:
-    dr-js "^0.13.2"
+    dr-js "^0.13.3"
 
-dev-dep-web@0.2.0-dev.3:
-  version "0.2.0-dev.3"
-  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.2.0-dev.3.tgz#61cd9bcedc449b8620be3222b167c1f50e50ac62"
+dev-dep-web@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/dev-dep-web/-/dev-dep-web-0.2.0.tgz#6ea14dfe8fb528f4a41a9a26a2da024524599bf0"
   dependencies:
     "@babel/cli" "^7.0.0-beta.44"
     "@babel/core" "^7.0.0-beta.44"
@@ -1477,7 +1477,7 @@ dev-dep-web@0.2.0-dev.3:
     "@babel/register" "^7.0.0-beta.44"
     babel-eslint "^8.2.2"
     babel-loader "^8.0.0-beta.2"
-    babel-plugin-minify-replace "^0.3.0"
+    babel-plugin-minify-replace "^0.4.0"
     babel-plugin-module-resolver "^3.1.1"
     cross-env "^5.1.4"
     eslint "^4.19.1"
@@ -1519,13 +1519,9 @@ domain-browser@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
 
-dr-js@0.13.3-dev.1:
-  version "0.13.3-dev.1"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.3-dev.1.tgz#140e6cdbef116c8f64dcd296182bc83be6f00ae0"
-
-dr-js@^0.13.2:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.2.tgz#32c1f03ecd1a53616b8f30caf19a9207c2fb9fd7"
+dr-js@^0.13.3:
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/dr-js/-/dr-js-0.13.3.tgz#c39a22b53ad35154ed1ef9442f9d69435ac7c22e"
 
 duplexer@^0.1.1:
   version "0.1.1"

@@ -21,6 +21,8 @@
     #FPS { font-size: 12px; color: #900; }
 
     #Log { font-size: 10px; color: #666; }
+
+    .drag-box { position: fixed; top: 0; left: 0; width: 64px; height: 64px; touch-action: none; box-shadow: inset 0 0 32px 4px #faa; }
   </style>
 </head>
 <body>
@@ -43,7 +45,7 @@
 
   <div class="flex-row box">
     <div class="box">
-      <canvas id="Dr.Canvas" width="300" height="600"></canvas>
+      <canvas id="main-canvas" width="300" height="600"></canvas>
     </div>
 
     <div class="flex-column box">
@@ -61,7 +63,12 @@
   <pre id="FPS">FPS</pre>
   <pre id="Log">Log</pre>
 </div>
+<div id="SWIPE-TARGET" class="drag-box" style="transform: translate(300px, 300px); background: rgba(0,255,0,0.80); pointer-events: none;">SWIPE TARGET</div>
+<div id="SWIPE" class="drag-box" style="transform: translate(300px, 300px);">SWIPE</div>
+<div id="SCROLL" class="drag-box" style="transform: translate(300px, 400px);">SCROLL</div>
 <script>
+  const qS = (selector) => document.querySelector(selector)
+
   const fitCanvas = (canvas, devicePixelRatio = window.devicePixelRatio || 1) => {
     const width = canvas.width || parseInt(canvas.style.width)
     const height = canvas.height || parseInt(canvas.style.height)
@@ -73,7 +80,7 @@
   }
 
   window.addEventListener('load', () => {
-    fitCanvas(document.getElementById('Dr.Canvas'))
+    fitCanvas(qS('#main-canvas'))
 
     const setContext = (context, fontSize, fillStyle) => Object.assign(context, {
       font: `bold ${fontSize}px monospace`,
@@ -84,21 +91,19 @@
 
     const fontSize = 50
 
-    const testCanvasElement = document.getElementById('testCanvasElement')
+    const testCanvasElement = qS('#testCanvasElement')
     const testCanvasElementContext2d = testCanvasElement.getContext('2d')
-    testCanvasElement.width += 0
     setContext(testCanvasElementContext2d, fontSize, '#500')
     testCanvasElementContext2d.fillText('ImageElement', 0, fontSize * 0.5)
 
-    const testImageElement = document.getElementById('testImageElement')
+    const testImageElement = qS('#testImageElement')
     testImageElement.src = testCanvasElement.toDataURL()
     testCanvasElement.width += 0
     setContext(testCanvasElementContext2d, fontSize, '#050')
     testCanvasElementContext2d.fillText('CanvasElement', 0, fontSize * 0.5)
 
-    const testCanvasImageData = document.getElementById('testCanvasImageData')
+    const testCanvasImageData = qS('#testCanvasImageData')
     const testCanvasImageDataContext2d = testCanvasImageData.getContext('2d')
-    testCanvasImageData.width += 0
     setContext(testCanvasImageDataContext2d, fontSize, '#005')
     testCanvasImageDataContext2d.fillText('CanvasImageData', 0, testCanvasImageData.height * 0.5)
   })

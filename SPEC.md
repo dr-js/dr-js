@@ -8,9 +8,7 @@
 + 📄 [source/env.js](source/env.js)
   - `assert`, `getEnvironment`, `getGlobal`, `getSystemEndianness`, `global`
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
-  - `applyDragFileListListener`, `throttleByAnimationFrame`
-+ 📄 [source/browser/input.js](source/browser/input.js)
-  - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `applyPointerEventListener`, `createKeyCommandListener`
+  - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
@@ -35,8 +33,16 @@
   - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
 + 📄 [source/browser/graphic/ImageData.js](source/browser/graphic/ImageData.js)
   - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
++ 📄 [source/browser/input/EnhancedEventProcessor.js](source/browser/input/EnhancedEventProcessor.js)
+  - `createScrollEnhancedEventProcessor`, `createSwipeEnhancedEventProcessor`
++ 📄 [source/browser/input/KeyCommand.js](source/browser/input/KeyCommand.js)
+  - `createKeyCommandListener`
++ 📄 [source/browser/input/PointerEvent.js](source/browser/input/PointerEvent.js)
+  - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
 + 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
   - `createHistoryStateStore`
++ 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
+  - `createMotionAutoTimer`, `createVectorAccumulator`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -78,7 +84,7 @@
 + 📄 [source/common/geometry/D2/Rect.js](source/common/geometry/D2/Rect.js)
   - `fromBoundingRect`, `fromEmpty`, `fromPoint`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isContain`, `isContainPoint`, `isEmpty`, `isIntersect`
 + 📄 [source/common/geometry/D2/Vector.js](source/common/geometry/D2/Vector.js)
-  - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
+  - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `isZero`, `lerp`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
 + 📄 [source/common/geometry/D2/Widget.js](source/common/geometry/D2/Widget.js)
   - `fromBoundingRect`, `fromLine`, `fromPoint`, `getBoundingBottom`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingSize`, `getBoundingTop`, `getBoundingWidth`, `isContainBoundingRect`, `isInterceptBoundingRect`, `localBoundingRect`, `localPoint`, `round`
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
@@ -92,7 +98,7 @@
 + 📄 [source/common/immutable/function.js](source/common/immutable/function.js)
   - `createTransformCacheWithInfo`, `transformCache`
 + 📄 [source/common/math/base.js](source/common/math/base.js)
-  - `clamp`, `euclideanModulo`, `roundFloat`, `smoothstep`
+  - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
   - `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
@@ -212,13 +218,20 @@
       - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
     - **ImageData**
       - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
+  - **Input**
+    - **EnhancedEventProcessor**
+      - `createScrollEnhancedEventProcessor`, `createSwipeEnhancedEventProcessor`
+    - **KeyCommand**
+      - `createKeyCommandListener`
+    - **PointerEvent**
+      - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
   - **Module**
     - **HistoryStateStore**
       - `createHistoryStateStore`
+    - **MotionAutoTimer**
+      - `createMotionAutoTimer`, `createVectorAccumulator`
   - **DOM**
-    - `applyDragFileListListener`, `throttleByAnimationFrame`
-  - **Input**
-    - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyPointerEnhancedEventListener`, `applyPointerEventListener`, `createKeyCommandListener`
+    - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
     - `fetchLikeRequest`
   - **Resource**
@@ -251,7 +264,7 @@
       - **Rect**
         - `fromBoundingRect`, `fromEmpty`, `fromPoint`, `getCenter`, `getSize`, `getUnion`, `getUnionOfList`, `isContain`, `isContainPoint`, `isEmpty`, `isIntersect`
       - **Vector**
-        - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
+        - `abs`, `add`, `clamp`, `divide`, `fromAngleLength`, `fromOrigin`, `getAngle`, `getDist`, `getDistSq`, `getLength`, `getLengthSq`, `getRotate`, `getRotateDelta`, `isZero`, `lerp`, `max`, `min`, `multiply`, `round`, `scale`, `sub`
       - **Widget**
         - `fromBoundingRect`, `fromLine`, `fromPoint`, `getBoundingBottom`, `getBoundingHeight`, `getBoundingLeft`, `getBoundingRight`, `getBoundingSize`, `getBoundingTop`, `getBoundingWidth`, `isContainBoundingRect`, `isInterceptBoundingRect`, `localBoundingRect`, `localPoint`, `round`
     - **Angle**
@@ -265,7 +278,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
   - **Math**
-    - `clamp`, `euclideanModulo`, `roundFloat`, `smoothstep`, `getRandomId`, `getRandomInt`, `getRandomIntList`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `getRandomId`, `getRandomInt`, `getRandomIntList`
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`

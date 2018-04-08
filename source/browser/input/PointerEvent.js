@@ -1,6 +1,4 @@
 import { clock } from 'source/common/time'
-import { getRandomId } from 'source/common/math/random'
-import { isObjectContain } from 'source/common/check'
 import { getDist } from 'source/common/geometry/D2/Vector'
 import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/BoundingRect'
 
@@ -18,16 +16,17 @@ const applyPointerEventListener = ({
   onEvent,
   isGlobal = false,
   isCancel = true, // send cancel
-  isCancelOnOutOfBound = true
+  isCancelOnOutOfBound = true // send out of bound as cancel
 }) => {
   if (!window.getComputedStyle(element).touchAction) throw new Error(`[applyPointerEventListener] should set CSS 'touch-action' to 'none' to prevent browser defaults`)
 
   const eventSource = isGlobal ? window.document : element
+  isCancelOnOutOfBound = isCancel && isCancelOnOutOfBound
 
   // TODO: add custom function to record start state
-  let timeStart = null
-  let pointStart = null // relative to client/viewport
-  let eventStart = null
+  let timeStart
+  let pointStart // relative to client/viewport
+  let eventStart
 
   let prevEvent // basic memorize
   let prevState // basic memorize
@@ -36,16 +35,18 @@ const applyPointerEventListener = ({
     timeStart = null
     pointStart = null
     eventStart = null
+
     prevEvent = null
     prevState = null
+
     eventSource.removeEventListener('pointermove', onMove)
     eventSource.removeEventListener('pointerup', onEnd)
     isCancel && eventSource.removeEventListener('pointercancel', onCancel)
-    isCancel && eventSource.removeEventListener('pointerleave', onCancel) // TODO: should check in onMove, Chrome may not fire leave for touch
+    isCancelOnOutOfBound && eventSource.removeEventListener('pointerleave', onCancel)
   }
 
   const calcState = (event) => {
-    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`) // TODO: check this
+    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`) // TODO: check is needed
     if (__DEV__ && !event) throw new Error('[calcState] event expected')
     if (event !== prevEvent) {
       const { clientX, clientY } = event
@@ -74,14 +75,13 @@ const applyPointerEventListener = ({
     eventSource.addEventListener('pointermove', onMove)
     eventSource.addEventListener('pointerup', onEnd)
     isCancel && eventSource.addEventListener('pointercancel', onCancel)
-    isCancel && eventSource.addEventListener('pointerleave', onCancel)
+    isCancelOnOutOfBound && eventSource.addEventListener('pointerleave', onCancel)
     onEvent(POINTER_EVENT_TYPE.START, event, calcState)
   }
   const onMove = (event) => {
     if (!event.isPrimary) return
     const { point } = calcState(event)
     if (
-      isCancel &&
       isCancelOnOutOfBound &&
       !isBoundingRectContainPoint(element.getBoundingClientRect(), point)
     ) return onCancel(event)
@@ -99,6 +99,7 @@ const applyPointerEventListener = ({
   }
 
   element.addEventListener('pointerdown', onStart)
+  reset()
   return () => {
     element.removeEventListener('pointerdown', onStart)
     reset()
@@ -106,7 +107,6 @@ const applyPointerEventListener = ({
 }
 
 const ENHANCED_POINTER_EVENT_TYPE = {
-  ...POINTER_EVENT_TYPE,
   TAP: 'TAP',
   HOLD: 'HOLD',
   DRAG_MOVE: 'DRAG_MOVE',
@@ -114,67 +114,39 @@ const ENHANCED_POINTER_EVENT_TYPE = {
   DRAG_CANCEL: 'DRAG_CANCEL'
 }
 
-// TODO: touch action do not get pointercancel when
-const DEFAULT_HOLD_DURATION_THRESHOLD = 500 // in msec
-const DEFAULT_DRAG_DISTANCE_THRESHOLD = 5 // in px
-const applyPointerEnhancedEventListener = ({
+const applyEnhancedPointerEventListener = ({
   element,
   onEnhancedEvent,
-  onEvent,
-  isGlobal = false,
-  isCancel = true,
-  isCancelOnOutOfBound = true,
-  holdDurationThreshold = DEFAULT_HOLD_DURATION_THRESHOLD,
-  dragDistanceThreshold = DEFAULT_DRAG_DISTANCE_THRESHOLD
+  onEvent, // optional, for original PointerEvent
+  holdDurationThreshold = 500, // in msec
+  dragDistanceThreshold = 5, // in px
+  ...extraOption
 }) => {
   let isDragging = false
-  return applyPointerEventListener({
-    element,
-    onEvent: (name, event, calcState) => {
-      const eventState = calcState(event) // TODO: check eventState, should not be null
-      switch (name) {
-        case POINTER_EVENT_TYPE.START:
-          isDragging = false
-          break
-        case POINTER_EVENT_TYPE.MOVE:
-          isDragging |= eventState.distance >= dragDistanceThreshold
-          if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_MOVE, event, eventState)
-          break
-        case POINTER_EVENT_TYPE.END:
-          if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_END, event, eventState)
-          else if (eventState.duration >= holdDurationThreshold) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.HOLD, event, eventState)
-          else onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.TAP, event, eventState)
-          break
-        case POINTER_EVENT_TYPE.CANCEL:
-          if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_CANCEL, event, eventState)
-          break
-      }
-      onEvent && onEvent(name, event, calcState)
-    },
-    isGlobal,
-    isCancel,
-    isCancelOnOutOfBound
-  })
-}
 
-// TODO: single key, not key sequence
-const createKeyCommandListener = (eventSource = window.document) => {
-  const keyCommandMap = new Map()
-  const keyCommandListener = (event) => keyCommandMap.forEach((keyCommand) => {
-    const { target, checkMap, callback } = keyCommand
-    if (target && !target.contains(event.target)) return
-    if (!isObjectContain(event, checkMap)) return
-    event.preventDefault()
-    callback(event, keyCommand)
-  })
-  const clear = () => eventSource.removeEventListener('keydown', keyCommandListener)
-  const addKeyCommand = ({ id = getRandomId(), target, checkMap, callback }) => {
-    keyCommandMap.set(id, { id, target, checkMap, callback })
-    return id
+  const enhancedOnEvent = (name, event, calcState) => {
+    const eventState = calcState(event) // TODO: check eventState, should not be null
+    switch (name) {
+      case POINTER_EVENT_TYPE.START:
+        isDragging = false
+        break
+      case POINTER_EVENT_TYPE.MOVE:
+        isDragging |= eventState.distance >= dragDistanceThreshold
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_MOVE, event, eventState)
+        break
+      case POINTER_EVENT_TYPE.END:
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_END, event, eventState)
+        else if (eventState.duration >= holdDurationThreshold) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.HOLD, event, eventState)
+        else onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.TAP, event, eventState)
+        break
+      case POINTER_EVENT_TYPE.CANCEL:
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_CANCEL, event, eventState)
+        break
+    }
+    onEvent && onEvent(name, event, calcState)
   }
-  const deleteKeyCommand = ({ id }) => keyCommandMap.delete(id)
-  eventSource.addEventListener('keydown', keyCommandListener)
-  return { clear, addKeyCommand, deleteKeyCommand }
+
+  return applyPointerEventListener({ element, onEvent: enhancedOnEvent, ...extraOption })
 }
 
 export {
@@ -182,7 +154,5 @@ export {
   applyPointerEventListener,
 
   ENHANCED_POINTER_EVENT_TYPE,
-  applyPointerEnhancedEventListener,
-
-  createKeyCommandListener
+  applyEnhancedPointerEventListener
 }

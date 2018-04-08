@@ -25,7 +25,33 @@ const applyDragFileListListener = (eventSource = window.document, onFileList) =>
   })
 }
 
+// return the path between 2 node (no fromElement, include toElement)
+// fromElement, [ element, element, element, toElement ]
+const getPathElementList = (fromElement, toElement) => {
+  if (!fromElement.contains(toElement)) return []
+  let element = toElement
+  const elementList = []
+  while (element !== fromElement) {
+    elementList.unshift(element)
+    element = element.parentElement
+  }
+  return elementList
+}
+
+const getElementAtViewport = (clientPosition, excludeElementList) => {
+  const styleRecoverList = excludeElementList && excludeElementList.map((element) => {
+    const { visibility } = element.style
+    element.style.visibility = 'hidden' // Temporarily hide the element (without changing the layout)
+    return visibility
+  })
+  const elementUnder = document.elementFromPoint(clientPosition.x, clientPosition.y)
+  excludeElementList && excludeElementList.forEach((element, index) => (element.style.visibility = styleRecoverList[ index ]))
+  return elementUnder
+}
+
 export {
   throttleByAnimationFrame,
-  applyDragFileListListener
+  applyDragFileListListener,
+  getPathElementList,
+  getElementAtViewport
 }

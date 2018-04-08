@@ -13,9 +13,11 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
   const getRouteMapInfo = () => {
     if (!routeMapInfoBuffer) {
       routeMapInfoBuffer = Buffer.from([
-        '<h>Route List</h>',
         '<pre>',
-        ...describeRouteMap(routeMap).map(({ method, route }) => `<b>${method}</b> ${route}`),
+        '<h2>Route List</h2>',
+        '<table>',
+        ...describeRouteMap(routeMap).map(({ method, route }) => `<tr><td><b>${method}</b></td><td>${route}</td></tr>`),
+        '</table>',
         '</pre>'
       ].join('\n'))
     }

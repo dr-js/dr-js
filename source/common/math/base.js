@@ -1,8 +1,12 @@
 const roundFloat = (value) => Math.round(value * 10000) / 10000
 
-// min max
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+// add to absolute value but keep sign
+const addAbs = (value, add) => Math.sign(value) * Math.max(0, Math.abs(value) + add)
+
 const euclideanModulo = (value, divisor) => ((value % divisor + divisor) % divisor)
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+
 const smoothstep = (value, min, max) => {
   if (value <= min) return 0
   if (value >= max) return 1
@@ -10,10 +14,13 @@ const smoothstep = (value, min, max) => {
   return value * value * (3 - 2 * value)
 }
 
+const lerp = (from, to, rate) => from + (to - from) * rate
+
 export {
   roundFloat,
-
-  clamp,
+  addAbs,
   euclideanModulo,
-  smoothstep
+  clamp,
+  smoothstep,
+  lerp
 }

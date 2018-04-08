@@ -85,6 +85,13 @@ const round = ({ x, y }) => ({
   y: Math.round(y)
 })
 
+const lerp = (from, to, rate) => ({
+  x: from.x + (to.x - from.x) * rate,
+  y: from.y + (to.y - from.y) * rate
+})
+
+const isZero = ({ x, y }) => x === 0 && y === 0
+
 export {
   fromOrigin,
   fromAngleLength,
@@ -104,5 +111,7 @@ export {
   max,
   clamp,
   abs,
-  round
+  round,
+  lerp,
+  isZero
 }

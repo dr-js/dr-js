@@ -51,18 +51,17 @@ const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTi
   let token = null
   const update = () => {
     if (!token) return
+    token = queueTask(update, delay)
     func()
-    token = queueTask(update, delay)
   }
-  const start = () => {
-    stop()
-    token = queueTask(update, delay)
-  }
+  const start = () => { if (!token) token = queueTask(update, delay) }
   const stop = () => {
-    token && cancelTask(token)
+    if (!token) return
+    cancelTask(token)
     token = null
   }
-  return { start, stop }
+  const isActive = () => Boolean(token)
+  return { start, stop, isActive }
 }
 
 export {

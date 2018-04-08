@@ -2,6 +2,7 @@ const {
   Common: {
     Time: { now },
     Data: { Toggle: { createToggle } },
+    Geometry: { D2: { Vector } },
     Module: {
       UpdateLoop: { createUpdateLoop },
       Event: { createEventEmitter }
@@ -9,7 +10,13 @@ const {
   },
   Browser: {
     Font: { createFontRender, createFontRenderBitmap },
-    Input: { applyPointerEventListener, applyPointerEnhancedEventListener },
+    Input: {
+      PointerEvent: { applyPointerEventListener, applyEnhancedPointerEventListener },
+      EnhancedEventProcessor: {
+        createScrollEnhancedEventProcessor,
+        createSwipeEnhancedEventProcessor
+      }
+    },
     Graphic: {
       ImageData: {
         applyImageElementExt,
@@ -58,9 +65,72 @@ const bindFPSElement = (element) => {
   return { step, output }
 }
 
+const bindSwipeElement = (element = document.createElement('div'), targetMarkElement) => {
+  const { x, y } = element.getBoundingClientRect()
+  let currentPoint = { x, y }
+
+  const updateOrigin = (origin) => {
+    const { width, height } = element.getBoundingClientRect()
+    currentPoint = {
+      x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
+      y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
+    }
+    element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
+  }
+
+  const { onEnhancedEvent, onEvent } = createSwipeEnhancedEventProcessor({
+    updateOrigin,
+    getOrigin: () => currentPoint,
+    getTarget: ({ pointCurrent, pointOrigin, exitVector, exitSpeed }) => {
+      const targetPoint = Vector.getDist(pointCurrent, pointOrigin) + exitSpeed * 0.5 < 256
+        ? pointOrigin
+        : Vector.add(pointCurrent, Vector.scale(exitVector, 0.5))
+
+      targetMarkElement.style.transform = `translate(${Math.round(targetPoint.x)}px,${Math.round(targetPoint.y)}px)`
+
+      console.log(targetPoint, { pointCurrent, pointOrigin, exitVector, exitSpeed })
+      return targetPoint
+    },
+    // normalizeVector: ({ x, y }) => Math.abs(x) >= Math.abs(y)
+    //   ? { x, y: 0 }
+    //   : { x: 0, y }, // can lock result direction
+    accelerateScalar: 5000
+  })
+
+  applyEnhancedPointerEventListener({ element, onEnhancedEvent, onEvent, isGlobal: true, isCancelOnOutOfBound: false })
+}
+
+const bindScrollElement = (element = document.createElement('div')) => {
+  const { x, y } = element.getBoundingClientRect()
+  let currentPoint = { x, y }
+
+  const updateOrigin = (origin) => {
+    const { width, height } = element.getBoundingClientRect()
+    currentPoint = {
+      x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
+      y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
+    }
+    element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
+  }
+
+  const { onEnhancedEvent, onEvent } = createScrollEnhancedEventProcessor({
+    updateOrigin,
+    getOrigin: () => currentPoint,
+    // normalizeVector: ({ x, y }) => Math.abs(x) >= Math.abs(y)
+    //   ? { x, y: 0 }
+    //   : { x: 0, y }, // can lock result direction
+    accelerateScalar: -5000
+  })
+  applyEnhancedPointerEventListener({ element, onEnhancedEvent, onEvent, isGlobal: true, isCancelOnOutOfBound: false })
+}
+
 window.addEventListener('load', () => {
-  const LOG = bindLogElement(document.getElementById('Log'))
-  const FPS = bindFPSElement(document.getElementById('FPS'))
+  const qS = (selector) => document.querySelector(selector)
+
+  const LOG = bindLogElement(qS('#Log'))
+  const FPS = bindFPSElement(qS('#FPS'))
+  bindSwipeElement(qS('#SWIPE'), qS('#SWIPE-TARGET'))
+  bindScrollElement(qS('#SCROLL'))
 
   const log = (...args) => LOG.log(args.join(' '))
 
@@ -75,12 +145,12 @@ window.addEventListener('load', () => {
 
   // =========================================================================================
 
-  const mainCanvas = document.getElementById('Dr.Canvas')
+  const mainCanvas = qS('#main-canvas')
   const mainContext2d = mainCanvas.getContext('2d')
 
-  const testImageElement = document.getElementById('testImageElement')
-  const testCanvasElement = document.getElementById('testCanvasElement')
-  const testCanvasImageData = document.getElementById('testCanvasImageData').getContext('2d').getImageData(0, 0, testCanvasElement.width, testCanvasElement.height)
+  const testImageElement = qS('#testImageElement')
+  const testCanvasElement = qS('#testCanvasElement')
+  const testCanvasImageData = qS('#testCanvasImageData').getContext('2d').getImageData(0, 0, testCanvasElement.width, testCanvasElement.height)
 
   const imageElementExt = applyImageElementExt(testImageElement)
   const canvasElementExt = applyCanvasElementExt(testCanvasElement)
@@ -168,7 +238,7 @@ window.addEventListener('load', () => {
     isCancelOnOutOfBound: false
   })
 
-  applyPointerEnhancedEventListener({
+  applyEnhancedPointerEventListener({
     element: mainCanvas,
     onEvent: (name, event) => {
       console.log(name, event.type, event.pointerType)
@@ -181,10 +251,10 @@ window.addEventListener('load', () => {
   // =========================================================================================
 
   // test font
-  const testFontCanvas = document.getElementById('testFont')
+  const testFontCanvas = qS('#testFont')
   const testFontCanvasContext2d = testFontCanvas.getContext('2d')
 
-  const testFontBitmapCanvas = document.getElementById('testFontBitmap')
+  const testFontBitmapCanvas = qS('#testFontBitmap')
   const testFontBitmapCanvasContext2d = testFontBitmapCanvas.getContext('2d')
 
   let textValue = 'You can input by tapping some key...'
@@ -252,7 +322,7 @@ window.addEventListener('load', () => {
   testFontCanvas.addEventListener('click', () => textSoftKeyboardTextarea.focus())
   testFontBitmapCanvas.addEventListener('click', () => textSoftKeyboardTextarea.focus())
 
-  const textSoftKeyboardTextarea = document.getElementById('textSoftKeyboardTextarea')
+  const textSoftKeyboardTextarea = qS('#textSoftKeyboardTextarea')
   textSoftKeyboardTextarea.addEventListener('focus', () => (textSoftKeyboardTextarea.value = textValue))
   textSoftKeyboardTextarea.addEventListener('input', () => updateTextValue(textSoftKeyboardTextarea.value))
   textSoftKeyboardTextarea.addEventListener('blur', () => updateTextValue(textSoftKeyboardTextarea.value))

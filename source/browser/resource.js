@@ -17,7 +17,7 @@ const loadScript = (url) => new Promise((resolve, reject) => {
   element.src = url
   element.async = false
   element.type = 'text/javascript'
-  document.body.appendChild(element)
+  document.body.appendChild(element) // TODO: document.body can be null if script is running from <head> tag and page is not fully loaded
 })
 
 const createDownload = (fileName, url) => {
