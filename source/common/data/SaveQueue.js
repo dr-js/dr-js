@@ -11,11 +11,10 @@ const createSaveQueue = ({ beforeSave, doSave, afterSave, onError }) => {
     dataQueue = []
     isSaving = true
     beforeSave && beforeSave()
-    const { result, error } = await catchAsync(doSave, savingDataQueue)
+    const { error } = await catchAsync(doSave, savingDataQueue)
     isSaving = false
     afterSave && afterSave()
-    if (error) onError(error)
-    else return result
+    error && onError(error)
   }
 
   const getLength = () => dataQueue.length

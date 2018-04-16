@@ -14,6 +14,7 @@ const smoothstep = (value, min, max) => {
   return value * value * (3 - 2 * value)
 }
 
+// linear interpolation
 const lerp = (from, to, rate) => from + (to - from) * rate
 
 export {

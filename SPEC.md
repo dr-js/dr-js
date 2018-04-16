@@ -34,7 +34,7 @@
 + 📄 [source/browser/graphic/ImageData.js](source/browser/graphic/ImageData.js)
   - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
 + 📄 [source/browser/input/EnhancedEventProcessor.js](source/browser/input/EnhancedEventProcessor.js)
-  - `createScrollEnhancedEventProcessor`, `createSwipeEnhancedEventProcessor`
+  - `createSwipeEnhancedEventProcessor`
 + 📄 [source/browser/input/KeyCommand.js](source/browser/input/KeyCommand.js)
   - `createKeyCommandListener`
 + 📄 [source/browser/input/PointerEvent.js](source/browser/input/PointerEvent.js)
@@ -42,7 +42,7 @@
 + 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
   - `createHistoryStateStore`
 + 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
-  - `createMotionAutoTimer`, `createVectorAccumulator`
+  - `createInterpolationAutoTimer`, `createVectorAccumulator`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -99,10 +99,16 @@
   - `createTransformCacheWithInfo`, `transformCache`
 + 📄 [source/common/math/base.js](source/common/math/base.js)
   - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`
++ 📄 [source/common/math/easing.js](source/common/math/easing.js)
+  - `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
   - `getRandomId`, `getRandomInt`, `getRandomIntList`
++ 📄 [source/common/math/sample.js](source/common/math/sample.js)
+  - `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
   - `createAsyncTaskQueue`
++ 📄 [source/common/module/BlockChart.js](source/common/module/BlockChart.js)
+  - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
   - `createEventEmitter`, `createEventTarget`, `createHub`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
@@ -220,7 +226,7 @@
       - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
   - **Input**
     - **EnhancedEventProcessor**
-      - `createScrollEnhancedEventProcessor`, `createSwipeEnhancedEventProcessor`
+      - `createSwipeEnhancedEventProcessor`
     - **KeyCommand**
       - `createKeyCommandListener`
     - **PointerEvent**
@@ -229,7 +235,7 @@
     - **HistoryStateStore**
       - `createHistoryStateStore`
     - **MotionAutoTimer**
-      - `createMotionAutoTimer`, `createVectorAccumulator`
+      - `createInterpolationAutoTimer`, `createVectorAccumulator`
   - **DOM**
     - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
@@ -278,7 +284,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `getRandomId`, `getRandomInt`, `getRandomIntList`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
@@ -294,6 +300,8 @@
       - `arrayActMap`, `objectActMap`, `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
     - **AsyncTaskQueue**
       - `createAsyncTaskQueue`
+    - **BlockChart**
+      - `getBlockBar`, `getBlockChart`
     - **Event**
       - `createEventEmitter`, `createEventTarget`, `createHub`
     - **KeySelector**

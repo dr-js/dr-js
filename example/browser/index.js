@@ -1,6 +1,7 @@
 const {
   Common: {
     Time: { now },
+    Math: { easeOutCubic, easeInOutQuad },
     Data: { Toggle: { createToggle } },
     Geometry: { D2: { Vector } },
     Module: {
@@ -12,10 +13,7 @@ const {
     Font: { createFontRender, createFontRenderBitmap },
     Input: {
       PointerEvent: { applyPointerEventListener, applyEnhancedPointerEventListener },
-      EnhancedEventProcessor: {
-        createScrollEnhancedEventProcessor,
-        createSwipeEnhancedEventProcessor
-      }
+      EnhancedEventProcessor: { createSwipeEnhancedEventProcessor }
     },
     Graphic: {
       ImageData: {
@@ -68,58 +66,73 @@ const bindFPSElement = (element) => {
 const bindSwipeElement = (element = document.createElement('div'), targetMarkElement) => {
   const { x, y } = element.getBoundingClientRect()
   let currentPoint = { x, y }
-
-  const updateOrigin = (origin) => {
-    const { width, height } = element.getBoundingClientRect()
-    currentPoint = {
-      x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
-      y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
-    }
-    element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
+  const getTimeToDistanceFromVelocityAccelerate = (s, v, a) => {
+    if (a === 0) return s / v
+    // att + vt = s
+    // att + vt + pow(v/2/sqrt(a), 2) = s + pow(v/2/sqrt(a), 2)
+    // pow((sqrt(a)t + v/2/sqrt(a)), 2) = s + pow(v/2/sqrt(a), 2)
+    // sqrt(a)t + v/2/sqrt(a) = sqrt(s + pow(v/2/sqrt(a), 2))
+    // sqrt(a)t = sqrt(s + pow(v/2/sqrt(a), 2)) - v/2/sqrt(a)
+    // t = sqrt(s + pow(v/2/sqrt(a), 2))/sqrt(a) - v/2/sqrt(a)/sqrt(a)
+    // t = sqrt(s/a + pow(v/2/a, 2)) - v/2/a
+    const temp = 0.5 * v / a
+    return Math.sqrt(s / a + temp * temp) - temp
   }
-
   const { onEnhancedEvent, onEvent } = createSwipeEnhancedEventProcessor({
-    updateOrigin,
-    getOrigin: () => currentPoint,
-    getTarget: ({ pointCurrent, pointOrigin, exitVector, exitSpeed }) => {
-      const targetPoint = Vector.getDist(pointCurrent, pointOrigin) + exitSpeed * 0.5 < 256
-        ? pointOrigin
-        : Vector.add(pointCurrent, Vector.scale(exitVector, 0.5))
-
-      targetMarkElement.style.transform = `translate(${Math.round(targetPoint.x)}px,${Math.round(targetPoint.y)}px)`
-
-      console.log(targetPoint, { pointCurrent, pointOrigin, exitVector, exitSpeed })
-      return targetPoint
+    getOrigin: (event) => {
+      event.preventDefault()
+      return currentPoint
     },
-    // normalizeVector: ({ x, y }) => Math.abs(x) >= Math.abs(y)
-    //   ? { x, y: 0 }
-    //   : { x: 0, y }, // can lock result direction
-    accelerateScalar: 5000
+    updateOrigin: (origin) => {
+      const { width, height } = element.getBoundingClientRect()
+      currentPoint = {
+        x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
+        y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
+      }
+      element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
+    },
+    getExitInfo: ({ exitVector, pointCurrent, pointOrigin }) => {
+      const exitSpeed = Vector.getLength(exitVector)
+      const pointExit = Vector.getDist(pointCurrent, pointOrigin) + exitSpeed * 0.25 < 256
+        ? pointOrigin
+        : Vector.add(pointCurrent, Vector.scale(exitVector, 0.25))
+      const targetVector = Vector.sub(pointExit, pointCurrent)
+      const targetDistance = Vector.getLength(targetVector)
+      const exitDuration = targetDistance ? getTimeToDistanceFromVelocityAccelerate(targetDistance, exitSpeed, 5000)
+        : 0
+      targetMarkElement.style.transform = `translate(${Math.round(pointExit.x)}px,${Math.round(pointExit.y)}px)`
+      return { pointExit, exitDuration }
+    },
+    normalizeVector: ({ x, y }) => Math.abs(x) >= Math.abs(y)
+      ? { x, y: 0 }
+      : { x: 0, y }, // can lock result direction
+    timeFunction: easeInOutQuad
   })
-
   applyEnhancedPointerEventListener({ element, onEnhancedEvent, onEvent, isGlobal: true, isCancelOnOutOfBound: false })
 }
 
 const bindScrollElement = (element = document.createElement('div')) => {
   const { x, y } = element.getBoundingClientRect()
   let currentPoint = { x, y }
-
-  const updateOrigin = (origin) => {
-    const { width, height } = element.getBoundingClientRect()
-    currentPoint = {
-      x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
-      y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
-    }
-    element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
-  }
-
-  const { onEnhancedEvent, onEvent } = createScrollEnhancedEventProcessor({
-    updateOrigin,
-    getOrigin: () => currentPoint,
-    // normalizeVector: ({ x, y }) => Math.abs(x) >= Math.abs(y)
-    //   ? { x, y: 0 }
-    //   : { x: 0, y }, // can lock result direction
-    accelerateScalar: -5000
+  const { onEnhancedEvent, onEvent } = createSwipeEnhancedEventProcessor({
+    getOrigin: (event) => {
+      event.preventDefault()
+      return currentPoint
+    },
+    updateOrigin: (origin) => {
+      const { width, height } = element.getBoundingClientRect()
+      currentPoint = {
+        x: Math.max(0, Math.min(document.documentElement.clientWidth - width, origin.x)),
+        y: Math.max(0, Math.min(document.documentElement.clientHeight - height, origin.y))
+      }
+      element.style.transform = `translate(${Math.round(currentPoint.x)}px,${Math.round(currentPoint.y)}px)`
+    },
+    getExitInfo: ({ exitVector, pointCurrent, pointOrigin }) => {
+      const exitDuration = Math.abs(Vector.getLength(exitVector) / -5000)
+      const pointExit = Vector.add(pointCurrent, Vector.scale(exitVector, exitDuration * 0.5))
+      return { pointExit, exitDuration }
+    },
+    timeFunction: easeOutCubic
   })
   applyEnhancedPointerEventListener({ element, onEnhancedEvent, onEvent, isGlobal: true, isCancelOnOutOfBound: false })
 }

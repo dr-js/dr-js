@@ -1,48 +1,38 @@
-import { CLOCK_TO_SECOND, clock, createTimer, requestFrameUpdate, cancelFrameUpdate } from 'source/common/time'
-import { fromOrigin, add, scale } from 'source/common/geometry/D2/Vector'
+import { CLOCK_PER_SECOND, clock, createTimer, requestFrameUpdate, cancelFrameUpdate } from 'source/common/time'
+import { clamp } from 'source/common/math/base'
+import { fromOrigin, getLength, add, scale } from 'source/common/geometry/D2/Vector'
 
-const createMotionAutoTimer = ({
-  func, // (move) => {}, will get move distance in px
-  accelerateScalar = Infinity, // should be px/sec^2
+const createInterpolationAutoTimer = ({
+  func, // (rate) => {}, will get move distance in px
   queueTask = requestFrameUpdate,
   cancelTask = cancelFrameUpdate
 }) => {
-  let speed = 0 // in px/sec
-  let distance = 0 // in px/sec
-  let prevTime = 0 // in ms
+  let prevRate = 1 // range [0, 1]
+  let timeStart = 0 // in ms
+  let timeDuration = 0 // in ms
 
   const reset = () => {
     stop()
-    speed = 0
-    distance = 0
-    prevTime = 0
+    prevRate = 1
+    timeStart = 0
+    timeDuration = 0
   }
 
   const { start: startTimer, stop, isActive } = createTimer({
     func: () => {
-      const time = clock()
-      const deltaTime = (time - prevTime) * CLOCK_TO_SECOND
-      const nextSpeed = Math.max(0, speed + deltaTime * accelerateScalar)
-      const move = nextSpeed * deltaTime
-      const nextDistance = Math.max(0, distance - move)
-      __DEV__ && console.log({ prevTime, deltaTime, speed, distance, nextSpeed, nextDistance, move })
-
-      speed = nextSpeed
-      distance = nextDistance
-      prevTime = time
-      if (speed === 0 || distance === 0) reset() // done
-
-      func(move) // vector should move
+      prevRate = clamp((clock() - timeStart) / timeDuration, 0, 1)
+      prevRate === 1 && reset() // done
+      func(prevRate) // vector should move
     },
     queueTask,
     cancelTask
   })
 
-  const start = (nextSpeed, nextDistance = Infinity) => { // in px/sec
-    if (nextSpeed <= 0 || nextDistance <= 0) return // TODO: calc if there is a end condition
-    speed = nextSpeed
-    distance = nextDistance
-    prevTime = clock()
+  const start = (duration) => { // in sec
+    if (duration <= 0) throw new Error(`[InterpolationAutoTimer] invalid nextDurationTime: ${duration}`)
+    prevRate = 0
+    timeStart = clock()
+    timeDuration = duration * CLOCK_PER_SECOND
     startTimer()
   }
 
@@ -50,12 +40,11 @@ const createMotionAutoTimer = ({
     stop,
     start,
     isActive,
-    getSpeed: () => speed,
-    getDistance: () => distance
+    getRate: () => prevRate
   }
 }
 
-const createVectorAccumulator = (accumulatedTimeRange = 32) => { // in msec
+const createVectorAccumulator = (accumulatedTimeRange = 24) => { // in msec
   let accumulatedTimeVector = fromOrigin()
   let accumulatedTime = 0
 
@@ -78,7 +67,7 @@ const createVectorAccumulator = (accumulatedTimeRange = 32) => { // in msec
       accumulatedTimeVector = add(scale(accumulatedTimeVector, keepRate), scale(vector, time))
       accumulatedTime = accumulatedTime * keepRate + time
     }
-    __DEV__ && console.log('[accumulate]', getAverageVector(), { accumulatedTime, vector, time })
+    __DEV__ && console.log('[accumulate]', getLength(vector), vector, time, getAverageVector(), accumulatedTime)
   }
 
   const getAverageVector = () => accumulatedTime
@@ -93,6 +82,6 @@ const createVectorAccumulator = (accumulatedTimeRange = 32) => { // in msec
 }
 
 export {
-  createMotionAutoTimer,
+  createInterpolationAutoTimer,
   createVectorAccumulator
 }
