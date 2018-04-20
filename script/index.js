@@ -124,7 +124,8 @@ runMain(async (logger) => {
   await processOutput({ packageJSON, logger })
 
   isTest && logger.padLog(`test output`)
-  isTest && execSync(`npm run test-mocha-output`, execOptionRoot)
+  isTest && execSync(`npm run test-mocha-output-library`, execOptionRoot)
+  isTest && execSync(`npm run test-mocha-output-module`, execOptionRoot)
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })

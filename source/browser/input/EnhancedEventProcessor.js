@@ -9,20 +9,20 @@ const { START } = POINTER_EVENT_TYPE
 const { DRAG_MOVE, DRAG_END, DRAG_CANCEL } = ENHANCED_POINTER_EVENT_TYPE
 
 const createSwipeEnhancedEventProcessor = ({
-  getOrigin, // (event) => pointOrigin
-  updateOrigin, // (pointCurrent) => {}
-  getExitInfo, // ({ exitVector, pointCurrent, pointOrigin }) => ({ pointExit: pointCurrent, exitDuration: 0 }),
+  getPointStart, // (eventState) => pointStart
+  updatePoint, // (pointCurrent, eventState || undefined) => {}
+  getExitInfo, // ({ exitVector, pointCurrent, pointStart }) => ({ pointExit: pointCurrent, exitDuration: 0 }),
   normalizeVector = (vector) => vector, // can lock result direction
   timeFunction = linear,
   accumulatedTimeRange
 }) => {
   let isPause = false
-  let pointOrigin
+  let pointStart
   let pointExit
   let prevTime
   let prevPoint
 
-  const { stop, start } = createInterpolationAutoTimer({ func: (rate) => updateOrigin(lerp(pointOrigin, pointExit, timeFunction(rate))) })
+  const { stop, start } = createInterpolationAutoTimer({ func: (rate) => updatePoint(lerp(pointStart, pointExit, timeFunction(rate))) })
 
   const { reset: resetVectorAccumulator, accumulate, getAverageVector } = createVectorAccumulator(accumulatedTimeRange)
 
@@ -30,7 +30,7 @@ const createSwipeEnhancedEventProcessor = ({
     stop()
     resetVectorAccumulator()
     isPause = false
-    pointOrigin = undefined
+    pointStart = undefined
     pointExit = undefined
     prevTime = undefined
     prevPoint = undefined
@@ -44,13 +44,14 @@ const createSwipeEnhancedEventProcessor = ({
   return {
     reset,
     pause,
-    onEnhancedEvent: (name, event, eventState) => {
+    onEnhancedEvent: (name, eventState) => {
+      // __DEV__ && window.log('onEnhancedEvent', name)
       if (isPause || !(name === DRAG_END || name === DRAG_CANCEL || name === DRAG_MOVE)) return
 
-      const { timeStart, pointStart, time, point } = eventState
-      const pointCurrent = add(pointOrigin, normalizeVector(sub(point, pointStart)))
+      const { timeStart, pointStart: eventPointStart, time, point } = eventState
+      const pointCurrent = add(pointStart, normalizeVector(sub(point, eventPointStart)))
       __DEV__ && console.log('[onEnhancedEvent]', { pointCurrent })
-      updateOrigin(pointCurrent)
+      updatePoint(pointCurrent, eventState)
 
       const duration = time - (prevTime || timeStart)
       accumulate(scale(normalizeVector(sub(point, prevPoint || pointStart)), CLOCK_PER_SECOND / duration), duration)
@@ -60,19 +61,19 @@ const createSwipeEnhancedEventProcessor = ({
       if (name === DRAG_MOVE) return
 
       const exitVector = normalizeVector(getAverageVector())
-      const { pointExit: nextPointExit, exitDuration } = getExitInfo({ exitVector, pointCurrent, pointOrigin })
+      const { pointExit: nextPointExit, exitDuration } = getExitInfo({ exitVector, pointCurrent, pointStart })
       if (!exitDuration) return
 
-      pointOrigin = pointCurrent
+      pointStart = pointCurrent
       pointExit = nextPointExit
       __DEV__ && console.log('[onEnhancedEvent] startExit', { exitVector, exitDuration, exitSpeed: getLength(exitVector), pointExit })
       start(exitDuration)
     },
-    onEvent: (name, event) => {
+    onEvent: (name, event, calcState) => {
       if (isPause || name !== START) return
       reset()
-      pointOrigin = getOrigin(event)
-      __DEV__ && console.log('[onEvent]', { pointOrigin })
+      pointStart = getPointStart(calcState(event))
+      __DEV__ && console.log('[onEvent]', { pointStart })
     }
   }
 }

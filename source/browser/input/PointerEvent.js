@@ -13,10 +13,11 @@ const POINTER_EVENT_TYPE = {
 // TODO: currently single pointer only
 const applyPointerEventListener = ({
   element,
-  onEvent,
+  onEvent, // (type, event, calcState) => {}
   isGlobal = false,
   isCancel = true, // send cancel
-  isCancelOnOutOfBound = true // send out of bound as cancel
+  isCancelOnOutOfBound = true, // send out of bound as cancel
+  isUseTouchEvent = true // TODO: when touch trigger browser scroll, pointer will be cancelled, so to still get a drag, both Pointer & Touch will be listened
 }) => {
   if (!window.getComputedStyle(element).touchAction) throw new Error(`[applyPointerEventListener] should set CSS 'touch-action' to 'none' to prevent browser defaults`)
 
@@ -43,15 +44,28 @@ const applyPointerEventListener = ({
     eventSource.removeEventListener('pointerup', onEnd)
     isCancel && eventSource.removeEventListener('pointercancel', onCancel)
     isCancelOnOutOfBound && eventSource.removeEventListener('pointerleave', onCancel)
+
+    isUseTouchEvent && eventSource.removeEventListener('touchmove', onMove, { passive: false })
+    isUseTouchEvent && eventSource.removeEventListener('touchend', onEnd)
+    isUseTouchEvent && isCancel && eventSource.removeEventListener('touchcancel', onCancel)
   }
+
+  const getEventPoint = !isUseTouchEvent
+    ? (event) => ({ x: event.clientX, y: event.clientY })
+    : (event) => (event instanceof window.TouchEvent)
+      ? (
+        event.touches.length
+          ? { x: event.touches[ 0 ].clientX, y: event.touches[ 0 ].clientY }
+          : { x: event.changedTouches[ 0 ].clientX, y: event.changedTouches[ 0 ].clientY }
+      )
+      : { x: event.clientX, y: event.clientY }
 
   const calcState = (event) => {
     if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`) // TODO: check is needed
     if (__DEV__ && !event) throw new Error('[calcState] event expected')
     if (event !== prevEvent) {
-      const { clientX, clientY } = event
       const time = clock()
-      const point = { x: clientX, y: clientY }
+      const point = getEventPoint(event)
       prevEvent = event
       prevState = {
         timeStart,
@@ -59,6 +73,7 @@ const applyPointerEventListener = ({
         eventStart,
         time,
         point,
+        event,
         duration: time - timeStart,
         distance: getDist(pointStart, point)
       }
@@ -66,20 +81,35 @@ const applyPointerEventListener = ({
     return prevState
   }
 
+  const checkShouldPass = !isUseTouchEvent
+    ? (event) => !event.isPrimary
+    : (event) => (event instanceof window.TouchEvent)
+      ? (
+        (event.type === 'touchend' || event.type === 'touchcancel')
+          ? event.touches.length !== 0
+          : event.touches.length !== 1
+      )
+      : (!event.isPrimary || event.pointerType === 'touch')
+
   const onStart = (event) => {
-    if (!event.isPrimary) return
-    const { clientX, clientY } = event
+    if (checkShouldPass(event)) return
     timeStart = clock()
-    pointStart = { x: clientX, y: clientY }
+    pointStart = getEventPoint(event)
     eventStart = event
+
     eventSource.addEventListener('pointermove', onMove)
     eventSource.addEventListener('pointerup', onEnd)
     isCancel && eventSource.addEventListener('pointercancel', onCancel)
     isCancelOnOutOfBound && eventSource.addEventListener('pointerleave', onCancel)
+
+    isUseTouchEvent && eventSource.addEventListener('touchmove', onMove, { passive: false })
+    isUseTouchEvent && eventSource.addEventListener('touchend', onEnd)
+    isUseTouchEvent && isCancel && eventSource.addEventListener('touchcancel', onCancel)
+
     onEvent(POINTER_EVENT_TYPE.START, event, calcState)
   }
   const onMove = (event) => {
-    if (!event.isPrimary) return
+    if (checkShouldPass(event)) return
     const { point } = calcState(event)
     if (
       isCancelOnOutOfBound &&
@@ -88,20 +118,22 @@ const applyPointerEventListener = ({
     onEvent(POINTER_EVENT_TYPE.MOVE, event, calcState)
   }
   const onEnd = (event) => {
-    if (!event.isPrimary) return
+    if (checkShouldPass(event)) return
     onEvent(POINTER_EVENT_TYPE.END, event, calcState)
     reset()
   }
   const onCancel = (event) => {
-    if (!event.isPrimary) return
+    if (checkShouldPass(event)) return
     onEvent(POINTER_EVENT_TYPE.CANCEL, event, calcState)
     reset()
   }
 
   element.addEventListener('pointerdown', onStart)
+  isUseTouchEvent && element.addEventListener('touchstart', onStart, { passive: false })
   reset()
   return () => {
     element.removeEventListener('pointerdown', onStart)
+    isUseTouchEvent && element.removeEventListener('touchstart', onStart, { passive: false })
     reset()
   }
 }
@@ -116,8 +148,8 @@ const ENHANCED_POINTER_EVENT_TYPE = {
 
 const applyEnhancedPointerEventListener = ({
   element,
-  onEnhancedEvent,
-  onEvent, // optional, for original PointerEvent
+  onEnhancedEvent, // (type, eventState) => {}
+  onEvent, // (type, event, calcState) => {}, optional, for original PointerEvent
   holdDurationThreshold = 500, // in msec
   dragDistanceThreshold = 5, // in px
   ...extraOption
@@ -132,15 +164,15 @@ const applyEnhancedPointerEventListener = ({
         break
       case POINTER_EVENT_TYPE.MOVE:
         isDragging |= eventState.distance >= dragDistanceThreshold
-        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_MOVE, event, eventState)
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_MOVE, eventState)
         break
       case POINTER_EVENT_TYPE.END:
-        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_END, event, eventState)
-        else if (eventState.duration >= holdDurationThreshold) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.HOLD, event, eventState)
-        else onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.TAP, event, eventState)
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_END, eventState)
+        else if (eventState.duration >= holdDurationThreshold) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.HOLD, eventState)
+        else onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.TAP, eventState)
         break
       case POINTER_EVENT_TYPE.CANCEL:
-        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_CANCEL, event, eventState)
+        if (isDragging) onEnhancedEvent(ENHANCED_POINTER_EVENT_TYPE.DRAG_CANCEL, eventState)
         break
     }
     onEvent && onEvent(name, event, calcState)

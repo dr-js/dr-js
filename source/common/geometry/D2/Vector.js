@@ -34,6 +34,7 @@ const getRotateDelta = (anchor, from, to) => {
     Math.atan2(anchor.y - from.y, anchor.x - from.x)
   return radian >= 0 ? radian : radian + PI_DOUBLE
 }
+const getDotProduct = (a, b) => a.x * b.x + a.y * b.y
 
 const add = (a, b) => ({
   x: a.x + b.x,
@@ -59,6 +60,12 @@ const scale = ({ x, y }, scale) => ({
   x: x * scale,
   y: y * scale
 })
+
+// project a onto b, result has same direction as b
+const project = (a, b) => scale(
+  b,
+  getDotProduct(a, b) / Math.pow(getLength(b), 2)
+)
 
 const min = (a, b) => ({
   x: Math.min(a.x, b.x),
@@ -95,18 +102,17 @@ const isZero = ({ x, y }) => x === 0 && y === 0
 export {
   fromOrigin,
   fromAngleLength,
-  getLength,
-  getLengthSq,
-  getDist,
-  getDistSq,
+  getLength, getLengthSq,
+  getDist, getDistSq,
   getAngle,
-  getRotate,
-  getRotateDelta,
+  getRotate, getRotateDelta,
+  getDotProduct,
   add,
   sub,
   multiply,
   divide,
   scale,
+  project,
   min,
   max,
   clamp,
