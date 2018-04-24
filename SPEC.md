@@ -182,7 +182,7 @@
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
@@ -373,7 +373,7 @@
       - **Common**
         - `AccessorMap`, `createResponderParseURL`, `createResponderReceiveBuffer`, `createStoreStateAccessor`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
       - **Router**
-        - `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**

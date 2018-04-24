@@ -8,11 +8,14 @@ import {
 
 const METHOD_MAP = {
   GET: '/GET',
-  PUT: '/PUT',
   POST: '/POST',
-  HEAD: '/HEAD',
+  PUT: '/PUT',
   PATCH: '/PATCH',
-  DELETE: '/DELETE'
+  DELETE: '/DELETE',
+  HEAD: '/HEAD',
+  OPTIONS: '/OPTIONS',
+  CONNECT: '/CONNECT',
+  TRACE: '/TRACE'
 }
 
 const appendRouteMap = (routeMap, route = '/', method = 'GET', routeResponder) => {
@@ -76,6 +79,7 @@ const describeRouteMap = (routeMap) => {
 // }
 
 export {
+  METHOD_MAP,
   createRouteMap,
   createResponderRouter,
   appendRouteMap,

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.14.0-dev.2",
+  "version": "0.14.0-dev.3",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -45,14 +45,13 @@
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
   "engines": {
-    "node": ">=8.8.0",
-    "npm": ">=5.8.0",
-    "yarn": ">=1.6.0"
+    "node": ">=8.8",
+    "npm": ">=5"
   },
   "devDependencies": {
     "dev-dep-tool": "0.2.1-dev.2",
     "dev-dep-web": "0.2.1-dev.2",
-    "dr-js": "0.14.0-dev.1",
+    "dr-js": "0.14.0-dev.2",
     "webpack-bundle-analyzer": "^2.11.1"
   },
   "sideEffects": false
