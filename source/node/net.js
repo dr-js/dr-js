@@ -12,7 +12,7 @@ const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, u
   return option
 }
 
-const requestAsync = (option, body) => new Promise((resolve, reject) => {
+const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
   const request = (option.protocol === 'https:' ? httpsRequest : httpRequest)(option, resolve)
   const endWithError = (error) => {
     request.destroy()
@@ -31,7 +31,7 @@ const requestAsync = (option, body) => new Promise((resolve, reject) => {
 //   If not, on nextTick, the data will be dropped.
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 const fetch = async (url, config = {}) => {
-  const { method, headers, body = null, timeout = DEFAULT_TIMEOUT } = config
+  const { method, headers, body, timeout = DEFAULT_TIMEOUT } = config
   const option = { ...urlToOption(new URL(url)), method, headers, timeout } // will result in error if timeout
   const response = await requestAsync(option, body)
   const status = response.statusCode

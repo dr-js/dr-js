@@ -50,7 +50,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `throwInfo`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `describe`, `escapeHTML`, `padTable`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -207,6 +207,8 @@
   - `startREPL`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
++ 📄 [source/node/system/Status.js](source/node/system/Status.js)
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
 #### Export Tree
 - **Browser**
@@ -328,7 +330,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `throwInfo`
   - **Format**
-    - `binary`, `describe`, `escapeHTML`, `padTable`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
@@ -401,6 +403,8 @@
       - `startREPL`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
+    - **Status**
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
     - `fetch`, `ping`, `requestAsync`, `urlToOption`
   - **Resource**
@@ -424,6 +428,7 @@
 >         echo cat
 >         write append
 >         open o
+>         status s
 >         file-list ls
 >         file-list-all ls-R
 >         file-create-directory mkdir

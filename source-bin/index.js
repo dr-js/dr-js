@@ -9,6 +9,7 @@ import { getFileList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
+import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
 import { getVersion } from './version'
 import { parseOption, formatUsage } from './option'
@@ -54,9 +55,14 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
       const flags = mode === 'write' ? 'w' : 'a'
       return pipeStreamAsync(createWriteStream(resolveArgumentPath(getSingleOption('argument')), { flags }), process.stdin)
+    case 'status':
+    case 's':
+      return (getOptionOptional('argument') || []).includes('h')
+        ? console.log(describeSystemStatus())
+        : logJSON({ ...getSystemStatus(), ...getProcessStatus() })
     case 'open':
     case 'o':
-      return runSync({ command: getDefaultOpen(), argList: [ singleArgumentPath() ] })
+      return runSync({ command: getDefaultOpen(), argList: [ getSingleOptionOptional('argument') || '.' ] })
     case 'file-list':
     case 'ls':
       return logJSON(await getPathContent(singleArgumentPath()))

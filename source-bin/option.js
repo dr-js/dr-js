@@ -8,6 +8,7 @@ const MODE_OPTION = [
   'echo', 'cat',
   'write', 'append',
   'open', 'o',
+  'status', 's',
   'file-list', 'ls',
   'file-list-all', 'ls-R',
   'file-create-directory', 'mkdir',
