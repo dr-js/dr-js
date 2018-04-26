@@ -47,9 +47,12 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
   switch (mode) {
     case 'echo':
       return logJSON(getOption('argument'))
-    case 'cat':
-      for (const path of getOption('argument').map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
+    case 'cat': {
+      const argumentList = getOptionOptional('argument')
+      if (argumentList && argumentList.length) for (const path of argumentList.map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
+      else if (!process.stdin.isTTY) await pipeStreamAsync(process.stdout, process.stdin)
       return
+    }
     case 'write':
     case 'append':
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
