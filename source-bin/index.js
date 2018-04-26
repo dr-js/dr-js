@@ -62,7 +62,7 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     case 's':
       return (getOptionOptional('argument') || []).includes('h')
         ? console.log(describeSystemStatus())
-        : logJSON({ ...getSystemStatus(), ...getProcessStatus() })
+        : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
     case 'open':
     case 'o':
       return runSync({ command: getDefaultOpen(), argList: [ getSingleOptionOptional('argument') || '.' ] })

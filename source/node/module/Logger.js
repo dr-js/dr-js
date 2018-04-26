@@ -1,46 +1,63 @@
-import { join as joinPath } from 'path'
+import { resolve } from 'path'
 import { getRandomId } from 'source/common/math/random'
 import { createLogQueue } from 'source/node/data/LogQueue'
 import { createDirectory } from 'source/node/file/File'
 import { createSafeWriteStream } from './SafeWrite'
 
-const createSimpleLogger = ({ pathOutputFile, queueLengthThreshold, flag, mode, onError }) => createLogQueue({
-  outputStream: createSafeWriteStream({ pathOutputFile, flag, mode, onError }),
+const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createLogQueue({
+  outputStream: createSafeWriteStream(extraOption),
   queueLengthThreshold
 })
 
-const FILE_SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // 24hour
+const AUTO_SAVE_TIME = 5 * 60 * 1000 // in ms, 5min
+const AUTO_SPLIT_TIME = 24 * 60 * 60 * 1000 // in ms, 24day
 const DEFAULT_GET_LOG_FILE_NAME = () => `${getRandomId()}.log`
 
 const createLogger = async ({
   pathLogDirectory,
   getLogFileName = DEFAULT_GET_LOG_FILE_NAME,
-  queueLengthThreshold,
-  fileSplitInterval = FILE_SPLIT_INTERVAL,
-  flag,
-  mode,
-  onError
+  autoSaveInterval = AUTO_SAVE_TIME, // TODO: rename to `saveInterval`
+  fileSplitInterval = AUTO_SPLIT_TIME, // TODO: rename to `splitInterval`
+  ...extraOption
 }) => {
-  await createDirectory(pathLogDirectory)
+  let logger
+  let saveToken
+  let splitToken
 
-  let logger = null
-  const splitLogFile = () => {
+  const reset = () => {
+    end()
+    const pathOutputFile = resolve(pathLogDirectory, getLogFileName())
+    logger = createSimpleLogger({ ...extraOption, pathOutputFile })
+    saveToken = autoSaveInterval && setInterval(save, autoSaveInterval)
+    splitToken = fileSplitInterval && setTimeout(split, fileSplitInterval)
+  }
+
+  const add = (...args) => {
+    // __DEV__ && logger && console.log('[Logger] add')
+    logger && logger.add(args.join(' '))
+  }
+  const save = () => {
+    __DEV__ && logger && console.log('[Logger] save')
+    logger && logger.save()
+  }
+  const split = () => {
+    __DEV__ && logger && console.log('[Logger] split')
+    logger && reset()
+  }
+  const end = () => {
+    __DEV__ && logger && console.log('[Logger] end')
     logger && logger.end()
-    logger = createSimpleLogger({ pathOutputFile: joinPath(pathLogDirectory, getLogFileName()), queueLengthThreshold, flag, mode, onError })
+    saveToken && clearInterval(saveToken)
+    splitToken && clearTimeout(splitToken)
+    logger = null
+    saveToken = null
+    splitToken = null
   }
 
-  splitLogFile()
-  let intervalToken = setInterval(splitLogFile, fileSplitInterval)
+  await createDirectory(pathLogDirectory)
+  reset()
 
-  return {
-    add: (...args) => logger && logger.add(args.join(' ')),
-    save: () => logger && logger.save(),
-    split: splitLogFile,
-    end: () => {
-      intervalToken && clearInterval(intervalToken) && (intervalToken = null)
-      logger && logger.end() && (logger = null)
-    }
-  }
+  return { add, save, split, end }
 }
 
-export { createLogger, createSimpleLogger }
+export { createSimpleLogger, createLogger }

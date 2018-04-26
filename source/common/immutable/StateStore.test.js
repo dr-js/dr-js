@@ -1,4 +1,4 @@
-import { equal, deepEqual, deepStrictEqual, notEqual, notStrictEqual, throws, doesNotThrow } from 'assert'
+import { equal, deepEqual, deepStrictEqual, notEqual, notDeepEqual, throws, doesNotThrow } from 'assert'
 import { objectMerge } from './Object'
 import { createInsideOutPromise } from 'source/common/function'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
@@ -30,11 +30,11 @@ const verifyBasicSubscribeUnsubscribe = (store) => {
   equal(typeof (store.unsubscribe), 'function')
 
   const listener = (state, prevState) => {
-    notStrictEqual(state, prevState)
+    notDeepEqual(state, prevState)
     callCount++
   }
   const listenerAlter = (state, prevState) => {
-    notStrictEqual(state, prevState)
+    notDeepEqual(state, prevState)
     callCount++
   }
   let callCount = 0
@@ -148,7 +148,7 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
@@ -175,7 +175,7 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
@@ -208,7 +208,7 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
@@ -280,7 +280,7 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
@@ -300,12 +300,12 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         store.unsubscribe(listenerAlter)
         callCount++
       }
       const listenerAlter = (state, prevState) => {
-        notStrictEqual(state, prevState)
+        notDeepEqual(state, prevState)
         store.unsubscribe(listener)
         callCount++
       }

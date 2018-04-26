@@ -1,4 +1,4 @@
-import { deepEqual, strictEqual, notStrictEqual, throws } from 'assert'
+import { deepEqual, strictEqual, notDeepEqual, throws } from 'assert'
 
 import { ObjectAs } from './ObjectAs'
 import { ArrayOf } from './ArrayOf'
@@ -34,23 +34,23 @@ describe('Common.Module.StateSchema', () => {
 
   it('actMap simple', () => {
     const state = schemaC.reducer(undefined, { name: 'SchemaB', type: 'set', payload: { key: 'e', value: 'changedE' } })
-    notStrictEqual(state, schemaC.initialState)
-    notStrictEqual(state.stateB, schemaC.initialState.stateB)
+    notDeepEqual(state, schemaC.initialState)
+    notDeepEqual(state.stateB, schemaC.initialState.stateB)
     strictEqual(state.stateBList, schemaC.initialState.stateBList)
     strictEqual(state.stateB.e, 'changedE')
   })
 
   it('actMap extend', () => {
     const state0 = schemaC.reducer(undefined, { name: 'SchemaBList', type: 'push', payload: { value: { ...schemaB.initialState, id: 0 } } })
-    notStrictEqual(state0, schemaC.initialState)
+    notDeepEqual(state0, schemaC.initialState)
     strictEqual(state0.stateB, schemaC.initialState.stateB)
-    notStrictEqual(state0.stateBList, schemaC.initialState.stateBList)
+    notDeepEqual(state0.stateBList, schemaC.initialState.stateBList)
 
     const state1 = schemaC.reducer(state0, { name: 'SchemaBList', type: 'push', payload: { value: { ...schemaB.initialState, id: 1 } } })
     const state2 = schemaC.reducer(state1, { name: 'SchemaA', type: 'set', payload: { key: 'id', value: 'set value' } })
-    notStrictEqual(state2, schemaC.initialState)
+    notDeepEqual(state2, schemaC.initialState)
     strictEqual(state2.stateB, schemaC.initialState.stateB)
-    notStrictEqual(state2.stateBList, schemaC.initialState.stateBList)
+    notDeepEqual(state2.stateBList, schemaC.initialState.stateBList)
     strictEqual(state2.stateBList.length, 2)
 
     const state3 = schemaC.reducer(state2, {

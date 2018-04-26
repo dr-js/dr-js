@@ -1,7 +1,8 @@
 import { openSync, write, writeSync, closeSync } from 'fs'
+import { rethrowError } from 'source/common/error'
 
 // async write normally, sync write on emergency
-const createSafeWriteStream = ({ pathOutputFile, flag = 'w', mode = 0o666, onError = DEFAULT_ON_ERROR }) => {
+const createSafeWriteStream = ({ pathOutputFile, flag = 'w', mode = 0o666, onError = rethrowError }) => {
   let fileDescriptor = openSync(pathOutputFile, flag, mode)
   let writingQueue = []
   let pendingQueue = []
@@ -23,11 +24,6 @@ const createSafeWriteStream = ({ pathOutputFile, flag = 'w', mode = 0o666, onErr
       pendingQueue.length = writingQueue.length = 0
     }
   }
-}
-
-const DEFAULT_ON_ERROR = (error) => {
-  console.warn(error)
-  throw error
 }
 
 export { createSafeWriteStream }

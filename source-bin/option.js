@@ -5,8 +5,10 @@ import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/Opt
 const { OneOfString, BooleanFlag, Any, Config } = ConfigPreset
 
 const MODE_OPTION = [
-  'echo', 'cat',
-  'write', 'append',
+  'echo',
+  'cat',
+  'write',
+  'append',
   'open', 'o',
   'status', 's',
   'file-list', 'ls',

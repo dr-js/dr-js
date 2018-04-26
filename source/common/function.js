@@ -1,4 +1,5 @@
 import { clock, setTimeoutAsync } from 'source/common/time'
+import { rethrowError } from 'source/common/error'
 
 // https://davidwalsh.name/javascript-debounce-function
 // https://gist.github.com/nmsdvid/8807205
@@ -30,6 +31,26 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
       !isLeadingEdge && func.apply(null, args)
     }, wait)
     isCallNow && func.apply(null, args)
+  }
+}
+
+// drop calls during async function running, good to make a trigger for async func
+// WARN: this will drop return result, func can not return value
+const lossyAsync = (func, onError = rethrowError) => {
+  let isRunning = false
+  const onResolve = () => { isRunning = false }
+  const onReject = (error) => {
+    isRunning = false
+    onError(error)
+  }
+  return (...args) => {
+    if (isRunning) return
+    isRunning = true
+    try {
+      const result = func.apply(null, args)
+      if (result instanceof Object && result.then) result.then(onResolve, onReject)
+      else onResolve()
+    } catch (error) { onReject(error) }
   }
 }
 
@@ -114,6 +135,7 @@ const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) =>
 export {
   debounce,
   throttle,
+  lossyAsync,
   withDelayArgvQueue,
   withRepeat,
   withRetryAsync,

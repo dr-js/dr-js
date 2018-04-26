@@ -2,6 +2,7 @@ import { deepEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
+  lossyAsync,
   withDelayArgvQueue,
   withRepeat,
   withRetryAsync,
@@ -128,6 +129,36 @@ describe('Common.Function', () => {
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
       await setTimeoutAsync(100)
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+    }
+
+    await test() // 1st try
+    await test() // 2nd try
+    resolve() // done
+    return promise
+  })
+
+  it('lossyAsync()', async () => {
+    const { promise, resolve, reject } = createInsideOutPromise()
+
+    let testValue = null
+    const lossyAsyncFunc = lossyAsync(async (value) => {
+      value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
+      testValue = value
+      await setTimeoutAsync(10)
+      testValue = 'DONE'
+      throw new Error('should be dropped')
+    }, (error) => error) // drop error
+
+    const test = async () => {
+      testValue = null
+      lossyAsyncFunc('Good')
+      testValue !== 'Good' && reject(new Error(`asyncFunc should get called in time`))
+      lossyAsyncFunc('Not 1')
+      testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
+      lossyAsyncFunc('Not 2')
+      testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
+      await setTimeoutAsync(20)
+      testValue !== 'DONE' && reject(new Error(`asyncFunc should not be called during waiting`))
     }
 
     await test() // 1st try

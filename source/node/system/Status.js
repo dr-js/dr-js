@@ -5,6 +5,7 @@ import {
 } from 'os'
 
 import { percent, time, binary, stringIndentLine } from 'source/common/format'
+import { tryCall } from 'source/common/error'
 
 const getSystemPlatform = () => ({
   platform: platform(),
@@ -72,18 +73,18 @@ const getProcessStatus = () => ({
   pid: process.pid,
   ppid: process.ppid,
 
-  getegid: tryGet(process, 'getegid', -1),
-  geteuid: tryGet(process, 'geteuid', -1),
-  getgid: tryGet(process, 'getgid', -1),
-  getgroups: tryGet(process, 'getgroups', []),
-  getuid: tryGet(process, 'getuid', -1),
+  uid: tryCall(process, 'getuid'),
+  gid: tryCall(process, 'getgid'),
+  groups: tryCall(process, 'getgroups') || [],
+  euid: tryCall(process, 'geteuid'),
+  egid: tryCall(process, 'getegid'),
 
   stdio: {
-    stdin: describeStdio('stdin'),
-    stdout: describeStdio('stdout'),
-    stderr: describeStdio('stderr')
+    stdin: getStdio('stdin'),
+    stdout: getStdio('stdout'),
+    stderr: getStdio('stderr')
   },
-  connected: Boolean(process.connected),
+  isConnectedIPC: Boolean(process.connected),
 
   execPath: process.execPath,
   execArgv: process.execArgv, // []
@@ -94,14 +95,7 @@ const getProcessStatus = () => ({
   memoryUsage: process.memoryUsage() // {}
 })
 
-const tryGet = (thisArg, name, defaultReturn) => {
-  try { return thisArg[ name ]() } catch (error) {
-    __DEV__ && console.log('[tryGet]', name)
-    return defaultReturn
-  }
-}
-
-const describeStdio = (name) => `${name}${process[ name ].isTTY ? ' [TTY]' : ''}`
+const getStdio = (name) => ({ isTTY: Boolean(process[ name ].isTTY) })
 
 export {
   getSystemPlatform,

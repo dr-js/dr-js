@@ -64,7 +64,7 @@ describe('Node.Module.Logger', () => {
         return `${logFileIndex}.log`
       },
       queueLengthThreshold: 4,
-      fileSplitInterval: 500
+      fileSplitInterval: 200
     })
     let size, prevSize
 
@@ -72,51 +72,52 @@ describe('Node.Module.Logger', () => {
     add('2')
     add('3')
     add('4')
-    await setTimeoutAsync(50)
+    await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('4', size)
-    equal(size, 0)
+    equal(size, 0, 'check 0')
 
     add('5')
-    await setTimeoutAsync(50)
+    await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
-    // console.log('5', size)
-    ok(size > 0)
+    // console.log('5', statSync(getCurrentLogPath()))
+    ok(size > 0, 'check 1')
     prevSize = size
 
     add('6')
     save()
-    await setTimeoutAsync(50)
+    await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('6', size)
-    ok(size > prevSize)
+    ok(size > prevSize, 'check 2')
     prevSize = size
 
     add('7')
-    split() // new file
-    await setTimeoutAsync(50)
-    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize)
+    split() // new file, reset split timer
+    await setTimeoutAsync(10)
+    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 3')
     size = statSync(getCurrentLogPath()).size
     // console.log('7', size)
-    equal(size, 0)
+    equal(size, 0, 'check 4')
     prevSize = size
 
     add('8', [ 'A' ])
     add('9', { o: 'o' })
-    await setTimeoutAsync(350) // already 200+ ms, so split should run
-    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize)
+    await setTimeoutAsync(250) // already 300+ ms, so split should run
+    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 5')
     size = statSync(getCurrentLogPath()).size
     // console.log('9', size)
-    equal(size, 0)
+    equal(size, 0, 'check 6')
     prevSize = size
+
 
     add('10')
     add('11')
     end()
-    await setTimeoutAsync(50)
+    await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('11', size)
-    ok(size > prevSize)
+    ok(size > prevSize, 'check 7')
 
     equal(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`), { encoding: 'utf8' }), '1 1\n2\n3\n4\n5\n6\n7\n')
     equal(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`), { encoding: 'utf8' }), `8 A\n9 ${{}}\n`)

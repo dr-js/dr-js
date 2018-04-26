@@ -6,6 +6,7 @@ import { createFileWatcher } from './Watch'
 import { createDirectory } from './File'
 import { modify } from './Modify'
 import { setTimeoutAsync } from 'source/common/time'
+import { catchAsync } from 'source/common/error'
 
 const { describe, it, after } = global
 
@@ -22,13 +23,9 @@ const createWatcherTest = (tag, func) => async () => {
   await writeFileAsync(fromTest('file'), `${tag}|file`)
   await writeFileAsync(fromTest('folder/folder-file'), `${tag}|folder-file`)
 
-  try {
-    await func({ fromTest, watcher })
-    watcher.clear()
-  } catch (error) {
-    watcher.clear()
-    throw error
-  }
+  const { error } = await catchAsync(func, { fromTest, watcher })
+  watcher.clear()
+  if (error) throw error
 }
 
 after('clear', async () => {

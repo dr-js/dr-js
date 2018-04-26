@@ -60,6 +60,8 @@ const main = async () => {
   // setTimeout(() => process.exit(), 1)
   // process.nextTick(() => process.exit())
   // process.exit()
+
+  // factDB.end()
 }
 
 main().catch(console.error)

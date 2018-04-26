@@ -6,7 +6,7 @@ const hashStringToNumber = (string = '', hash = 0) => {
   return hash
 }
 
-// always return a object, use this with object destructuring
+// always return a object/array, use this with object destructuring
 const tryParseJSONObject = (text, defaultResult = {}) => {
   try {
     const result = JSON.parse(text)
@@ -15,7 +15,16 @@ const tryParseJSONObject = (text, defaultResult = {}) => {
   return defaultResult
 }
 
+const getValueByKeyList = (value, keyList) => {
+  for (const key of keyList) {
+    if (value && typeof (value) === 'object' && value.hasOwnProperty(key)) value = value[ key ]
+    else return
+  }
+  return value
+}
+
 export {
   hashStringToNumber,
-  tryParseJSONObject
+  tryParseJSONObject,
+  getValueByKeyList
 }

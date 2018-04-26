@@ -1,6 +1,6 @@
 import { equal, deepStrictEqual } from 'assert'
 
-import { createServer, getUnusedPort } from '../Server'
+import { createServer, getUnusedPort } from 'source/node/server/Server'
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from './type'
 import { enableWebSocketServer } from './WebSocketServer'
 import { createWebSocketClient } from './WebSocketClient'

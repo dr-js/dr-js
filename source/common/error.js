@@ -1,8 +1,20 @@
-// attach more data to error
-const throwInfo = (info, message = info.type) => {
+const devWarnError = (error) => { __DEV__ && console.warn(error) }
+
+const rethrowError = (error) => {
+  console.warn(error)
+  throw error
+}
+
+const throwInfo = (info, message = info.type) => { // attach more data to error
   const error = new Error(message)
   error.info = info
   throw error
+}
+
+const tryCall = (thisArg, name, ...args) => {
+  try {
+    return thisArg[ name ](...args)
+  } catch (error) { __DEV__ && console.log('[tryCall] failed:', name, error) }
 }
 
 // for better flow control
@@ -19,7 +31,10 @@ const catchAsync = async (func, ...args) => {
 }
 
 export {
+  devWarnError,
+  rethrowError,
   throwInfo,
+  tryCall,
   catchSync,
   catchAsync
 }

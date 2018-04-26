@@ -1,42 +1,51 @@
 import { join as joinPath } from 'path'
+import { lossyAsync } from 'source/common/function'
 import { createStateStore } from 'source/common/immutable/StateStore'
 
 import { readFileAsync, writeFileAsync, unlinkAsync } from 'source/node/file/function'
 import { getDirectoryContentShallow, walkDirectoryContent } from 'source/node/file/Directory'
 import { createLogger } from './Logger'
 
-/* lightweight log-based database
-*   fact:
-*     an object with id like:
-*       { id, ... }
-*
-*   factState:
-*     the state object from reduce `applyFact`, may not have `id`, initial state:
-*       { }
-*
-*   fact log:
-*     save fact line by line, can reconstruct factState by redo all the reduce
-*
-*   fact cache:
-*     for faster save/load factState, save the `factState` at `id`, like:
-*       { factId, factState }
-**/
+// lightweight log-based database
+//
+//   fact:
+//     an object with id like:
+//       { id, ... }
+//
+//   factState:
+//     the state object from reduce `applyFact`, will also have `id`, initial state:
+//       { id, ... }
+//
+//   fact log:
+//     save fact line by line, can reconstruct factState by redo all the reduce
+//
+//   fact cache:
+//     for faster save/load factState, save the `factState` at `id`, like:
+//       { factId, factState }
+//
 
 const DEFAULT_LOG_FILE_NAME = 'factLog'
 const DEFAULT_CACHE_FILE_NAME = 'factCache'
 
+const INITIAL_FACT_INFO = {
+  factId: 0,
+  factState: { id: 0 },
+  factCacheFile: '',
+  factLogFile: ''
+}
+
 const createFactDatabase = async ({
+  initialFactInfo = INITIAL_FACT_INFO,
   applyFact = (state, fact) => ({ ...state, ...fact }), // (state, fact) => nextState
   encodeFact = JSON.stringify, // (fact) => factText
   decodeFact = JSON.parse, // (factText) => fact
+  pathFactDirectory,
   nameFactLogFile = DEFAULT_LOG_FILE_NAME,
   nameFactCacheFile = DEFAULT_CACHE_FILE_NAME,
-  pathFactDirectory,
-  queueLengthThreshold, // optional
-  fileSplitInterval, // optional
-  onError
+  onError,
+  ...extraOption
 }) => {
-  const { factId: initialFactId, factState: initialFactState } = await loadFactInfoFromFile({
+  initialFactInfo = await loadFactInfoFromFile(initialFactInfo, {
     applyFact,
     decodeFact,
     pathFactDirectory,
@@ -44,55 +53,67 @@ const createFactDatabase = async ({
     nameFactCacheFile
   })
 
-  let factId = initialFactId
+  let isActive = true
+  let factId = initialFactInfo.factId || 0
+  let prevFactCacheFile = initialFactInfo.factCacheFile || ''
 
-  const { getState, setState, subscribe, unsubscribe } = createStateStore(initialFactState)
+  const { getState, setState, subscribe, unsubscribe } = createStateStore(initialFactInfo.factState)
 
   const factLogger = await createLogger({
+    ...extraOption,
     pathLogDirectory: pathFactDirectory,
     getLogFileName: () => `${nameFactLogFile}.${factId + 1}.log`,
-    queueLengthThreshold,
-    fileSplitInterval,
     onError
   })
 
-  let isSaving = false
-  const doneSave = () => { isSaving = false }
-  const saveFactCache = () => {
-    if (isSaving) return
-    isSaving = true
-    writeFactCacheFile(pathFactDirectory, nameFactCacheFile, factId, getState()).then(doneSave, onError)
-  }
+  const saveFactCache = lossyAsync(async () => {
+    const factCacheFile = joinPath(pathFactDirectory, `${nameFactCacheFile}.${factId}.json`)
+    const fileContent = JSON.stringify({ factId, factState: getState() })
+
+    __DEV__ && console.log('[saveFactCache] saving fact state:', factCacheFile)
+    await writeFileAsync(factCacheFile, fileContent) // may not always finish on progress exit
+
+    __DEV__ && prevFactCacheFile && console.log('[saveFactCache] dropping prev fact state:', prevFactCacheFile)
+    prevFactCacheFile && await unlinkAsync(prevFactCacheFile).catch((error) => { __DEV__ && console.warn('[saveFactCache] clear failed:', prevFactCacheFile, error) })
+
+    __DEV__ && console.log('[saveFactCache] done save fact state')
+    prevFactCacheFile = factCacheFile
+  }, onError)
 
   return {
+    getIsActive: () => isActive,
     getState,
     subscribe,
     unsubscribe,
     add: (fact) => {
-      fact.id = factId + 1
+      if (!isActive) return
+      fact.id = factId + 1 // TODO: may expload
       factId++
       factLogger.add(encodeFact(fact))
       setState(applyFact(getState(), fact))
     },
     save: () => {
+      if (!isActive) return
+      __DEV__ && console.log('[save]', factId)
       factLogger.save()
-      saveFactCache()
     },
     split: () => {
+      if (!isActive) return
+      __DEV__ && console.log('[split]', factId)
       factLogger.split()
       saveFactCache()
     },
-    end: () => factLogger.end()
+    end: () => {
+      if (!isActive) return
+      __DEV__ && console.log('[end]', factId)
+      isActive = false
+      factLogger.end()
+      saveFactCache()
+    }
   }
 }
 
-const writeFactCacheFile = async (pathFactDirectory, nameFactCacheFile, factId, factState) => {
-  const factCacheFile = joinPath(pathFactDirectory, `${nameFactCacheFile}.${factId}.json`)
-  await writeFileAsync(factCacheFile, JSON.stringify({ factId, factState })) // may not always finish on progress exit
-  __DEV__ && console.log('[saveFactCache] saved fact state:', factCacheFile)
-}
-
-const loadFactInfoFromFile = async ({ applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactCacheFile }) => {
+const loadFactInfoFromFile = async (factInfo, { applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactCacheFile }) => {
   const factLogFileList = []
   const factCacheFileList = []
   try {
@@ -102,28 +123,29 @@ const loadFactInfoFromFile = async ({ applyFact, decodeFact, pathFactDirectory, 
     })
   } catch (error) { __DEV__ && console.log('[loadFactInfoFromFile] failed to get content at:', pathFactDirectory) }
 
-  let factInfo = await tryLoadFactCache({ factCacheFileList })
+  factInfo = await tryLoadFactCache(factInfo, { factCacheFileList })
   factInfo = await tryLoadFactLog(factInfo, { factLogFileList, decodeFact, applyFact })
   return factInfo
 }
 const REGEXP_LOG_FILE_ID = /\.(\d+)\.log$/
 const REGEXP_CACHE_FILE_ID = /\.(\d+)\.json$/
 
-const tryLoadFactCache = async ({ factCacheFileList }) => { // first check if cached state is available
+const tryLoadFactCache = async (factInfo, { factCacheFileList }) => { // first check if cached state is available
   factCacheFileList.sort((a, b) => b.fileId - a.fileId) // bigger id first
   for (const { path, name } of factCacheFileList) {
     try {
-      __DEV__ && console.log('found cached fact state file:', name)
-      const factInfo = JSON.parse(await readFileAsync(joinPath(path, name), { encoding: 'utf8' }))
-      __DEV__ && console.log('load cached fact state with factId:', factInfo.factId)
-      return factInfo
+      __DEV__ && console.log('try cached fact state file:', name)
+      const factCacheFile = joinPath(path, name)
+      const { factId, factState } = JSON.parse(await readFileAsync(factCacheFile, { encoding: 'utf8' }))
+      __DEV__ && console.log('load cached fact state with factId:', factId)
+      return { ...factInfo, factId, factState, factCacheFile }
     } catch (error) { __DEV__ && console.warn('failed to load cached fact state file:', name, error) }
   }
-
-  return { factId: 0, factState: {} }
+  return factInfo
 }
 
-const tryLoadFactLog = async ({ factId, factState }, { factLogFileList, decodeFact, applyFact }) => { // then load minimal added state from log
+const tryLoadFactLog = async (factInfo, { factLogFileList, decodeFact, applyFact }) => { // then load minimal added state from log
+  let { factId, factState, factLogFile = '' } = factInfo
   const maxFactLogId = factLogFileList.reduce((o, { fileId }) => (fileId <= factId + 1) ? Math.max(o, fileId) : o, 0)
 
   factLogFileList = factLogFileList
@@ -132,7 +154,9 @@ const tryLoadFactLog = async ({ factId, factState }, { factLogFileList, decodeFa
   __DEV__ && factLogFileList.length && console.log('found fact log file:', factLogFileList.length, 'maxFactLogId:', maxFactLogId)
 
   for (const { path, name } of factLogFileList) {
-    (await readFileAsync(joinPath(path, name), { encoding: 'utf8' }))
+    const filePath = joinPath(path, name)
+    const fileContent = await readFileAsync(filePath, { encoding: 'utf8' })
+    fileContent
       .split('\n') // TODO: should check multiline log? (from non-JSON encodeFact output)
       .forEach((logText) => {
         const fact = logText && decodeFact(logText)
@@ -140,11 +164,12 @@ const tryLoadFactLog = async ({ factId, factState }, { factLogFileList, decodeFa
         if (fact.id !== factId + 1) throw new Error(`invalid factId: ${fact.id}, should be: ${factId + 1}. file: ${name}`)
         factState = applyFact(factState, fact)
         factId = fact.id
+        factLogFile = filePath
       })
     __DEV__ && console.log('load fact log file:', name, factId)
   }
 
-  return { factId, factState }
+  return { ...factInfo, factId, factState, factLogFile }
 }
 
 // TODO: remove extra cache file?

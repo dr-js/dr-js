@@ -1,13 +1,16 @@
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 
-const createLogQueue = ({ outputStream, queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD }) => {
+const createLogQueue = ({
+  outputStream,
+  queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD
+}) => {
   const logQueue = [] // buffered log
 
-  const consumeLogQueue = () => {
+  const pullLog = () => {
     logQueue.push('') // for an extra '\n'
-    const writeString = logQueue.join('\n')
+    const string = logQueue.join('\n')
     logQueue.length = 0
-    return writeString
+    return string
   }
 
   const add = (logString) => { // will trigger save on threshold
@@ -19,12 +22,12 @@ const createLogQueue = ({ outputStream, queueLengthThreshold = DEFAULT_QUEUE_LEN
   const save = () => {
     if (logQueue.length === 0) return
     __DEV__ && console.log('[LogQueue] save')
-    outputStream.write(consumeLogQueue())
+    outputStream.write(pullLog())
   }
 
   const end = () => {
     __DEV__ && console.log('[LogQueue] end')
-    logQueue.length !== 0 && outputStream.write(consumeLogQueue())
+    logQueue.length !== 0 && outputStream.write(pullLog())
     outputStream.end()
   }
 

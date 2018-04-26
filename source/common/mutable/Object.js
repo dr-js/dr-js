@@ -5,7 +5,7 @@ const objectMergeDeep = (object, merge) => {
   for (const [ key, mergeValue ] of Object.entries(merge)) {
     const objectValue = object[ key ]
     if (objectValue === mergeValue) continue
-    object[ key ] = (objectValue instanceof Object) && (mergeValue instanceof Object)
+    object[ key ] = isBasicObject(objectValue) && isBasicObject(mergeValue) // do not merge array, just replace
       ? objectMergeDeep(objectValue, mergeValue)
       : mergeValue
   }

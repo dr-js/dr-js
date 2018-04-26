@@ -48,11 +48,11 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchSync`, `throwInfo`
+  - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
+  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -74,7 +74,7 @@
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
-  - `hashStringToNumber`, `tryParseJSONObject`
+  - `getValueByKeyList`, `hashStringToNumber`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
   - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
 + 📄 [source/common/geometry/D2/BoundingRect.js](source/common/geometry/D2/BoundingRect.js)
@@ -90,7 +90,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectMerge`, `objectSet`
+  - `objectDelete`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -262,7 +262,7 @@
       - `SetMap`
     - **Toggle**
       - `createToggle`
-    - `hashStringToNumber`, `tryParseJSONObject`
+    - `getValueByKeyList`, `hashStringToNumber`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
       - **BoundingRect**
@@ -281,7 +281,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectMerge`, `objectSet`
+      - `objectDelete`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
@@ -328,11 +328,11 @@
   - **Compare**
     - `compareString`, `compareStringLocale`
   - **Error**
-    - `catchAsync`, `catchSync`, `throwInfo`
+    - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
     - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
-    - `createInsideOutPromise`, `debounce`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
+    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
