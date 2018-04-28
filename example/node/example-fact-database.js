@@ -1,4 +1,4 @@
-const { setProcessExitListener } = require('../../output-gitignore/library/node/system/ProcessExitListener')
+const { addExitListenerSync } = require('../../output-gitignore/library/node/system/ExitListener')
 const { createFactDatabase, tryDeleteExtraCache } = require('../../output-gitignore/library/node/module/FactDatabase')
 
 const main = async () => {
@@ -11,16 +11,14 @@ const main = async () => {
 
   const logFactDBState = () => console.log('state:', JSON.stringify(factDB.getState()))
 
-  setProcessExitListener({
-    listenerSync: ({ eventType, code }) => {
-      console.log('listenerSync', eventType, code)
-      factDB.add({ key1: 2 })
-      factDB.add({ key2: 4 })
-      factDB.add({ key3: 6 })
-      factDB.add({ exitAt: (new Date()).toString() })
-      logFactDBState()
-      factDB.end()
-    }
+  addExitListenerSync((event) => {
+    console.log('listenerSync', event)
+    factDB.add({ key1: 2 })
+    factDB.add({ key2: 4 })
+    factDB.add({ key3: 6 })
+    factDB.add({ exitAt: (new Date()).toString() })
+    logFactDBState()
+    factDB.end()
   })
 
   console.log('init:', factDB)

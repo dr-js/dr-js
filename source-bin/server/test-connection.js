@@ -2,10 +2,9 @@ import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { arraySplitChunk } from 'dr-js/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
-import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderSendBuffer, responderSendJSON, createResponderParseURL, responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
-import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, describeRouteMap } from 'dr-js/module/node/server/Responder/Router'
-import { getServerInfo, responderSendFavicon, createResponderLogEnd } from './function'
+import { responderSendBuffer, responderSendJSON, responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
+import { METHOD_MAP, createRouteMap, getRouteParam, describeRouteMap } from 'dr-js/module/node/server/Responder/Router'
+import { getServerInfo, commonCreateServer } from './function'
 
 const createServerTestConnection = ({ protocol = 'http:', hostname, port, log }) => {
   const BUFFER_SCRIPT = Buffer.from(`TEST CONTENT`)
@@ -13,6 +12,7 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
   let routeMapInfoBuffer
   const getRouteMapInfo = () => {
     if (!routeMapInfoBuffer) {
+      const routeMap = createRouteMap(routeConfigList)
       routeMapInfoBuffer = Buffer.from([
         '<pre>',
         '<h2>Route List</h2>',
@@ -25,7 +25,7 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
     return routeMapInfoBuffer
   }
 
-  const routeMap = createRouteMap([
+  const routeConfigList = [
     [ [ '/test-describe', '/test-describe/*' ], Object.keys(METHOD_MAP), async (store) => {
       const { url, method, httpVersion, rawHeaders, socket: { remoteAddress, remotePort } } = store.request
       const describeString = JSON.stringify({
@@ -62,19 +62,10 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', (store) => responderSendBuffer(store, { buffer: getRouteMapInfo(), type: BASIC_EXTENSION_MAP.html }) ],
-    [ '/favicon.ico', 'GET', responderSendFavicon ]
-  ])
+    [ '/', 'GET', (store) => responderSendBuffer(store, { buffer: getRouteMapInfo(), type: BASIC_EXTENSION_MAP.html }) ]
+  ]
 
-  const { server, start, option } = createServer({ protocol, hostname, port })
-
-  server.on('request', createRequestListener({
-    responderList: [
-      createResponderParseURL(option),
-      createResponderRouter(routeMap)
-    ],
-    responderEnd: createResponderLogEnd(log)
-  }))
+  const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })
 
   start()
 

@@ -70,8 +70,8 @@ const DEFAULT_RESPONSE_REDUCER_LIST = __DEV__ ? [ (store) => console.log(store.g
 const DEFAULT_RESPONSE_REDUCER_ERROR = (store, error) => store.setState({ error })
 const DEFAULT_RESPONSE_REDUCER_END = responderEnd
 const GET_INITIAL_STORE_STATE = () => ({
-  error: null, // from failed responder
   time: clock(), // in msec
+  error: null, // from failed responder
   url: null, // from createResponderParseURL
   method: null // from createResponderParseURL
 })

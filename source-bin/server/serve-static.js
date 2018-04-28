@@ -3,31 +3,25 @@ import { compareString } from 'dr-js/module/common/compare'
 import { escapeHTML } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
-import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
-import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
+import { responderEndWithRedirect, responderSendBuffer } from 'dr-js/module/node/server/Responder/Common'
+import { getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { getPathContent, getServerInfo, responderSendFavicon, createResponderLogEnd } from './function'
+import { getPathContent, getServerInfo, commonCreateServer } from './function'
 
 const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
-  const { server, start, option } = createServer({ protocol, hostname, port })
-  server.on('request', createRequestListener({
-    responderList: [
-      createResponderParseURL(option),
-      createResponderRouter(createRouteMap(isSimpleServe ? [
-        [ '/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
-      ] : [
-        [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
-        [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
-        [ [ '/', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ],
-        [ '/favicon.ico', 'GET', responderSendFavicon ]
-      ]))
-    ],
-    responderEnd: createResponderLogEnd(log)
-  }))
+
+  const routeConfigList = isSimpleServe ? [
+    [ '/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+  ] : [
+    [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+    [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
+    [ [ '/', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
+  ]
+
+  const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: !isSimpleServe, log })
 
   start()
 

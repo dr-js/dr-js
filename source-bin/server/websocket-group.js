@@ -2,13 +2,12 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
-import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
-import { getServerInfo, responderSendFavicon, createResponderLogEnd } from './function'
+import { getServerInfo, commonCreateServer } from './function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
@@ -125,30 +124,25 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
     .replace(`"{TYPE_LIST}"`, JSON.stringify([ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE ]))
   )
 
-  const { server, start, option } = createServer({ protocol, hostname, port })
+  const routeConfigList = [
+    [ '/', 'GET', (store) => responderSendBuffer(store, { buffer: BUFFER_HTML, type: BASIC_EXTENSION_MAP.html }) ],
+    [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ]
+  ]
+
+  const { server, start, option } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })
 
   enableWebSocketServer({
     server,
     onUpgradeRequest: createUpdateRequestListener({
       responderList: [
         createResponderParseURL(option),
-        createResponderRouter(createRouteMap([ [ '/websocket-group/*', 'GET', responderWebsocketGroupUpgrade ] ]))
+        createResponderRouter(createRouteMap([
+          [ '/websocket-group/*', 'GET', responderWebsocketGroupUpgrade ]
+        ]))
       ]
     }),
     frameLengthLimit: FRAME_LENGTH_LIMIT
   })
-
-  server.on('request', createRequestListener({
-    responderList: [
-      createResponderParseURL(option),
-      createResponderRouter(createRouteMap([
-        [ '/', 'GET', (store) => responderSendBuffer(store, { buffer: BUFFER_HTML, type: BASIC_EXTENSION_MAP.html }) ],
-        [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ],
-        [ '/favicon.ico', 'GET', responderSendFavicon ]
-      ]))
-    ],
-    responderEnd: createResponderLogEnd(log)
-  }))
 
   start()
 

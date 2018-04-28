@@ -1,15 +1,15 @@
 import { cpus } from 'os'
-import { getSystemEndianness } from 'dr-js/module/env'
+import { getEndianness } from 'dr-js/module/env'
 import { name as packageName, version as packageVersion } from '../package.json'
 
 const getVersion = () => ({
   packageName,
   packageVersion,
-  systemNodeVersion: process.version,
-  systemPlatform: process.platform,
-  systemCPUArchitecture: process.arch,
-  systemCPUCoreCount: (cpus() || [ 'TERMUX FIX' ]).length,
-  systemEndianness: getSystemEndianness
+  platform: process.platform,
+  nodeVersion: process.version,
+  processorArchitecture: process.arch,
+  processorEndianness: getEndianness(),
+  processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: check Termux fix
 })
 
 export { getVersion }

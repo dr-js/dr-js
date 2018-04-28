@@ -1,5 +1,4 @@
 import { resolve } from 'path'
-import { getRandomId } from 'source/common/math/random'
 import { createLogQueue } from 'source/node/data/LogQueue'
 import { createDirectory } from 'source/node/file/File'
 import { createSafeWriteStream } from './SafeWrite'
@@ -11,11 +10,11 @@ const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createL
 
 const AUTO_SAVE_TIME = 5 * 60 * 1000 // in ms, 5min
 const AUTO_SPLIT_TIME = 24 * 60 * 60 * 1000 // in ms, 24day
-const DEFAULT_GET_LOG_FILE_NAME = () => `${getRandomId()}.log`
 
 const createLogger = async ({
   pathLogDirectory,
-  getLogFileName = DEFAULT_GET_LOG_FILE_NAME,
+  prefixLogFile = '',
+  getLogFileName = () => `${prefixLogFile}${(new Date().toISOString()).replace(/\W/g, '-')}.log`,
   autoSaveInterval = AUTO_SAVE_TIME, // TODO: rename to `saveInterval`
   fileSplitInterval = AUTO_SPLIT_TIME, // TODO: rename to `splitInterval`
   ...extraOption

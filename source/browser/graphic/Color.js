@@ -1,7 +1,7 @@
-import { getSystemEndianness } from 'source/env'
+import { getEndianness } from 'source/env'
 
 // operation
-const getUint32RGBA = getSystemEndianness() === 'little'
+const getUint32RGBA = getEndianness() === 'little'
   ? (r, g, b, a) => ( // little endian
     r +
     (g << 8) +
@@ -14,7 +14,7 @@ const getUint32RGBA = getSystemEndianness() === 'little'
     (g << 16) +
     (r << 24)
   )
-const getRGBAFromUint32RGBA = getSystemEndianness() === 'little'
+const getRGBAFromUint32RGBA = getEndianness() === 'little'
   ? (value) => ({ // little endian
     r: value & 0x000000ff,
     g: (value & 0x0000ff00) >> 8,

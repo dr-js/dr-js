@@ -1,6 +1,8 @@
 import { URL } from 'url'
+import { clock } from 'source/common/time'
+import { time as formatTime } from 'source/common/format'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { receiveBufferAsync, sendBufferAsync } from 'source/node/data/Buffer'
+import { sendBufferAsync } from 'source/node/data/Buffer'
 import { pipeStreamAsync } from 'source/node/data/Stream'
 
 const responderEnd = (store) => {
@@ -53,20 +55,36 @@ const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl
   store.setState({ url: new URL(urlString, baseUrlObject), method })
 }
 
-const createResponderReceiveBuffer = (setBufferData = AccessorMap.bufferData.set) => async (store) => setBufferData(store, await receiveBufferAsync(store.request))
-
-const createStoreStateAccessor = (key) => ({
-  get: (store) => store.getState()[ key ],
-  set: (store, value) => store.setState({ [ key ]: value })
-})
-
-const AccessorMap = {
-  // error: createStoreStateAccessor('error'),
-  // url: createStoreStateAccessor('url'),
-  bufferData: createStoreStateAccessor('bufferData'), // { buffer, length, type, entityTag }
-  streamData: createStoreStateAccessor('streamData'), // { stream, length, type, entityTag }
-  JSONData: createStoreStateAccessor('JSONData') // { object, entityTag }
+const createResponderLog = (log) => (store) => {
+  log(
+    describeRequest(store.request),
+    '|',
+    store.request.headers[ 'user-agent' ] || 'no-user-agent'
+  )
 }
+
+const createResponderLogEnd = (log) => (store) => {
+  const { time, error } = store.getState()
+  __DEV__ && error && console.error(describeRequest(store.request), error)
+  log(
+    describeRequest(store.request),
+    '|',
+    error ? '[ERROR]' : '[END]',
+    formatTime(clock() - time),
+    store.response.statusCode,
+    error ? error.stack || error : ''
+  )
+}
+
+const describeRequest = ({
+  url, method, headers: { host = '' }, socket: { remoteAddress, remotePort }
+}) => `[${method}] ${host}${url} (${remoteAddress}:${remotePort})`
+
+const createResponderSetHeaderHSTS = (protocol) => protocol !== 'https:'
+  ? () => {}
+  : (store) => {
+    store.response.setHeader('strict-transport-security', 'max-age=31536000; includeSubDomains; preload')
+  }
 
 export {
   responderEnd,
@@ -80,8 +98,7 @@ export {
   responderSendJSON,
 
   createResponderParseURL,
-  createResponderReceiveBuffer,
-
-  createStoreStateAccessor,
-  AccessorMap
+  createResponderLog,
+  createResponderLogEnd,
+  createResponderSetHeaderHSTS
 }

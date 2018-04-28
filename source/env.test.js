@@ -1,5 +1,5 @@
 import { equal, notEqual, throws, doesNotThrow } from 'assert'
-import { getGlobal, getEnvironment, getSystemEndianness, assert } from './env'
+import { getGlobal, getEnvironment, getEndianness, assert } from './env'
 
 const { describe, it } = global
 
@@ -15,7 +15,7 @@ describe('Env', () => {
 
   it('getEnvironment().environmentName should be node', () => equal(getEnvironment().environmentName, 'node'))
 
-  it('getSystemEndianness() should not be unknown', () => notEqual(getSystemEndianness(), 'unknown'))
+  it('getEndianness() should not be unknown', () => notEqual(getEndianness(), 'unknown'))
 
   it('assert(true) should not throw', wrapMuteConsoleError(() => {
     doesNotThrow(() => assert(true, 'assert(true)'))

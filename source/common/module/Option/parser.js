@@ -19,7 +19,7 @@ import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 // }
 
 const FORMAT_DEFAULT = {
-  name: '',
+  name: '', // TODO: support add alias list?
   nameENV: '', // auto append
   nameJSON: '', // auto append
   shortName: '',

@@ -12,7 +12,7 @@ const getEnvironment = () => {
   return { isNode, isBrowser, environmentName }
 }
 
-const getSystemEndianness = () => {
+const getEndianness = () => {
   try {
     const buffer = new ArrayBuffer(4)
     const viewUint8 = new Uint8Array(buffer)
@@ -23,7 +23,7 @@ const getSystemEndianness = () => {
     viewUint8[ 3 ] = 0xd4
     if (viewUint32[ 0 ] === 0xd4c3b2a1) return 'little'
     if (viewUint32[ 0 ] === 0xa1b2c3d4) return 'big'
-  } catch (error) { console.error('[getSystemEndianness]', error) }
+  } catch (error) { console.error('[getEndianness]', error) }
   return 'unknown'
 }
 
@@ -35,10 +35,14 @@ const assert = (assertion, ...args) => { // always Error throw (console.assert i
 
 const GLOBAL = getGlobal()
 
+const getSystemEndianness = getEndianness // TODO: deprecate
+
 export {
   getGlobal,
   getEnvironment,
-  getSystemEndianness,
+  getEndianness,
   assert,
-  GLOBAL as global
+  GLOBAL as global,
+
+  getSystemEndianness // TODO: deprecate
 }

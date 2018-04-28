@@ -1,7 +1,7 @@
 const BABEL_ENV = process.env.BABEL_ENV || ''
 const isDev = BABEL_ENV.includes('dev')
 const isRawModule = BABEL_ENV.includes('module')
-const isBuildBin = BABEL_ENV.includes('build-bin') // for rewriting import form 'dr-js/module' to 'library' or 'source'
+const isBuildBin = BABEL_ENV.includes('build-bin') // for rewriting import form 'dr-js/module' to 'library'(build) or 'source'(test)
 
 module.exports = {
   presets: [

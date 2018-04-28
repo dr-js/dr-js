@@ -21,12 +21,11 @@ import { createServerWebSocketGroup } from './server/websocket-group'
 
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
-const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
+const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingleOption }) => {
   const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
     ? dirname(getSingleOption('config'))
     : process.cwd())
-  const resolveArgumentPath = (path) => resolve(argumentRootPath, path)
-  const singleArgumentPath = () => resolveArgumentPath(getSingleOptionOptional('argument') || '.')
+  const resolveArgumentPath = (path = '.') => resolve(argumentRootPath, path)
 
   const log = getOptionOptional('quiet')
     ? () => {}
@@ -36,11 +35,13 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     (error) => log(`[${mode}] error: ${path}\n${error.stack || error}`)
   )
 
-  const getServerConfig = async (argumentList = getOptionOptional('argument')) => {
+  const argumentList = getOptionOptional('argument') || []
+
+  const getServerConfig = async (configList) => {
     const [
       hostname = '0.0.0.0',
-      port = await autoTestServerPort([ 80, 8080 ], hostname)
-    ] = argumentList || []
+      port = await autoTestServerPort([ 80, 8080, 8888, 8000 ], hostname) // for more stable port
+    ] = configList || argumentList
     return { hostname, port: Number(port) }
   }
 
@@ -48,8 +49,7 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     case 'echo':
       return logJSON(getOption('argument'))
     case 'cat': {
-      const argumentList = getOptionOptional('argument')
-      if (argumentList && argumentList.length) for (const path of argumentList.map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
+      if (argumentList.length) for (const path of argumentList.map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
       else if (!process.stdin.isTTY) await pipeStreamAsync(process.stdout, process.stdin)
       return
     }
@@ -60,21 +60,21 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return pipeStreamAsync(createWriteStream(resolveArgumentPath(getSingleOption('argument')), { flags }), process.stdin)
     case 'status':
     case 's':
-      return (getOptionOptional('argument') || []).includes('h')
+      return argumentList.includes('h')
         ? console.log(describeSystemStatus())
         : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
     case 'open':
     case 'o':
-      return runSync({ command: getDefaultOpen(), argList: [ getSingleOptionOptional('argument') || '.' ] })
+      return runSync({ command: getDefaultOpen(), argList: [ argumentList[ 0 ] || '.' ] })
     case 'file-list':
     case 'ls':
-      return logJSON(await getPathContent(singleArgumentPath()))
+      return logJSON(await getPathContent(resolveArgumentPath(argumentList[ 0 ])))
     case 'file-list-all':
     case 'ls-R':
-      return logJSON(await getFileList(singleArgumentPath()))
+      return logJSON(await getFileList(resolveArgumentPath(argumentList[ 0 ])))
     case 'file-create-directory':
     case 'mkdir':
-      for (const path of getOption('argument').map(resolveArgumentPath)) await logTaskResult(createDirectory, path)
+      for (const path of argumentList.map(resolveArgumentPath)) await logTaskResult(createDirectory, path)
       return
     case 'file-modify-copy':
     case 'cp':
@@ -84,12 +84,12 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
       return modify.move(...getOption('argument', 2).map(resolveArgumentPath))
     case 'file-modify-delete':
     case 'rm':
-      for (const path of getOption('argument').map(resolveArgumentPath)) await logTaskResult(modify.delete, path)
+      for (const path of argumentList.map(resolveArgumentPath)) await logTaskResult(modify.delete, path)
       return
     case 'file-merge':
     case 'merge': {
-      const fileList = getOption('argument').map(resolveArgumentPath)
-      if (fileList.length < 2) return console.log(`[skipped] minimum 2 file, get ${fileList.length}`)
+      const fileList = argumentList.map(resolveArgumentPath)
+      if (fileList.length < 2) return log(`[skipped] minimum 2 file, get ${fileList.length}`)
       const outputFile = fileList.shift()
       for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
       return
@@ -98,10 +98,10 @@ const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingl
     case 'sss':
     case 'server-serve-static-simple':
     case 'ssss': {
-      const [ relativeStaticRoot = '.', ...argumentList ] = getOptionOptional('argument') || []
+      const [ relativeStaticRoot, ...configList ] = argumentList
       const staticRoot = resolveArgumentPath(relativeStaticRoot)
       const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-      return createServerServeStatic({ staticRoot, isSimpleServe, log, ...(await getServerConfig(argumentList)) })
+      return createServerServeStatic({ staticRoot, isSimpleServe, log, ...(await getServerConfig(configList)) })
     }
     case 'server-websocket-group':
     case 'swg':
