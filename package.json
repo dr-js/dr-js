@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.14.1-dev.0",
+  "version": "0.14.1-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -10,9 +10,7 @@
     "Dr-js",
     "JavaScript"
   ],
-  "repository": "https://github.com/dr-js/dr-js.git",
-  "homepage": "https://github.com/dr-js/dr-js#readme",
-  "bugs": "https://github.com/dr-js/dr-js/issues",
+  "repository": "github:dr-js/dr-js",
   "bin": "bin/index.js",
   "scripts": {
     "// script ======================": "",
@@ -50,9 +48,9 @@
     "npm": ">=5"
   },
   "devDependencies": {
-    "dev-dep-tool": "^0.2.1",
-    "dev-dep-web": "^0.2.1",
-    "dr-js": "^0.14.0",
+    "dev-dep-tool": "0.2.2-dev.0",
+    "dev-dep-web": "0.2.2-dev.0",
+    "dr-js": "0.14.1-dev.0",
     "webpack-bundle-analyzer": "^2.11.1"
   },
   "sideEffects": false

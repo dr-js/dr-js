@@ -111,11 +111,6 @@ const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
 }
 
 runMain(async (logger) => {
-  const isTest = argvFlag('test', 'publish', 'publish-dev')
-
-  isTest && logger.padLog('test source')
-  isTest && execSync(`npm run test-mocha-source`, execOptionRoot)
-
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
   if (!argvFlag('pack')) return
@@ -123,9 +118,11 @@ runMain(async (logger) => {
   await buildOutput({ logger })
   await processOutput({ packageJSON, logger })
 
-  isTest && logger.padLog(`test output`)
-  isTest && execSync(`npm run test-mocha-output-library`, execOptionRoot)
-  isTest && execSync(`npm run test-mocha-output-module`, execOptionRoot)
+  if (argvFlag('test', 'publish', 'publish-dev')) {
+    logger.padLog(`test output`)
+    execSync(`npm run test-mocha-output-library`, execOptionRoot)
+    execSync(`npm run test-mocha-output-module`, execOptionRoot)
+  }
 
   await clearOutput({ packageJSON, logger })
   await verifyOutput({ packageJSON, logger })

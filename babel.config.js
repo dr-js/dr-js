@@ -5,7 +5,7 @@ const isBuildBin = BABEL_ENV.includes('build-bin') // for rewriting import form 
 
 module.exports = {
   presets: [
-    [ '@babel/env', { targets: { node: 8 }, modules: isRawModule ? false : 'commonjs' } ]
+    [ '@babel/env', { targets: { node: '8.8' }, modules: isRawModule ? false : 'commonjs' } ]
   ],
   plugins: [
     [ '@babel/proposal-class-properties' ],
