@@ -6,7 +6,7 @@
 
 #### Export Path
 + 📄 [source/env.js](source/env.js)
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `getSystemEndianness`, `global`
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
   - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
@@ -203,8 +203,6 @@
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
-+ 📄 [source/node/system/ProcessExitListener.js](source/node/system/ProcessExitListener.js)
-  - `setProcessExitListener`
 + 📄 [source/node/system/REPL.js](source/node/system/REPL.js)
   - `startREPL`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
@@ -401,8 +399,6 @@
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
-    - **ProcessExitListener**
-      - `setProcessExitListener`
     - **REPL**
       - `startREPL`
     - **Run**
@@ -414,7 +410,7 @@
   - **Resource**
     - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 - **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `getSystemEndianness`, `global`
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)
@@ -423,48 +419,88 @@
 >   --config -c [OPTIONAL] [ARGUMENT=1]
 >       # from JSON: set to 'path/to/config.json'
 >       # from ENV: set to 'env'
->   --help -h [OPTIONAL]
->       set to enable
 >   --version -v [OPTIONAL]
 >       set to enable
->   --mode -m [OPTIONAL] [ARGUMENT=1]
->       one of:
->         echo cat
->         write append
->         open o
->         status s
->         file-list ls
->         file-list-all ls-R
->         file-create-directory mkdir
->         file-modify-copy cp
->         file-modify-move mv
->         file-modify-delete rm
->         file-merge merge
->         server-serve-static sss
->         server-serve-static-simple ssss
->         server-websocket-group swg
->         server-test-connection stc
->     --argument -a [OPTIONAL-CHECK]
->         different for each mode
->     --quiet -q [OPTIONAL-CHECK]
->         set to enable
+>   --help -h [OPTIONAL]
+>       show help, or request better human readable output
+>   --quiet -q [OPTIONAL]
+>       reduce most output
+>   --echo [OPTIONAL]
+>   --cat [OPTIONAL]
+>   --write [OPTIONAL] [ARGUMENT=1]
+>   --append [OPTIONAL] [ARGUMENT=1]
+>   --open|o [OPTIONAL]
+>   --status|s [OPTIONAL]
+>   --file-list|ls [OPTIONAL]
+>   --file-list-all|ls-R [OPTIONAL]
+>   --file-create-directory|mkdir [OPTIONAL]
+>   --file-modify-copy|cp [OPTIONAL] [ARGUMENT=2]
+>   --file-modify-move|mv [OPTIONAL] [ARGUMENT=2]
+>   --file-modify-delete|rm [OPTIONAL]
+>   --file-merge|merge [OPTIONAL] [ARGUMENT=2+]
+>   --server-serve-static|sss [OPTIONAL]
+>   --server-serve-static-simple|ssss [OPTIONAL]
+>   --server-websocket-group|swg [OPTIONAL]
+>   --server-test-connection|stc [OPTIONAL]
+>   --hostname -H [OPTIONAL] [ARGUMENT=1]
+>       for server
+>   --port -P [OPTIONAL] [ARGUMENT=1]
+>       for server
+>   --root -R [OPTIONAL] [ARGUMENT=1]
+>       for server static
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_HELP="[OPTIONAL]"
 >     export DR_JS_VERSION="[OPTIONAL]"
->     export DR_JS_MODE="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_ARGUMENT="[OPTIONAL-CHECK]"
->     export DR_JS_QUIET="[OPTIONAL-CHECK]"
+>     export DR_JS_HELP="[OPTIONAL]"
+>     export DR_JS_QUIET="[OPTIONAL]"
+>     export DR_JS_ECHO="[OPTIONAL]"
+>     export DR_JS_CAT="[OPTIONAL]"
+>     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_OPEN="[OPTIONAL]"
+>     export DR_JS_STATUS="[OPTIONAL]"
+>     export DR_JS_FILE_LIST="[OPTIONAL]"
+>     export DR_JS_FILE_LIST_ALL="[OPTIONAL]"
+>     export DR_JS_FILE_CREATE_DIRECTORY="[OPTIONAL]"
+>     export DR_JS_FILE_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
+>     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
+>     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL]"
+>     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
+>     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL]"
+>     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
+>     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
+>     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
+>     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >   "
 > JSON Usage:
 >   {
 >     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsHelp": [ "[OPTIONAL]" ],
 >     "drJsVersion": [ "[OPTIONAL]" ],
->     "drJsMode": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsArgument": [ "[OPTIONAL-CHECK]" ],
->     "drJsQuiet": [ "[OPTIONAL-CHECK]" ],
+>     "drJsHelp": [ "[OPTIONAL]" ],
+>     "drJsQuiet": [ "[OPTIONAL]" ],
+>     "drJsEcho": [ "[OPTIONAL]" ],
+>     "drJsCat": [ "[OPTIONAL]" ],
+>     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsAppend": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsOpen": [ "[OPTIONAL]" ],
+>     "drJsStatus": [ "[OPTIONAL]" ],
+>     "drJsFileList": [ "[OPTIONAL]" ],
+>     "drJsFileListAll": [ "[OPTIONAL]" ],
+>     "drJsFileCreateDirectory": [ "[OPTIONAL]" ],
+>     "drJsFileModifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
+>     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
+>     "drJsFileModifyDelete": [ "[OPTIONAL]" ],
+>     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
+>     "drJsServerServeStatic": [ "[OPTIONAL]" ],
+>     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
+>     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
+>     "drJsServerTestConnection": [ "[OPTIONAL]" ],
+>     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >   }
 > ```

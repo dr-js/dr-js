@@ -8,15 +8,15 @@ const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createL
   queueLengthThreshold
 })
 
-const AUTO_SAVE_TIME = 5 * 60 * 1000 // in ms, 5min
-const AUTO_SPLIT_TIME = 24 * 60 * 60 * 1000 // in ms, 24day
+const SAVE_INTERVAL = 5 * 60 * 1000 // in ms, 5min
+const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 24day
 
 const createLogger = async ({
   pathLogDirectory,
   prefixLogFile = '',
   getLogFileName = () => `${prefixLogFile}${(new Date().toISOString()).replace(/\W/g, '-')}.log`,
-  autoSaveInterval = AUTO_SAVE_TIME, // TODO: rename to `saveInterval`
-  fileSplitInterval = AUTO_SPLIT_TIME, // TODO: rename to `splitInterval`
+  saveInterval = SAVE_INTERVAL,
+  splitInterval = SPLIT_INTERVAL,
   ...extraOption
 }) => {
   let logger
@@ -27,8 +27,8 @@ const createLogger = async ({
     end()
     const pathOutputFile = resolve(pathLogDirectory, getLogFileName())
     logger = createSimpleLogger({ ...extraOption, pathOutputFile })
-    saveToken = autoSaveInterval && setInterval(save, autoSaveInterval)
-    splitToken = fileSplitInterval && setTimeout(split, fileSplitInterval)
+    saveToken = saveInterval && setInterval(save, saveInterval)
+    splitToken = splitInterval && setTimeout(split, splitInterval)
   }
 
   const add = (...args) => {

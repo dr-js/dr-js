@@ -35,14 +35,10 @@ const assert = (assertion, ...args) => { // always Error throw (console.assert i
 
 const GLOBAL = getGlobal()
 
-const getSystemEndianness = getEndianness // TODO: deprecate
-
 export {
   getGlobal,
   getEnvironment,
   getEndianness,
   assert,
-  GLOBAL as global,
-
-  getSystemEndianness // TODO: deprecate
+  GLOBAL as global
 }

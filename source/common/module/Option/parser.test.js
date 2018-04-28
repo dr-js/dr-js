@@ -10,7 +10,7 @@ const optionData = {
   formatList: [
     { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
     { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
-    { name: 'option-name-c', shortName: 'c', ...ConfigPreset.AllNumber, argumentCount: 2 },
+    { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], ...ConfigPreset.AllNumber, argumentCount: 2 },
     { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0+', description: 'TEST DESCRIPTION A' },
     { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1+', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
     { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2+', description: 'TEST DESCRIPTION C\n' }
@@ -83,12 +83,15 @@ describe('Common.Module.OptionParser', () => {
       // 'SCRIPT.js',
       '-ab=1',
       '-AB', '1',
-      '-c=1', '2.2',
+      '--onc0=1',
+      '--onc1=2.2',
       '-C=1', '2.2', '3.3', '4.4'
     ])
     it('should pass use combined shortName', () => ok(optionNameList.every((name) => (name in optionMap2))))
     it('should pass processOptionMap use combined shortName', () => processOptionMap(optionMap2))
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
+
+    console.log(optionMap2)
   })
 
   describe('OptionParser.parseENV', () => {

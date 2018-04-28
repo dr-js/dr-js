@@ -49,8 +49,8 @@ const getSystemActivity = () => ({
 })
 const describeSystemActivity = ({ uptime, loadAverageList } = getSystemActivity()) => [
   `[uptime] ${time(uptime)}`,
-  `[load average] ${loadAverageList.map(percent).join(', ')} (1min, 5min, 15min)`
-].join('\n')
+  platform() !== 'win32' && `[load average] ${loadAverageList.map(percent).join(', ')} (1min, 5min, 15min)`
+].filter(Boolean).join('\n')
 
 const getSystemStatus = () => ({
   platform: getSystemPlatform(),

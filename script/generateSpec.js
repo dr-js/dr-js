@@ -57,8 +57,7 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
   ].join('\n'))
 
   writeFileSync(fromRoot('tempFileDelete.config.json'), JSON.stringify({
-    drJsMode: 'file-modify-delete',
-    drJsArgument: [ ...tempFileList, 'tempFileDelete.config.json' ],
+    drJsFileModifyDelete: [ ...tempFileList, 'tempFileDelete.config.json' ],
     drJsQuiet: true
   }))
 }

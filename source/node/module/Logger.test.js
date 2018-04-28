@@ -64,7 +64,7 @@ describe('Node.Module.Logger', () => {
         return `${logFileIndex}.log`
       },
       queueLengthThreshold: 4,
-      fileSplitInterval: 200
+      splitInterval: 200
     })
     let size, prevSize
 

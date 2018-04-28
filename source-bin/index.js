@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { resolve, dirname } from 'path'
 import { createReadStream, createWriteStream } from 'fs'
 
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
@@ -12,7 +11,7 @@ import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
 import { getVersion } from './version'
-import { parseOption, formatUsage } from './option'
+import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
 import { autoTestServerPort, getPathContent } from './server/function'
 import { createServerTestConnection } from './server/test-connection'
@@ -21,104 +20,81 @@ import { createServerWebSocketGroup } from './server/websocket-group'
 
 const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
-const runMode = async (mode, { optionMap, getOption, getOptionOptional, getSingleOption }) => {
-  const argumentRootPath = (optionMap[ 'argument' ] && (optionMap[ 'argument' ].source === 'JSON')
-    ? dirname(getSingleOption('config'))
-    : process.cwd())
-  const resolveArgumentPath = (path = '.') => resolve(argumentRootPath, path)
-
+const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
     ? () => {}
     : console.log
   const logTaskResult = (task, path) => task(path).then(
-    () => log(`[${mode}] done: ${path}`),
-    (error) => log(`[${mode}] error: ${path}\n${error.stack || error}`)
+    () => log(`[${modeFormat.name}] done: ${path}`),
+    (error) => log(`[${modeFormat.name}] error: ${path}\n${error.stack || error}`)
   )
 
-  const argumentList = getOptionOptional('argument') || []
+  const argumentList = getOptionOptional(modeFormat.name) || []
 
-  const getServerConfig = async (configList) => {
-    const [
-      hostname = '0.0.0.0',
-      port = await autoTestServerPort([ 80, 8080, 8888, 8000 ], hostname) // for more stable port
-    ] = configList || argumentList
+  const getServerConfig = async () => {
+    const hostname = getSingleOptionOptional('hostname') || '0.0.0.0'
+    const port = getSingleOptionOptional('port') || await autoTestServerPort([ 80, 8080, 8888, 8000 ], hostname) // for more stable port
     return { hostname, port: Number(port) }
   }
 
-  switch (mode) {
+  switch (modeFormat.name) {
     case 'echo':
-      return logJSON(getOption('argument'))
+      return logJSON(argumentList)
     case 'cat': {
-      if (argumentList.length) for (const path of argumentList.map(resolveArgumentPath)) await pipeStreamAsync(process.stdout, createReadStream(path))
+      if (argumentList.length) for (const path of argumentList) await pipeStreamAsync(process.stdout, createReadStream(path))
       else if (!process.stdin.isTTY) await pipeStreamAsync(process.stdout, process.stdin)
       return
     }
     case 'write':
     case 'append':
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
-      const flags = mode === 'write' ? 'w' : 'a'
-      return pipeStreamAsync(createWriteStream(resolveArgumentPath(getSingleOption('argument')), { flags }), process.stdin)
+      const flags = modeFormat.name === 'write' ? 'w' : 'a'
+      return pipeStreamAsync(createWriteStream(argumentList[ 0 ] || process.cwd(), { flags }), process.stdin)
+    case 'open':
+      return runSync({ command: getDefaultOpen(), argList: [ argumentList[ 0 ] || '.' ] }) // can be url
     case 'status':
-    case 's':
-      return argumentList.includes('h')
+      return getOptionOptional('help')
         ? console.log(describeSystemStatus())
         : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
-    case 'open':
-    case 'o':
-      return runSync({ command: getDefaultOpen(), argList: [ argumentList[ 0 ] || '.' ] })
     case 'file-list':
-    case 'ls':
-      return logJSON(await getPathContent(resolveArgumentPath(argumentList[ 0 ])))
+      return logJSON(await getPathContent(argumentList[ 0 ] || process.cwd()))
     case 'file-list-all':
-    case 'ls-R':
-      return logJSON(await getFileList(resolveArgumentPath(argumentList[ 0 ])))
+      return logJSON(await getFileList(argumentList[ 0 ] || process.cwd()))
     case 'file-create-directory':
-    case 'mkdir':
-      for (const path of argumentList.map(resolveArgumentPath)) await logTaskResult(createDirectory, path)
+      for (const path of argumentList) await logTaskResult(createDirectory, path)
       return
     case 'file-modify-copy':
-    case 'cp':
-      return modify.copy(...getOption('argument', 2).map(resolveArgumentPath))
+      return modify.copy(argumentList[ 0 ], argumentList[ 1 ])
     case 'file-modify-move':
-    case 'mv':
-      return modify.move(...getOption('argument', 2).map(resolveArgumentPath))
+      return modify.move(argumentList[ 0 ], argumentList[ 1 ])
     case 'file-modify-delete':
-    case 'rm':
-      for (const path of argumentList.map(resolveArgumentPath)) await logTaskResult(modify.delete, path)
+      for (const path of argumentList) await logTaskResult(modify.delete, path)
       return
-    case 'file-merge':
-    case 'merge': {
-      const fileList = argumentList.map(resolveArgumentPath)
-      if (fileList.length < 2) return log(`[skipped] minimum 2 file, get ${fileList.length}`)
-      const outputFile = fileList.shift()
+    case 'file-merge': {
+      const [ outputFile, ...fileList ] = argumentList
       for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
       return
     }
     case 'server-serve-static':
-    case 'sss':
-    case 'server-serve-static-simple':
-    case 'ssss': {
-      const [ relativeStaticRoot, ...configList ] = argumentList
-      const staticRoot = resolveArgumentPath(relativeStaticRoot)
-      const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(mode)
-      return createServerServeStatic({ staticRoot, isSimpleServe, log, ...(await getServerConfig(configList)) })
+    case 'server-serve-static-simple': {
+      const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(modeFormat.name)
+      const staticRoot = getSingleOptionOptional('root') || process.cwd()
+      return createServerServeStatic({ isSimpleServe, staticRoot, log, ...(await getServerConfig()) })
     }
     case 'server-websocket-group':
-    case 'swg':
       return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
     case 'server-test-connection':
-    case 'stc':
       return createServerTestConnection({ log, ...(await getServerConfig()) })
   }
 }
 
 const main = async () => {
   const optionData = await parseOption()
-  const mode = optionData.getSingleOptionOptional('mode')
+  const modeFormat = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name))
 
-  if (mode) {
-    await runMode(mode, optionData).catch((error) => {
-      console.warn(`[Error] in mode: ${mode}:`, error.stack || error)
+  if (modeFormat) {
+    await runMode(modeFormat, optionData).catch((error) => {
+      console.warn(`[Error] in mode: ${modeFormat.name}:`, error.stack || error)
       process.exit(2)
     })
   } else optionData.getOptionOptional('version') ? logJSON(getVersion()) : console.log(formatUsage())
