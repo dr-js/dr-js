@@ -1,8 +1,10 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
+import { catchAsync } from 'dr-js/module/common/error'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
-import { responderEndWithRedirect, responderSendBuffer, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { responderEndWithRedirect, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { responderSendBuffer } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
@@ -18,10 +20,9 @@ const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 const wrapFrameBufferPacket = (onData) => async (webSocket, { dataType, dataBuffer }) => {
   __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
   if (dataType !== DATA_TYPE_MAP.OPCODE_BINARY) return webSocket.close(1000, 'OPCODE_BINARY expected')
-  try { await onData(parseBufferPacket(dataBuffer)) } catch (error) {
-    __DEV__ && console.warn('[ERROR][wrapFrameBufferPacket]', error)
-    webSocket.close(1000, error.toString())
-  }
+  const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
+  __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
+  error && webSocket.close(1000, error.toString())
 }
 
 // TODO: keep some message history?

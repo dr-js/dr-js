@@ -1,7 +1,8 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
 import { createServer, createRequestListener, getUnusedPort } from 'source/node/server/Server'
-import { responderSendBuffer, responderSendJSON, createResponderParseURL } from 'source/node/server/Responder/Common'
+import { createResponderParseURL } from 'source/node/server/Responder/Common'
+import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import {
   loadRemoteScript, loadLocalScript, loadScript,

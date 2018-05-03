@@ -90,8 +90,6 @@ describe('Common.Module.OptionParser', () => {
     it('should pass use combined shortName', () => ok(optionNameList.every((name) => (name in optionMap2))))
     it('should pass processOptionMap use combined shortName', () => processOptionMap(optionMap2))
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
-
-    console.log(optionMap2)
   })
 
   describe('OptionParser.parseENV', () => {

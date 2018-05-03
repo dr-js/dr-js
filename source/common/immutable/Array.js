@@ -1,4 +1,4 @@
-// NOTE: all method do not check if the value is valid
+// NOTE: all method do not check if the value is a valid array
 
 const arraySet = (array, index, value) => {
   if (array[ index ] === value) return array

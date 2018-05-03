@@ -1,4 +1,4 @@
-// NOTE: all method do not check if the value is valid
+// NOTE: all method do not check if the value is a valid object
 
 const objectSet = (object, key, value) => (object[ key ] !== value)
   ? { ...object, [ key ]: value }
@@ -26,9 +26,20 @@ const objectPickKey = (object, keyList) => {
   return result
 }
 
+const objectDeleteUndefined = (object) => {
+  let result
+  for (const [ key, value ] of Object.entries(object)) { // check if has new data
+    if (value !== undefined) continue
+    if (result === undefined) result = { ...object }
+    delete result[ key ]
+  }
+  return result || object
+}
+
 export {
   objectSet,
   objectDelete,
   objectMerge,
-  objectPickKey
+  objectPickKey,
+  objectDeleteUndefined
 }

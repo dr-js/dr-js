@@ -90,7 +90,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectMerge`, `objectPickKey`, `objectSet`
+  - `objectDelete`, `objectDeleteUndefined`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -154,7 +154,7 @@
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `pipeStreamAsync`
+  - `bufferToStream`, `pipeStreamAsync`
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
@@ -180,9 +180,11 @@
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`, `getUnusedPort`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
-  - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
+  - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
++ 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
+  - `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
@@ -281,7 +283,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectMerge`, `objectPickKey`, `objectSet`
+      - `objectDelete`, `objectDeleteUndefined`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
@@ -346,7 +348,7 @@
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
-      - `pipeStreamAsync`
+      - `bufferToStream`, `pipeStreamAsync`
   - **File**
     - **Compress**
       - `checkBloat`, `compressFile`, `compressFileList`
@@ -373,9 +375,11 @@
   - **Server**
     - **Responder**
       - **Common**
-        - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSendBuffer`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamRange`
+        - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+      - **Send**
+        - `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**

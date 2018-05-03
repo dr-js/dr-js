@@ -8,7 +8,7 @@ import {
   responderSendBufferRange,
   responderSendStream,
   responderSendStreamRange
-} from './Common'
+} from './Send'
 
 const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
 const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
@@ -68,7 +68,7 @@ const createResponderServeStatic = ({
     encoding && store.response.setHeader('content-encoding', encoding)
     if (range) { // has range, pipe it
       if (range[ 1 ] === Infinity) range[ 1 ] = length - 1
-      await responderSendStreamRange(store, { stream: createReadStream(filePath, { start: range[ 0 ], end: range[ 1 ] }), length, type, entityTag }, range)
+      await responderSendStreamRange(store, { streamRange: createReadStream(filePath, { start: range[ 0 ], end: range[ 1 ] }), length, type, entityTag }, range)
     } else if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
       await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })

@@ -4,7 +4,8 @@ import { FILE_TYPE } from 'dr-js/module/node/file/File'
 import { getDirectoryContent } from 'dr-js/module/node/file/Directory'
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
 import { createServer, createRequestListener, getUnusedPort } from 'dr-js/module/node/server/Server'
-import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd, responderSendBuffer } from 'dr-js/module/node/server/Responder/Common'
+import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
+import { responderSendBuffer } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
 const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.

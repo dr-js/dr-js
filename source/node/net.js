@@ -1,6 +1,7 @@
 import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
 import { URL } from 'url'
+import { createGunzip } from 'zlib'
 
 import { withRetryAsync } from 'source/common/function'
 import { receiveBufferAsync } from 'source/node/data/Buffer'
@@ -32,7 +33,7 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 const fetch = async (url, config = {}) => {
   const { method, headers, body, timeout = DEFAULT_TIMEOUT } = config
-  const option = { ...urlToOption(new URL(url)), method, headers, timeout } // will result in error if timeout
+  const option = { ...urlToOption(new URL(url)), method, headers: { 'accept-encoding': 'gzip', ...headers }, timeout } // will result in error if timeout
   const response = await requestAsync(option, body)
   const status = response.statusCode
   const ok = (status >= 200 && status < 300)
@@ -46,7 +47,7 @@ const fetch = async (url, config = {}) => {
   const buffer = async () => {
     if (bufferPromise === undefined) {
       if (isBufferDropped) throw new Error('[fetch] data already dropped, should call receive data immediately')
-      bufferPromise = receiveBufferAsync(response)
+      bufferPromise = receiveBufferAsync(response.headers[ 'content-encoding' ] === 'gzip' ? response.pipe(createGunzip()) : response)
     }
     return bufferPromise
   }
