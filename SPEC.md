@@ -170,7 +170,7 @@
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
-  - `createFactDatabase`, `tryDeleteExtraCache`
+  - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/Option.js](source/node/module/Option.js)
@@ -365,7 +365,7 @@
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **FactDatabase**
-      - `createFactDatabase`, `tryDeleteExtraCache`
+      - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **Option**

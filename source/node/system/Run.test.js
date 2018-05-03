@@ -17,7 +17,8 @@ describe('Node.System.Run', () => {
   })
 
   it('runQuiet()', async () => {
-    const { stdoutBufferPromise } = await runQuiet({ command: TEST_COMMAND, option: { cwd: __dirname } })
+    const { promise, stdoutBufferPromise } = runQuiet({ command: TEST_COMMAND, option: { cwd: __dirname } })
+    await promise
     const stdoutString = (await stdoutBufferPromise).toString()
     ok(stdoutString.includes('Run.test.js'))
     ok(stdoutString.includes('Run.js'))

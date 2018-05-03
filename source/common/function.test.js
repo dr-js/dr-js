@@ -21,7 +21,7 @@ describe('Common.Function', () => {
     const debouncedFunc = debounce((value) => {
       value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
       debouncedValue = value
-    }, 50)
+    }, 20)
 
     const test = async () => {
       debouncedValue = null
@@ -34,7 +34,7 @@ describe('Common.Function', () => {
       debouncedFunc('Not 3')
       debouncedValue !== null && reject(new Error(`debouncedFunc should not be called yet`))
       debouncedFunc('Good')
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should get called in time`))
     }
 
@@ -51,7 +51,7 @@ describe('Common.Function', () => {
     const debouncedFunc = debounce((value) => {
       value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
       debouncedValue = value
-    }, 50, true)
+    }, 20, true)
 
     const test = async () => {
       debouncedValue = null
@@ -65,7 +65,7 @@ describe('Common.Function', () => {
       debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
       debouncedFunc('Not 3')
       debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
     }
 
@@ -82,7 +82,7 @@ describe('Common.Function', () => {
     const throttledFunc = throttle((value) => {
       value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
       throttledValue = value
-    }, 50)
+    }, 20)
 
     const test = async () => {
       throttledValue = null
@@ -96,7 +96,7 @@ describe('Common.Function', () => {
       throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
       throttledFunc('Not 3')
       throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should get called in time`))
     }
 
@@ -113,7 +113,7 @@ describe('Common.Function', () => {
     const throttledFunc = throttle((value) => {
       value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
       throttledValue = value
-    }, 50, true)
+    }, 20, true)
 
     const test = async () => {
       throttledValue = null
@@ -127,7 +127,7 @@ describe('Common.Function', () => {
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
       throttledFunc('Not 3')
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
     }
 
@@ -141,7 +141,7 @@ describe('Common.Function', () => {
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let testValue = null
-    const lossyAsyncFunc = lossyAsync(async (value) => {
+    const { trigger, getRunningPromise } = lossyAsync(async (value) => {
       value !== 'Good' && reject(new Error(`expect value === 'Good' but get: ${value}`))
       testValue = value
       await setTimeoutAsync(10)
@@ -151,12 +151,15 @@ describe('Common.Function', () => {
 
     const test = async () => {
       testValue = null
-      lossyAsyncFunc('Good')
+      getRunningPromise() && reject(new Error(`asyncFunc should not be running`))
+      trigger('Good')
+      !getRunningPromise() && reject(new Error(`asyncFunc should be running`))
       testValue !== 'Good' && reject(new Error(`asyncFunc should get called in time`))
-      lossyAsyncFunc('Not 1')
+      trigger('Not 1')
       testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
-      lossyAsyncFunc('Not 2')
+      trigger('Not 2')
       testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
+      !getRunningPromise() && reject(new Error(`asyncFunc should be running`))
       await setTimeoutAsync(20)
       testValue !== 'DONE' && reject(new Error(`asyncFunc should not be called during waiting`))
     }
@@ -174,7 +177,7 @@ describe('Common.Function', () => {
     const delayedFunc = withDelayArgvQueue((value) => {
       delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
       delayedValue = value
-    }, debounce, 50)
+    }, debounce, 20)
 
     const test = async () => {
       delayedValue = null
@@ -187,7 +190,7 @@ describe('Common.Function', () => {
       delayedFunc('Not 3')
       delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
       delayedFunc('Good')
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
       deepEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
     }
@@ -205,7 +208,7 @@ describe('Common.Function', () => {
     const delayedFunc = withDelayArgvQueue((value) => {
       delayedValue !== null && reject(new Error(`expect delayedValue === null but get: ${delayedValue}`))
       delayedValue = value
-    }, throttle, 50)
+    }, throttle, 20)
 
     const test = async () => {
       delayedValue = null
@@ -219,7 +222,7 @@ describe('Common.Function', () => {
       delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
       delayedFunc('Not 3')
       delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
-      await setTimeoutAsync(100)
+      await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
       deepEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
     }
@@ -316,7 +319,7 @@ describe('Common.Function', () => {
       async () => {
         strictEqual(state, 'Queue started')
         state = 'AsyncTask 1 started'
-        await setTimeoutAsync(50)
+        await setTimeoutAsync(20)
         return 1
       },
       async () => { throw expectedError },
@@ -335,7 +338,7 @@ describe('Common.Function', () => {
     strictEqual(state, '')
     state = 'Queue started'
 
-    setTimeoutAsync(100).then(() => reject(new Error(`promiseQueue should finish in time`)))
+    setTimeoutAsync(50).then(() => reject(new Error(`promiseQueue should finish in time`)))
 
     const { resultList, errorList, endList, pendingList } = await promiseQueuePromise
 
@@ -358,7 +361,7 @@ describe('Common.Function', () => {
       async () => {
         strictEqual(state, 'Queue started')
         state = 'AsyncTask 1 started'
-        await setTimeoutAsync(50)
+        await setTimeoutAsync(20)
         return 1
       },
       async () => { throw expectedError },
@@ -376,7 +379,7 @@ describe('Common.Function', () => {
     strictEqual(state, '')
     state = 'Queue started'
 
-    setTimeoutAsync(100).then(() => reject(new Error(`promiseQueue should finish in time`)))
+    setTimeoutAsync(50).then(() => reject(new Error(`promiseQueue should finish in time`)))
 
     const { resultList, errorList, endList, pendingList } = await promiseQueuePromise
 

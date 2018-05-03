@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.15.0-dev.2",
+  "version": "0.15.0-dev.3",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -30,7 +30,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "mocha --require @babel/register \"source/common/module/Option/parser.test.js\"",
+    "test-mocha-dev": "mocha --require @babel/register \"source/common/function.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -47,9 +47,9 @@
     "npm": ">=5"
   },
   "devDependencies": {
-    "dev-dep-tool": "0.2.2-dev.0",
-    "dev-dep-web": "0.2.2-dev.0",
-    "dr-js": "0.15.0-dev.1",
+    "dev-dep-tool": "0.2.2-dev.3",
+    "dev-dep-web": "0.2.2-dev.3",
+    "dr-js": "0.15.0-dev.3",
     "webpack-bundle-analyzer": "^2.11.1"
   },
   "sideEffects": false

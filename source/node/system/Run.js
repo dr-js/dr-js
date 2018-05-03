@@ -25,14 +25,10 @@ const runSync = ({ command, argList = [], option }) => {
 }
 
 const runQuiet = ({ command, argList, option }) => {
-  option = { stdio: [ 'ignore', 'pipe', 'pipe' ], ...option }
-  const { subProcess: { stdout, stderr }, promise } = run({ command, argList, option })
-  const stdoutBufferPromise = receiveBufferAsync(stdout)
-  const stderrBufferPromise = receiveBufferAsync(stderr)
-  return promise.then(
-    (result) => Object.assign(result, { stdoutBufferPromise, stderrBufferPromise }),
-    (error) => { throw Object.assign(error, { stdoutBufferPromise, stderrBufferPromise }) }
-  )
+  const { subProcess, promise } = run({ command, argList, option: { stdio: [ 'ignore', 'pipe', 'pipe' ], ...option } })
+  const stdoutBufferPromise = receiveBufferAsync(subProcess.stdout)
+  const stderrBufferPromise = receiveBufferAsync(subProcess.stderr)
+  return { subProcess, promise, stdoutBufferPromise, stderrBufferPromise }
 }
 
 const withCwd = (pathCwd, taskAsync) => async (...args) => {

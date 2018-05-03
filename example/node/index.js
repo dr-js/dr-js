@@ -7,7 +7,8 @@ const main = async () => {
   console.log(describeSystemStatus())
 
   console.log('== exec ========================')
-  const { stdoutBufferPromise } = await runQuiet({ command: process.platform === 'win32' ? 'dir' : 'ls -l' })
+  const { promise, stdoutBufferPromise } = runQuiet({ command: process.platform === 'win32' ? 'dir' : 'ls -l' })
+  await promise
   console.warn((await stdoutBufferPromise).toString())
 
   console.log('== REPL ========================')

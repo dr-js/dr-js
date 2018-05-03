@@ -8,7 +8,7 @@ import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev
 import { initOutput, packOutput, publishOutput } from 'dev-dep-tool/library/commonOutput'
 import { getUglifyESOption, minifyFileListWithUglifyEs } from 'dev-dep-tool/library/uglify'
 
-import { binary as formatBinary } from 'source/common/format'
+import { binary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
 import { getFileList } from 'source/node/file/Directory'
 
@@ -70,20 +70,20 @@ const processOutput = async ({ packageJSON, logger }) => {
   padLog(`process code`)
   let sizeCodeReduceBin = 0
   for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`bin size reduce: ${formatBinary(sizeCodeReduceBin)}B`)
+  log(`bin size reduce: ${binary(sizeCodeReduceBin)}B`)
 
   let sizeCodeReduceModule = 0
   for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`module size reduce: ${formatBinary(sizeCodeReduceModule)}B`)
+  log(`module size reduce: ${binary(sizeCodeReduceModule)}B`)
 
   let sizeCodeReduceLibraryBabel = 0
   for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`library-babel size reduce: ${formatBinary(sizeCodeReduceLibraryBabel)}B`)
+  log(`library-babel size reduce: ${binary(sizeCodeReduceLibraryBabel)}B`)
 
   const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
-  log(`library-webpack size reduce: ${formatBinary(sizeCodeReduceLibraryWebpack)}B`)
+  log(`library-webpack size reduce: ${binary(sizeCodeReduceLibraryWebpack)}B`)
 
-  log(`total size reduce: ${formatBinary(
+  log(`total size reduce: ${binary(
     sizeCodeReduceBin +
     sizeCodeReduceModule +
     sizeCodeReduceLibraryBabel +

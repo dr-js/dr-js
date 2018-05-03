@@ -36,8 +36,12 @@ const INITIAL_FACT_INFO = {
   factLogFile: ''
 }
 
+// TODO: consider support gzip?
+// TODO: consider support encodeFact with BufferPacket?
+// TODO: consider support drop head log (cache + part of log)?
+
 const createFactDatabase = async ({
-  initialFactInfo = INITIAL_FACT_INFO,
+  initialFactInfo,
   applyFact = (state, fact) => ({ ...state, ...fact }), // (state, fact) => nextState
   encodeFact = JSON.stringify, // (fact) => factText
   decodeFact = JSON.parse, // (factText) => fact
@@ -47,13 +51,15 @@ const createFactDatabase = async ({
   onError,
   ...extraOption
 }) => {
-  initialFactInfo = await loadFactInfoFromFile(initialFactInfo, {
-    applyFact,
-    decodeFact,
-    pathFactDirectory,
-    nameFactLogFile,
-    nameFactCacheFile
-  })
+  if (initialFactInfo === undefined) {
+    initialFactInfo = await tryLoadFactInfo(INITIAL_FACT_INFO, {
+      applyFact,
+      decodeFact,
+      pathFactDirectory,
+      nameFactLogFile,
+      nameFactCacheFile
+    })
+  }
 
   __DEV__ && console.log('initialFactInfo:', initialFactInfo)
 
@@ -70,8 +76,10 @@ const createFactDatabase = async ({
     onError
   })
 
-  const saveFactCache = lossyAsync(async () => {
+  const { trigger: saveFactCache, getRunningPromise: getSaveFactCachePromise } = lossyAsync(async () => {
     const factCacheFile = joinPath(pathFactDirectory, `${nameFactCacheFile}.${factId}.json`)
+    if (prevFactCacheFile === factCacheFile) return // skip save
+
     const fileContent = JSON.stringify({ factId, factState: getState() })
 
     __DEV__ && console.log('[saveFactCache] saving fact state:', factCacheFile)
@@ -85,13 +93,15 @@ const createFactDatabase = async ({
   }, onError)
 
   return {
-    getIsActive: () => isActive,
     getState,
+    getIsActive: () => isActive,
+    getSaveFactCachePromise, // maybe a promise or undefined
     subscribe,
     unsubscribe,
     add: (fact) => {
       if (!isActive) return
-      fact.id = factId + 1 // TODO: may explode
+      if (factId === Number.MAX_SAFE_INTEGER) throw new Error(`[FactDatabase] factId is Number.MAX_SAFE_INTEGER: ${factId}`) // TODO: may explode Integer
+      fact.id = factId + 1
       factId++
       factLogger.add(encodeFact(fact))
       setState(applyFact(getState(), fact))
@@ -117,26 +127,26 @@ const createFactDatabase = async ({
   }
 }
 
-const loadFactInfoFromFile = async (factInfo, { applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactCacheFile }) => {
+const tryLoadFactInfo = async (factInfo, { applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactCacheFile }) => {
   const factLogFileList = []
   const factCacheFileList = []
   const { error } = await catchAsync(async () => walkDirectoryContent(
     await getDirectoryContentShallow(pathFactDirectory),
     (path, name) => {
-      name.startsWith(nameFactLogFile) && REGEXP_LOG_FILE_ID.test(name) && factLogFileList.push({ fileId: parseInt(REGEXP_LOG_FILE_ID.exec(name)[ 1 ]), path, name })
-      name.startsWith(nameFactCacheFile) && REGEXP_CACHE_FILE_ID.test(name) && factCacheFileList.push({ fileId: parseInt(REGEXP_CACHE_FILE_ID.exec(name)[ 1 ]), path, name })
+      name.startsWith(nameFactLogFile) && REGEXP_LOG_FILE.test(name) && factLogFileList.push({ fileId: parseInt(REGEXP_LOG_FILE.exec(name)[ 1 ]), path, name })
+      name.startsWith(nameFactCacheFile) && REGEXP_CACHE_FILE.test(name) && factCacheFileList.push({ fileId: parseInt(REGEXP_CACHE_FILE.exec(name)[ 1 ]), path, name })
     }
   ))
-  __DEV__ && error && console.log('[loadFactInfoFromFile] failed to get content at:', pathFactDirectory)
+  __DEV__ && error && console.log('[tryLoadFactInfo] failed to get content at:', pathFactDirectory)
 
-  factInfo = await tryLoadFactCache(factInfo, { factCacheFileList })
-  factInfo = await tryLoadFactLog(factInfo, { factLogFileList, decodeFact, applyFact })
+  factInfo = await tryLoadFactInfoFromCache(factInfo, { factCacheFileList })
+  factInfo = await tryLoadFactInfoFromLog(factInfo, { factLogFileList, decodeFact, applyFact })
   return factInfo
 }
-const REGEXP_LOG_FILE_ID = /\.(\d+)\.log$/
-const REGEXP_CACHE_FILE_ID = /\.(\d+)\.json$/
+const REGEXP_LOG_FILE = /\.(\d+)\.log$/
+const REGEXP_CACHE_FILE = /\.(\d+)\.json$/
 
-const tryLoadFactCache = async (factInfo, { factCacheFileList }) => { // first check if cached state is available
+const tryLoadFactInfoFromCache = async (factInfo, { factCacheFileList }) => { // first check if cached state is available
   factCacheFileList.sort((a, b) => b.fileId - a.fileId) // bigger id first
   for (const { path, name } of factCacheFileList) {
     __DEV__ && console.log('try cached fact state file:', name)
@@ -148,7 +158,7 @@ const tryLoadFactCache = async (factInfo, { factCacheFileList }) => { // first c
   return factInfo
 }
 
-const tryLoadFactLog = async (factInfo, { factLogFileList, decodeFact, applyFact }) => { // then load minimal added state from log
+const tryLoadFactInfoFromLog = async (factInfo, { factLogFileList, decodeFact, applyFact }) => { // then load minimal added state from log
   let { factId, factState, factLogFile = '' } = factInfo
   const maxFactLogId = factLogFileList.reduce((o, { fileId }) => (fileId <= factId + 1) ? Math.max(o, fileId) : o, 0)
 
@@ -185,7 +195,7 @@ const tryDeleteExtraCache = async ({
   let maxFactId = 0
   const factCacheFileList = []
   await walkDirectoryContent(await getDirectoryContentShallow(pathFactDirectory), (path, name) => {
-    const fileId = name.startsWith(nameFactCacheFile) && REGEXP_CACHE_FILE_ID.test(name) && parseInt(REGEXP_CACHE_FILE_ID.exec(name)[ 1 ])
+    const fileId = name.startsWith(nameFactCacheFile) && REGEXP_CACHE_FILE.test(name) && parseInt(REGEXP_CACHE_FILE.exec(name)[ 1 ])
     Number.isInteger(fileId) && factCacheFileList.push({ fileId, path, name })
     maxFactId = Math.max(maxFactId, fileId)
   })
@@ -198,4 +208,9 @@ const tryDeleteExtraCache = async ({
   }
 }
 
-export { createFactDatabase, tryDeleteExtraCache }
+export {
+  INITIAL_FACT_INFO,
+  createFactDatabase,
+  tryLoadFactInfo,
+  tryDeleteExtraCache
+}

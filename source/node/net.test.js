@@ -28,7 +28,7 @@ const withTestServer = (asyncTest) => async () => {
         [ '/test-buffer', 'GET', (store) => responderSendBuffer(store, { buffer: Buffer.from('TEST BUFFER') }) ],
         [ '/test-json', 'GET', (store) => responderSendJSON(store, { object: { testKey: 'testValue' } }) ],
         [ '/test-timeout', 'GET', async (store) => {
-          await setTimeoutAsync(200)
+          await setTimeoutAsync(60)
           return responderEndWithStatusCode(store, { statusCode: 204 })
         } ],
         [ '/test-retry', 'GET', async (store) => {
@@ -70,13 +70,9 @@ describe('Node.Net', () => {
       () => { throw new Error('should throw time out error') },
       (error) => `good, expected Error: ${error}`
     )
-    await fetch(`${serverUrl}/test-timeout`, { timeout: 100 }).then(
-      () => { throw new Error('should throw time out error') },
-      (error) => `good, expected Error: ${error}`
-    )
-    await fetch(`${serverUrl}/test-timeout`, { timeout: 150 }).then(
-      () => { throw new Error('should throw time out error') },
-      (error) => `good, expected Error: ${error}`
+    await fetch(`${serverUrl}/test-timeout`, { timeout: 80 }).then(
+      () => `good, should pass`,
+      (error) => { throw new Error(`should not timeout: ${error}`) }
     )
   }))
 
@@ -128,7 +124,7 @@ describe('Node.Net', () => {
 
   it('ping() timeout', withTestServer(async (serverUrl) => {
     await ping({ url: `${serverUrl}/test-buffer`, wait: 10 })
-    await ping({ url: `${serverUrl}/test-timeout`, wait: 150, maxRetry: 2 }).then(
+    await ping({ url: `${serverUrl}/test-timeout`, wait: 50, maxRetry: 2 }).then(
       () => { throw new Error('should throw ping timeout error') },
       (error) => `good, expected Error: ${error}`
     )

@@ -35,22 +35,24 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
 }
 
 // drop calls during async function running, good to make a trigger for async func
-// WARN: this will drop return result, func can not return value
+// WARN: lossyFunc will drop return result from func
 const lossyAsync = (func, onError = rethrowError) => {
-  let isRunning = false
-  const onResolve = () => { isRunning = false }
+  let runningPromise
+  const onResolve = () => { runningPromise = undefined }
   const onReject = (error) => {
-    isRunning = false
+    runningPromise = undefined
     onError(error)
   }
-  return (...args) => {
-    if (isRunning) return
-    isRunning = true
-    try {
-      const result = func.apply(null, args)
-      if (result instanceof Object && result.then) result.then(onResolve, onReject)
-      else onResolve()
-    } catch (error) { onReject(error) }
+  return {
+    trigger: (...args) => {
+      if (runningPromise) return
+      try {
+        const result = func.apply(null, args)
+        if (result instanceof Object && result.then) runningPromise = result.then(onResolve, onReject)
+        else onResolve()
+      } catch (error) { onReject(error) }
+    },
+    getRunningPromise: () => runningPromise
   }
 }
 
