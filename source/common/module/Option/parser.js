@@ -8,7 +8,7 @@ import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 //     shortName: 'n',                                                        // optional, default '', single char [A-Za-z] CLI name alias, leading with `-`
 //     aliasNameList: [ 'o-n' ],                                              // optional, default [], multi-char CLI name alias, leading with `--`
 //     optional: false || (optionMap, optionFormatSet, format) => Boolean,    // optional, default false, can set checkOptional function, checkOptional should return false for non-optional
-//     argumentCount: 0,                                                      // optional, default 0, can be 0, 1, 2, ... or '0+', '1+' for more than
+//     argumentCount: '0-3',                                                  // optional, default 0, can be 0, 1, 2, ... or '0-', '1-6' for range
 //     argumentListNormalize: (argumentList) => argumentList,                 // optional, default (argumentList) => argumentList, can map each value in argumentList
 //     argumentListVerify: (argumentList)=> {},                               // optional, default (argumentList)=> {}, can add custom logic to throw error
 //     description: ''                                                        // optional, default '', description, can be multiline
@@ -26,7 +26,7 @@ const FORMAT_DEFAULT = {
   shortName: '', // CLI only
   aliasNameList: [], // CLI only
   optional: false,
-  argumentCount: '0', // or number
+  argumentCount: '0', // can be number
   argumentLengthMin: 0, // auto append
   argumentLengthMax: 0, // auto append
   argumentListNormalize: (argumentList) => argumentList,
@@ -45,12 +45,14 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
 
   const parseFormat = (format, index, upperFormat) => {
     const { name, shortName, aliasNameList, argumentCount } = format
-    const [ , argumentLengthString, argumentLengthExtendMark ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
+    const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
     format.nameENV = (prefixENV ? `${prefixENV}-${name}` : name).split('-').join('_').toUpperCase()
     format.nameJSON = stringListJoinCamelCase((prefixJSON ? `${prefixJSON}-${name}` : name).split('-'))
     format.optional = parseOptional(format.optional, upperFormat)
-    format.argumentLengthMin = argumentLengthExtendMark === '-' ? 0 : parseInt(argumentLengthString)
-    format.argumentLengthMax = argumentLengthExtendMark === '+' ? Infinity : parseInt(argumentLengthString)
+    format.argumentLengthMin = parseInt(argumentLengthMinString)
+    format.argumentLengthMax = argumentLengthSep
+      ? (argumentLengthMaxString ? parseInt(argumentLengthMaxString) : Infinity)
+      : format.argumentLengthMin
 
     CLINameMap.has(name) && throwFormatError(`duplicate name '${name}'`, format, index, upperFormat)
     CLINameMap.set(name, format)
@@ -85,7 +87,7 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
     )
   }
 }
-const REGEXP_FORMAT_ARGUMENT_COUNT = /(\d+)([+-])?/
+const REGEXP_FORMAT_ARGUMENT_COUNT = /^(\d+)(-)?(\d+)?$/
 const parseOptional = (optional, upperFormat) => {
   if (typeof (optional) !== 'function') optional = optional ? OPTIONAL_TRUE : false
   return !upperFormat ? optional
@@ -101,7 +103,11 @@ const normalizeFormat = (format, index, upperFormat) => {
     const errorIndex = format.aliasNameList.findIndex((aliasName) => !REGEXP_FORMAT_NAME.test(aliasName))
     errorIndex !== -1 && throwFormatError(`aliasNameList #${errorIndex} '${format.aliasNameList[ errorIndex ]}'`, format, index, upperFormat)
   }
-  !REGEXP_FORMAT_ARGUMENT_COUNT.test(format.argumentCount) && throwFormatError(`argumentCount '${format.argumentCount}'`, format, index, upperFormat)
+  {
+    !REGEXP_FORMAT_ARGUMENT_COUNT.test(format.argumentCount) && throwFormatError(`argumentCount '${format.argumentCount}'`, format, index, upperFormat)
+    const [ , from, , to ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(format.argumentCount)
+    to && parseInt(to) < parseInt(from) && throwFormatError(`argumentCount '${format.argumentCount}'`, format, index, upperFormat)
+  }
   if (format.extendFormatList.length) format.extendFormatList = format.extendFormatList.map((extendFormat, index) => normalizeFormat(extendFormat, index, format))
   return format
 }

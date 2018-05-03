@@ -5,19 +5,20 @@ import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/Opt
 const { SingleString, BooleanFlag, Config } = ConfigPreset
 
 const MODE_FORMAT_LIST = [
-  [ 'echo', [], '0+' ],
-  [ 'cat', [], '0+', true ],
+  [ 'echo', [], '0-' ],
+  [ 'cat', [], '0-', true ],
   [ 'write', [], 1, true ],
   [ 'append', [], 1, true ],
-  [ 'open', [ 'o' ], '1-' ],
+  [ 'open', [ 'o' ], '0-1' ],
   [ 'status', [ 's' ], 0 ],
-  [ 'file-list', [ 'ls' ], '1-', true ],
-  [ 'file-list-all', [ 'ls-R' ], '1-', true ],
-  [ 'file-create-directory', [ 'mkdir' ], '0+', true ],
+  [ 'file-list', [ 'ls' ], '0-1', true ],
+  [ 'file-list-all', [ 'ls-R' ], '0-1', true ],
+  [ 'file-create-directory', [ 'mkdir' ], '0-', true ],
   [ 'file-modify-copy', [ 'cp' ], 2, true ],
   [ 'file-modify-move', [ 'mv' ], 2, true ],
-  [ 'file-modify-delete', [ 'rm' ], '0+', true ],
-  [ 'file-merge', [ 'merge' ], '2+', true ],
+  [ 'file-modify-delete', [ 'rm' ], '0-', true ],
+  [ 'file-merge', [ 'merge' ], '2-', true ],
+  [ 'fetch', [ 'f' ], 1 ],
   [ 'server-serve-static', [ 'sss' ], 0 ],
   [ 'server-serve-static-simple', [ 'ssss' ], 0 ],
   [ 'server-websocket-group', [ 'swg' ], 0 ],
@@ -35,7 +36,8 @@ const OPTION_CONFIG = {
     ...MODE_FORMAT_LIST,
     { ...SingleString, optional: true, name: 'hostname', shortName: 'H', description: `for server` },
     { ...SingleString, optional: true, name: 'port', shortName: 'P', description: `for server` },
-    { ...SingleString, isPath: true, optional: true, name: 'root', shortName: 'R', description: `for server static` }
+    { ...SingleString, isPath: true, optional: true, name: 'root', shortName: 'R', description: `for server static` },
+    { ...SingleString, isPath: true, optional: true, name: 'output-file', shortName: 'O', description: `for fetch` }
   ]
 }
 

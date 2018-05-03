@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import { createReadStream, createWriteStream } from 'fs'
+import { createReadStream, createWriteStream, writeFileSync } from 'fs'
 
+import { fetch } from 'dr-js/module/node/net'
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList } from 'dr-js/module/node/file/Directory'
@@ -74,6 +75,14 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       const [ outputFile, ...fileList ] = argumentList
       for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
       return
+    }
+    case 'fetch': {
+      const outputFile = getSingleOptionOptional('output-file')
+      const response = await fetch(argumentList[0])
+      if (!response.ok) return log(`[fetch] failed for: ${argumentList[0]}, status: ${response.status}`)
+      return outputFile
+        ? writeFileSync(outputFile, await response.buffer(), { flags: 'a' })
+        : console.log(await response.text())
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {

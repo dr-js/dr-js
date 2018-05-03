@@ -11,9 +11,9 @@ const optionData = {
     { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
     { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
     { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], ...ConfigPreset.AllNumber, argumentCount: 2 },
-    { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0+', description: 'TEST DESCRIPTION A' },
-    { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1+', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
-    { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2+', description: 'TEST DESCRIPTION C\n' }
+    { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0-', description: 'TEST DESCRIPTION A' },
+    { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1-', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
+    { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2-', description: 'TEST DESCRIPTION C\n' }
   ]
 }
 const optionNameList = optionData.formatList.map(({ name }) => name)

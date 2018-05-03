@@ -442,6 +442,7 @@
 >   --file-modify-move|mv [OPTIONAL] [ARGUMENT=2]
 >   --file-modify-delete|rm [OPTIONAL]
 >   --file-merge|merge [OPTIONAL] [ARGUMENT=2+]
+>   --fetch|f [OPTIONAL] [ARGUMENT=1]
 >   --server-serve-static|sss [OPTIONAL]
 >   --server-serve-static-simple|ssss [OPTIONAL]
 >   --server-websocket-group|swg [OPTIONAL]
@@ -452,6 +453,8 @@
 >       for server
 >   --root -R [OPTIONAL] [ARGUMENT=1]
 >       for server static
+>   --output-file -O [OPTIONAL] [ARGUMENT=1]
+>       for fetch
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -472,6 +475,7 @@
 >     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
 >     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
@@ -479,6 +483,7 @@
 >     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >   "
 > JSON Usage:
 >   {
@@ -499,6 +504,7 @@
 >     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
 >     "drJsFileModifyDelete": [ "[OPTIONAL]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
+>     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
@@ -506,5 +512,6 @@
 >     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >   }
 > ```

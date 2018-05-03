@@ -38,16 +38,16 @@ const ConfigPreset = {
   SingleNumber: getPreset(1, normalizeToNumber, getVerifySingle(number, 'Number')),
   SingleInteger: getPreset(1, normalizeToInteger, getVerifySingle(integer, 'Integer')),
 
-  AllString: getPreset('1+', normalizeToString, verifyAllString),
-  AllNumber: getPreset('1+', normalizeToNumber, verifyAllNumber),
-  AllInteger: getPreset('1+', normalizeToInteger, verifyAllInteger),
+  AllString: getPreset('1-', normalizeToString, verifyAllString),
+  AllNumber: getPreset('1-', normalizeToNumber, verifyAllNumber),
+  AllInteger: getPreset('1-', normalizeToInteger, verifyAllInteger),
 
   OneOfString: getOneOfPreset(normalizeToString, verifyAllString),
   OneOfNumber: getOneOfPreset(normalizeToNumber, verifyAllNumber),
   OneOfInteger: getOneOfPreset(normalizeToInteger, verifyAllInteger),
 
-  BooleanFlag: getPreset('0+', () => ([ true ]), undefined, 'set to enable', true),
-  Any: getPreset('0+', undefined, undefined, 'optional', true),
+  BooleanFlag: getPreset('0-', () => ([ true ]), undefined, 'set to enable', true),
+  Any: getPreset('0-', undefined, undefined, 'optional', true),
 
   // common config preset
   Config: { ...getPreset(1, normalizeToString, getVerifySingle(string, 'String'), `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`, true), name: 'config', shortName: 'c' }
