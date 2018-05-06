@@ -10,5 +10,5 @@ A collection of strange functions
 [l:npm]: https://www.npmjs.com/package/dr-js
 [i:ci]: https://img.shields.io/travis/dr-js/dr-js/master.svg
 [l:ci]: https://travis-ci.org/dr-js/dr-js
-[i:lint]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
+[i:lint]: https://img.shields.io/badge/code_style-standard-yellow.svg
 [l:lint]: https://standardjs.com

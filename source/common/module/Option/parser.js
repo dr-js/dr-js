@@ -190,7 +190,7 @@ const formatSimple = ({ name, shortName, aliasNameList }) => `${name}${aliasName
 
 const usageCLI = (formatList) => mapJoin(formatList, formatUsageCLI)
 const formatUsageCLI = (format) => join(
-  formatUsageBase(format, `--${format.name}${format.aliasNameList.length ? `|${format.aliasNameList.join('|')}` : ''}`, format.shortName && `-${format.shortName}`),
+  formatUsageBase(format, `--${format.name}${format.aliasNameList.length ? ` --${format.aliasNameList.join(' --')}` : ''}`, format.shortName && `-${format.shortName}`),
   format.description && indent(format.description, 4),
   formatExtendList(format.extendFormatList, formatUsageCLI, 2)
 )

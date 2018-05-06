@@ -15,7 +15,7 @@ const getSystemPlatform = () => ({
 const describeSystemPlatform = ({ platform, arch, release } = getSystemPlatform()) => `${platform} ${arch} [${release}]`
 
 // TODO: cpus() will return undefined on Android 8 Termux
-const getSystemProcessor = () => cpus() || [ { model: 'N/A', speed: 'N/A', times: {} } ]
+const getSystemProcessor = () => cpus() || [ { model: 'N/A', speed: 'N/A', times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 } } ]
 const describeSystemProcessor = (processorList = getSystemProcessor()) => processorList
   .map(({ model, speed, times }) => `[${model}] speed:${speed}MHz ${Object.entries(times).map(([ k, v ]) => `${k}:${time(v)}`).join(' ')}`)
   .join('\n')
@@ -60,12 +60,12 @@ const getSystemStatus = () => ({
   activity: getSystemActivity()
 })
 
-const describeSystemStatus = () => Object.entries({
-  Platform: describeSystemPlatform(),
-  Processor: describeSystemProcessor(),
-  Memory: describeSystemMemory(),
-  Network: describeSystemNetwork(),
-  Activity: describeSystemActivity()
+const describeSystemStatus = ({ platform, processor, memory, network, activity } = getSystemStatus()) => Object.entries({
+  platform: describeSystemPlatform(platform),
+  processor: describeSystemProcessor(processor),
+  memory: describeSystemMemory(memory),
+  network: describeSystemNetwork(network),
+  activity: describeSystemActivity(activity)
 }).map(([ k, v ]) => `[${k}]\n${stringIndentLine(v)}`).join('\n')
 
 const getProcessStatus = () => ({
@@ -91,7 +91,7 @@ const getProcessStatus = () => ({
   argv: process.argv, // []
   cwd: process.cwd(),
   uptime: process.uptime() * 1000,
-  cpuUsage: process.cpuUsage(), // {}
+  cpuUsage: process.cpuUsage(), // { user, system } // in µsec(micro-sec), not msec(mili-sec)
   memoryUsage: process.memoryUsage() // {}
 })
 

@@ -1,10 +1,54 @@
 import { resolve } from 'path'
-import { equal, throws } from 'assert'
-import { createPathPrefixLock } from './function'
+import { ok, equal, throws } from 'assert'
+import { // TODO: add more test
+  statAsync,
+  // lstatAsync,
+  // renameAsync,
+  // unlinkAsync,
+  // accessAsync,
+  // visibleAsync,
+  // readableAsync,
+  // writableAsync,
+  // executableAsync,
+  // mkdirAsync,
+  // rmdirAsync,
+  // readdirAsync,
+  // readFileAsync,
+  // writeFileAsync,
+  // copyFileAsync,
+  // nearestExistAsync,
+  // createReadStream,
+  // createWriteStream,
+  createPathPrefixLock
+  // createReadlineFromStreamAsync,
+  // createReadlineFromFileAsync,
+  // trimPathDepth,
+  // toPosixPath
+} from './function'
 
 const { describe, it } = global
 
 describe('Node.File.function', () => {
+  it('statAsync()', async () => {
+    const statFile = await statAsync(`${__dirname}/function.js`)
+    ok(statFile)
+    ok(statFile.mode, 'file stat should have mode')
+    ok(statFile.size, 'file stat should have size')
+    ok(statFile.isFile(), 'file stat should isFile')
+    ok(!statFile.isDirectory(), 'file stat should !isDirectory')
+
+    const statDirectory = await statAsync(`${__dirname}/..`)
+    ok(statDirectory)
+    ok(statDirectory.mode, 'directory stat should have mode')
+    ok(!statDirectory.isFile(), 'directory stat should !isFile')
+    ok(statDirectory.isDirectory(), 'directory stat should isDirectory')
+
+    await statAsync(`${__dirname}/path-not-exist`).then(
+      () => { throw new Error('should throw for path-not-exist') },
+      () => 'expected error'
+    )
+  })
+
   it('createPathPrefixLock()', () => {
     const checkPath = (getPathFromRoot, rootPath) => {
       const expectedPath = resolve(`${rootPath}/a/b/c`)

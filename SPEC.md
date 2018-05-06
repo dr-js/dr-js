@@ -166,7 +166,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -360,7 +360,7 @@
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `moveDirectory`, `moveFile`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -433,20 +433,20 @@
 >   --cat [OPTIONAL]
 >   --write [OPTIONAL] [ARGUMENT=1]
 >   --append [OPTIONAL] [ARGUMENT=1]
->   --open|o [OPTIONAL]
->   --status|s [OPTIONAL]
->   --file-list|ls [OPTIONAL]
->   --file-list-all|ls-R [OPTIONAL]
->   --file-create-directory|mkdir [OPTIONAL]
->   --file-modify-copy|cp [OPTIONAL] [ARGUMENT=2]
->   --file-modify-move|mv [OPTIONAL] [ARGUMENT=2]
->   --file-modify-delete|rm [OPTIONAL]
->   --file-merge|merge [OPTIONAL] [ARGUMENT=2+]
->   --fetch|f [OPTIONAL] [ARGUMENT=1]
->   --server-serve-static|sss [OPTIONAL]
->   --server-serve-static-simple|ssss [OPTIONAL]
->   --server-websocket-group|swg [OPTIONAL]
->   --server-test-connection|stc [OPTIONAL]
+>   --open --o [OPTIONAL]
+>   --status --s [OPTIONAL]
+>   --file-list --ls [OPTIONAL]
+>   --file-list-all --ls-R [OPTIONAL]
+>   --file-create-directory --mkdir [OPTIONAL]
+>   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
+>   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
+>   --file-modify-delete --rm [OPTIONAL]
+>   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
+>   --fetch --f [OPTIONAL] [ARGUMENT=1]
+>   --server-serve-static --sss [OPTIONAL]
+>   --server-serve-static-simple --ssss [OPTIONAL]
+>   --server-websocket-group --swg [OPTIONAL]
+>   --server-test-connection --stc [OPTIONAL]
 >   --hostname -H [OPTIONAL] [ARGUMENT=1]
 >       for server
 >   --port -P [OPTIONAL] [ARGUMENT=1]

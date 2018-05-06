@@ -1,4 +1,4 @@
-import { resolve, normalize, dirname, sep } from 'path'
+import { resolve as resolvePath, normalize, dirname, sep } from 'path'
 import {
   stat, lstat, access, rename, unlink,
   readFile, writeFile, copyFile,
@@ -8,6 +8,7 @@ import {
   open, fstat
 } from 'fs'
 import { promisify } from 'util'
+import { createInterface } from 'readline'
 
 const statAsync = promisify(stat)
 const lstatAsync = promisify(lstat)
@@ -51,13 +52,32 @@ const nearestExistAsync = async (path) => {
 }
 
 const createPathPrefixLock = (rootPath) => {
-  rootPath = resolve(rootPath)
+  rootPath = resolvePath(rootPath)
   return (relativePath) => {
-    const absolutePath = resolve(rootPath, relativePath)
+    const absolutePath = resolvePath(rootPath, relativePath)
     if (!absolutePath.startsWith(rootPath)) throw new Error(`[PathPrefixLock] invalid relativePath: ${relativePath}`)
     return absolutePath
   }
 }
+
+// TODO: not able to pause & resume the line-reading to run some async code
+const createReadlineFromStreamAsync = (readStream, onLineSync) => new Promise((resolve, reject) => {
+  const readlineInterface = createInterface({ input: readStream, historySize: 0, crlfDelay: Infinity })
+  readlineInterface.on('error', (error) => { // TODO: this is not documented, don't know if this will be called some how
+    __DEV__ && console.log(`[Readline] error`, error)
+    readlineInterface.close()
+    reject(error)
+  })
+  readlineInterface.on('close', () => {
+    __DEV__ && console.log(`[Readline] close`)
+    resolve()
+  })
+  readlineInterface.on('line', (line) => {
+    __DEV__ && console.log(`[Readline] line: ${line}`)
+    onLineSync(line)
+  })
+})
+const createReadlineFromFileAsync = (filePath, onLineSync) => createReadlineFromStreamAsync(createReadStream(filePath), onLineSync)
 
 const trimPathDepth = (path, depth) => normalize(path).split(sep).slice(0, depth).join(sep)
 const toPosixPath = sep === '\\'
@@ -86,6 +106,9 @@ export {
   createWriteStream,
   createPathPrefixLock,
 
-  toPosixPath,
-  trimPathDepth
+  createReadlineFromStreamAsync,
+  createReadlineFromFileAsync,
+
+  trimPathDepth,
+  toPosixPath
 }

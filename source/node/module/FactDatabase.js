@@ -4,7 +4,7 @@ import { lossyAsync } from 'source/common/function'
 import { tryParseJSONObject } from 'source/common/data/function'
 import { createStateStore } from 'source/common/immutable/StateStore'
 
-import { readFileAsync, writeFileAsync, unlinkAsync } from 'source/node/file/function'
+import { readFileAsync, writeFileAsync, unlinkAsync, createReadlineFromFileAsync } from 'source/node/file/function'
 import { getDirectoryContentShallow, walkDirectoryContent } from 'source/node/file/Directory'
 import { createLogger } from './Logger'
 
@@ -29,9 +29,10 @@ import { createLogger } from './Logger'
 const DEFAULT_LOG_FILE_NAME = 'factLog'
 const DEFAULT_CACHE_FILE_NAME = 'factCache'
 
+const INITIAL_STATE = { id: 0 }
 const INITIAL_FACT_INFO = {
   factId: 0,
-  factState: { id: 0 },
+  factState: INITIAL_STATE,
   factCacheFile: '',
   factLogFile: ''
 }
@@ -42,6 +43,7 @@ const INITIAL_FACT_INFO = {
 
 const createFactDatabase = async ({
   initialFactInfo,
+  initialState = INITIAL_STATE,
   applyFact = (state, fact) => ({ ...state, ...fact }), // (state, fact) => nextState
   encodeFact = JSON.stringify, // (fact) => factText
   decodeFact = JSON.parse, // (factText) => fact
@@ -52,16 +54,12 @@ const createFactDatabase = async ({
   ...extraOption
 }) => {
   if (initialFactInfo === undefined) {
-    initialFactInfo = await tryLoadFactInfo(INITIAL_FACT_INFO, {
-      applyFact,
-      decodeFact,
-      pathFactDirectory,
-      nameFactLogFile,
-      nameFactCacheFile
-    })
+    initialFactInfo = await tryLoadFactInfo(
+      { ...INITIAL_FACT_INFO, factState: initialState },
+      { applyFact, decodeFact, pathFactDirectory, nameFactLogFile, nameFactCacheFile }
+    )
+    __DEV__ && console.log('loaded initialFactInfo:', initialFactInfo)
   }
-
-  __DEV__ && console.log('initialFactInfo:', initialFactInfo)
 
   let isActive = true
   let factId = initialFactInfo.factId || 0
@@ -169,17 +167,14 @@ const tryLoadFactInfoFromLog = async (factInfo, { factLogFileList, decodeFact, a
 
   for (const { path, name } of factLogFileList) {
     const filePath = joinPath(path, name)
-    const fileContent = await readFileAsync(filePath, { encoding: 'utf8' })
-    fileContent
-      .split('\n') // TODO: should check multiline log? (from non-JSON encodeFact output)
-      .forEach((logText) => {
-        const fact = logText && decodeFact(logText)
-        if (!fact || fact.id <= factId) return
-        if (fact.id !== factId + 1) throw new Error(`invalid factId: ${fact.id}, should be: ${factId + 1}. file: ${name}`)
-        factState = applyFact(factState, fact)
-        factId = fact.id
-        factLogFile = filePath
-      })
+    await createReadlineFromFileAsync(filePath, (logText) => { // TODO: should check multiline log? (from non-JSON encodeFact output)
+      const fact = logText && decodeFact(logText)
+      if (!fact || fact.id <= factId) return
+      if (fact.id !== factId + 1) throw new Error(`invalid factId: ${fact.id}, should be: ${factId + 1}. file: ${name}`)
+      factState = applyFact(factState, fact)
+      factId = fact.id
+      factLogFile = filePath
+    })
     __DEV__ && console.log('load fact log file:', name, factId)
   }
 

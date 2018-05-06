@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.15.0-dev.3",
+  "version": "0.15.0-dev.4",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -47,8 +47,8 @@
     "npm": ">=5"
   },
   "devDependencies": {
-    "dev-dep-tool": "0.2.2-dev.3",
-    "dev-dep-web": "0.2.2-dev.3",
+    "dev-dep-tool": "0.2.2-dev.4",
+    "dev-dep-web": "0.2.2-dev.4",
     "dr-js": "0.15.0-dev.3",
     "webpack-bundle-analyzer": "^2.11.1"
   },
