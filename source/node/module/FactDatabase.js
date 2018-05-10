@@ -37,9 +37,10 @@ const INITIAL_FACT_INFO = {
   factLogFile: ''
 }
 
+// TODO: consider use [ base36, base36 ] for Id?
 // TODO: consider support gzip?
 // TODO: consider support encodeFact with BufferPacket?
-// TODO: consider support drop head log (cache + part of log)?
+// TODO: consider support drop id, or drop head log (cache + part of log)?
 
 const createFactDatabase = async ({
   initialFactInfo,
@@ -185,21 +186,26 @@ const tryLoadFactInfoFromLog = async (factInfo, { factLogFileList, decodeFact, a
 const tryDeleteExtraCache = async ({
   pathFactDirectory,
   nameFactCacheFile = DEFAULT_CACHE_FILE_NAME,
-  keepFactId = Infinity
+  keepFactId = Infinity,
+  keepFileCount = 2
 }) => {
-  let maxFactId = 0
   const factCacheFileList = []
   await walkDirectoryContent(await getDirectoryContentShallow(pathFactDirectory), (path, name) => {
     const fileId = name.startsWith(nameFactCacheFile) && REGEXP_CACHE_FILE.test(name) && parseInt(REGEXP_CACHE_FILE.exec(name)[ 1 ])
     Number.isInteger(fileId) && factCacheFileList.push({ fileId, path, name })
-    maxFactId = Math.max(maxFactId, fileId)
   })
-  maxFactId = Math.min(maxFactId, keepFactId)
+  if (!factCacheFileList.length) return
+  factCacheFileList.sort((a, b) => b.fileId - a.fileId)
+  let skippedFile = 0
   for (const { fileId, path, name } of factCacheFileList) {
-    if (fileId >= maxFactId) continue
-    __DEV__ && console.log('delete cached fact state file:', name)
+    if (fileId >= keepFactId) continue
+    if (skippedFile < keepFileCount) {
+      skippedFile += 1
+      continue
+    }
+    __DEV__ && console.log('[DeleteExtraCache] delete:', name)
     const { error } = await catchAsync(unlinkAsync, joinPath(path, name))
-    __DEV__ && error && console.warn('failed to delete cached fact state file:', name, error)
+    __DEV__ && error && console.warn('[DeleteExtraCache] failed to delete:', name, error)
   }
 }
 

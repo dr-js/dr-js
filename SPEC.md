@@ -43,6 +43,8 @@
   - `createHistoryStateStore`
 + 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
   - `createInterpolationAutoTimer`, `createVectorAccumulator`
++ 📄 [source/browser/module/TimedLookup.js](source/browser/module/TimedLookup.js)
+  - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -50,7 +52,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -74,7 +76,7 @@
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
-  - `getValueByKeyList`, `hashStringToNumber`, `tryParseJSONObject`
+  - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
   - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
 + 📄 [source/common/geometry/D2/BoundingRect.js](source/common/geometry/D2/BoundingRect.js)
@@ -123,6 +125,8 @@
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
++ 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
+  - `generateCheckCode`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -148,13 +152,15 @@
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `receiveBufferAsync`, `sendBufferAsync`
+  - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `MAX_BUFFER_PACKET_SIZE`, `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `bufferToStream`, `pipeStreamAsync`
++ 📄 [source/node/data/function.js](source/node/data/function.js)
+  - `getRandomBufferAsync`
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
@@ -177,6 +183,8 @@
   - `createOptionGetter`, `parseOptionMap`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
++ 📄 [source/node/module/TimedLookup.js](source/node/module/TimedLookup.js)
+  - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`, `getUnusedPort`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
@@ -240,6 +248,8 @@
       - `createHistoryStateStore`
     - **MotionAutoTimer**
       - `createInterpolationAutoTimer`, `createVectorAccumulator`
+    - **TimedLookup**
+      - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
   - **DOM**
     - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
@@ -264,7 +274,7 @@
       - `SetMap`
     - **Toggle**
       - `createToggle`
-    - `getValueByKeyList`, `hashStringToNumber`, `tryParseJSONObject`
+    - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
       - **BoundingRect**
@@ -320,6 +330,8 @@
       - `compareSemVer`, `parseSemVer`
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
+    - **TimedLookup**
+      - `generateCheckCode`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
@@ -332,7 +344,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
@@ -342,13 +354,14 @@
 - **Node**
   - **Data**
     - **Buffer**
-      - `receiveBufferAsync`, `sendBufferAsync`
+      - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
     - **BufferPacket**
       - `MAX_BUFFER_PACKET_SIZE`, `packBufferPacket`, `parseBufferPacket`
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
       - `bufferToStream`, `pipeStreamAsync`
+    - `getRandomBufferAsync`
   - **File**
     - **Compress**
       - `checkBloat`, `compressFile`, `compressFileList`
@@ -372,6 +385,8 @@
       - `createOptionGetter`, `parseOptionMap`
     - **SafeWrite**
       - `createSafeWriteStream`
+    - **TimedLookup**
+      - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
   - **Server**
     - **Responder**
       - **Common**

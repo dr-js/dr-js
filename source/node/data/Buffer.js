@@ -16,7 +16,12 @@ const sendBufferAsync = (writableStream, buffer) => new Promise((resolve, reject
   })
 })
 
+// TODO: NOTE: the `buffer, byteOffset, byteLength` are inner buffer attributes
+// NOTE: slice: for small Buffers are views on a shared ArrayBuffer.
+const toArrayBuffer = ({ buffer, byteOffset, byteLength }) => buffer.slice(byteOffset, byteOffset + byteLength)
+
 export {
   receiveBufferAsync,
-  sendBufferAsync
+  sendBufferAsync,
+  toArrayBuffer
 }

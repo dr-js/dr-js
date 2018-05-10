@@ -6,6 +6,22 @@ const hashStringToNumber = (string = '', hash = 0) => {
   return hash
 }
 
+const reverseString = (string) => [ ...string ].reverse().join('')
+
+const swapObfuscateString = (string = '') => {
+  const stringLength = string.length
+  const stringEndIndex = stringLength - 1
+  const indexMax = Math.floor(stringLength * 0.5)
+  const result = []
+  if (stringLength % 2) result[ indexMax ] = string.charAt(indexMax)
+  for (let index = 0; index < indexMax; index++) {
+    const pickIndex = (index % 2) ? index : stringEndIndex - index
+    result[ index ] = string.charAt(pickIndex)
+    result[ stringEndIndex - index ] = string.charAt(stringEndIndex - pickIndex)
+  }
+  return result.join('')
+}
+
 // always return a object/array, use this with object destructuring
 const tryParseJSONObject = (text, defaultResult = {}) => {
   try {
@@ -25,6 +41,8 @@ const getValueByKeyList = (value, keyList) => {
 
 export {
   hashStringToNumber,
+  reverseString,
+  swapObfuscateString,
   tryParseJSONObject,
   getValueByKeyList
 }

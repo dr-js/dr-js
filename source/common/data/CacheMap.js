@@ -1,13 +1,12 @@
 import { clock } from 'source/common/time'
 import { DoublyLinkedList } from './LinkedList'
 
-const DEFAULT_VALUE_SIZE_SUM_MAX = 10 * 1024 * 1024 // in byte, 10mB
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 // Time aware Least Recently Used (TLRU)
 class CacheMap {
-  constructor (option = {}) {
-    const { valueSizeSumMax = DEFAULT_VALUE_SIZE_SUM_MAX, onCacheAdd = null, onCacheDelete = null } = option
+  constructor ({ valueSizeSumMax, onCacheAdd = null, onCacheDelete = null }) {
+    if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`[CacheMap] invalid valueSizeSumMax: ${valueSizeSumMax}`)
 
     this.cacheMap = new Map()
     this.cacheLinkedList = new DoublyLinkedList()

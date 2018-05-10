@@ -16,7 +16,7 @@ const doSanityTest = (cacheMap, length) => {
 
 describe('Common.Data.CacheMap', () => {
   describe('CacheMap', () => {
-    const cacheMap = new CacheMap()
+    const cacheMap = new CacheMap({ valueSizeSumMax: 512 })
     doSanityTest(cacheMap, 0)
   })
 

@@ -28,6 +28,10 @@ const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl
   store.setState({ url: new URL(urlString, baseUrlObject), method })
 }
 
+const describeRequest = ({
+  url, method, headers: { host = '' }, socket: { remoteAddress, remotePort }
+}) => `[${method}] ${host}${url} (${remoteAddress}:${remotePort})`
+
 const createResponderLog = (log) => (store) => {
   log(
     describeRequest(store.request),
@@ -48,10 +52,6 @@ const createResponderLogEnd = (log) => (store) => {
     error ? error.stack || error : ''
   )
 }
-
-const describeRequest = ({
-  url, method, headers: { host = '' }, socket: { remoteAddress, remotePort }
-}) => `[${method}] ${host}${url} (${remoteAddress}:${remotePort})`
 
 const createResponderSetHeaderHSTS = (protocol) => protocol !== 'https:'
   ? () => {}

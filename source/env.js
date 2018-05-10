@@ -14,15 +14,13 @@ const getEnvironment = () => {
 
 const getEndianness = () => {
   try {
-    const buffer = new ArrayBuffer(4)
-    const viewUint8 = new Uint8Array(buffer)
-    const viewUint32 = new Uint32Array(buffer)
-    viewUint8[ 0 ] = 0xa1
-    viewUint8[ 1 ] = 0xb2
-    viewUint8[ 2 ] = 0xc3
-    viewUint8[ 3 ] = 0xd4
-    if (viewUint32[ 0 ] === 0xd4c3b2a1) return 'little'
-    if (viewUint32[ 0 ] === 0xa1b2c3d4) return 'big'
+    const arrayBuffer = new ArrayBuffer(2)
+    const uint8Array = new Uint8Array(arrayBuffer)
+    const uint16array = new Uint16Array(arrayBuffer)
+    uint8Array[0] = 0xa1 // set first byte
+    uint8Array[1] = 0xb2 // set second byte
+    if (uint16array[0] === 0xb2a1) return 'little'
+    if (uint16array[0] === 0xa1b2) return 'big'
   } catch (error) { console.error('[getEndianness]', error) }
   return 'unknown'
 }

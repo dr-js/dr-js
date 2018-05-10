@@ -1,7 +1,6 @@
 import { equal, deepEqual } from 'assert'
 import { resolve } from 'path'
 import { createFactDatabase, tryDeleteExtraCache } from './FactDatabase'
-import { setTimeoutAsync } from 'source/common/time'
 import { getFileList } from 'source/node/file/Directory'
 import { modify } from 'source/node/file/Modify'
 
@@ -22,7 +21,7 @@ const basicTest = async (pathFactDirectory) => {
   deepEqual(factDB.getState(), { id: 3, key1: 1, key2: 2, key3: 3 })
 
   factDB.split() // to factLog.4.log
-  await setTimeoutAsync(10) // wait for file to write
+  await factDB.getSaveFactCachePromise() // wait for file to write
 
   factDB.add({ key1: 2 })
   factDB.add({ key2: 4 })
@@ -31,7 +30,7 @@ const basicTest = async (pathFactDirectory) => {
 
   factDB.split() // to factLog.7.log
   factDB.split() // should only split once
-  await setTimeoutAsync(10) // wait for file to write
+  await factDB.getSaveFactCachePromise() // wait for file to write
 
   factDB.add({ textKey: TEST_TEXT })
   deepEqual(factDB.getState(), { id: 7, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT })
@@ -51,7 +50,7 @@ const basicTest = async (pathFactDirectory) => {
   deepEqual(factDB.getState(), { id: 10, key1: 1, key2: 2, key3: 3, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
 
   factDB.end()
-  await setTimeoutAsync(10) // wait for file to write
+  await factDB.getSaveFactCachePromise() // wait for file to write
 
   const fileList = await getFileList(pathFactDirectory)
   // console.log(fileList)
@@ -90,7 +89,7 @@ describe('Node.Module.FactDatabase', () => {
     factDB.save()
 
     factDB.end()
-    await setTimeoutAsync(10)
+    await factDB.getSaveFactCachePromise() // wait for file to write
 
     const fileList = await getFileList(pathFactDirectory)
     // console.log(fileList)

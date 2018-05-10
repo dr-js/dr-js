@@ -10,6 +10,34 @@ const percent = (value) => `${(value * 100).toFixed(2)}%`
 
 const OVER_THRESHOLD = 0.75
 
+// https://en.wikipedia.org/wiki/Metric_prefix
+const DECIMAL_PICO = Math.pow(10, -12) // pico p 10^−12
+const DECIMAL_NANO = Math.pow(10, -9) // nano n 10^−9
+const DECIMAL_MICRO = Math.pow(10, -6) // micro μ 10^−6
+const DECIMAL_MILLI = Math.pow(10, -3) // milli m 10^−3
+const DECIMAL_BASE = Math.pow(10, 0) // BASE @ 10^0
+const DECIMAL_KILO = Math.pow(10, 3) // kilo k 10^3
+const DECIMAL_MEGA = Math.pow(10, 6) // mega M 10^6
+const DECIMAL_GIGA = Math.pow(10, 9) // giga G 10^9
+const DECIMAL_TERA = Math.pow(10, 12) // tera T 10^12
+const DECIMAL_PETA = Math.pow(10, 15) // peta P 10^15
+const DECIMAL_EXA = Math.pow(10, 18) // exa E 10^18
+const decimal = (value) => {
+  const abs = Math.abs(value) * OVER_THRESHOLD
+  return abs === 0 ? `0`
+    : abs < DECIMAL_NANO ? `${(value / DECIMAL_PICO).toFixed(2)}pico`
+      : abs < DECIMAL_MICRO ? `${(value / DECIMAL_NANO).toFixed(2)}nano`
+        : abs < DECIMAL_MILLI ? `${(value / DECIMAL_MICRO).toFixed(2)}micro`
+          : abs < DECIMAL_BASE ? `${(value / DECIMAL_MILLI).toFixed(2)}milli`
+            : abs < DECIMAL_KILO ? `${(value / DECIMAL_BASE).toFixed(2)}`
+              : abs < DECIMAL_MEGA ? `${(value / DECIMAL_KILO).toFixed(2)}kilo`
+                : abs < DECIMAL_GIGA ? `${(value / DECIMAL_MEGA).toFixed(2)}mega`
+                  : abs < DECIMAL_TERA ? `${(value / DECIMAL_GIGA).toFixed(2)}giga`
+                    : abs < DECIMAL_PETA ? `${(value / DECIMAL_TERA).toFixed(2)}tera`
+                      : abs < DECIMAL_EXA ? `${(value / DECIMAL_PETA).toFixed(2)}peta`
+                        : `${(value / DECIMAL_EXA).toFixed(2)}exa`
+}
+
 const TIME_S = 1000
 const TIME_M = 1000 * 60
 const TIME_H = 1000 * 60 * 60
@@ -78,6 +106,7 @@ export {
   describe,
 
   percent,
+  decimal,
   time,
   binary,
   padTable,
