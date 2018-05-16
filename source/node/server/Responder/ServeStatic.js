@@ -1,5 +1,5 @@
 import { clock } from 'source/common/time'
-import { CacheMap } from 'source/common/data/CacheMap'
+import { createCacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
 import { statAsync, readFileAsync, createReadStream } from 'source/node/file/function'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
@@ -13,17 +13,13 @@ import {
 const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
 const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
-const createDefaultCacheMap = () => new CacheMap({
-  valueSizeSumMax: CACHE_BUFFER_SIZE_SUM_MAX,
-  onCacheAdd: __DEV__ ? (cache) => console.log('[onCacheAdd]', cache.key) : null,
-  onCacheDelete: __DEV__ ? (cache) => console.log('[onCacheDelete]', cache.key) : null
-})
+const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_BUFFER_SIZE_SUM_MAX })
 
 const createResponderBufferCache = ({
   getBufferData, // (store, cacheKey) => ({ buffer, length, type, entityTag })
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
-  serveCacheMap = createDefaultCacheMap()
+  serveCacheMap = GET_DEFAULT_CACHE_MAP()
 }) => async (store, cacheKey) => {
   let bufferData = serveCacheMap.get(cacheKey)
   __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
@@ -44,7 +40,7 @@ const createResponderServeStatic = ({
   expireTime = CACHE_EXPIRE_TIME,
   isEnableGzip = false, // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
   isEnableRange = true, // only when content is not gzip
-  serveCacheMap = createDefaultCacheMap()
+  serveCacheMap = GET_DEFAULT_CACHE_MAP()
 }) => {
   const serveCache = async (store, filePath, encoding, range) => {
     let bufferData = serveCacheMap.get(filePath)

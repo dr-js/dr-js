@@ -210,11 +210,11 @@ const formatUsageJSON = (format) => join(
 const formatUsageBase = ({ optional, argumentLengthMin, argumentLengthMax }, ...args) => [
   ...args,
   optional && (optional === OPTIONAL_TRUE ? '[OPTIONAL]' : '[OPTIONAL-CHECK]'),
-  argumentLengthMin && `[ARGUMENT=${formatRange(argumentLengthMin, argumentLengthMax)}]`
+  (argumentLengthMin || argumentLengthMax) && `[ARGUMENT=${formatRange(argumentLengthMin, argumentLengthMax)}]`
 ].filter(Boolean).join(' ')
 
 const formatExtendList = (extendFormatList, formatUsage, indentCount) => extendFormatList.length && indent(mapJoin(extendFormatList, formatUsage), indentCount)
-const formatRange = (min, max) => `${min}${max === Infinity ? '+' : max > min ? `-${max}` : ''}`
+const formatRange = (min, max) => `${min}${max === Infinity ? '+' : (max > min ? `-${max}` : '')}`
 
 const mapJoin = (array, func) => join(...array.map(func))
 const join = (...fragList) => fragList.filter(Boolean).join('\n')

@@ -60,7 +60,7 @@
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
-  - `CacheMap`
+  - `CacheMap`, `createCacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
   - `createIdPool`
 + 📄 [source/common/data/IndexBox.js](source/common/data/IndexBox.js)
@@ -190,7 +190,7 @@
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
-  - `createResponderRateLimit`
+  - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
@@ -261,7 +261,7 @@
 - **Common**
   - **Data**
     - **CacheMap**
-      - `CacheMap`
+      - `CacheMap`, `createCacheMap`
     - **IdPool**
       - `createIdPool`
     - **IndexBox**
@@ -394,7 +394,7 @@
       - **Common**
         - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
       - **RateLimit**
-        - `createResponderRateLimit`
+        - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
@@ -442,31 +442,31 @@
 >   --config -c [OPTIONAL] [ARGUMENT=1]
 >       # from JSON: set to 'path/to/config.json'
 >       # from ENV: set to 'env'
->   --version -v [OPTIONAL]
+>   --version -v [OPTIONAL] [ARGUMENT=0+]
 >       set to enable
->   --help -h [OPTIONAL]
+>   --help -h [OPTIONAL] [ARGUMENT=0+]
 >       show help, or request better human readable output
->   --quiet -q [OPTIONAL]
+>   --quiet -q [OPTIONAL] [ARGUMENT=0+]
 >       reduce most output
->   --echo [OPTIONAL]
->   --cat [OPTIONAL]
+>   --echo [OPTIONAL] [ARGUMENT=0+]
+>   --cat [OPTIONAL] [ARGUMENT=0+]
 >   --write [OPTIONAL] [ARGUMENT=1]
 >   --append [OPTIONAL] [ARGUMENT=1]
->   --open --o [OPTIONAL]
+>   --open --o [OPTIONAL] [ARGUMENT=0-1]
 >   --status --s [OPTIONAL]
->   --file-list --ls [OPTIONAL]
->   --file-list-all --ls-R [OPTIONAL]
->   --file-create-directory --mkdir [OPTIONAL]
+>   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
+>   --file-list-all --ls-R [OPTIONAL] [ARGUMENT=0-1]
+>   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
 >   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
 >   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
->   --file-modify-delete --rm [OPTIONAL]
+>   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
 >   --fetch --f [OPTIONAL] [ARGUMENT=1]
 >   --server-serve-static --sss [OPTIONAL]
 >   --server-serve-static-simple --ssss [OPTIONAL]
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
->   --timed-lookup-file-generate --tlfg [OPTIONAL]
+>   --timed-lookup-file-generate --tlfg [OPTIONAL] [ARGUMENT=0-4]
 >   --timed-lookup-check-code-generate --tlccg [OPTIONAL]
 >   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1]
 >   --hostname -H [OPTIONAL] [ARGUMENT=1]
@@ -483,28 +483,28 @@
 >   "
 >     #!/usr/bin/env bash
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_VERSION="[OPTIONAL]"
->     export DR_JS_HELP="[OPTIONAL]"
->     export DR_JS_QUIET="[OPTIONAL]"
->     export DR_JS_ECHO="[OPTIONAL]"
->     export DR_JS_CAT="[OPTIONAL]"
+>     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_OPEN="[OPTIONAL]"
+>     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_STATUS="[OPTIONAL]"
->     export DR_JS_FILE_LIST="[OPTIONAL]"
->     export DR_JS_FILE_LIST_ALL="[OPTIONAL]"
->     export DR_JS_FILE_CREATE_DIRECTORY="[OPTIONAL]"
+>     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_FILE_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
 >     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL]"
+>     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
->     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL]"
+>     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL] [ARGUMENT=0-4]"
 >     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL]"
 >     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
@@ -516,28 +516,28 @@
 > JSON Usage:
 >   {
 >     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsVersion": [ "[OPTIONAL]" ],
->     "drJsHelp": [ "[OPTIONAL]" ],
->     "drJsQuiet": [ "[OPTIONAL]" ],
->     "drJsEcho": [ "[OPTIONAL]" ],
->     "drJsCat": [ "[OPTIONAL]" ],
+>     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsAppend": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsOpen": [ "[OPTIONAL]" ],
+>     "drJsOpen": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsStatus": [ "[OPTIONAL]" ],
->     "drJsFileList": [ "[OPTIONAL]" ],
->     "drJsFileListAll": [ "[OPTIONAL]" ],
->     "drJsFileCreateDirectory": [ "[OPTIONAL]" ],
+>     "drJsFileList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsFileListAll": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsFileCreateDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileModifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
 >     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "drJsFileModifyDelete": [ "[OPTIONAL]" ],
+>     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
->     "drJsTimedLookupFileGenerate": [ "[OPTIONAL]" ],
+>     "drJsTimedLookupFileGenerate": [ "[OPTIONAL] [ARGUMENT=0-4]" ],
 >     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL]" ],
 >     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],

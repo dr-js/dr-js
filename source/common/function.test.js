@@ -7,7 +7,7 @@ import {
   withRepeat,
   withRetryAsync,
   createInsideOutPromise,
-  promiseQueue
+  promiseQueue // TODO: DEPRECATED
 } from './function'
 import { setTimeoutAsync } from './time'
 
@@ -309,7 +309,7 @@ describe('Common.Function', () => {
   })
 
   // shouldContinueOnError
-  it('promiseQueue()', async () => {
+  it('promiseQueue()', async () => { // TODO: DEPRECATED
     const { promise, resolve, reject } = createInsideOutPromise()
     const expectedError = new Error('Expected Error')
     let state = ''
@@ -351,7 +351,7 @@ describe('Common.Function', () => {
     deepEqual(pendingList, asyncTaskList.slice(3))
   })
 
-  it('promiseQueue() shouldContinueOnError', async () => {
+  it('promiseQueue() shouldContinueOnError', async () => { // TODO: DEPRECATED
     const { promise, resolve, reject } = createInsideOutPromise()
     const expectedError = new Error('Expected Error')
     let state = ''

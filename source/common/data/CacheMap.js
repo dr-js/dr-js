@@ -1,70 +1,84 @@
 import { clock } from 'source/common/time'
+import { createHub } from 'source/common/module/Event'
 import { DoublyLinkedList } from './LinkedList'
 
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 // Time aware Least Recently Used (TLRU)
-class CacheMap {
-  constructor ({ valueSizeSumMax, onCacheAdd = null, onCacheDelete = null }) {
-    if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`[CacheMap] invalid valueSizeSumMax: ${valueSizeSumMax}`)
+const createCacheMap = ({
+  valueSizeSumMax,
+  valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1)
+}) => {
+  if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`[CacheMap] invalid valueSizeSumMax: ${valueSizeSumMax}`)
 
-    this.cacheMap = new Map()
-    this.cacheLinkedList = new DoublyLinkedList()
+  const { clear: clearHub, subscribe, unsubscribe, send } = createHub()
+  const cacheMap = new Map()
+  const cacheLinkedList = new DoublyLinkedList()
+  let valueSizeSum = 0
 
-    this.valueSizeSum = 0
-    this.valueSizeSumMax = valueSizeSumMax
-    this.valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1)
-
-    this.onCacheAdd = onCacheAdd
-    this.onCacheDelete = onCacheDelete
+  const cacheAdd = (cache) => {
+    cacheMap.set(cache.key, cache)
+    cacheLinkedList.unshift(cache)
+    valueSizeSum += cache.size
+    send({ type: 'add', key: cache.key, payload: cache.value })
+  }
+  const cacheDelete = (cache) => {
+    cacheMap.delete(cache.key)
+    cacheLinkedList.remove(cache)
+    valueSizeSum -= cache.size
+    send({ type: 'delete', key: cache.key, payload: cache.value })
   }
 
-  get size () { return this.cacheMap.size }
-
-  clear () { this.cacheMap.forEach(this.cacheDelete, this) }
-
-  cacheAdd (cache) {
-    this.cacheMap.set(cache.key, cache)
-    this.cacheLinkedList.unshift(cache)
-    this.valueSizeSum += cache.size
-    this.onCacheAdd && this.onCacheAdd(cache)
-  }
-
-  cacheDelete (cache) {
-    this.cacheMap.delete(cache.key)
-    this.cacheLinkedList.remove(cache)
-    this.valueSizeSum -= cache.size
-    this.onCacheDelete && this.onCacheDelete(cache)
-  }
-
-  get (key, time = clock()) {
-    const cache = this.cacheMap.get(key)
-    if (!cache) return // miss
-    if (cache.expireAt <= time) { // expire
-      __DEV__ && console.log('expired', cache.expireAt, time)
-      this.cacheDelete(cache)
-      return
+  return {
+    clearHub,
+    subscribe,
+    unsubscribe,
+    getSize: () => cacheMap.size,
+    clear: () => cacheMap.forEach(cacheDelete),
+    set: (key, value, size = 1, expireAt = clock() + DEFAULT_EXPIRE_TIME) => {
+      const prevCache = cacheMap.get(key)
+      prevCache && cacheDelete(prevCache) // drop prev cache
+      if (size > valueSizeSingleMax) return // cache busted
+      while (size + valueSizeSum > valueSizeSumMax) cacheDelete(cacheLinkedList.tail.prev) // eslint-disable-line no-unmodified-loop-condition
+      cacheAdd({ ...DoublyLinkedList.createNode(value), value, key, size, expireAt })
+    },
+    get: (key, time = clock()) => {
+      const cache = cacheMap.get(key)
+      if (!cache) return // miss
+      if (cache.expireAt <= time) { // expire
+        __DEV__ && console.log('expired', cache.expireAt, time)
+        cacheDelete(cache)
+        return
+      }
+      cacheLinkedList.setFirst(cache) // promote
+      return cache.value
+    },
+    touch: (key, expireAt = clock() + DEFAULT_EXPIRE_TIME) => {
+      const cache = cacheMap.get(key)
+      if (!cache) return
+      cache.expireAt = expireAt
+      cacheLinkedList.setFirst(cache) // promote
+      return cache.value
+    },
+    delete: (key) => {
+      const cache = cacheMap.get(key)
+      cache && cacheDelete(cache)
+      return cache && cache.value
     }
-    this.cacheLinkedList.setFirst(cache) // promote
-    return cache.value
-  }
-
-  set (key, value, size = 1, expireAt = clock() + DEFAULT_EXPIRE_TIME) {
-    if (__DEV__ && !key) throw new Error('[CacheMap][set] invalid key')
-    if (__DEV__ && !size) throw new Error('[CacheMap][set] invalid size')
-    let cache = this.cacheMap.get(key)
-    if (cache) this.cacheDelete(cache) // check remove
-    if (size > this.valueSizeSingleMax) return // cache busted
-    while (this.valueSizeSum && size + this.valueSizeSum > this.valueSizeSumMax) this.cacheDelete(this.cacheLinkedList.tail.prev) // compress cache
-    if (cache) cache.value = value
-    else {
-      cache = DoublyLinkedList.createNode(value)
-      cache.key = key
-    }
-    cache.size = size
-    cache.expireAt = expireAt
-    this.cacheAdd(cache)
   }
 }
 
-export { CacheMap }
+class CacheMap { // TODO: DEPRECATED
+  constructor (option) {
+    Object.assign(this, createCacheMap(option))
+    if (option.onCacheAdd) this.subscribe(({ type, key, payload }) => type === 'add' && option.onCacheAdd({ key, value: payload }))
+    if (option.onCacheDelete) this.subscribe(({ type, key, payload }) => type === 'delete' && option.onCacheDelete({ key, value: payload }))
+  }
+
+  get size () { return this.getSize() }
+}
+
+export {
+  createCacheMap,
+  CacheMap // TODO: DEPRECATED
+}

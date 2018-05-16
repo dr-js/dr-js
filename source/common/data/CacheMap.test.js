@@ -1,22 +1,21 @@
 import { equal } from 'assert'
-import { CacheMap } from './CacheMap'
+import { createCacheMap } from './CacheMap'
 
 const { describe, it } = global
 
 const getTestData = (valueSizeSumMax) => {
-  const cacheMap = new CacheMap({ valueSizeSumMax })
+  const cacheMap = createCacheMap({ valueSizeSumMax })
   const dataList = [ 0, 1, 2, 3, 4 ].map((index) => ({ key: `Key${index}`, value: `Data${index}` }))
   return { cacheMap, dataList }
 }
 
 const doSanityTest = (cacheMap, length) => {
-  it('should has matched cacheMap.size', () => equal(cacheMap.cacheMap.size, length))
-  it('should has matched cacheLinkedList.length', () => equal(cacheMap.cacheLinkedList.length, length))
+  it('should has matched cacheMap.getSize', () => equal(cacheMap.getSize(), length))
 }
 
 describe('Common.Data.CacheMap', () => {
   describe('CacheMap', () => {
-    const cacheMap = new CacheMap({ valueSizeSumMax: 512 })
+    const cacheMap = createCacheMap({ valueSizeSumMax: 512 })
     doSanityTest(cacheMap, 0)
   })
 

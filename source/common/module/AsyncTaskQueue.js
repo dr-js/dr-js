@@ -12,6 +12,7 @@ const createQueueStatus = (size = 0, isValid = true) => ({
 
 const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
   let queueStatus, queueTail
+
   const resetTaskQueue = () => {
     queueStatus && queueStatus.invalid()
     queueStatus = createQueueStatus()
@@ -31,7 +32,9 @@ const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
     queueTail = promise
     return taskPromise
   }
+
   resetTaskQueue()
+
   return { resetTaskQueue, getTaskQueueSize, pushTask }
 }
 

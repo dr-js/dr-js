@@ -4,11 +4,11 @@ import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
 import { clock } from 'source/common/time'
-import { CacheMap } from 'source/common/data/CacheMap'
+import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder/Common'
 
-const SSL_SESSION_CACHE_MAX = 5000
+const SSL_SESSION_CACHE_MAX = 4 * 1024
 const SSL_SESSION_EXPIRE_TIME = 5 * 60 * 1000 // in msec, 5min
 
 const DEFAULT_HTTPS_OPTION = {
@@ -47,7 +47,7 @@ const getServerToggle = (server, { hostname, port, baseUrl }) => ({
   }
 })
 const applyServerSessionCache = (server) => {
-  const sslSessionCacheMap = new CacheMap({ valueSizeSumMax: SSL_SESSION_CACHE_MAX })
+  const sslSessionCacheMap = createCacheMap({ valueSizeSumMax: SSL_SESSION_CACHE_MAX })
   server.on('newSession', (sessionId, sessionData, next) => {
     __DEV__ && console.log('newSession', sessionId.toString('hex'))
     sslSessionCacheMap.set(sessionId.toString('hex'), sessionData, 1, clock() + SSL_SESSION_EXPIRE_TIME)

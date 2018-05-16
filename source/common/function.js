@@ -112,7 +112,7 @@ const createInsideOutPromise = () => {
 }
 
 // for dynamic appending tasks, use `Common.Module.createAsyncTaskQueue`
-const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) => {
+const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) => { // TODO: DEPRECATED
   const resultList = []
   const errorList = []
   const endList = []
@@ -142,5 +142,5 @@ export {
   withRepeat,
   withRetryAsync,
   createInsideOutPromise,
-  promiseQueue
+  promiseQueue // TODO: DEPRECATED
 }
