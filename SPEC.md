@@ -189,6 +189,8 @@
   - `createRequestListener`, `createServer`, `getUnusedPort`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
++ 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
+  - `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
@@ -391,6 +393,8 @@
     - **Responder**
       - **Common**
         - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
+      - **RateLimit**
+        - `createResponderRateLimit`
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
@@ -462,14 +466,19 @@
 >   --server-serve-static-simple --ssss [OPTIONAL]
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
+>   --timed-lookup-file-generate --tlfg [OPTIONAL]
+>   --timed-lookup-check-code-generate --tlccg [OPTIONAL]
+>   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1]
 >   --hostname -H [OPTIONAL] [ARGUMENT=1]
->       for server
+>       for 'server'
 >   --port -P [OPTIONAL] [ARGUMENT=1]
->       for server
+>       for 'server'
 >   --root -R [OPTIONAL] [ARGUMENT=1]
->       for server static
+>       for 'server-serve-static'
+>   --input-file -I [OPTIONAL] [ARGUMENT=1]
+>       for 'timed-lookup-check-code-generate', 'timed-lookup-check-code-verify'
 >   --output-file -O [OPTIONAL] [ARGUMENT=1]
->       for fetch
+>       for 'fetch', 'timed-lookup-file-generate'
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -495,9 +504,13 @@
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
+>     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL]"
+>     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL]"
+>     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >   "
 > JSON Usage:
@@ -524,9 +537,13 @@
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
+>     "drJsTimedLookupFileGenerate": [ "[OPTIONAL]" ],
+>     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL]" ],
+>     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >   }
 > ```

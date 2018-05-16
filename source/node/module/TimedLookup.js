@@ -20,9 +20,9 @@ const parseLookupBuffer = async (buffer) => {
   return { ...JSON.parse(headerString), dataView: new DataView(toArrayBuffer(payloadBuffer)) }
 }
 
-const saveLookupFile = (fileOutput, { tag, size, tokenSize, timeGap, dataView }) => writeFileAsync(fileOutput, packLookupBuffer({ tag, size, tokenSize, timeGap, dataView }))
+const saveLookupFile = (pathFile, { tag, size, tokenSize, timeGap, dataView }) => writeFileAsync(pathFile, packLookupBuffer({ tag, size, tokenSize, timeGap, dataView }))
 
-const loadLookupFile = async (fileOutput) => parseLookupBuffer(await readFileAsync(fileOutput))
+const loadLookupFile = async (pathFile) => parseLookupBuffer(await readFileAsync(pathFile))
 
 export {
   generateLookupData,

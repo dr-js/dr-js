@@ -11,6 +11,9 @@ import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
+import { generateCheckCode, verifyCheckCode } from 'dr-js/module/common/module/TimedLookup'
+import { generateLookupData, saveLookupFile, loadLookupFile } from 'dr-js/module/node/module/TimedLookup'
+
 import { getVersion } from './version'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
@@ -78,8 +81,8 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     }
     case 'fetch': {
       const outputFile = getSingleOptionOptional('output-file')
-      const response = await fetch(argumentList[0])
-      if (!response.ok) return log(`[fetch] failed for: ${argumentList[0]}, status: ${response.status}`)
+      const response = await fetch(argumentList[ 0 ])
+      if (!response.ok) return log(`[fetch] failed for: ${argumentList[ 0 ]}, status: ${response.status}`)
       return outputFile
         ? writeFileSync(outputFile, await response.buffer(), { flags: 'a' })
         : console.log(await response.text())
@@ -94,6 +97,16 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
     case 'server-test-connection':
       return createServerTestConnection({ log, ...(await getServerConfig()) })
+    case 'timed-lookup-file-generate': {
+      const outputFile = getSingleOptionOptional('output-file')
+      const [ tag, size, tokenSize, timeGap ] = argumentList
+      return saveLookupFile(outputFile, await generateLookupData({ tag, size, tokenSize, timeGap }))
+    }
+    case 'timed-lookup-check-code-generate':
+      return console.log(generateCheckCode(await loadLookupFile(getSingleOptionOptional('input-file'))))
+    case 'timed-lookup-check-code-verify':
+      verifyCheckCode(await loadLookupFile(getSingleOptionOptional('input-file')), argumentList[ 0 ])
+      return console.log('valid checkCode')
   }
 }
 

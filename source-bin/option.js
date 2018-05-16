@@ -22,7 +22,10 @@ const MODE_FORMAT_LIST = [
   [ 'server-serve-static', [ 'sss' ], 0 ],
   [ 'server-serve-static-simple', [ 'ssss' ], 0 ],
   [ 'server-websocket-group', [ 'swg' ], 0 ],
-  [ 'server-test-connection', [ 'stc' ], 0 ]
+  [ 'server-test-connection', [ 'stc' ], 0 ],
+  [ 'timed-lookup-file-generate', [ 'tlfg' ], '0-4' ],
+  [ 'timed-lookup-check-code-generate', [ 'tlccg' ], 0 ],
+  [ 'timed-lookup-check-code-verify', [ 'tlccv' ], 1 ]
 ].map(([ name, aliasNameList, argumentCount, isPath = false ]) => ({ optional: true, name, aliasNameList, argumentCount, isPath }))
 
 const OPTION_CONFIG = {
@@ -34,10 +37,11 @@ const OPTION_CONFIG = {
     { ...BooleanFlag, name: 'help', shortName: 'h', description: `show help, or request better human readable output` },
     { ...BooleanFlag, name: 'quiet', shortName: 'q', description: `reduce most output` },
     ...MODE_FORMAT_LIST,
-    { ...SingleString, optional: true, name: 'hostname', shortName: 'H', description: `for server` },
-    { ...SingleString, optional: true, name: 'port', shortName: 'P', description: `for server` },
-    { ...SingleString, isPath: true, optional: true, name: 'root', shortName: 'R', description: `for server static` },
-    { ...SingleString, isPath: true, optional: true, name: 'output-file', shortName: 'O', description: `for fetch` }
+    { ...SingleString, optional: true, name: 'hostname', shortName: 'H', description: `for 'server'` },
+    { ...SingleString, optional: true, name: 'port', shortName: 'P', description: `for 'server'` },
+    { ...SingleString, isPath: true, optional: true, name: 'root', shortName: 'R', description: `for 'server-serve-static'` },
+    { ...SingleString, isPath: true, optional: true, name: 'input-file', shortName: 'I', description: `for 'timed-lookup-check-code-generate', 'timed-lookup-check-code-verify'` },
+    { ...SingleString, isPath: true, optional: true, name: 'output-file', shortName: 'O', description: `for 'fetch', 'timed-lookup-file-generate'` }
   ]
 }
 

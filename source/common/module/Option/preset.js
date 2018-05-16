@@ -30,7 +30,7 @@ const getPreset = (argumentCount, argumentListNormalize = (v) => v, argumentList
 })
 const getOneOfPreset = (argumentListNormalize, argumentListVerify) => (selectList) => {
   argumentListVerify(selectList)
-  return getPreset(1, argumentListNormalize, verifyOneOf(selectList), `one of:\n  ${arraySplitChunk(selectList, 2).map((v) => v.join(' ')).join('\n  ')}`)
+  return getPreset(1, argumentListNormalize, verifyOneOf(selectList), `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
 }
 
 const ConfigPreset = {
