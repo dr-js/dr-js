@@ -31,11 +31,11 @@ const responderSendBufferRange = (store, { buffer, entityTag, type = DEFAULT_MIM
   length &&
   sendBufferAsync(store.response, buffer.slice(start, end + 1))
 
-const responderSendBufferCompress = async (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }) => {
+const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTag, type = DEFAULT_MIME, length = buffer.length }) => {
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')
-  const sendBuffer = shouldGzip ? await gzipAsync(buffer) : buffer
+  const sendBuffer = shouldGzip ? (bufferGzip || await gzipAsync(buffer)) : buffer
   shouldSendContent
     ? store.response.writeHead(200, (shouldGzip
       ? { 'content-type': type, 'content-length': sendBuffer.length, 'content-encoding': 'gzip' }
@@ -55,7 +55,7 @@ const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAUL
   length &&
   pipeStreamAsync(store.response, streamRange)
 
-const responderSendStreamCompress = async (store, { stream, entityTag, type = DEFAULT_MIME, length }) => {
+const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')
@@ -65,7 +65,7 @@ const responderSendStreamCompress = async (store, { stream, entityTag, type = DE
       : { 'content-type': type, 'content-length': length }
     ))
     : store.response.writeHead(304, { 'content-type': type })
-  return shouldSendContent && length && pipeStreamAsync(store.response, stream.pipe(createGzip()))
+  return shouldSendContent && length && pipeStreamAsync(store.response, shouldGzip ? (streamGzip || stream.pipe(createGzip())) : stream)
 }
 
 const responderSendJSON = (store, { object, entityTag }) => responderSendBuffer(store, {

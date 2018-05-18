@@ -1,4 +1,4 @@
-import { equal } from 'assert'
+import { equal, deepEqual } from 'assert'
 import { createCacheMap } from './CacheMap'
 
 const { describe, it } = global
@@ -57,5 +57,25 @@ describe('Common.Data.CacheMap', () => {
     dataList.forEach(({ key, value }) => cacheMap.set(key, value))
     cacheMap.clear()
     doSanityTest(cacheMap, 0)
+  })
+
+  describe('CacheMap.pack & load', () => {
+    const { cacheMap, dataList } = getTestData(3)
+    dataList.forEach(({ key, value }) => cacheMap.set(key, value))
+
+    const packDataList = cacheMap.packList()
+    // console.log('packDataList', packDataList)
+
+    cacheMap.parseList(packDataList)
+    doSanityTest(cacheMap, 3)
+
+    const loadCacheMap = createCacheMap({ valueSizeSumMax: 3 })
+    loadCacheMap.parseList(packDataList)
+    doSanityTest(loadCacheMap, 3)
+
+    const repackDataList = loadCacheMap.packList()
+    // console.log('repackDataList', repackDataList)
+
+    deepEqual(repackDataList, packDataList)
   })
 })

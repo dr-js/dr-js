@@ -4,6 +4,9 @@ import { DoublyLinkedList } from './LinkedList'
 
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
+const createCache = (key, value, size, expireAt) => ({ ...DoublyLinkedList.createNode(value), key, size, expireAt })
+
+// TODO: add pack & load as JSON
 // Time aware Least Recently Used (TLRU)
 const createCacheMap = ({
   valueSizeSumMax,
@@ -34,22 +37,19 @@ const createCacheMap = ({
     subscribe,
     unsubscribe,
     getSize: () => cacheMap.size,
-    clear: () => cacheMap.forEach(cacheDelete),
+    clear: () => cacheMap.forEach(cacheDelete), // TODO: NOTE: not clearHub
     set: (key, value, size = 1, expireAt = clock() + DEFAULT_EXPIRE_TIME) => {
       const prevCache = cacheMap.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache
       if (size > valueSizeSingleMax) return // cache busted
       while (size + valueSizeSum > valueSizeSumMax) cacheDelete(cacheLinkedList.tail.prev) // eslint-disable-line no-unmodified-loop-condition
-      cacheAdd({ ...DoublyLinkedList.createNode(value), value, key, size, expireAt })
+      cacheAdd(createCache(key, value, size, expireAt))
     },
     get: (key, time = clock()) => {
       const cache = cacheMap.get(key)
       if (!cache) return // miss
-      if (cache.expireAt <= time) { // expire
-        __DEV__ && console.log('expired', cache.expireAt, time)
-        cacheDelete(cache)
-        return
-      }
+      __DEV__ && cache.expireAt <= time && console.log('expired', cache.expireAt, time)
+      if (cache.expireAt <= time) return cacheDelete(cache) // expire
       cacheLinkedList.setFirst(cache) // promote
       return cache.value
     },
@@ -64,7 +64,18 @@ const createCacheMap = ({
       const cache = cacheMap.get(key)
       cache && cacheDelete(cache)
       return cache && cache.value
-    }
+    },
+    packList: (packFunc = JSON.stringify) => {
+      const dataList = []
+      cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push(packFunc({ key, value, size, expireAt })))
+      return dataList
+    },
+    parseList: (dataList, parseFunc = JSON.parse, time = clock()) => dataList.forEach((data) => {
+      const { key, value, size, expireAt } = parseFunc(data)
+      const cache = createCache(key, value, size, expireAt)
+      if (cache.expireAt <= time) cacheDelete(cache) // expire
+      else cacheAdd(cache)
+    })
   }
 }
 

@@ -61,23 +61,21 @@ class DoublyLinkedList {
     }
   }
 
-  forEach (callback, thisArg = this) {
+  forEach (callback) {
     let node = this.head.next
     let index = 0
     while (node !== this.tail) {
       callback(node, index)
-      callback.call(thisArg, node, index, this)
       node = node.next
       index++
     }
   }
 
-  forEachReverse (callback, thisArg = this) { // the index starts from length - 1
+  forEachReverse (callback) { // the index starts from length - 1
     let node = this.tail.prev
     let index = this.nodeSet.size - 1
     while (node !== this.head) {
       callback(node, index)
-      callback.call(thisArg, node, index, this)
       node = node.prev
       index--
     }
