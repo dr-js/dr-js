@@ -16,13 +16,19 @@ const muteEvent = (event) => {
   event.preventDefault()
 }
 const applyDragFileListListener = (eventSource = window.document, onFileList) => {
-  eventSource.addEventListener('dragenter', muteEvent)
-  eventSource.addEventListener('dragover', muteEvent)
-  eventSource.addEventListener('drop', (event) => {
+  const dropListener = (event) => {
     muteEvent(event)
     const { files } = event.dataTransfer
     files && files.length && onFileList(files) // FileList (Array-like, contains File)
-  })
+  }
+  eventSource.addEventListener('dragenter', muteEvent)
+  eventSource.addEventListener('dragover', muteEvent)
+  eventSource.addEventListener('drop', dropListener)
+  return () => {
+    eventSource.removeEventListener('dragenter', muteEvent)
+    eventSource.removeEventListener('dragover', muteEvent)
+    eventSource.removeEventListener('drop', dropListener)
+  }
 }
 
 // return the path between 2 node (no fromElement, include toElement)

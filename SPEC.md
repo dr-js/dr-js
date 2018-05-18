@@ -59,6 +59,8 @@
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
++ 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
+  - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `CacheMap`, `createCacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
@@ -126,7 +128,7 @@
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `generateCheckCode`, `verifyCheckCode`, `verifyOption`
+  - `generateCheckCode`, `packDataString`, `parseDataString`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -260,6 +262,8 @@
     - `createDownload`, `createDownloadBlob`, `createDownloadText`, `loadImage`, `loadScript`, `loadText`
 - **Common**
   - **Data**
+    - **ArrayBuffer**
+      - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
     - **CacheMap**
       - `CacheMap`, `createCacheMap`
     - **IdPool**
@@ -333,7 +337,7 @@
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **TimedLookup**
-      - `generateCheckCode`, `verifyCheckCode`, `verifyOption`
+      - `generateCheckCode`, `packDataString`, `parseDataString`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**

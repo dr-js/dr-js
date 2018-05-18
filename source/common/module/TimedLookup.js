@@ -1,5 +1,6 @@
 import { getTimestamp } from 'source/common/time'
 import { swapObfuscateString } from 'source/common/data/function'
+import { packBufferString, parseBufferString } from 'source/common/data/ArrayBuffer'
 
 const CHECK_CODE_SEP = '-'
 const CHAR_CODE_1 = '1'.charCodeAt(0)
@@ -60,8 +61,17 @@ const verifyCheckCode = (
   if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
 }
 
+const packDataString = ({ tag, size, tokenSize, timeGap, dataView }) => JSON.stringify({ tag, size, tokenSize, timeGap, dataViewBufferString: packBufferString(dataView.buffer) })
+
+const parseDataString = (dataString) => {
+  const { tag, size, tokenSize, timeGap, dataViewBufferString } = JSON.parse(dataString)
+  return { tag, size, tokenSize, timeGap, dataView: new DataView(parseBufferString(dataViewBufferString)) }
+}
+
 export {
   verifyOption,
   generateCheckCode,
-  verifyCheckCode
+  verifyCheckCode,
+  packDataString,
+  parseDataString
 }
