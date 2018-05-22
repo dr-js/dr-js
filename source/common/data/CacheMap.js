@@ -65,13 +65,12 @@ const createCacheMap = ({
       cache && cacheDelete(cache)
       return cache && cache.value
     },
-    packList: (packFunc = JSON.stringify) => {
+    packList: () => {
       const dataList = []
-      cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push(packFunc({ key, value, size, expireAt })))
+      cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push({ key, value, size, expireAt }))
       return dataList
     },
-    parseList: (dataList, parseFunc = JSON.parse, time = clock()) => dataList.forEach((data) => {
-      const { key, value, size, expireAt } = parseFunc(data)
+    parseList: (dataList, time = clock()) => dataList.forEach(({ key, value, size, expireAt }) => {
       const cache = createCache(key, value, size, expireAt)
       if (cache.expireAt <= time) cacheDelete(cache) // expire
       else cacheAdd(cache)

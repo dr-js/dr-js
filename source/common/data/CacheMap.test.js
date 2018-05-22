@@ -66,6 +66,9 @@ describe('Common.Data.CacheMap', () => {
     const packDataList = cacheMap.packList()
     // console.log('packDataList', packDataList)
 
+    const reloadPackDataList = JSON.parse(JSON.stringify(packDataList))
+    deepEqual(reloadPackDataList, packDataList)
+
     cacheMap.parseList(packDataList)
     doSanityTest(cacheMap, 3)
 
