@@ -1,4 +1,4 @@
-import { strictEqual,deepEqual, notDeepEqual } from 'assert'
+import { strictEqual, deepEqual, notDeepEqual } from 'assert'
 import {
   objectSet,
   objectDelete,

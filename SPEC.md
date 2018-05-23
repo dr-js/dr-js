@@ -182,7 +182,7 @@
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/Option.js](source/node/module/Option.js)
-  - `createOptionGetter`, `parseOptionMap`
+  - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/TimedLookup.js](source/node/module/TimedLookup.js)
@@ -390,7 +390,7 @@
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **Option**
-      - `createOptionGetter`, `parseOptionMap`
+      - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
     - **SafeWrite**
       - `createSafeWriteStream`
     - **TimedLookup**

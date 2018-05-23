@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
 import { createReadStream, createWriteStream, writeFileSync } from 'fs'
+import { cpus } from 'os'
 
+import { getEndianness } from 'dr-js/module/env'
+import { generateCheckCode, verifyCheckCode } from 'dr-js/module/common/module/TimedLookup'
+import { generateLookupData, saveLookupFile, loadLookupFile } from 'dr-js/module/node/module/TimedLookup'
 import { fetch } from 'dr-js/module/node/net'
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -11,18 +15,12 @@ import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
-import { generateCheckCode, verifyCheckCode } from 'dr-js/module/common/module/TimedLookup'
-import { generateLookupData, saveLookupFile, loadLookupFile } from 'dr-js/module/node/module/TimedLookup'
-
-import { getVersion } from './version'
+import { name as packageName, version as packageVersion } from '../package.json'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
-
 import { autoTestServerPort, getPathContent } from './server/function'
 import { createServerTestConnection } from './server/test-connection'
 import { createServerServeStatic } from './server/serve-static'
 import { createServerWebSocketGroup } from './server/websocket-group'
-
-const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
 const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
@@ -109,6 +107,18 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return console.log('valid checkCode')
   }
 }
+
+const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
+
+const getVersion = () => ({
+  packageName,
+  packageVersion,
+  platform: process.platform,
+  nodeVersion: process.version,
+  processorArchitecture: process.arch,
+  processorEndianness: getEndianness(),
+  processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: check Termux fix
+})
 
 const main = async () => {
   const optionData = await parseOption()

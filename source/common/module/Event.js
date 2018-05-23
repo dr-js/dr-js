@@ -41,6 +41,7 @@ const createEventTarget = () => {
 // emitter.removeAllListeners([eventName])
 // emitter.emit(eventName[, ...args])
 // emitter.on(eventName, listener)
+// emitter.off(eventName, listener)
 const createEventEmitter = () => {
   const { setMap, clear, addListener, removeListener } = createEventBase()
   const removeAllListeners = (...eventNameList) => {
@@ -51,7 +52,7 @@ const createEventEmitter = () => {
     const listenerSet = setMap.get(eventName)
     listenerSet && listenerSet.forEach((listener) => listener(...args))
   }
-  return { clear, addListener, removeListener, removeAllListeners, emit, on: addListener }
+  return { clear, addListener, removeListener, removeAllListeners, emit, on: addListener, off: removeListener }
 }
 
 export { createHub, createEventTarget, createEventEmitter }

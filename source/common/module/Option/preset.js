@@ -49,8 +49,7 @@ const ConfigPreset = {
   BooleanFlag: getPreset('0-', () => ([ true ]), undefined, 'set to enable', true),
   Any: getPreset('0-', undefined, undefined, 'optional', true),
 
-  // common config preset
-  Config: { ...getPreset(1, normalizeToString, getVerifySingle(string, 'String'), `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`, true), name: 'config', shortName: 'c' }
+  Config: { ...getPreset(1, normalizeToString, getVerifySingle(string, 'String'), `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`, true), name: 'config', shortName: 'c' } // TODO: DEPRECATED,move to node/module/Option
 }
 
 const getOptionalFormatFlag = (...formatNameList) => (optionMap) => !formatNameList.some((formatName) => Boolean(optionMap[ formatName ])) // not option if the format has been set

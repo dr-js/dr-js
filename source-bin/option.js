@@ -1,8 +1,6 @@
-import { createOptionParser } from 'dr-js/module/common/module/Option/parser'
-import { ConfigPreset } from 'dr-js/module/common/module/Option/preset'
-import { parseOptionMap, createOptionGetter } from 'dr-js/module/node/module/Option'
+import { ConfigPresetNode, prepareOption } from 'dr-js/module/node/module/Option'
 
-const { SingleString, BooleanFlag, Config } = ConfigPreset
+const { SingleString, SinglePath, BooleanFlag, Config } = ConfigPresetNode
 
 const MODE_FORMAT_LIST = [
   [ 'echo', [], '0-' ],
@@ -26,7 +24,9 @@ const MODE_FORMAT_LIST = [
   [ 'timed-lookup-file-generate', [ 'tlfg' ], '0-4' ],
   [ 'timed-lookup-check-code-generate', [ 'tlccg' ], 0 ],
   [ 'timed-lookup-check-code-verify', [ 'tlccv' ], 1 ]
-].map(([ name, aliasNameList, argumentCount, isPath = false ]) => ({ optional: true, name, aliasNameList, argumentCount, isPath }))
+].map(([ name, aliasNameList, argumentCount, isPath = false ]) => ({
+  optional: true, name, aliasNameList, argumentCount, isPath
+}))
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
@@ -39,14 +39,12 @@ const OPTION_CONFIG = {
     ...MODE_FORMAT_LIST,
     { ...SingleString, optional: true, name: 'hostname', shortName: 'H', description: `for 'server'` },
     { ...SingleString, optional: true, name: 'port', shortName: 'P', description: `for 'server'` },
-    { ...SingleString, isPath: true, optional: true, name: 'root', shortName: 'R', description: `for 'server-serve-static'` },
-    { ...SingleString, isPath: true, optional: true, name: 'input-file', shortName: 'I', description: `for 'timed-lookup-check-code-generate', 'timed-lookup-check-code-verify'` },
-    { ...SingleString, isPath: true, optional: true, name: 'output-file', shortName: 'O', description: `for 'fetch', 'timed-lookup-file-generate'` }
+    { ...SinglePath, optional: true, name: 'root', shortName: 'R', description: `for 'server-serve-static'` },
+    { ...SinglePath, optional: true, name: 'input-file', shortName: 'I', description: `for 'timed-lookup-check-code-generate', 'timed-lookup-check-code-verify'` },
+    { ...SinglePath, optional: true, name: 'output-file', shortName: 'O', description: `for 'fetch', 'timed-lookup-file-generate'` }
   ]
 }
 
-const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(OPTION_CONFIG)
-
-const parseOption = async () => createOptionGetter(await parseOptionMap({ parseCLI, parseENV, parseJSON, processOptionMap }))
+const { parseOption, formatUsage } = prepareOption(OPTION_CONFIG)
 
 export { MODE_FORMAT_LIST, parseOption, formatUsage }
