@@ -1,4 +1,3 @@
-import { clock } from 'source/common/time'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
 import { statAsync, readFileAsync, createReadStream } from 'source/node/file/function'
@@ -26,14 +25,13 @@ const createResponderBufferCache = ({
   if (!bufferData) {
     bufferData = await getBufferData(store, cacheKey)
     __DEV__ && console.log(`[${bufferData.length <= sizeSingleMax ? 'SET' : 'BAIL'}] CACHE: ${cacheKey}`)
-    bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, clock() + expireTime)
+    bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, Date.now() + expireTime)
   }
   return responderSendBuffer(store, bufferData)
 }
 
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
 const REGEXP_ENCODING_GZIP = /gzip/i
-const REGEXP_RANGE = /bytes=(\d+)-(\d+)?$/i
 
 const createResponderServeStatic = ({
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
@@ -70,7 +68,7 @@ const createResponderServeStatic = ({
       await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })
     } else { // right size, cache
       const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
-      serveCacheMap.set(filePath, bufferData, length, clock() + expireTime)
+      serveCacheMap.set(filePath, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
       await responderSendBuffer(store, bufferData)
     }
@@ -90,13 +88,15 @@ const createResponderServeStatic = ({
   }
 }
 
+const REGEXP_RANGE = /bytes=(\d+)-(\d+)?$/i
+
 const parseRangeHeader = (rangeString) => {
-  if (REGEXP_RANGE.test(rangeString)) {
-    const [ , startString, endString ] = REGEXP_RANGE.exec(rangeString)
-    let start = parseInt(startString)
-    const end = endString ? parseInt(endString) : Infinity
-    if (start < end) return [ start, end ]
-  }
+  const result = REGEXP_RANGE.exec(rangeString)
+  if (!result) return
+  const [ , startString, endString ] = result
+  const start = parseInt(startString)
+  const end = endString ? parseInt(endString) : Infinity
+  if (start < end) return [ start, end ]
 }
 
 export {

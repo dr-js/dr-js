@@ -1,4 +1,3 @@
-import { clock } from 'source/common/time'
 import { createHub } from 'source/common/module/Event'
 import { DoublyLinkedList } from './LinkedList'
 
@@ -38,14 +37,14 @@ const createCacheMap = ({
     unsubscribe,
     getSize: () => cacheMap.size,
     clear: () => cacheMap.forEach(cacheDelete), // TODO: NOTE: not clearHub
-    set: (key, value, size = 1, expireAt = clock() + DEFAULT_EXPIRE_TIME) => {
+    set: (key, value, size = 1, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
       const prevCache = cacheMap.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache
       if (size > valueSizeSingleMax) return // cache busted
       while (size + valueSizeSum > valueSizeSumMax) cacheDelete(cacheLinkedList.tail.prev) // eslint-disable-line no-unmodified-loop-condition
       cacheAdd(createCache(key, value, size, expireAt))
     },
-    get: (key, time = clock()) => {
+    get: (key, time = Date.now()) => {
       const cache = cacheMap.get(key)
       if (!cache) return // miss
       __DEV__ && cache.expireAt <= time && console.log('expired', cache.expireAt, time)
@@ -53,7 +52,7 @@ const createCacheMap = ({
       cacheLinkedList.setFirst(cache) // promote
       return cache.value
     },
-    touch: (key, expireAt = clock() + DEFAULT_EXPIRE_TIME) => {
+    touch: (key, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
       const cache = cacheMap.get(key)
       if (!cache) return
       cache.expireAt = expireAt
@@ -70,7 +69,7 @@ const createCacheMap = ({
       cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push({ key, value, size, expireAt }))
       return dataList
     },
-    parseList: (dataList, time = clock()) => dataList.forEach(({ key, value, size, expireAt }) => {
+    parseList: (dataList, time = Date.now()) => dataList.forEach(({ key, value, size, expireAt }) => {
       const cache = createCache(key, value, size, expireAt)
       if (cache.expireAt <= time) cacheDelete(cache) // expire
       else cacheAdd(cache)

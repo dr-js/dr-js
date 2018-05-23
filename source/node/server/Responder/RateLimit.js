@@ -1,4 +1,4 @@
-import { clock } from 'source/common/time'
+import { catchAsync } from 'source/common/error'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { responderEndWithStatusCode } from './Common'
 
@@ -21,12 +21,11 @@ const createResponderRateLimit = ({
   const cacheKey = getRequestKey(store)
   const rateData = rateCacheMap.get(cacheKey) || { cacheKey, limitCount }
   if (rateData.limitCount <= 0) return responderLimitHit(store)
-
-  rateCacheMap.set(cacheKey, { ...rateData, limitCount: rateData.limitCount - 1 }, 1, clock() + expireTime)
+  rateCacheMap.set(cacheKey, { ...rateData, limitCount: rateData.limitCount - 1 }, 1, Date.now() + expireTime)
   return responderNext(store)
 }
 
-const createResponderCheckRateLimit = ({
+const createResponderCheckRateLimit = ({ // only record rate limit for failed check
   checkFunc,
   responderNext,
   responderCheckFail,
@@ -39,10 +38,8 @@ const createResponderCheckRateLimit = ({
   const cacheKey = getRequestKey(store)
   const rateData = rateCacheMap.get(cacheKey) || { cacheKey, limitCount }
   if (rateData.limitCount <= 0) return responderLimitHit(store)
-
-  if (await checkFunc(store)) return responderNext(store)
-
-  rateCacheMap.set(cacheKey, { ...rateData, limitCount: rateData.limitCount - 1 }, 1, clock() + expireTime)
+  if ((await catchAsync(checkFunc, store)).result) return responderNext(store)
+  rateCacheMap.set(cacheKey, { ...rateData, limitCount: rateData.limitCount - 1 }, 1, Date.now() + expireTime)
   return responderCheckFail(store)
 }
 

@@ -189,6 +189,8 @@
   - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`, `getUnusedPort`
++ 📄 [source/node/server/function.js](source/node/server/function.js)
+  - `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
@@ -419,6 +421,8 @@
       - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
     - **Server**
       - `createRequestListener`, `createServer`, `getUnusedPort`
+    - **Function**
+      - `getUnusedPort`, `parseCookieString`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpen`

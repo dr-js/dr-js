@@ -5,7 +5,7 @@ const { time: formatTime } = require('../../output-gitignore/library/common/form
 
 const { readFileAsync, createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
-const { responderEnd, createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
+const { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
@@ -18,37 +18,25 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const ServerHost = 'localhost'
 const ServerPort = 3000
 
-const responderLogHeader = (store) => {
-  const { url, method, headers, socket: { remoteAddress, remotePort } } = store.request
-  const host = headers[ 'host' ] || ''
-  const userAgent = headers[ 'user-agent' ] || ''
-  console.log(`${new Date().toISOString()} [REQUEST] ${method} ${host}${url} ${remoteAddress}:${remotePort} ${userAgent}`)
-}
+const responderLog = createResponderLog(console.log)
+const responderLogEnd = createResponderLogEnd(console.log)
 const responderLogTimeStep = () => (store) => {
   const state = store.getState()
   const stepTime = clock()
   console.log(`${new Date().toISOString()} [STEP] ${formatTime(stepTime - (state.stepTime || state.time))}`)
   store.setState({ stepTime })
 }
-const responderLogEnd = (store) => {
-  const state = store.getState()
-  state.error && console.error(state.error)
-  const errorLog = state.error
-    ? `[ERROR] ${store.request.method} ${store.request.url} ${store.response.finished ? 'finished' : 'not-finished'} ${state.error}`
-    : ''
-  console.log(`${new Date().toISOString()} [END] ${formatTime(clock() - state.time)} ${store.response.statusCode} ${errorLog}`)
-}
 const responderServeStatic = createResponderServeStatic({})
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
-    responderLogHeader,
+    responderLog,
     createResponderParseURL(option),
     responderLogTimeStep,
     createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderServeStatic(store, fromStaticRoot('resource/favicon.ico')) ],
-      [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
+      [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('node/example-server.html')) ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
     ]))
   ],

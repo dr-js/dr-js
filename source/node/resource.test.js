@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
-import { createServer, createRequestListener, getUnusedPort } from 'source/node/server/Server'
+import { getUnusedPort } from 'source/node/server/function'
+import { createServer, createRequestListener } from 'source/node/server/Server'
 import { createResponderParseURL } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
