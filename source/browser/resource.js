@@ -1,4 +1,4 @@
-import { DEFAULT_MIME } from 'source/common/module/MIME'
+import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 
 const loadText = (url) => window.fetch(url, { credentials: 'same-origin' })
   .then((result) => result.text())
@@ -16,7 +16,7 @@ const loadScript = (url) => new Promise((resolve, reject) => {
   element.addEventListener('error', reject)
   element.src = url
   element.async = false
-  element.type = 'text/javascript'
+  element.type = BASIC_EXTENSION_MAP.js
   document.body.appendChild(element) // TODO: document.body can be null if script is running from <head> tag and page is not fully loaded
 })
 
@@ -28,12 +28,18 @@ const createDownload = (fileName, url) => {
   element.click()
   document.body.removeChild(element)
 }
-const createDownloadText = (fileName, text) => createDownload(fileName, `data:text/plain;charset=utf-8,${encodeURIComponent(text)}`)
-const createDownloadBlob = (fileName, dataArray, dataType = DEFAULT_MIME) => {
-  const objectUrl = window.URL.createObjectURL(new window.Blob(dataArray, { type: dataType }))
+const createDownloadWithString = (fileName, string, type = BASIC_EXTENSION_MAP.txt) => (string.length <= (5 << 20))
+  ? createDownload(fileName, `data:${type};charset=utf-8,${encodeURIComponent(string)}`) // use dataUri if less than about 5MB
+  : createDownloadWithBlob(new window.Blob([ string ], { type }))
+const createDownloadWithObject = (fileName, object, type = BASIC_EXTENSION_MAP.json) => createDownloadWithString(fileName, JSON.stringify(object), type)
+const createDownloadWithBlob = (fileName, blob) => {
+  const objectUrl = window.URL.createObjectURL(blob)
   createDownload(fileName, objectUrl)
   window.URL.revokeObjectURL(objectUrl)
 }
+
+const createDownloadText = createDownloadWithString // TODO: DEPRECATED
+const createDownloadBlob = (fileName, dataArray, dataType = DEFAULT_MIME) => createDownloadWithBlob(new window.Blob(dataArray, { type: dataType })) // TODO: DEPRECATED, bad naming, change to download JSON
 
 export {
   loadText,
@@ -41,6 +47,10 @@ export {
   loadScript,
 
   createDownload,
-  createDownloadText,
-  createDownloadBlob
+  createDownloadWithString,
+  createDownloadWithObject,
+  createDownloadWithBlob,
+
+  createDownloadText, // TODO: DEPRECATED
+  createDownloadBlob // TODO: DEPRECATED
 }

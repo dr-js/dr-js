@@ -12,7 +12,7 @@
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `createDownload`, `createDownloadBlob`, `createDownloadText`, `loadImage`, `loadScript`, `loadText`
+  - `createDownload`, `createDownloadBlob`, `createDownloadText`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
@@ -198,7 +198,7 @@
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
-  - `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+  - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
@@ -261,7 +261,7 @@
   - **Net**
     - `fetchLikeRequest`
   - **Resource**
-    - `createDownload`, `createDownloadBlob`, `createDownloadText`, `loadImage`, `loadScript`, `loadText`
+    - `createDownload`, `createDownloadBlob`, `createDownloadText`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
 - **Common**
   - **Data**
     - **ArrayBuffer**
@@ -404,7 +404,7 @@
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
-        - `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+        - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**

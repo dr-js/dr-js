@@ -1,8 +1,9 @@
-import { gzip, createGzip } from 'zlib'
+import { gzip, gzipSync, createGzip } from 'zlib'
 import { promisify } from 'util'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 import { sendBufferAsync } from 'source/node/data/Buffer'
 import { pipeStreamAsync } from 'source/node/data/Stream'
+import { getEntityTagByContentHashAsync, getEntityTagByContentHash } from 'source/node/module/EntityTag'
 
 const gzipAsync = promisify(gzip)
 
@@ -74,6 +75,30 @@ const responderSendJSON = (store, { object, entityTag }) => responderSendBuffer(
   entityTag
 })
 
+const prepareBufferData = (buffer, type) => ({
+  type,
+  buffer,
+  bufferGzip: gzipSync(buffer),
+  entityTag: getEntityTagByContentHash(buffer),
+  length: buffer.length
+})
+
+const prepareBufferDataAsync = async (buffer, type) => ({
+  type,
+  buffer,
+  bufferGzip: await gzipAsync(buffer),
+  entityTag: await getEntityTagByContentHashAsync(buffer),
+  length: buffer.length
+})
+
+const createResponderFavicon = () => {
+  const bufferData = prepareBufferData(
+    Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNMXvf/PwAGnQMR4CJUOAAAAABJRU5ErkJggg==', 'base64'),
+    BASIC_EXTENSION_MAP.png
+  )
+  return (store) => responderSendBufferCompress(store, bufferData)
+}
+
 export {
   responderSendBuffer,
   responderSendBufferRange,
@@ -83,5 +108,10 @@ export {
   responderSendStreamRange,
   responderSendStreamCompress,
 
-  responderSendJSON
+  responderSendJSON,
+
+  createResponderFavicon,
+
+  prepareBufferData,
+  prepareBufferDataAsync
 }

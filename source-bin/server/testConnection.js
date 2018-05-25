@@ -3,27 +3,28 @@ import { arraySplitChunk } from 'dr-js/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
-import { responderSendBuffer, responderSendJSON } from 'dr-js/module/node/server/Responder/Send'
+import { responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { METHOD_MAP, createRouteMap, getRouteParam, describeRouteMap } from 'dr-js/module/node/server/Responder/Router'
 import { getServerInfo, commonCreateServer } from './function'
+import { COMMON_LAYOUT } from './commonHTML'
 
 const createServerTestConnection = ({ protocol = 'http:', hostname, port, log }) => {
   const BUFFER_SCRIPT = Buffer.from(`TEST CONTENT`)
 
-  let routeMapInfoBuffer
-  const getRouteMapInfo = () => {
-    if (!routeMapInfoBuffer) {
+  let routeMapInfoBufferData
+  const getRouteMapInfoBufferData = () => {
+    if (!routeMapInfoBufferData) {
       const routeMap = createRouteMap(routeConfigList)
-      routeMapInfoBuffer = Buffer.from([
+      routeMapInfoBufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([], [
         '<pre>',
         '<h2>Route List</h2>',
         '<table>',
         ...describeRouteMap(routeMap).map(({ method, route }) => `<tr><td><b>${method}</b></td><td>${method === '/GET' ? `<a href="${route}">${route}</a>` : route}</td></tr>`),
         '</table>',
         '</pre>'
-      ].join('\n'))
+      ])), BASIC_EXTENSION_MAP.html)
     }
-    return routeMapInfoBuffer
+    return routeMapInfoBufferData
   }
 
   const routeConfigList = [
@@ -34,13 +35,13 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
         request: { url, method, httpVersion, headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')) }
       }, null, '  ')
       log(`[test-describe]\n${describeString}`)
-      return responderSendBuffer(store, { buffer: Buffer.from(describeString), type: BASIC_EXTENSION_MAP.json })
+      return responderSendBufferCompress(store, { buffer: Buffer.from(describeString), type: BASIC_EXTENSION_MAP.json })
     } ],
-    [ [ '/test-echo-post', '/test-echo-post/:mime' ], 'POST', async (store) => responderSendBuffer(store, {
+    [ [ '/test-echo-post', '/test-echo-post/:mime' ], 'POST', async (store) => responderSendBufferCompress(store, {
       buffer: await receiveBufferAsync(store.request),
       type: BASIC_EXTENSION_MAP[ getRouteParam(store, 'mime') ]
     }) ],
-    [ '/test-buffer', 'GET', (store) => responderSendBuffer(store, { buffer: BUFFER_SCRIPT }) ],
+    [ '/test-buffer', 'GET', (store) => responderSendBufferCompress(store, { buffer: BUFFER_SCRIPT }) ],
     [ '/test-json', 'GET', (store) => responderSendJSON(store, { object: { testKey: 'TEST VALUE' } }) ],
     [ '/test-destroy', 'GET', async (store) => store.response.destroy() ],
     [ [ '/test-timeout', '/test-timeout/:wait' ], 'GET', async (store) => {
@@ -63,7 +64,7 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', (store) => responderSendBuffer(store, { buffer: getRouteMapInfo(), type: BASIC_EXTENSION_MAP.html }) ]
+    [ '/', 'GET', (store) => responderSendBufferCompress(store, getRouteMapInfoBufferData()) ]
   ]
 
   const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })

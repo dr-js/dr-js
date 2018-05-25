@@ -18,9 +18,9 @@ import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/m
 import { name as packageName, version as packageVersion } from '../package.json'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 import { autoTestServerPort, getPathContent } from './server/function'
-import { createServerTestConnection } from './server/test-connection'
-import { createServerServeStatic } from './server/serve-static'
-import { createServerWebSocketGroup } from './server/websocket-group'
+import { createServerTestConnection } from './server/testConnection'
+import { createServerServeStatic } from './server/serveStatic'
+import { createServerWebSocketGroup } from './server/websocketGroup'
 
 const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
