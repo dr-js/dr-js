@@ -7,8 +7,7 @@ import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Com
 import { responderSendBufferCompress } from 'dr-js/module/node/server/Responder/Send'
 import { getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { getPathContent, getServerInfo, commonCreateServer } from './function'
-import { COMMON_LAYOUT, COMMON_STYLE } from './commonHTML'
+import { getPathContent, getServerInfo, commonCreateServer, COMMON_LAYOUT, COMMON_STYLE } from './function'
 
 const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)

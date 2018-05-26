@@ -48,57 +48,41 @@ const processOutput = async ({ packageJSON, logger }) => {
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
 
+  const filterScript = (path) => path.endsWith('.js') && !path.endsWith('.test.js') && !path.endsWith('Dr.browser.js')
+
+  const fileListBin = (await getFileList(fromOutput('bin'))).filter(filterScript)
+  const fileListModule = (await getFileList(fromOutput('module'))).filter(filterScript)
+  const fileListLibrary = (await getFileList(fromOutput('library'))).filter(filterScript)
+
   padLog(`minify module`)
   await minifyFileListWithUglifyEs({
-    fileList: (await getFileList(fromOutput('module'))).filter((path) => path.endsWith('.js') && !path.endsWith('.test.js')),
+    fileList: fileListModule,
     option: getUglifyESOption({ isDevelopment: false, isModule: true }),
     rootPath: PATH_OUTPUT,
     logger
   })
 
-  padLog(`minify library`)
+  padLog(`minify library & bin`)
   await minifyFileListWithUglifyEs({
-    fileList: [
-      ...await getFileList(fromOutput('bin')),
-      ...await getFileList(fromOutput('library'))
-    ].filter((path) => path.endsWith('.js') && !path.endsWith('.test.js') && !path.endsWith('Dr.browser.js')),
+    fileList: [ ...fileListBin, ...fileListLibrary ],
     option: getUglifyESOption({ isDevelopment: false, isModule: false }),
     rootPath: PATH_OUTPUT,
     logger
   })
 
   padLog(`process code`)
-  let sizeCodeReduceBin = 0
-  for (const filePath of await getFileList(fromOutput('bin'))) sizeCodeReduceBin += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`bin size reduce: ${binary(sizeCodeReduceBin)}B`)
-
-  let sizeCodeReduceModule = 0
-  for (const filePath of await getFileList(fromOutput('module'))) sizeCodeReduceModule += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`module size reduce: ${binary(sizeCodeReduceModule)}B`)
-
-  let sizeCodeReduceLibraryBabel = 0
-  for (const filePath of await getFileList(fromOutput('library'))) sizeCodeReduceLibraryBabel += filePath.endsWith('.test.js') ? 0 : await processBabel(filePath)
-  log(`library-babel size reduce: ${binary(sizeCodeReduceLibraryBabel)}B`)
-
-  const sizeCodeReduceLibraryWebpack = await processWebpack(fromOutput('library/Dr.browser.js'))
-  log(`library-webpack size reduce: ${binary(sizeCodeReduceLibraryWebpack)}B`)
-
-  log(`total size reduce: ${binary(
-    sizeCodeReduceBin +
-    sizeCodeReduceModule +
-    sizeCodeReduceLibraryBabel +
-    sizeCodeReduceLibraryWebpack
-  )}B`)
+  let sizeCodeReduce = 0
+  for (const filePath of [ ...fileListBin, ...fileListModule, ...fileListLibrary ]) sizeCodeReduce += await processBabel(filePath)
+  sizeCodeReduce += await processWebpack(fromOutput('library/Dr.browser.js'))
+  log(`total size reduce: ${binary(sizeCodeReduce)}B`)
 }
 
 const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   padLog(`clear output`)
 
-  log(`clear module test`)
-  for (const filePath of await getFileList(fromOutput('module'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
-
-  log(`clear library test`)
-  for (const filePath of await getFileList(fromOutput('library'))) filePath.endsWith('.test.js') && await modify.delete(filePath)
+  log(`clear test`)
+  const fileList = (await getFileList(fromOutput())).filter((filePath) => filePath.endsWith('.test.js'))
+  for (const filePath of fileList) await modify.delete(filePath)
 }
 
 const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {

@@ -7,8 +7,7 @@ import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/m
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
-import { getServerInfo, commonCreateServer } from './function'
-import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT, DR_BROWSER_SCRIPT, INJECT_GLOBAL_ENV_SCRIPT } from './commonHTML'
+import { getServerInfo, commonCreateServer, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT, DR_BROWSER_SCRIPT } from './function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
@@ -121,10 +120,9 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
     COMMON_STYLE(),
     mainStyle()
   ], [
-    COMMON_SCRIPT(),
+    COMMON_SCRIPT({ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE }),
     mainScript(),
-    DR_BROWSER_SCRIPT(),
-    INJECT_GLOBAL_ENV_SCRIPT({ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE })
+    DR_BROWSER_SCRIPT()
   ])), BASIC_EXTENSION_MAP.html)
 
   const routeConfigList = [
@@ -187,7 +185,6 @@ const mainScript = () => `
 const mainScriptInit = () => {
   const {
     qS,
-    qSS,
     cT,
     TYPE_CLOSE,
     TYPE_INFO_GROUP,
@@ -231,7 +228,7 @@ const mainScriptInit = () => {
     idTag('System', 'color-system'),
     timeTag()
   )
-  const clearLog = () => qSS('#log', '')
+  const clearLog = () => qS('#log', '')
 
   const getWebSocketGroupUrl = (groupPath, id) => {
     const { protocol, host } = window.location
@@ -244,7 +241,7 @@ const mainScriptInit = () => {
     qS('#setup').style.display = ''
     qS('#main').style.display = 'none'
     qS('#group-path').focus()
-    qSS('#button-toggle', 'Enter Group [Ctrl+d]')
+    qS('#button-toggle', 'Enter Group [Ctrl+d]')
     document.title = `WebSocket Group`
     STATE.websocket = null
     STATE.groupPath = null
@@ -256,7 +253,7 @@ const mainScriptInit = () => {
     qS('#setup').style.display = 'none'
     qS('#main').style.display = ''
     qS('#payload-text').focus()
-    qSS('#button-toggle', `Exit Group: ${groupPath} [Ctrl+d]`)
+    qS('#button-toggle', `Exit Group: ${groupPath} [Ctrl+d]`)
     document.title = `[${groupPath}/${id}]`
     STATE.websocket = websocket
     STATE.groupPath = groupPath
@@ -302,7 +299,7 @@ const mainScriptInit = () => {
     } else if (type === TYPE_INFO_GROUP) {
       addLogSystem(`Current ${payload.length} user: ${payload.join(', ')}`)
       qS('#button-send').disabled = payload.length <= 1
-      qSS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
+      qS('#button-send', `Send to ${payload.length - 1} User [Ctrl+Enter]`)
       STATE.groupInfo = payload
     } else if (type === TYPE_BUFFER_GROUP) {
       const { id, text, fileName, fileSize, fileId } = payload
