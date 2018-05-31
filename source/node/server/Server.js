@@ -5,8 +5,8 @@ import { createServer as createHttpsServer } from 'https'
 import { clock } from 'source/common/time'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
-import { getUnusedPort } from './function'
 import { responderEnd } from './Responder/Common'
+import { getUnusedPort } from './function' // TODO: DEPRECATED
 
 const DEFAULT_HTTPS_OPTION = {
   protocol: 'https:',

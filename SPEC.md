@@ -190,7 +190,7 @@
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`, `getUnusedPort`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
-  - `getUnusedPort`, `parseCookieString`
+  - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
@@ -422,7 +422,7 @@
     - **Server**
       - `createRequestListener`, `createServer`, `getUnusedPort`
     - **Function**
-      - `getUnusedPort`, `parseCookieString`
+      - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpen`
@@ -474,6 +474,7 @@
 >   --server-serve-static-simple --ssss [OPTIONAL]
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
+>   --server-cache-http-proxy --schp [OPTIONAL] [ARGUMENT=1-2]
 >   --timed-lookup-file-generate --tlfg [OPTIONAL] [ARGUMENT=0-4]
 >   --timed-lookup-check-code-generate --tlccg [OPTIONAL]
 >   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1]
@@ -512,6 +513,7 @@
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
+>     export DR_JS_SERVER_CACHE_HTTP_PROXY="[OPTIONAL] [ARGUMENT=1-2]"
 >     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL] [ARGUMENT=0-4]"
 >     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL]"
 >     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1]"
@@ -545,6 +547,7 @@
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
+>     "drJsServerCacheHttpProxy": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
 >     "drJsTimedLookupFileGenerate": [ "[OPTIONAL] [ARGUMENT=0-4]" ],
 >     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL]" ],
 >     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1]" ],

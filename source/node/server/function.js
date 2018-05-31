@@ -1,3 +1,4 @@
+import { catchAsync } from 'source/common/error'
 import { createServer as createNetServer } from 'net'
 
 const parseCookieString = (cookieString) => cookieString
@@ -20,7 +21,17 @@ const getUnusedPort = (expectPort = 0, host = '0.0.0.0') => new Promise((resolve
   })
 })
 
+const autoTestServerPort = async (expectPortList, host) => {
+  for (const expectPort of expectPortList) {
+    const { result, error } = await catchAsync(getUnusedPort, expectPort, host)
+    __DEV__ && error && console.log(`[autoTestServerPort] failed for expectPort: ${expectPort}`, error)
+    if (result) return result
+  }
+  return getUnusedPort(0, host) // any random
+}
+
 export {
   parseCookieString,
-  getUnusedPort
+  getUnusedPort,
+  autoTestServerPort
 }

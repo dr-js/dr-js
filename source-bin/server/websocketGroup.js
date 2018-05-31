@@ -192,7 +192,12 @@ const mainScriptInit = () => {
     TYPE_BUFFER_GROUP,
     TYPE_BUFFER_SINGLE,
     Dr: {
-      Common: { Math: { getRandomInt, getRandomId }, Format: { binary } },
+      Common: {
+        Time: { setTimeoutAsync },
+        Function: { lossyAsync },
+        Math: { getRandomInt, getRandomId },
+        Format: { binary }
+      },
       Browser: {
         Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
         Resource: { createDownloadWithBlob },
@@ -235,7 +240,10 @@ const mainScriptInit = () => {
     return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURI(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
-  const STATE = { fileWeakMap: new WeakMap() } // DOM - file-blob
+  const STATE = {
+    fileWeakMap: new WeakMap(),
+    retryCount: 0
+  } // DOM - file-blob
   const onCloseWebSocket = () => {
     addLogSystem(`Left group: ${STATE.groupPath}`)
     qS('#setup').style.display = ''
@@ -259,7 +267,15 @@ const mainScriptInit = () => {
     STATE.groupPath = groupPath
     STATE.id = id
     STATE.groupInfo = []
+    STATE.retryCount = 0
   }
+  const onErrorRetry = lossyAsync(async (error) => {
+    onCloseWebSocket()
+    await setTimeoutAsync(200 * STATE.retryCount)
+    STATE.retryCount++
+    STATE.retryCount <= 10 && addLogSystem(`(${STATE.retryCount}) connection dropped, try re-connect... [${error.message || error.type || error}]`)
+    STATE.retryCount <= 10 && toggleWebSocket()
+  }).trigger
 
   onCloseWebSocket() // reset STATE
   clearLog()
@@ -281,8 +297,11 @@ const mainScriptInit = () => {
       qS('#id').value = id
       onOpenWebSocket({ websocket, groupPath, id })
     }
-    websocket.addEventListener('error', onCloseWebSocket)
-    websocket.addEventListener('close', onCloseWebSocket)
+    websocket.addEventListener('error', onErrorRetry)
+    websocket.addEventListener('close', ({ code }) => code === 1000
+      ? onCloseWebSocket()
+      : onErrorRetry(new Error(`server close with code: ${code}`))
+    )
     websocket.addEventListener('message', ({ data }) => onMessage(data, onOpenInfo))
   }
 

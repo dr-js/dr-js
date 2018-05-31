@@ -21,6 +21,7 @@ import { autoTestServerPort, getPathContent } from './server/function'
 import { createServerTestConnection } from './server/testConnection'
 import { createServerServeStatic } from './server/serveStatic'
 import { createServerWebSocketGroup } from './server/websocketGroup'
+import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
 
 const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
@@ -95,6 +96,11 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
     case 'server-test-connection':
       return createServerTestConnection({ log, ...(await getServerConfig()) })
+    case 'server-cache-http-proxy': {
+      const [ remoteUrlPrefix, expireTime = 7 * 24 * 60 * 60 ] = getOption(modeFormat.name) // expireTime: 7days, in seconds
+      const cachePath = getSingleOption('root')
+      return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
+    }
     case 'timed-lookup-file-generate': {
       const outputFile = getSingleOptionOptional('output-file')
       const [ tag, size, tokenSize, timeGap ] = argumentList

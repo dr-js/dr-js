@@ -21,6 +21,7 @@ const MODE_FORMAT_LIST = [
   [ 'server-serve-static-simple', [ 'ssss' ], 0 ],
   [ 'server-websocket-group', [ 'swg' ], 0 ],
   [ 'server-test-connection', [ 'stc' ], 0 ],
+  [ 'server-cache-http-proxy', [ 'schp' ], '1-2' ],
   [ 'timed-lookup-file-generate', [ 'tlfg' ], '0-4' ],
   [ 'timed-lookup-check-code-generate', [ 'tlccg' ], 0 ],
   [ 'timed-lookup-check-code-verify', [ 'tlccv' ], 1 ]

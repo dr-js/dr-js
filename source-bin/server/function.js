@@ -1,9 +1,8 @@
 import { readFileSync } from 'fs'
-import { catchAsync } from 'dr-js/module/common/error'
 import { FILE_TYPE } from 'dr-js/module/node/file/File'
 import { getDirectoryContent } from 'dr-js/module/node/file/Directory'
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
-import { getUnusedPort } from 'dr-js/module/node/server/function'
+import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
@@ -18,15 +17,6 @@ const getPathContent = async (rootPath) => { // The resulting path is normalized
     otherList: content[ FILE_TYPE.Other ],
     errorList: content[ FILE_TYPE.Error ]
   }
-}
-
-const autoTestServerPort = async (expectPortList, host) => {
-  for (const expectPort of expectPortList) {
-    const { result, error } = await catchAsync(getUnusedPort, expectPort, host)
-    __DEV__ && error && console.log(`[autoTestServerPort] failed for expectPort: ${expectPort}`, error)
-    if (result) return result
-  }
-  return getUnusedPort(0, host) // any
 }
 
 const getServerInfo = (title, protocol, hostname, port, extra = []) => `[${title}]\n  ${[
