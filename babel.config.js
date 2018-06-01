@@ -9,8 +9,9 @@ module.exports = {
   ],
   plugins: [
     [ '@babel/proposal-class-properties' ],
+    !isRawModule && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ],
     [ 'module-resolver', { root: [ './' ], alias: isRawModule ? undefined : { 'dr-js/module/(.+)': isBuildBin ? './library/' : './source/' } } ],
     [ 'minify-replace', { replacements: [ { identifierName: '__DEV__', replacement: { type: 'booleanLiteral', value: isDev } } ] } ]
-  ],
+  ].filter(Boolean),
   comments: false
 }

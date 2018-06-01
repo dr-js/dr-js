@@ -5,7 +5,8 @@ import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { METHOD_MAP, createRouteMap, getRouteParam, describeRouteMap } from 'dr-js/module/node/server/Responder/Router'
-import { getServerInfo, commonCreateServer, COMMON_LAYOUT } from './function'
+import { COMMON_LAYOUT } from 'dr-js/module/node/server/commonHTML'
+import { getServerInfo, commonCreateServer } from './function'
 
 const createServerTestConnection = ({ protocol = 'http:', hostname, port, log }) => {
   const BUFFER_SCRIPT = Buffer.from(`TEST CONTENT`)

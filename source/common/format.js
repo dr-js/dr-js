@@ -8,6 +8,12 @@ const describe = (value) => {
 
 const percent = (value) => `${(value * 100).toFixed(2)}%`
 
+const mediaTime = (value) => { // in second
+  const minute = String(Math.floor(value / 60))
+  const second = String(Math.floor(value % 60))
+  return `${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
+}
+
 const OVER_THRESHOLD = 0.75
 
 // https://en.wikipedia.org/wiki/Metric_prefix
@@ -106,6 +112,8 @@ export {
   describe,
 
   percent,
+  mediaTime,
+
   decimal,
   time,
   binary,

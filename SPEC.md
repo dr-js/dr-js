@@ -43,6 +43,8 @@
   - `createHistoryStateStore`
 + 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
   - `createInterpolationAutoTimer`, `createVectorAccumulator`
++ 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
+  - `createSyncStateStorage`
 + 📄 [source/browser/module/TimedLookup.js](source/browser/module/TimedLookup.js)
   - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
 + 📄 [source/common/check.js](source/common/check.js)
@@ -52,7 +54,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -189,6 +191,8 @@
   - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`, `getUnusedPort`
++ 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
+  - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_SCRIPT`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
@@ -254,6 +258,8 @@
       - `createHistoryStateStore`
     - **MotionAutoTimer**
       - `createInterpolationAutoTimer`, `createVectorAccumulator`
+    - **StateStorage**
+      - `createSyncStateStorage`
     - **TimedLookup**
       - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
   - **DOM**
@@ -352,7 +358,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `escapeHTML`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
@@ -421,6 +427,8 @@
       - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
     - **Server**
       - `createRequestListener`, `createServer`, `getUnusedPort`
+    - **CommonHTML**
+      - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_SCRIPT`
     - **Function**
       - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**

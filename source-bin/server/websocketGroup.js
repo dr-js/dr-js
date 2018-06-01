@@ -7,7 +7,8 @@ import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/m
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
-import { getServerInfo, commonCreateServer, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT, DR_BROWSER_SCRIPT } from './function'
+import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT, DR_BROWSER_SCRIPT } from 'dr-js/module/node/server/commonHTML'
+import { getServerInfo, commonCreateServer } from './function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
@@ -118,10 +119,17 @@ const getProtocol = (protocolList, protocolTypeSet) => {
 const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
-    mainStyle()
+    mainStyle
   ], [
-    COMMON_SCRIPT({ TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE }),
-    mainScript(),
+    mainHTML,
+    COMMON_SCRIPT({
+      TYPE_CLOSE,
+      TYPE_INFO_GROUP,
+      TYPE_INFO_USER,
+      TYPE_BUFFER_GROUP,
+      TYPE_BUFFER_SINGLE,
+      onload: mainScriptInit
+    }),
     DR_BROWSER_SCRIPT()
   ])), BASIC_EXTENSION_MAP.html)
 
@@ -150,22 +158,22 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
   log(getServerInfo('ServerWebSocketGroup', protocol, hostname, port))
 }
 
-const mainStyle = () => `<style>
-  label { display: flex; align-items: center; }
-  p { position: relative; padding: 14px 4px 2px; border-top: 1px solid #ddd; word-break: break-all; }
-  p:hover { background: #f5f5f5; }
-  pre { overflow: auto; padding: 0 2px; max-height: 10em; border-left: 1px solid #ddd; color: #666; }
-  input { flex: 1; }
-  .flex-column { display: flex; flex-flow: column; }
-  .non-flex { flex-shrink: 0; }
-  .time-tag, .id-tag { position: absolute; top: 0; font-size: 12px; line-height: 12px; }
-  .time-tag { right: 0; color: #aaa }
-  .id-tag { left: 0; }
-  .color-self { color: #63aeff }
-  .color-system { color: #aaa }
+const mainStyle = `<style>
+label { display: flex; align-items: center; }
+p { position: relative; padding: 14px 4px 2px; border-top: 1px solid #ddd; word-break: break-all; }
+p:hover { background: #f5f5f5; }
+pre { overflow: auto; padding: 0 2px; max-height: 10em; border-left: 1px solid #ddd; color: #666; }
+input { flex: 1; }
+.flex-column { display: flex; flex-flow: column; }
+.non-flex { flex-shrink: 0; }
+.time-tag, .id-tag { position: absolute; top: 0; font-size: 12px; line-height: 12px; }
+.time-tag { right: 0; color: #aaa }
+.id-tag { left: 0; }
+.color-self { color: #63aeff }
+.color-system { color: #aaa }
 </style>`
 
-const mainScript = () => `
+const mainHTML = `
 <div id="setup" class="flex-column">
   <input id="group-path" class="auto-height" type="text" placeholder="group-path" autofocus />
   <input id="id" class="auto-height" type="text" placeholder="id" />
@@ -179,13 +187,12 @@ const mainScript = () => `
   <label>Message File: <input id="payload-file" class="auto-height" type="file" /></label>
   <button id="button-send"></button>
 </div>
-<script>window.onload = ${mainScriptInit.toString()}</script>
 `
 
 const mainScriptInit = () => {
   const {
     qS,
-    cT,
+    cE,
     TYPE_CLOSE,
     TYPE_INFO_GROUP,
     TYPE_INFO_USER,
@@ -201,35 +208,36 @@ const mainScriptInit = () => {
       Browser: {
         Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
         Resource: { createDownloadWithBlob },
+        DOM: { applyDragFileListListener },
         Input: { KeyCommand: { createKeyCommandListener } }
       }
     }
   } = window
 
-  const idTag = (id, className = '') => cT('span', { innerHTML: `[${id}]`, className: `id-tag ${className}` })
-  const timeTag = () => cT('span', { innerHTML: new Date().toLocaleString(), className: 'time-tag' })
+  const idTag = (id, className = '') => cE('span', { innerText: `[${id}]`, className: `id-tag ${className}` })
+  const timeTag = () => cE('span', { innerText: new Date().toLocaleString(), className: 'time-tag' })
 
-  const appendLog = (...extraTagList) => {
+  const appendLog = (...elementList) => {
     const log = qS('#log')
-    const item = cT('p', { id: getRandomId() }, ...extraTagList)
+    const item = cE('p', { id: getRandomId() }, elementList)
     log.appendChild(item)
     log.scrollTop = log.scrollHeight
     return item
   }
 
   const addLog = ({ id, text, className }) => appendLog(
-    cT('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.querySelector('pre')) }),
+    cE('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.querySelector('pre')) }),
     idTag(id, className),
     timeTag()
   )
   const addLogWithFile = ({ isSend, id, fileName, fileSize, fileId, className }) => appendLog(
-    cT('pre', { innerText: isSend ? 'sharing: ' : 'share: ' }),
-    cT(isSend ? 'b' : 'button', { innerHTML: `📄 ${fileName} (${binary(fileSize)}B)`, onclick: isSend ? null : () => requestFile(id, fileId) }),
+    cE('pre', { innerText: isSend ? 'sharing: ' : 'share: ' }),
+    cE(isSend ? 'b' : 'button', { innerText: `📄 ${fileName} (${binary(fileSize)}B)`, onclick: isSend ? null : () => requestFile(id, fileId) }),
     idTag(id, className),
     timeTag()
   )
   const addLogSystem = (text) => appendLog(
-    cT('pre', { innerText: text, className: 'color-system' }),
+    cE('pre', { innerText: text, className: 'color-system' }),
     idTag('System', 'color-system'),
     timeTag()
   )
@@ -373,6 +381,11 @@ const mainScriptInit = () => {
   addKeyCommand({ target: qS('#payload-text'), checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })
   addKeyCommand({ target: qS('#group-path'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
   addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
+
+  applyDragFileListListener(document, (fileList) => {
+    const payloadFile = qS('#payload-file')
+    if (payloadFile) payloadFile.files = fileList
+  })
 }
 
 export { createServerWebSocketGroup }

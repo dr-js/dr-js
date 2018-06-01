@@ -7,7 +7,8 @@ import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Com
 import { responderSendBufferCompress } from 'dr-js/module/node/server/Responder/Send'
 import { getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { getPathContent, getServerInfo, commonCreateServer, COMMON_LAYOUT, COMMON_STYLE } from './function'
+import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML'
+import { getPathContent, getServerInfo, commonCreateServer } from './function'
 
 const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
@@ -35,10 +36,11 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
   const titleHTML = `/${formatPathHTML(relativeRoot)}`
   return responderSendBufferCompress(store, {
     buffer: Buffer.from(COMMON_LAYOUT([
+      `<title>${titleHTML}</title>`,
       COMMON_STYLE(),
+      `<style>a, b { display: flex; align-items: center; }</style>`,
       `<style>a { text-decoration: none; border-top: 1px solid #ddd; }</style>`,
-      `<style>a:hover { background: #eee; }</style>`,
-      `<title>${titleHTML}</title>`
+      `<style>a:hover { background: #eee; }</style>`
     ], [
       `<pre style="overflow: auto; display: flex; flex-flow: column;">`,
       `<b class="auto-height">${titleHTML}</b>`,
