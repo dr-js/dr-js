@@ -6,7 +6,7 @@ import { readFileAsync } from 'source/node/file/function'
 const ConfigPresetNode = {
   ...ConfigPreset,
   SinglePath: { ...ConfigPreset.SingleString, isPath: true },
-  AllString: { ...ConfigPreset.AllString, isPath: true },
+  AllPath: { ...ConfigPreset.AllString, isPath: true },
   Config: { // common config preset
     ...ConfigPreset.SingleString,
     description: `# from JSON: set to 'path/to/config.json'\n# from ENV: set to 'env'`,
