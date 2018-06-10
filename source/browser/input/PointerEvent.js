@@ -50,7 +50,7 @@ const applyPointerEventListener = ({
     isUseTouchEvent && isCancel && eventSource.removeEventListener('touchcancel', onCancel)
   }
 
-  const getEventPoint = !isUseTouchEvent
+  const getEventPoint = (!isUseTouchEvent || !window.TouchEvent)
     ? (event) => ({ x: event.clientX, y: event.clientY })
     : (event) => (event instanceof window.TouchEvent)
       ? (
@@ -81,7 +81,7 @@ const applyPointerEventListener = ({
     return prevState
   }
 
-  const checkShouldPass = !isUseTouchEvent
+  const checkShouldPass = (!isUseTouchEvent || !window.TouchEvent)
     ? (event) => !event.isPrimary
     : (event) => (event instanceof window.TouchEvent)
       ? (
