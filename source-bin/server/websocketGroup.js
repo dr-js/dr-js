@@ -357,7 +357,7 @@ const mainScriptInit = () => {
   }
 
   const sendPayload = () => {
-    if (!STATE.websocket || STATE.groupInfo.length <= 1) return
+    if (!STATE.websocket || STATE.groupInfo.length <= 1 || !qS('#payload-text')) return
     const text = qS('#payload-text').value.trim()
     const file = qS('#payload-file').files[ 0 ]
     qS('#payload-text').value = ''
@@ -378,7 +378,7 @@ const mainScriptInit = () => {
   const { addKeyCommand } = createKeyCommandListener(document)
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'd' }, callback: toggleWebSocket })
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'l' }, callback: clearLog })
-  addKeyCommand({ target: qS('#payload-text'), checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })
+  addKeyCommand({ checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })
   addKeyCommand({ target: qS('#group-path'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
   addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
 

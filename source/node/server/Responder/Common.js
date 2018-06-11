@@ -23,6 +23,8 @@ const responderEndWithRedirect = (store, { statusCode = 302, redirectUrl }) => {
   store.response.end()
 }
 
+const responderSetHeaderCacheControlImmutable = (store) => { store.response.setHeader('cache-control', 'max-age=315360000, public, immutable') }
+
 const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl) }) => (store) => {
   const { url: urlString, method } = store.request
   store.setState({ url: new URL(urlString, baseUrlObject), method })
@@ -61,6 +63,7 @@ export {
   responderEnd,
   responderEndWithStatusCode,
   responderEndWithRedirect,
+  responderSetHeaderCacheControlImmutable,
 
   createResponderParseURL,
   createResponderLog,

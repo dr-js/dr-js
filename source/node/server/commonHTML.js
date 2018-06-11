@@ -55,13 +55,13 @@ const COMMON_SCRIPT = (injectMap = {}) => {
 }
 
 // common quick function
-const querySelectorFunc = (selector, innerHTML) => {
+const querySelectorFunc = (selector, innerHTML = undefined) => {
   const element = document.querySelector(selector)
-  if (typeof (innerHTML) === 'string') element.innerHTML = innerHTML
+  if (element && typeof (innerHTML) === 'string') element.innerHTML = innerHTML
   return element
 }
 const querySelectorAllFunc = (selector) => [ ...document.querySelectorAll(selector) ]
-const createElementFunc = (tagName, attributeMap, childElementList = []) => {
+const createElementFunc = (tagName, attributeMap = {}, childElementList = []) => {
   const element = Object.assign(document.createElement(tagName), attributeMap)
   childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
   return element
