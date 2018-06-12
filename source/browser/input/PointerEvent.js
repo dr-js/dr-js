@@ -9,7 +9,6 @@ const POINTER_EVENT_TYPE = {
   CANCEL: 'CANCEL'
 }
 
-// TODO: Safari do not have PointerEvent yet, use mouse* + touch* event
 // TODO: currently single pointer only
 const applyPointerEventListener = ({
   element,
