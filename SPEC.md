@@ -64,19 +64,19 @@
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
-  - `CacheMap`, `createCacheMap`
+  - `CacheMap`, `createCache`, `createCacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
   - `createIdPool`
 + 📄 [source/common/data/IndexBox.js](source/common/data/IndexBox.js)
-  - `IndexBox`
+  - `IndexBox`, `createIndexBox`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
-  - `DoublyLinkedList`
+  - `DoublyLinkedList`, `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
-  - `ListMap`
+  - `ListMap`, `createListMap`
 + 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
   - `createSaveQueue`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
-  - `SetMap`
+  - `SetMap`, `createSetMap`, `getInvertSetMap`
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
@@ -206,7 +206,7 @@
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
-  - `FrameReceiver`, `FrameSender`
+  - `createFrameReceiver`, `createFrameSender`
 + 📄 [source/node/server/WebSocket/WebSocketBase.js](source/node/server/WebSocket/WebSocketBase.js)
   - `WebSocketBase`
 + 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
@@ -273,19 +273,19 @@
     - **ArrayBuffer**
       - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
     - **CacheMap**
-      - `CacheMap`, `createCacheMap`
+      - `CacheMap`, `createCache`, `createCacheMap`
     - **IdPool**
       - `createIdPool`
     - **IndexBox**
-      - `IndexBox`
+      - `IndexBox`, `createIndexBox`
     - **LinkedList**
-      - `DoublyLinkedList`
+      - `DoublyLinkedList`, `createDoublyLinkedList`, `createNode`
     - **ListMap**
-      - `ListMap`
+      - `ListMap`, `createListMap`
     - **SaveQueue**
       - `createSaveQueue`
     - **SetMap**
-      - `SetMap`
+      - `SetMap`, `createSetMap`, `getInvertSetMap`
     - **Toggle**
       - `createToggle`
     - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
@@ -415,7 +415,7 @@
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**
       - **Frame**
-        - `FrameReceiver`, `FrameSender`
+        - `createFrameReceiver`, `createFrameSender`
       - **WebSocketBase**
         - `WebSocketBase`
       - **WebSocketClient**

@@ -1,6 +1,6 @@
 import { createEventEmitter } from 'source/common/module/Event'
 import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from './type'
-import { FrameSender, FrameReceiver } from './Frame'
+import { createFrameSender, createFrameReceiver } from './Frame'
 
 const WEB_SOCKET_PING_PONG_TIMEOUT = __DEV__ ? 5 * 1000 : 60 * 1000 // in msec, 60sec
 const WEB_SOCKET_CLOSE_TIMEOUT = __DEV__ ? 0.5 * 1000 : 5 * 1000 // in msec, 5sec
@@ -19,8 +19,8 @@ class WebSocketBase {
     Object.assign(this, createEventEmitter())
 
     this.socket = socket
-    this.frameSender = new FrameSender(frameLengthLimit)
-    this.frameReceiver = new FrameReceiver(frameLengthLimit)
+    this.frameSender = createFrameSender(frameLengthLimit)
+    this.frameReceiver = createFrameReceiver(frameLengthLimit)
     this.frameLengthLimit = frameLengthLimit
 
     // should be public
@@ -188,8 +188,8 @@ class WebSocketBase {
 
   setFrameLengthLimit (frameLengthLimit) {
     if (__DEV__ && !Number.isInteger(frameLengthLimit)) throw new Error(`[setFrameLengthLimit] error value: ${frameLengthLimit}`)
-    this.frameSender.frameLengthLimit = frameLengthLimit
-    this.frameReceiver.frameLengthLimit = frameLengthLimit
+    this.frameSender.setFrameLengthLimit(frameLengthLimit)
+    this.frameReceiver.setFrameLengthLimit(frameLengthLimit)
     this.frameLengthLimit = frameLengthLimit
   }
 }

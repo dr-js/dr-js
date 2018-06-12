@@ -2,53 +2,50 @@
 // has many: Node
 // each contains: value
 
-class DoublyLinkedList {
-  static createNode = (value, prev = null, next = null) => ({ value, prev, next })
-
-  constructor () { this.clear() }
-
-  get length () { return this.nodeSet.size }
-
-  clear () {
-    this.head = DoublyLinkedList.createNode(null)
-    this.tail = DoublyLinkedList.createNode(null)
-    this.head.next = this.tail
-    this.tail.prev = this.head
-    this.nodeSet = new Set()
+const createNode = (value, prev = null, next = null) => ({ value, prev, next })
+const createDoublyLinkedList = () => {
+  let nodeSet, head, tail
+  const clear = () => {
+    nodeSet = new Set()
+    head = createNode(null)
+    tail = createNode(null)
+    head.next = tail
+    tail.prev = head
   }
+  clear()
 
-  insertAfter (node, prevNode) {
-    if (__DEV__ && this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
-    if (__DEV__ && prevNode !== this.head && !this.nodeSet.has(prevNode)) throw new Error('[DoublyLinkedList][insertAfter] invalid prevNode')
+  const getHead = () => head
+  const getTail = () => tail
+  const getLength = () => nodeSet.size
+  const insertAfter = (node, prevNode) => {
+    if (__DEV__ && nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
+    if (__DEV__ && prevNode !== head && !nodeSet.has(prevNode)) throw new Error('[DoublyLinkedList][insertAfter] invalid prevNode')
     const { next } = prevNode
     prevNode.next = next.prev = node
     node.prev = prevNode
     node.next = next
-    this.nodeSet.add(node)
+    nodeSet.add(node)
   }
-
-  insertBefore (node, nextNode) {
-    if (__DEV__ && this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertBefore] already has node')
-    if (__DEV__ && nextNode !== this.tail && !this.nodeSet.has(nextNode)) throw new Error('[DoublyLinkedList][insertBefore] invalid nextNode')
+  const insertBefore = (node, nextNode) => {
+    if (__DEV__ && nodeSet.has(node)) throw new Error('[DoublyLinkedList][insertBefore] already has node')
+    if (__DEV__ && nextNode !== tail && !nodeSet.has(nextNode)) throw new Error('[DoublyLinkedList][insertBefore] invalid nextNode')
     const { prev } = nextNode
     nextNode.prev = prev.next = node
     node.prev = prev
     node.next = nextNode
-    this.nodeSet.add(node)
+    nodeSet.add(node)
   }
-
-  remove (node) {
-    if (__DEV__ && !this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][remove] invalid node')
+  const remove = (node) => {
+    if (__DEV__ && !nodeSet.has(node)) throw new Error('[DoublyLinkedList][remove] invalid node')
     const { prev, next } = node
     prev.next = next
     next.prev = prev
     node.prev = node.next = null
-    this.nodeSet.delete(node)
+    nodeSet.delete(node)
   }
-
-  removeBetween (fromNode, toNode) { // include both from & to node
-    if (__DEV__ && !this.nodeSet.has(fromNode)) throw new Error('[DoublyLinkedList][removeBetween] invalid fromNode')
-    if (__DEV__ && !this.nodeSet.has(toNode)) throw new Error('[DoublyLinkedList][removeBetween] invalid toNode')
+  const removeBetween = (fromNode, toNode) => { // include both from & to node
+    if (__DEV__ && !nodeSet.has(fromNode)) throw new Error('[DoublyLinkedList][removeBetween] invalid fromNode')
+    if (__DEV__ && !nodeSet.has(toNode)) throw new Error('[DoublyLinkedList][removeBetween] invalid toNode')
     const { prev } = fromNode
     const { next } = toNode
     prev.next = next
@@ -56,80 +53,101 @@ class DoublyLinkedList {
     fromNode.prev = toNode.next = null
     let node = fromNode
     while (node) {
-      this.nodeSet.delete(node)
+      nodeSet.delete(node)
       node = node.next
     }
   }
-
-  forEach (callback) {
-    let node = this.head.next
+  const forEach = (callback) => {
+    let node = head.next
     let index = 0
-    while (node !== this.tail) {
+    while (node !== tail) {
       callback(node, index)
       node = node.next
       index++
     }
   }
-
-  forEachReverse (callback) { // the index starts from length - 1
-    let node = this.tail.prev
-    let index = this.nodeSet.size - 1
-    while (node !== this.head) {
+  const forEachReverse = (callback) => { // the index starts from length - 1
+    let node = tail.prev
+    let index = nodeSet.size - 1
+    while (node !== head) {
       callback(node, index)
       node = node.prev
       index--
     }
   }
-
-  reverse () {
-    let node = this.head.next
-    while (node !== this.tail) {
+  const reverse = () => {
+    let node = head.next
+    while (node !== tail) {
       const { prev, next } = node
       node.prev = next
       node.next = prev
       node = next
     }
-    const { next } = this.head
-    const { prev } = this.tail
-    this.head.next = prev
-    this.tail.prev = next
-    prev.prev = this.head
-    next.next = this.tail
+    const { next } = head
+    const { prev } = tail
+    head.next = prev
+    tail.prev = next
+    prev.prev = head
+    next.next = tail
   }
-
-  setFirst (node) {
-    if (__DEV__ && !this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][setFirst] invalid node')
-    if (node === this.head.next) return
+  const setFirst = (node) => {
+    if (__DEV__ && !nodeSet.has(node)) throw new Error('[DoublyLinkedList][setFirst] invalid node')
+    if (node === head.next) return
     // pick
     const { prev, next } = node
     prev.next = next
     next.prev = prev
     // set
-    node.prev = this.head
-    node.next = this.head.next
-    this.head.next = node
+    node.prev = head
+    node.next = head.next
+    head.next = node
   }
-
-  setLast (node) {
-    if (__DEV__ && !this.nodeSet.has(node)) throw new Error('[DoublyLinkedList][setLast] invalid node')
-    if (node === this.tail.prev) return
+  const setLast = (node) => {
+    if (__DEV__ && !nodeSet.has(node)) throw new Error('[DoublyLinkedList][setLast] invalid node')
+    if (node === tail.prev) return
     // pick
     const { prev, next } = node
     prev.next = next
     next.prev = prev
     // set
-    node.prev = this.tail.prev
-    node.next = this.tail
-    this.tail.prev = node
+    node.prev = tail.prev
+    node.next = tail
+    tail.prev = node
   }
 
-  push (node) { return this.insertBefore(node, this.tail) }
-
-  pop () { return this.remove(this.tail.prev) }
-
-  unshift (node) { return this.insertAfter(node, this.head) }
-
-  shift () { return this.remove(this.head.next) }
+  return {
+    clear,
+    getHead,
+    getTail,
+    getLength,
+    insertAfter,
+    insertBefore,
+    remove,
+    removeBetween,
+    forEach,
+    forEachReverse,
+    reverse,
+    setFirst,
+    setLast,
+    push: (node) => insertBefore(node, tail),
+    pop: () => remove(tail.prev),
+    unshift: (node) => insertAfter(node, head),
+    shift: () => remove(head.next)
+  }
 }
 
-export { DoublyLinkedList }
+class DoublyLinkedList { // TODO: DEPRECATED
+  static createNode = createNode
+
+  constructor () { Object.assign(this, createDoublyLinkedList()) }
+
+  get head () { return this.getHead() }
+  get tail () { return this.getTail() }
+  get length () { return this.getLength() }
+}
+
+export {
+  createDoublyLinkedList,
+  createNode,
+  DoublyLinkedList // TODO: DEPRECATED
+}

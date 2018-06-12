@@ -14,29 +14,23 @@ const POW_2_32 = Math.pow(2, 32)
 
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
-class FrameSender {
-  constructor (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) {
-    this.frameLengthLimit = frameLengthLimit
-    this.clear = this.clear.bind(this)
-    this.clear()
+const createFrameSender = (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) => {
+  let encodedFrameHeaderBuffer, encodedFrameDataBuffer, promiseTail
+  const clear = () => {
+    encodedFrameHeaderBuffer = null
+    encodedFrameDataBuffer = null
+    promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
   }
+  clear()
 
-  clear () {
-    this.encodedFrameHeaderBuffer = null
-    this.encodedFrameDataBuffer = null
+  const setFrameLengthLimit = (nextFrameLengthLimit) => { frameLengthLimit = nextFrameLengthLimit }
 
-    this.promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
-  }
-
-  queuePromise (onFulfilled, onRejected) {
-    this.promiseTail = this.promiseTail.then(onFulfilled, onRejected)
-    return this.promiseTail
-  }
+  const queuePromise = (onFulfilled, onRejected) => (promiseTail = promiseTail.then(onFulfilled, onRejected))
 
   // frameTypeConfig: FRAME_COMPLETE/FRAME_FIRST
   // dataType: OPCODE_TEXT/OPCODE_BINARY/OPCODE_CLOSE/OPCODE_PING/OPCODE_PONG
   // data: Buffer for either text or binary, will be re-written for masking
-  encodeFrame (frameTypeConfig, dataType, dataBuffer, maskType) {
+  const encodeFrame = (frameTypeConfig, dataType, dataBuffer, maskType) => {
     const { FINQuadBit, opcodeQuadBitMask } = frameTypeConfig
     const { length } = dataBuffer
     const initialOctet = (FINQuadBit << 4) | (dataType & opcodeQuadBitMask)
@@ -53,48 +47,42 @@ class FrameSender {
       extendLengthOctetCount = 8
     } else throw new Error('[encodeFrame] dataBuffer length exceeds BUFFER_MAX_LENGTH')
 
-    if (length > this.frameLengthLimit) throw new Error(`[encodeFrame] dataBuffer length ${length} exceeds limit: ${this.frameLengthLimit}`)
+    if (length > frameLengthLimit) throw new Error(`[encodeFrame] dataBuffer length ${length} exceeds limit: ${frameLengthLimit}`)
 
     const isMask = (maskType === DO_MASK_DATA)
     const maskOctetCount = isMask ? 4 : 0
     const maskQuadletBuffer = (isMask && length) ? randomBytes(4) : DEFAULT_MASK_QUADLET_BUFFER // 4octets | 32bits
     if (isMask) maskLengthOctet |= 0b10000000
 
-    this.encodedFrameHeaderBuffer = Buffer.allocUnsafe(2 + extendLengthOctetCount + maskOctetCount) // 2-14octets | 16-112bits
-    this.encodedFrameHeaderBuffer.writeUInt16BE((initialOctet << 8) | maskLengthOctet, 0, !__DEV__) // FIN_BIT/RSV/OPCODE/MASK_BIT/LENGTH [2octets]
-    extendLengthOctetCount === 2 && this.encodedFrameHeaderBuffer.writeUInt16BE(length, 2, !__DEV__) // EXTEND LENGTH [2octets]
-    extendLengthOctetCount === 8 && this.encodedFrameHeaderBuffer.writeUInt32BE(0, 2, !__DEV__) // EXTEND LENGTH [4 of 8octets] // NOTE: can't use in node with buffer.constants.MAX_LENGTH
-    extendLengthOctetCount === 8 && this.encodedFrameHeaderBuffer.writeUInt32BE(length, 6, !__DEV__) // EXTEND LENGTH [4 of 8octets]
-    isMask && maskQuadletBuffer.copy(this.encodedFrameHeaderBuffer, 2 + extendLengthOctetCount) // MASK [4octets]
+    encodedFrameHeaderBuffer = Buffer.allocUnsafe(2 + extendLengthOctetCount + maskOctetCount) // 2-14octets | 16-112bits
+    encodedFrameHeaderBuffer.writeUInt16BE((initialOctet << 8) | maskLengthOctet, 0, !__DEV__) // FIN_BIT/RSV/OPCODE/MASK_BIT/LENGTH [2octets]
+    extendLengthOctetCount === 2 && encodedFrameHeaderBuffer.writeUInt16BE(length, 2, !__DEV__) // EXTEND LENGTH [2octets]
+    extendLengthOctetCount === 8 && encodedFrameHeaderBuffer.writeUInt32BE(0, 2, !__DEV__) // EXTEND LENGTH [4 of 8octets] // NOTE: can't use in node with buffer.constants.MAX_LENGTH
+    extendLengthOctetCount === 8 && encodedFrameHeaderBuffer.writeUInt32BE(length, 6, !__DEV__) // EXTEND LENGTH [4 of 8octets]
+    isMask && maskQuadletBuffer.copy(encodedFrameHeaderBuffer, 2 + extendLengthOctetCount) // MASK [4octets]
 
-    this.encodedFrameDataBuffer = dataBuffer
-    isMask && length && applyBufferMaskQuadlet(this.encodedFrameDataBuffer, maskQuadletBuffer)
+    encodedFrameDataBuffer = dataBuffer
+    isMask && length && applyBufferMaskQuadlet(encodedFrameDataBuffer, maskQuadletBuffer)
   }
 
-  encodeCloseFrame (code = 1000, reason = '', maskType) {
+  const encodeCloseFrame = (code = 1000, reason = '', maskType) => {
     const stringLength = Buffer.byteLength(reason)
     const dataBuffer = Buffer.allocUnsafe(2 + stringLength)
     dataBuffer.writeUInt16BE(code, 0, !__DEV__)
     dataBuffer.write(reason, 2, stringLength)
     // __DEV__ && console.log('encodeCloseFrame', { code, reason, stringLength })
-    this.encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_CLOSE, dataBuffer, maskType)
+    encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_CLOSE, dataBuffer, maskType)
   }
+  const encodePingFrame = (data = '', maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PING, Buffer.from(data), maskType)
+  const encodePongFrame = (data = '', maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PONG, Buffer.from(data), maskType)
 
-  encodePingFrame (data = '', maskType) {
-    this.encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PING, Buffer.from(data), maskType)
-  }
-
-  encodePongFrame (data = '', maskType) {
-    this.encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PONG, Buffer.from(data), maskType)
-  }
-
-  sendEncodedFrame (socket) { // will send the frame just encoded
-    __DEV__ && console.log('[Frame] sendEncodedFrame', this.encodedFrameHeaderBuffer, '|', this.encodedFrameDataBuffer)
-    const frameHeaderBuffer = this.encodedFrameHeaderBuffer
-    const frameDataBuffer = this.encodedFrameDataBuffer
-    this.encodedFrameHeaderBuffer = null
-    this.encodedFrameDataBuffer = null
-    return this.queuePromise(() => new Promise((resolve, reject) => {
+  const sendEncodedFrame = (socket) => { // will send the frame just encoded
+    __DEV__ && console.log('[Frame] sendEncodedFrame', encodedFrameHeaderBuffer, '|', encodedFrameDataBuffer)
+    const frameHeaderBuffer = encodedFrameHeaderBuffer
+    const frameDataBuffer = encodedFrameDataBuffer
+    encodedFrameHeaderBuffer = null
+    encodedFrameDataBuffer = null
+    return queuePromise(() => new Promise((resolve, reject) => {
       // __DEV__ && console.log('[Frame] sendEncodedFrame send')
       const onDataSend = () => {
         // __DEV__ && console.log('[Frame] sendEncodedFrame send finish')
@@ -109,6 +97,17 @@ class FrameSender {
       }
     }))
   }
+
+  return {
+    clear,
+    setFrameLengthLimit,
+    queuePromise,
+    encodeFrame,
+    encodeCloseFrame,
+    encodePingFrame,
+    encodePongFrame,
+    sendEncodedFrame
+  }
 }
 
 const DECODE_STAGE_INITIAL_OCTET = 0
@@ -118,27 +117,21 @@ const DECODE_STAGE_MASK_QUADLET = 3
 const DECODE_STAGE_DATA_BUFFER = 4
 const DECODE_STAGE_END_FRAME = 5
 
-class FrameReceiver {
-  constructor (frameLengthLimit) {
-    this.frameLengthLimit = frameLengthLimit
-    this.clear = this.clear.bind(this)
-    this.clear()
+const createFrameReceiver = (frameLengthLimit) => {
+  let doClearSocketListener, promiseTail
+  const clear = () => {
+    if (doClearSocketListener) doClearSocketListener()
+    doClearSocketListener = null
+    promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
   }
+  clear()
 
-  clear () {
-    if (this.doClearSocketListener) this.doClearSocketListener()
-    this.doClearSocketListener = null
+  const setFrameLengthLimit = (nextFrameLengthLimit) => { frameLengthLimit = nextFrameLengthLimit }
 
-    this.promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
-  }
+  const queuePromise = (onFulfilled, onRejected) => (promiseTail = promiseTail.then(onFulfilled, onRejected))
 
-  queuePromise (onFulfilled, onRejected) {
-    this.promiseTail = this.promiseTail.then(onFulfilled, onRejected)
-    return this.promiseTail
-  }
-
-  listenAndReceiveFrame (socket, onFrame, onError = this.clear) {
-    const { pushChunkDataBuffer, decode, resetDecode, getDecodeFrame } = createFrameDecoder(this.frameLengthLimit)
+  const listenAndReceiveFrame = (socket, onFrame, onError = clear) => {
+    const { pushChunkDataBuffer, decode, resetDecode, getDecodeFrame } = createFrameDecoder(frameLengthLimit)
 
     let receiveResolve = null
     let receiveReject = null
@@ -164,7 +157,7 @@ class FrameReceiver {
         receiveResolve = resolve
         receiveReject = reject
       })
-      this.queuePromise(() => receivePromise.then(onFrame), onPromiseReject)
+      queuePromise(() => receivePromise.then(onFrame), onPromiseReject)
     }
 
     const onSocketData = (chunk) => {
@@ -181,12 +174,19 @@ class FrameReceiver {
       }
     }
 
-    this.clear()
+    clear()
     socket.on('data', onSocketData)
-    this.doClearSocketListener = () => {
+    doClearSocketListener = () => {
       resetReceive()
       socket.removeListener('data', onSocketData)
     }
+  }
+
+  return {
+    clear,
+    setFrameLengthLimit,
+    queuePromise,
+    listenAndReceiveFrame
   }
 }
 
@@ -354,6 +354,6 @@ const applyBufferMaskQuadlet = (buffer, maskQuadletBuffer) => {
 }
 
 export {
-  FrameSender,
-  FrameReceiver
+  createFrameSender,
+  createFrameReceiver
 }

@@ -1,9 +1,9 @@
 import { createHub } from 'source/common/module/Event'
-import { DoublyLinkedList } from './LinkedList'
+import { createDoublyLinkedList, createNode } from './LinkedList'
 
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
-const createCache = (key, value, size, expireAt) => ({ ...DoublyLinkedList.createNode(value), key, size, expireAt })
+const createCache = (key, value, size, expireAt) => ({ ...createNode(value), key, size, expireAt })
 
 // TODO: add pack & load as JSON
 // Time aware Least Recently Used (TLRU)
@@ -15,7 +15,7 @@ const createCacheMap = ({
 
   const { clear: clearHub, subscribe, unsubscribe, send } = createHub()
   const cacheMap = new Map()
-  const cacheLinkedList = new DoublyLinkedList()
+  const cacheLinkedList = createDoublyLinkedList()
   let valueSizeSum = 0
 
   const cacheAdd = (cache) => {
@@ -41,7 +41,7 @@ const createCacheMap = ({
       const prevCache = cacheMap.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache
       if (size > valueSizeSingleMax) return // cache busted
-      while (size + valueSizeSum > valueSizeSumMax) cacheDelete(cacheLinkedList.tail.prev) // eslint-disable-line no-unmodified-loop-condition
+      while (size + valueSizeSum > valueSizeSumMax) cacheDelete(cacheLinkedList.getTail().prev) // eslint-disable-line no-unmodified-loop-condition
       cacheAdd(createCache(key, value, size, expireAt))
     },
     get: (key, time = Date.now()) => {
@@ -88,6 +88,7 @@ class CacheMap { // TODO: DEPRECATED
 }
 
 export {
+  createCache,
   createCacheMap,
   CacheMap // TODO: DEPRECATED
 }

@@ -1,25 +1,28 @@
-class IndexBox {
-  constructor (min = 0, max = Infinity) {
-    this.taken = []
-    this.min = min
-    this.max = max
-  }
+const createIndexBox = (min = 0, max = Infinity) => {
+  const taken = []
 
-  getExactly (index) {
-    if (index < this.min || index > this.max || this.taken[ index ]) return null
-    this.taken[ index ] = true
+  const getExactly = (index) => {
+    if (index < min || index > max || taken[ index ]) return null
+    taken[ index ] = true
     return index
   }
 
-  get (expect) {
+  const get = (expect) => {
     const origin = Math.round(expect)
     let offset = 0
     while (true) {
-      if (this.getExactly(origin + offset) !== null) return origin + offset
-      if (this.getExactly(origin - offset) !== null) return origin - offset
+      if (getExactly(origin + offset) !== null) return origin + offset
+      if (getExactly(origin - offset) !== null) return origin - offset
       offset++
     }
   }
+
+  return { getExactly, get }
 }
 
-export { IndexBox }
+class IndexBox { constructor (min, max) { Object.assign(this, createIndexBox(min, max)) } } // TODO: DEPRECATED
+
+export {
+  createIndexBox,
+  IndexBox // TODO: DEPRECATED
+}
