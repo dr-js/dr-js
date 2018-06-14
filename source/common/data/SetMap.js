@@ -38,14 +38,7 @@ const getInvertSetMap = (sourceSetMap, targetSetMap = createSetMap()) => {
   return targetSetMap
 }
 
-class SetMap { // TODO: DEPRECATED
-  static getInvertSetMap (sourceSetMap, targetSetMap = new SetMap()) { return getInvertSetMap(sourceSetMap, targetSetMap) }
-
-  constructor () { Object.assign(this, createSetMap()) }
-}
-
 export {
   createSetMap,
-  getInvertSetMap,
-  SetMap // TODO: DEPRECATED
+  getInvertSetMap
 }

@@ -12,7 +12,7 @@
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `createDownload`, `createDownloadBlob`, `createDownloadText`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
+  - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
@@ -56,7 +56,7 @@
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
+  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -64,19 +64,19 @@
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
-  - `CacheMap`, `createCache`, `createCacheMap`
+  - `createCache`, `createCacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
   - `createIdPool`
 + 📄 [source/common/data/IndexBox.js](source/common/data/IndexBox.js)
-  - `IndexBox`, `createIndexBox`
+  - `createIndexBox`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
-  - `DoublyLinkedList`, `createDoublyLinkedList`, `createNode`
+  - `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
-  - `ListMap`, `createListMap`
+  - `createListMap`
 + 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
   - `createSaveQueue`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
-  - `SetMap`, `createSetMap`, `getInvertSetMap`
+  - `createSetMap`, `getInvertSetMap`
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
@@ -122,7 +122,7 @@
 + 📄 [source/common/module/LevenshteinDistance.js](source/common/module/LevenshteinDistance.js)
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
-  - `BASIC_EXTENSION_MAP`, `BASIC_MIME_LIST_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
+  - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
@@ -190,7 +190,7 @@
 + 📄 [source/node/module/TimedLookup.js](source/node/module/TimedLookup.js)
   - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
-  - `createRequestListener`, `createServer`, `getUnusedPort`
+  - `createRequestListener`, `createServer`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_SCRIPT`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
@@ -267,25 +267,25 @@
   - **Net**
     - `fetchLikeRequest`
   - **Resource**
-    - `createDownload`, `createDownloadBlob`, `createDownloadText`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
+    - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
 - **Common**
   - **Data**
     - **ArrayBuffer**
       - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
     - **CacheMap**
-      - `CacheMap`, `createCache`, `createCacheMap`
+      - `createCache`, `createCacheMap`
     - **IdPool**
       - `createIdPool`
     - **IndexBox**
-      - `IndexBox`, `createIndexBox`
+      - `createIndexBox`
     - **LinkedList**
-      - `DoublyLinkedList`, `createDoublyLinkedList`, `createNode`
+      - `createDoublyLinkedList`, `createNode`
     - **ListMap**
-      - `ListMap`, `createListMap`
+      - `createListMap`
     - **SaveQueue**
       - `createSaveQueue`
     - **SetMap**
-      - `SetMap`, `createSetMap`, `getInvertSetMap`
+      - `createSetMap`, `getInvertSetMap`
     - **Toggle**
       - `createToggle`
     - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
@@ -337,7 +337,7 @@
     - **LevenshteinDistance**
       - `getLevenshteinDistance`
     - **MIME**
-      - `BASIC_EXTENSION_MAP`, `BASIC_MIME_LIST_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
+      - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **SemVer**
@@ -360,7 +360,7 @@
   - **Format**
     - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
-    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `promiseQueue`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
+    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRetryAsync`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
@@ -426,7 +426,7 @@
         - `createUpdateRequestListener`
       - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
     - **Server**
-      - `createRequestListener`, `createServer`, `getUnusedPort`
+      - `createRequestListener`, `createServer`
     - **CommonHTML**
       - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_SCRIPT`
     - **Function**

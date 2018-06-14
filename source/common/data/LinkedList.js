@@ -136,18 +136,7 @@ const createDoublyLinkedList = () => {
   }
 }
 
-class DoublyLinkedList { // TODO: DEPRECATED
-  static createNode = createNode
-
-  constructor () { Object.assign(this, createDoublyLinkedList()) }
-
-  get head () { return this.getHead() }
-  get tail () { return this.getTail() }
-  get length () { return this.getLength() }
-}
-
 export {
   createDoublyLinkedList,
-  createNode,
-  DoublyLinkedList // TODO: DEPRECATED
+  createNode
 }

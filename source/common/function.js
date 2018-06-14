@@ -111,29 +111,6 @@ const createInsideOutPromise = () => {
   }
 }
 
-// for dynamic appending tasks, use `Common.Module.createAsyncTaskQueue`
-const promiseQueue = async ({ asyncTaskList, shouldContinueOnError = false }) => { // TODO: DEPRECATED
-  const resultList = []
-  const errorList = []
-  const endList = []
-  const pendingList = [ ...asyncTaskList ] // do not change original asyncTaskList
-  while (pendingList.length) {
-    const index = endList.length
-    const asyncTask = pendingList.shift()
-    endList.push(asyncTask) // this asyncTask will end either way
-    try { resultList[ index ] = await asyncTask() } catch (error) {
-      errorList[ index ] = error
-      if (!shouldContinueOnError) break
-    }
-  }
-  return {
-    resultList,
-    errorList,
-    endList,
-    pendingList // normally empty. If shouldContinueOnError and got error, this list will have some pending asyncTask
-  }
-}
-
 export {
   debounce,
   throttle,
@@ -141,6 +118,5 @@ export {
   withDelayArgvQueue,
   withRepeat,
   withRetryAsync,
-  createInsideOutPromise,
-  promiseQueue // TODO: DEPRECATED
+  createInsideOutPromise
 }

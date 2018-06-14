@@ -29,6 +29,20 @@ const buildUpgradeRequest = (url, { key, isSecure, headers, origin = '', request
   return { requestOption, requestProtocolString, responseKey }
 }
 
+const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString) => {
+  if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketClient][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
+  if (responseKey !== response.headers[ 'sec-websocket-accept' ]) throw new Error('[WebSocketClient][doUpgradeSocket] wrong sec-websocket-accept')
+  const protocol = response.headers[ 'sec-websocket-protocol' ]
+  if (!requestProtocolString.split(/, */).includes(protocol)) throw new Error(`[WebSocketClient][doUpgradeSocket] unexpected protocol ${protocol}`)
+  webSocket.socket.on('error', webSocket.close)
+  webSocket.socket.on('end', webSocket.close)
+  __DEV__ && console.log('[WebSocketClient][doUpgradeSocket]', responseKey)
+  webSocket.listenAndReceiveFrame()
+  webSocket.protocol = protocol // the accepted protocol
+  webSocket.setReadyState(webSocket.OPEN)
+  webSocket.emit(WEB_SOCKET_EVENT_MAP.OPEN)
+}
+
 const createWebSocketClient = ({
   urlString,
   option = {},
@@ -37,8 +51,8 @@ const createWebSocketClient = ({
   frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT
 }) => {
   const url = new URL(urlString)
-  if (!VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[createWebSocketClient] invalid url protocol: ${url.protocol}`)
-  if (!url.host) throw new Error(`[createWebSocketClient] invalid url host: ${url.host}`)
+  if (!VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${url.protocol}`)
+  if (!url.host) throw new Error(`[WebSocketClient] invalid url host: ${url.host}`)
   option.isSecure = SECURE_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)
 
   const { requestOption, requestProtocolString, responseKey } = buildUpgradeRequest(url, option)
@@ -50,9 +64,9 @@ const createWebSocketClient = ({
     onError(error)
   })
   request.on('response', (response) => {
-    __DEV__ && console.log('[onUpgradeResponse] unexpected response', response)
+    __DEV__ && console.log('[WebSocketClient] unexpected response', response)
     request.abort()
-    onError(new Error('[createWebSocketClient] unexpected response'))
+    onError(new Error('[WebSocketClient] unexpected response'))
   })
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
     const webSocket = createWebSocket({ socket, frameLengthLimit, sendFrameMaskType: DO_MASK_DATA })
@@ -61,24 +75,10 @@ const createWebSocketClient = ({
     webSocket.isSecure = option.isSecure
 
     await onUpgradeResponse(webSocket, response, bodyHeadBuffer)
-    __DEV__ && webSocket.isClosed() && console.log('[onUpgradeResponse] closed webSocket')
+    __DEV__ && webSocket.isClosed() && console.log('[WebSocketClient] UpgradeResponse closed webSocket')
     if (webSocket.isClosed()) return
 
-    if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketClient][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
-    if (responseKey !== response.headers[ 'sec-websocket-accept' ]) throw new Error('[WebSocketClient][doUpgradeSocket] wrong sec-websocket-accept')
-    const protocol = response.headers[ 'sec-websocket-protocol' ]
-    if (!requestProtocolString.split(/, */).includes(protocol)) throw new Error(`[WebSocketClient][doUpgradeSocket] unexpected protocol ${protocol}`)
-    socket.on('error', webSocket.close)
-    socket.on('end', webSocket.close)
-    __DEV__ && console.log('[WebSocketClient][doUpgradeSocket]', responseKey)
-    webSocket.listenAndReceiveFrame(
-      socket,
-      webSocket.onReceiveFrame,
-      (error) => webSocket.close(1006, __DEV__ ? `Frame Error: ${error.message}` : 'Frame Error')
-    )
-    webSocket.protocol = protocol // the accepted protocol
-    webSocket.setReadyState(webSocket.OPEN)
-    webSocket.emit(WEB_SOCKET_EVENT_MAP.OPEN)
+    doUpgradeSocket(webSocket, response, responseKey, requestProtocolString)
   })
 }
 

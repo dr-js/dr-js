@@ -77,18 +77,7 @@ const createCacheMap = ({
   }
 }
 
-class CacheMap { // TODO: DEPRECATED
-  constructor (option) {
-    Object.assign(this, createCacheMap(option))
-    if (option.onCacheAdd) this.subscribe(({ type, key, payload }) => type === 'add' && option.onCacheAdd({ key, value: payload }))
-    if (option.onCacheDelete) this.subscribe(({ type, key, payload }) => type === 'delete' && option.onCacheDelete({ key, value: payload }))
-  }
-
-  get size () { return this.getSize() }
-}
-
 export {
   createCache,
-  createCacheMap,
-  CacheMap // TODO: DEPRECATED
+  createCacheMap
 }

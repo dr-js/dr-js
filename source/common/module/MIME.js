@@ -47,16 +47,8 @@ const getMIMETypeFromFileName = (fileName) => {
   return (result && BASIC_EXTENSION_MAP[ result[ 1 ] ]) || DEFAULT_MIME
 }
 
-const BASIC_MIME_LIST_MAP = BASIC_MIME_DATA_LIST.reduce((o, mimeData) => { // TODO: DEPRECATE
-  const [ mime, extensionData ] = mimeData.split(':')
-  o[ mime ] = extensionData.split(';')
-  return o
-}, {})
-
 export {
   DEFAULT_MIME,
   BASIC_EXTENSION_MAP,
-  getMIMETypeFromFileName,
-
-  BASIC_MIME_LIST_MAP // TODO: DEPRECATE
+  getMIMETypeFromFileName
 }

@@ -10,8 +10,7 @@ const CACHE_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
 const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_SIZE_SUM_MAX })
 
 const createResponderRateLimit = ({
-  responderLimitPass, // TODO: DEPRECATED
-  responderNext = responderLimitPass,
+  responderNext,
   responderLimitHit = DEFAULT_RESPONDER_LIMIT_HIT,
   getRequestKey = DEFAULT_GET_REQUEST_KEY,
   limitCount = CACHE_LIMIT_COUNT,

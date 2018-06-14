@@ -6,8 +6,7 @@ import {
   withDelayArgvQueue,
   withRepeat,
   withRetryAsync,
-  createInsideOutPromise,
-  promiseQueue // TODO: DEPRECATED
+  createInsideOutPromise
 } from './function'
 import { setTimeoutAsync } from './time'
 
@@ -306,89 +305,5 @@ describe('Common.Function', () => {
       (value) => new Error(`should not resolve with value: ${value}`),
       (error) => strictEqual(error.message, 'Good Error')
     )
-  })
-
-  // shouldContinueOnError
-  it('promiseQueue()', async () => { // TODO: DEPRECATED
-    const { promise, resolve, reject } = createInsideOutPromise()
-    const expectedError = new Error('Expected Error')
-    let state = ''
-
-    const asyncTaskList = [
-      async () => 0,
-      async () => {
-        strictEqual(state, 'Queue started')
-        state = 'AsyncTask 1 started'
-        await setTimeoutAsync(20)
-        return 1
-      },
-      async () => { throw expectedError },
-      async () => {
-        reject()
-        return 3
-      },
-      async () => {
-        reject()
-        return 4
-      }
-    ]
-
-    const promiseQueuePromise = promiseQueue({ asyncTaskList })
-
-    strictEqual(state, '')
-    state = 'Queue started'
-
-    setTimeoutAsync(50).then(() => reject(new Error(`promiseQueue should finish in time`)))
-
-    const { resultList, errorList, endList, pendingList } = await promiseQueuePromise
-
-    resolve()
-    await promise // time check
-
-    deepEqual([ ...resultList ], [ 0, 1 ])
-    deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
-    deepEqual(endList, asyncTaskList.slice(0, 3))
-    deepEqual(pendingList, asyncTaskList.slice(3))
-  })
-
-  it('promiseQueue() shouldContinueOnError', async () => { // TODO: DEPRECATED
-    const { promise, resolve, reject } = createInsideOutPromise()
-    const expectedError = new Error('Expected Error')
-    let state = ''
-
-    const asyncTaskList = [
-      async () => 0,
-      async () => {
-        strictEqual(state, 'Queue started')
-        state = 'AsyncTask 1 started'
-        await setTimeoutAsync(20)
-        return 1
-      },
-      async () => { throw expectedError },
-      async () => {
-        strictEqual(state, 'AsyncTask 1 started')
-        state = 'AsyncTask 2 started'
-        await setTimeoutAsync(10)
-        return 3
-      },
-      async () => 4
-    ]
-
-    const promiseQueuePromise = promiseQueue({ asyncTaskList, shouldContinueOnError: true })
-
-    strictEqual(state, '')
-    state = 'Queue started'
-
-    setTimeoutAsync(50).then(() => reject(new Error(`promiseQueue should finish in time`)))
-
-    const { resultList, errorList, endList, pendingList } = await promiseQueuePromise
-
-    resolve()
-    await promise // time check
-
-    deepEqual([ ...resultList ], [ 0, 1, undefined, 3, 4 ])
-    deepEqual([ ...errorList ], [ undefined, undefined, expectedError ])
-    deepEqual(endList, asyncTaskList)
-    deepEqual(pendingList, [])
   })
 })

@@ -38,9 +38,6 @@ const createDownloadWithBlob = (fileName, blob) => {
   window.URL.revokeObjectURL(objectUrl)
 }
 
-const createDownloadText = createDownloadWithString // TODO: DEPRECATED
-const createDownloadBlob = (fileName, dataArray, dataType = DEFAULT_MIME) => createDownloadWithBlob(new window.Blob(dataArray, { type: dataType })) // TODO: DEPRECATED, bad naming, change to download JSON
-
 export {
   loadText,
   loadImage,
@@ -49,8 +46,5 @@ export {
   createDownload,
   createDownloadWithString,
   createDownloadWithObject,
-  createDownloadWithBlob,
-
-  createDownloadText, // TODO: DEPRECATED
-  createDownloadBlob // TODO: DEPRECATED
+  createDownloadWithBlob
 }

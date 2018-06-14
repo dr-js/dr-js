@@ -6,7 +6,6 @@ import { clock } from 'source/common/time'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder/Common'
-import { getUnusedPort } from './function' // TODO: DEPRECATED
 
 const DEFAULT_HTTPS_OPTION = {
   protocol: 'https:',
@@ -83,6 +82,5 @@ const createRequestListener = ({
 
 export {
   createServer,
-  createRequestListener,
-  getUnusedPort // TODO: DEPRECATED
+  createRequestListener
 }

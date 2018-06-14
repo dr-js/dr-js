@@ -25,11 +25,7 @@ const doUpgradeSocket = (webSocket, protocol, responseKey) => {
   webSocket.socket.on('end', webSocket.close)
   webSocket.socket.write(`HTTP/1.1 101 Switching Protocols\r\nupgrade: websocket\r\nconnection: upgrade\r\nsec-websocket-accept: ${responseKey}\r\n${protocol ? `sec-websocket-protocol: ${protocol}\r\n` : ''}\r\n`)
   __DEV__ && console.log('[WebSocketServer][doUpgradeSocket]', responseKey)
-  webSocket.listenAndReceiveFrame(
-    webSocket.socket,
-    webSocket.onReceiveFrame,
-    (error) => webSocket.close(1006, __DEV__ ? `Frame Error: ${error.message}` : 'Frame Error')
-  )
+  webSocket.listenAndReceiveFrame()
   webSocket.protocol = protocol
   webSocket.setReadyState(webSocket.OPEN)
   webSocket.emit(WEB_SOCKET_EVENT_MAP.OPEN)

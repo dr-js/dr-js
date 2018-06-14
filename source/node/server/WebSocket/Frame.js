@@ -1,17 +1,10 @@
 import { randomBytes } from 'crypto'
 import { constants as bufferConstants } from 'buffer'
 
-import {
-  FRAME_TYPE_CONFIG_MAP,
-  DATA_TYPE_MAP,
-  DO_MASK_DATA,
-  DEFAULT_FRAME_LENGTH_LIMIT
-} from './type'
+import { FRAME_TYPE_CONFIG_MAP, DATA_TYPE_MAP, DO_MASK_DATA, DEFAULT_FRAME_LENGTH_LIMIT } from './type'
 
 const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
-
 const POW_2_32 = Math.pow(2, 32)
-
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
 const createFrameSender = (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) => {
@@ -351,7 +344,7 @@ const createFrameDecoder = (frameLengthLimit) => {
   }
 }
 
-// will change buffer
+// TODO: will change buffer, optimize speed?
 const applyBufferMaskQuadlet = (buffer, maskQuadletBuffer) => {
   for (let index = 0, indexMax = buffer.length; index < indexMax; index++) buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
 }

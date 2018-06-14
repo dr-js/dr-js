@@ -22,13 +22,12 @@ const createWebSocket = ({
   const frameSender = createFrameSender(frameLengthLimit)
   const frameReceiver = createFrameReceiver(frameLengthLimit)
 
-  // should be public
-  let readyState = CONNECTING // TODO: use getter
-
   let closeTimeoutToken = null
   let pingTimeoutToken = null
   let pongTimeoutToken = null
 
+  // should be public
+  let readyState = CONNECTING // TODO: NOTE: browser WebSocket can directly read readyState
   const getReadyState = () => readyState
   const setReadyState = (nextReadyState) => { readyState = nextReadyState }
 
@@ -77,19 +76,19 @@ const createWebSocket = ({
     if (!frameDataType) frameDataType = frame.dataType
     frameBufferList.push(frame.dataBuffer)
     frameBufferLength += frame.dataBuffer.length
-    if (frameBufferLength > frameLengthLimit) throw new Error(`[queueCompleteFrame] frameBufferList length ${frameBufferLength} exceeds limit: ${frameLengthLimit}`)
+    if (frameBufferLength > frameLengthLimit) throw new Error(`[WebSocket] frameBufferList length ${frameBufferLength} exceeds limit: ${frameLengthLimit}`)
 
-    __DEV__ && !frame.isFIN && console.log('[WebSocket] onQueueCompleteFrame need more', frameBufferList.length, frameBufferLength)
+    __DEV__ && !frame.isFIN && console.log('[WebSocket] need more frame', frameBufferList.length, frameBufferLength)
     if (!frame.isFIN) return null// has more frames
 
-    __DEV__ && console.log('[WebSocket] onQueueCompleteFrame got one complete frame', frameBufferList.length, frameBufferLength)
+    __DEV__ && console.log('[WebSocket] got one complete frame', frameBufferList.length, frameBufferLength)
     const dataType = frameDataType
     const dataBuffer = frameBufferList.length === 1 ? frameBufferList[ 0 ] : Buffer.concat(frameBufferList, frameBufferLength)
     frameDataType = null
     frameBufferList = []
     frameBufferLength = 0
 
-    // __DEV__ && console.log('[WebSocket] onQueueCompleteFrame emit one complete frame')
+    // __DEV__ && console.log('[WebSocket] emit one complete frame')
     return { dataType, dataBuffer }
   }
 
@@ -109,14 +108,16 @@ const createWebSocket = ({
         return receivePong()
     }
     __DEV__ && console.log('[WebSocket] onReceiveFrame', frame.dataType)
-    onQueueCompleteFrame(frame)
-  }
-
-  const onQueueCompleteFrame = (frame) => { // { isFIN, dataType, dataBuffer, dataBufferLength }
     const completeFrameData = queueCompleteFrame(frame)
     completeFrameData && eventEmitter.emit(WEB_SOCKET_EVENT_MAP.FRAME, completeFrameData)
     shouldActivePing && setNextPing() // [SERVER] delay next ping
   }
+
+  const listenAndReceiveFrame = () => frameReceiver.listenAndReceiveFrame(
+    socket,
+    onReceiveFrame,
+    (error) => close(1006, __DEV__ ? `Frame Error: ${error.message}` : 'Frame Error')
+  )
 
   const close = (code = 1000, reason = '') => {
     // __DEV__ && console.log('[WebSocket] want to close', { code, reason })
@@ -194,8 +195,6 @@ const createWebSocket = ({
     CLOSED,
 
     ...eventEmitter,
-    ...frameSender,
-    ...frameReceiver,
 
     socket,
     frameLengthLimit,
@@ -204,19 +203,17 @@ const createWebSocket = ({
     getReadyState,
     setReadyState,
     setFrameLengthLimit,
+
     isClosed,
     doCloseSocket,
-    queueCompleteFrame,
-    onReceiveFrame,
-    onQueueCompleteFrame,
+    listenAndReceiveFrame,
     close,
     sendText,
     sendBuffer,
     setNextPing,
     setNextPong,
     sendPing,
-    sendPong,
-    receivePong
+    sendPong
   }
 }
 

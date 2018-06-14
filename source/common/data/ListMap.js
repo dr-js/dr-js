@@ -34,9 +34,4 @@ const createListMap = () => {
   }
 }
 
-class ListMap {constructor () { Object.assign(this, createListMap()) }} // TODO: DEPRECATED
-
-export {
-  createListMap,
-  ListMap // TODO: DEPRECATED
-}
+export { createListMap }

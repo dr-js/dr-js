@@ -20,9 +20,4 @@ const createIndexBox = (min = 0, max = Infinity) => {
   return { getExactly, get }
 }
 
-class IndexBox { constructor (min, max) { Object.assign(this, createIndexBox(min, max)) } } // TODO: DEPRECATED
-
-export {
-  createIndexBox,
-  IndexBox // TODO: DEPRECATED
-}
+export { createIndexBox }
