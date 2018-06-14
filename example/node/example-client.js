@@ -24,7 +24,7 @@ createWebSocketClient({
       setTimeout(async () => webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico'))), 2000) // big buffer
       setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
     })
-    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, (webSocket, { dataType, dataBuffer }) => {
+    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, ({ dataType, dataBuffer }) => {
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
     })
     webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {

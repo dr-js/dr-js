@@ -15,17 +15,19 @@ const POW_2_32 = Math.pow(2, 32)
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
 const createFrameSender = (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) => {
-  let encodedFrameHeaderBuffer, encodedFrameDataBuffer, promiseTail
+  let promiseTail
+  let encodedFrameHeaderBuffer
+  let encodedFrameDataBuffer
   const clear = () => {
+    promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
     encodedFrameHeaderBuffer = null
     encodedFrameDataBuffer = null
-    promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
   }
   clear()
 
   const setFrameLengthLimit = (nextFrameLengthLimit) => { frameLengthLimit = nextFrameLengthLimit }
 
-  const queuePromise = (onFulfilled, onRejected) => (promiseTail = promiseTail.then(onFulfilled, onRejected))
+  const queuePromise = (resolve, reject) => (promiseTail = promiseTail.then(resolve, reject))
 
   // frameTypeConfig: FRAME_COMPLETE/FRAME_FIRST
   // dataType: OPCODE_TEXT/OPCODE_BINARY/OPCODE_CLOSE/OPCODE_PING/OPCODE_PONG
@@ -118,17 +120,18 @@ const DECODE_STAGE_DATA_BUFFER = 4
 const DECODE_STAGE_END_FRAME = 5
 
 const createFrameReceiver = (frameLengthLimit) => {
-  let doClearSocketListener, promiseTail
+  let promiseTail
+  let doClearSocketListener
   const clear = () => {
-    if (doClearSocketListener) doClearSocketListener()
-    doClearSocketListener = null
     promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
+    doClearSocketListener && doClearSocketListener()
+    doClearSocketListener = null
   }
   clear()
 
   const setFrameLengthLimit = (nextFrameLengthLimit) => { frameLengthLimit = nextFrameLengthLimit }
 
-  const queuePromise = (onFulfilled, onRejected) => (promiseTail = promiseTail.then(onFulfilled, onRejected))
+  const queuePromise = (resolve, reject) => (promiseTail = promiseTail.then(resolve, reject))
 
   const listenAndReceiveFrame = (socket, onFrame, onError = clear) => {
     const { pushChunkDataBuffer, decode, resetDecode, getDecodeFrame } = createFrameDecoder(frameLengthLimit)

@@ -207,12 +207,12 @@
   - `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
   - `createFrameReceiver`, `createFrameSender`
-+ 📄 [source/node/server/WebSocket/WebSocketBase.js](source/node/server/WebSocket/WebSocketBase.js)
-  - `WebSocketBase`
++ 📄 [source/node/server/WebSocket/WebSocket.js](source/node/server/WebSocket/WebSocket.js)
+  - `createWebSocket`
 + 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
-  - `WebSocketClient`, `createWebSocketClient`
+  - `createWebSocketClient`
 + 📄 [source/node/server/WebSocket/WebSocketServer.js](source/node/server/WebSocket/WebSocketServer.js)
-  - `WebSocketServer`, `enableWebSocketServer`
+  - `enableWebSocketServer`
 + 📄 [source/node/server/WebSocket/WebSocketUpgradeRequest.js](source/node/server/WebSocket/WebSocketUpgradeRequest.js)
   - `createUpdateRequestListener`
 + 📄 [source/node/server/WebSocket/type.js](source/node/server/WebSocket/type.js)
@@ -416,12 +416,12 @@
     - **WebSocket**
       - **Frame**
         - `createFrameReceiver`, `createFrameSender`
-      - **WebSocketBase**
-        - `WebSocketBase`
+      - **WebSocket**
+        - `createWebSocket`
       - **WebSocketClient**
-        - `WebSocketClient`, `createWebSocketClient`
+        - `createWebSocketClient`
       - **WebSocketServer**
-        - `WebSocketServer`, `enableWebSocketServer`
+        - `enableWebSocketServer`
       - **WebSocketUpgradeRequest**
         - `createUpdateRequestListener`
       - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`

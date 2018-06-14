@@ -16,8 +16,8 @@ const TYPE_INFO_USER = '#INFO_USER'
 const TYPE_BUFFER_GROUP = '#BUFFER_GROUP'
 const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
-const wrapFrameBufferPacket = (onData) => async (webSocket, { dataType, dataBuffer }) => {
-  __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
+const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
+  __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // dataBuffer.toString().slice(0, 20)
   if (dataType !== DATA_TYPE_MAP.OPCODE_BINARY) return webSocket.close(1000, 'OPCODE_BINARY expected')
   const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
   __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
@@ -88,7 +88,7 @@ const upgradeRequestProtocol = (store) => {
     sendGroupInfo(groupInfo)
     __DEV__ && console.log(`[RequestProtocol] >> CLOSE, current group: ${groupInfo.size} (self included)`, groupPath)
   })
-  webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, wrapFrameBufferPacket(([ headerString, payloadBuffer ]) => {
+  webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, wrapFrameBufferPacket(webSocket, ([ headerString, payloadBuffer ]) => {
     const { type, payload, targetId } = JSON.parse(headerString)
     if (type === TYPE_CLOSE) webSocket.close(1000, 'CLOSE received')
     if (type === TYPE_BUFFER_GROUP) sendGroupBuffer(groupInfoMap[ groupPath ], type, payload, payloadBuffer)
@@ -96,7 +96,7 @@ const upgradeRequestProtocol = (store) => {
   }))
 }
 
-const FRAME_LENGTH_LIMIT = 512 * 1024 * 1024 // 512 MiB
+const FRAME_LENGTH_LIMIT = 0.5 * 1024 * 1024 * 1024 // 0.5 GiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
 const responderWebsocketGroupUpgrade = async (store) => {
   const { origin, protocolList, isSecure } = store.webSocket
@@ -128,6 +128,7 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
       TYPE_INFO_USER,
       TYPE_BUFFER_GROUP,
       TYPE_BUFFER_SINGLE,
+      FRAME_LENGTH_LIMIT,
       onload: mainScriptInit
     }),
     DR_BROWSER_SCRIPT()
@@ -198,6 +199,7 @@ const mainScriptInit = () => {
     TYPE_INFO_USER,
     TYPE_BUFFER_GROUP,
     TYPE_BUFFER_SINGLE,
+    FRAME_LENGTH_LIMIT,
     Dr: {
       Common: {
         Time: { setTimeoutAsync },
@@ -365,6 +367,7 @@ const mainScriptInit = () => {
     if (!text && !file) return
     const fileName = file && file.name
     const fileSize = file && file.size
+    if (fileSize > FRAME_LENGTH_LIMIT) return window.alert(`fill size too big! max: ${binary(FRAME_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
     text && addLog({ id: STATE.id, text, className: 'color-self' })
     const fileTag = fileName && addLogWithFile({ isSend: true, id: STATE.id, fileName, fileSize, className: 'color-self' })
     STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
