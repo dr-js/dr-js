@@ -19,7 +19,7 @@ const COMMON_STYLE = () => `<style>
 ::-webkit-scrollbar-thumb { background: #0004; }
 ::-webkit-scrollbar-thumb:hover { background: #0006; }
 body { overflow: hidden; display: flex; flex-flow: column; width: 100vw; height: 100vh; font-family: monospace; font-size: 16px; }
-button, .button { text-decoration: none; cursor: pointer; margin: 2px 4px; padding: 2px 4px; border: 0; border-radius: 4px; background: #ddd; }
+button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: #ddd; box-shadow: inset 0 0 0 1px #888; }
 button:hover, .button:hover { background: #eee; box-shadow: inset 0 0 0 1px #aaa; }
 button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; }
 button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: #fff; box-shadow: unset; }

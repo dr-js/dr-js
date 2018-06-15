@@ -51,9 +51,10 @@ const deleteUser = (groupPath, id) => {
 const fixUserIdClash = (groupPath, id) => {
   const groupIdSet = groupIdSetMap[ groupPath ]
   if (!groupIdSet || !groupIdSet.has(id)) return id
+  const prefix = id.replace(/\d+$/, '')
   let suffix = 1
-  while (groupIdSet.has(`${id}${suffix}`)) suffix++
-  return `${id}${suffix}`
+  while (groupIdSet.has(`${prefix}-${suffix}`)) suffix++
+  return `${prefix}-${suffix}`
 }
 
 const upgradeRequestProtocol = (store) => {
@@ -211,7 +212,7 @@ const mainScriptInit = () => {
         Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
         Resource: { createDownloadWithBlob },
         DOM: { applyDragFileListListener },
-        Input: { KeyCommand: { createKeyCommandListener } }
+        Input: { KeyCommand: { createKeyCommandHub } }
       }
     }
   } = window
@@ -378,12 +379,13 @@ const mainScriptInit = () => {
   qS('#button-toggle').onclick = toggleWebSocket
   qS('#button-send').onclick = sendPayload
 
-  const { addKeyCommand } = createKeyCommandListener(document)
+  const { start, addKeyCommand } = createKeyCommandHub({})
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'd' }, callback: toggleWebSocket })
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'l' }, callback: clearLog })
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })
   addKeyCommand({ target: qS('#group-path'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
   addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
+  start()
 
   applyDragFileListListener(document, (fileList) => {
     const payloadFile = qS('#payload-file')

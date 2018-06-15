@@ -36,7 +36,7 @@
 + 📄 [source/browser/input/EnhancedEventProcessor.js](source/browser/input/EnhancedEventProcessor.js)
   - `createSwipeEnhancedEventProcessor`
 + 📄 [source/browser/input/KeyCommand.js](source/browser/input/KeyCommand.js)
-  - `createKeyCommandListener`
+  - `createKeyCommandHub`
 + 📄 [source/browser/input/PointerEvent.js](source/browser/input/PointerEvent.js)
   - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
 + 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
@@ -250,7 +250,7 @@
     - **EnhancedEventProcessor**
       - `createSwipeEnhancedEventProcessor`
     - **KeyCommand**
-      - `createKeyCommandListener`
+      - `createKeyCommandHub`
     - **PointerEvent**
       - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
   - **Module**

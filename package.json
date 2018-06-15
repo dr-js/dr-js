@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.16.0-dev.1",
+  "version": "0.16.0-dev.2",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -24,7 +24,7 @@
     "// build =======================": "",
     "build-bin": "cross-env BABEL_ENV=build-bin babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-bin-dev": "cross-env BABEL_ENV=build-bin-dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
-    "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/**",
+    "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/",
     "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "build-library-webpack": "babel-node ./script/webpack production profile",
@@ -47,9 +47,9 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dev-dep-tool": "0.3.1-dev.1",
-    "dev-dep-web": "0.3.1-dev.1",
-    "dr-js": "^0.15.2",
+    "dev-dep-tool": "0.3.1-dev.2",
+    "dev-dep-web": "0.3.1-dev.2",
+    "dr-js": "0.16.0-dev.1",
     "webpack-bundle-analyzer": "^2.13.1"
   },
   "sideEffects": false
