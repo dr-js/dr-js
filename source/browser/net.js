@@ -13,15 +13,20 @@ const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => 
   headers && Object.entries(headers).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.withCredentials = credentials === 'include'
   request.timeout = timeout || 0
-  request.responseType = 'text'
+  request.responseType = 'text' // TODO: may be not a good default
   request.onerror = () => reject(getError('NETWORK_ERROR', -1))
   request.onreadystatechange = () => {
     const { readyState, status } = request
-    if (readyState < 2) return
+    if (readyState !== 2) return // HEADERS_RECEIVED
     if (status === 0) reject(getError('STATUS_ERROR', -1)) // can be timeout
+    const headers = request.getAllResponseHeaders().split(/[\r\n]+/).reduce((o, rawHeader) => {
+      const [ key, ...valueList ] = rawHeader.split(':')
+      if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
+      return o
+    }, {})
     const ok = (status >= 200 && status < 300)
     const { text, json } = getPayloadGetter(request, getError)
-    resolve({ status, ok, text, json })
+    resolve({ headers, status, ok, text, json })
   }
   request.send(body || null)
 })
