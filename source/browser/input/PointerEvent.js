@@ -18,7 +18,7 @@ const applyPointerEventListener = ({
   isCancelOnOutOfBound = true, // send out of bound as cancel
   isUseTouchEvent = true // TODO: when touch trigger browser scroll, pointer will be cancelled, so to still get a drag, both Pointer & Touch will be listened
 }) => {
-  if (!window.getComputedStyle(element).touchAction) throw new Error(`[applyPointerEventListener] should set CSS 'touch-action' to 'none' to prevent browser defaults`)
+  !window.getComputedStyle(element).touchAction && console.warn(`[applyPointerEventListener] should set CSS 'touch-action' to 'none' to prevent browser defaults`)
 
   const eventSource = isGlobal ? window.document : element
   isCancelOnOutOfBound = isCancel && isCancelOnOutOfBound

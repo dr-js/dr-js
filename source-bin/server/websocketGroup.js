@@ -51,7 +51,7 @@ const deleteUser = (groupPath, id) => {
 const fixUserIdClash = (groupPath, id) => {
   const groupIdSet = groupIdSetMap[ groupPath ]
   if (!groupIdSet || !groupIdSet.has(id)) return id
-  const prefix = id.replace(/\d+$/, '')
+  const prefix = id.replace(/-*\d+$/, '')
   let suffix = 1
   while (groupIdSet.has(`${prefix}-${suffix}`)) suffix++
   return `${prefix}-${suffix}`

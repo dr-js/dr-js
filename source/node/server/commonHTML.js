@@ -19,10 +19,10 @@ const COMMON_STYLE = () => `<style>
 ::-webkit-scrollbar-thumb { background: #0004; }
 ::-webkit-scrollbar-thumb:hover { background: #0006; }
 body { overflow: hidden; display: flex; flex-flow: column; width: 100vw; height: 100vh; font-family: monospace; font-size: 16px; }
-button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: #ddd; box-shadow: inset 0 0 0 1px #888; }
-button:hover, .button:hover { background: #eee; box-shadow: inset 0 0 0 1px #aaa; }
-button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; }
-button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: #fff; box-shadow: unset; }
+button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: hsla(0, 0%, 70%, 0.4); box-shadow: inset 0 0 0 1px #888; }
+button:hover, .button:hover { background: hsla(0, 0%, 80%, 0.4); box-shadow: inset 0 0 0 1px #aaa; }
+button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; box-shadow: inset 0 0 0 1px #e00; }
+button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: hsla(0, 0%, 100%, 0.4); box-shadow: unset; }
 @media (pointer: fine) { 
   ::-webkit-scrollbar { width: 14px; height: 14px; }
   button, .button, .auto-height { min-height: 20px; font-size: 14px; } 
@@ -70,6 +70,7 @@ const appendChildListFunc = (element, childElementList = []) => childElementList
 const modifyElementClassName = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
 const modifyElementAttribute = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
 
+// TODO: this is relative to top package version
 const DR_BROWSER_SCRIPT = () => `<script>${readFileSync(require.resolve('dr-js/library/Dr.browser'), 'utf8')}</script>`
 
 export {
