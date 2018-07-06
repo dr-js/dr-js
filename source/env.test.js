@@ -11,11 +11,17 @@ const wrapMuteConsoleError = (func) => () => {
 }
 
 describe('Env', () => {
-  it('getGlobal() equal global in node', () => equal(getGlobal(), global))
+  it('getGlobal() equal global in node', () => {
+    equal(getGlobal(), global)
+  })
 
-  it('getEnvironment().environmentName should be node', () => equal(getEnvironment().environmentName, 'node'))
+  it('getEnvironment().environmentName should be node', () => {
+    equal(getEnvironment().environmentName, 'node')
+  })
 
-  it('getEndianness() should not be unknown', () => notEqual(getEndianness(), 'unknown'))
+  it('getEndianness() should not be unknown', () => {
+    notEqual(getEndianness(), 'unknown')
+  })
 
   it('assert(true) should not throw', wrapMuteConsoleError(() => {
     doesNotThrow(() => assert(true, 'assert(true)'))

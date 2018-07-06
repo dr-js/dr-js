@@ -1,25 +1,24 @@
-import { Blob, parseBlobAsText, parseBlobAsArrayBuffer } from './Blob'
+import { fromString, toString } from 'source/common/data/ArrayBuffer'
+import { HEADER_BYTE_SIZE, packArrayBufferHeader } from 'source/common/data/ArrayBufferPacket'
+import { Blob, parseBlobAsArrayBuffer } from './Blob'
 
 const EMPTY_BLOB = new Blob()
-const MAX_BLOB_PACKET_SIZE = (1 << 16) - 1
-const BLOB_PACKET_SIZE_MASK = (1 << 8) - 1
-const packBlobPacket = (headerString, payloadBlob = EMPTY_BLOB) => {
-  const headerBlob = new Blob([ headerString ])
-  if (headerBlob.size > MAX_BLOB_PACKET_SIZE) throw new Error(`[packBlobPacket] headerString exceeds max length ${MAX_BLOB_PACKET_SIZE} with length: ${headerBlob.size}`)
-  // make sure the number is written in Big Endian
-  return new Blob([ new Blob([ Uint8Array.of(headerBlob.size >> 8, headerBlob.size & BLOB_PACKET_SIZE_MASK), headerBlob, payloadBlob ]) ])
-}
+
+const packBlobPacket = (headerString, payloadBlob = EMPTY_BLOB) => new Blob([
+  ...packArrayBufferHeader(fromString(headerString)),
+  payloadBlob
+])
+
 const parseBlobPacket = async (blobPacket) => {
   // make sure the number is read in Big Endian
-  const [ headerBlobSizeHigh, headerBlobSizeLow ] = new Uint8Array(await parseBlobAsArrayBuffer(blobPacket.slice(0, 2)))
-  const headerLength = (headerBlobSizeHigh << 8) + headerBlobSizeLow
-  const headerString = await parseBlobAsText(blobPacket.slice(2, 2 + headerLength))
-  const payloadBlob = blobPacket.slice(2 + headerLength)
+  const headerSizeDataView = new DataView(await parseBlobAsArrayBuffer(blobPacket.slice(0, HEADER_BYTE_SIZE)))
+  const headerSize = headerSizeDataView.getUint32(0, false)
+  const headerString = await toString(await parseBlobAsArrayBuffer(blobPacket.slice(HEADER_BYTE_SIZE, HEADER_BYTE_SIZE + headerSize)))
+  const payloadBlob = blobPacket.slice(HEADER_BYTE_SIZE + headerSize)
   return [ headerString, payloadBlob ]
 }
 
 export {
-  MAX_BLOB_PACKET_SIZE,
   packBlobPacket,
   parseBlobPacket
 }

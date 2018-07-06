@@ -6,9 +6,7 @@ window.addContent(`
 .indicator { width: 100vw; height: 100vh; background: rgba(255,0,0,0.5); }
 </style>
 `, `
-<div id="root" class="flex-column">
-${`<button>AAA</button><hr /><p>BBB</p><hr />`.repeat(100)}
-</div>
+<div id="root" class="flex-column">${`<button>AAA</button><hr /><p>BBB</p><hr />`.repeat(100)}</div>
 <div id="SWIPE-TARGET" class="drag-box" style="transform: translate(300px, 300px); background: rgba(0,255,0,0.8); pointer-events: none;">SWIPE TARGET</div>
 <div id="SWIPE" class="drag-box" style="transform: translate(300px, 300px);">SWIPE</div>
 <div id="SCROLL" class="drag-box" style="transform: translate(300px, 400px);">SCROLL</div>

@@ -1,6 +1,7 @@
 import { getTimestamp } from 'source/common/time'
+import { getRandomArrayBuffer } from 'source/common/math/random'
 import { swapObfuscateString } from 'source/common/data/function'
-import { packBufferString, parseBufferString } from 'source/common/data/ArrayBuffer'
+import { packArrayBufferPacket, parseArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
 
 const CHECK_CODE_SEP = '-'
 const CHAR_CODE_1 = '1'.charCodeAt(0)
@@ -24,14 +25,14 @@ const calcCode = (size, tokenSize, dataView, seed = 0) => {
 
 const verifyOption = ({
   tag = Math.floor(getTimestamp()).toString(36), // /^\w*$/ only, public visible
-  size = 64 * 1024, // in byte
-  tokenSize = 8, // in byte, max 13byte, 32bit
+  size = 64 * 1024, // in byte, 32 based
+  tokenSize = 8, // in byte, max 13byte, 32bit (limited by calc step `Math.pow(16, tokenSize)`)
   timeGap = 30 // in sec, min 1sec
 }) => {
-  if (!/^\w*$/.test(tag)) throw new Error(`[verifyOption] invalid tag: ${tag}`)
-  if (!Number.isInteger(size) || size % 32) throw new Error(`[verifyOption] invalid size: ${size}`)
-  if (!Number.isInteger(tokenSize) || tokenSize > 13 || tokenSize < 2) throw new Error(`[verifyOption] invalid tokenSize: ${tokenSize}`)
-  if (!Number.isInteger(timeGap) || timeGap < 1) throw new Error(`[verifyOption] invalid timeGap: ${timeGap}`)
+  if (!/^\w*$/.test(tag)) throw new Error(`invalid tag: ${tag}`)
+  if (!Number.isInteger(size) || size % 32) throw new Error(`invalid size: ${size}`)
+  if (!Number.isInteger(tokenSize) || tokenSize > 13 || tokenSize < 2) throw new Error(`invalid tokenSize: ${tokenSize}`)
+  if (!Number.isInteger(timeGap) || timeGap < 1) throw new Error(`invalid timeGap: ${timeGap}`)
   return { tag, size, tokenSize, timeGap }
 }
 
@@ -61,17 +62,27 @@ const verifyCheckCode = (
   if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
 }
 
-const packDataString = ({ tag, size, tokenSize, timeGap, dataView }) => JSON.stringify({ tag, size, tokenSize, timeGap, dataViewBufferString: packBufferString(dataView.buffer) })
+const generateLookupData = (option) => {
+  option = verifyOption(option)
+  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) }
+}
 
-const parseDataString = (dataString) => {
-  const { tag, size, tokenSize, timeGap, dataViewBufferString } = JSON.parse(dataString)
-  return { tag, size, tokenSize, timeGap, dataView: new DataView(parseBufferString(dataViewBufferString)) }
+const packDataArrayBuffer = ({ tag, size, tokenSize, timeGap, dataView }) => packArrayBufferPacket(
+  JSON.stringify([ tag, size, tokenSize, timeGap ]),
+  dataView.buffer
+)
+
+const parseDataArrayBuffer = (dataArrayBuffer) => {
+  const [ headerString, payloadArrayBuffer ] = parseArrayBufferPacket(dataArrayBuffer)
+  const [ tag, size, tokenSize, timeGap ] = JSON.parse(headerString)
+  return { tag, size, tokenSize, timeGap, dataView: new DataView(payloadArrayBuffer) }
 }
 
 export {
   verifyOption,
   generateCheckCode,
   verifyCheckCode,
-  packDataString,
-  parseDataString
+  generateLookupData,
+  packDataArrayBuffer,
+  parseDataArrayBuffer
 }

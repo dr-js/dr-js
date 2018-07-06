@@ -97,7 +97,7 @@ const upgradeRequestProtocol = (store) => {
   }))
 }
 
-const FRAME_LENGTH_LIMIT = 0.5 * 1024 * 1024 * 1024 // 0.5 GiB
+const FRAME_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
 const responderWebsocketGroupUpgrade = async (store) => {
   const { origin, protocolList, isSecure } = store.webSocket
@@ -193,6 +193,11 @@ const mainHTML = `
 
 const mainScriptInit = () => {
   const {
+    alert,
+    getSelection,
+    location,
+    Blob,
+    WebSocket,
     qS,
     cE,
     TYPE_CLOSE,
@@ -206,10 +211,11 @@ const mainScriptInit = () => {
         Time: { setTimeoutAsync },
         Function: { lossyAsync },
         Math: { getRandomInt, getRandomId },
-        Format: { binary }
+        Format: { binary },
+        Data: { ArrayBufferPacket: { packArrayBufferPacket, parseArrayBufferPacket } }
       },
       Browser: {
-        Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
+        Data: { Blob: { parseBlobAsArrayBuffer } },
         Resource: { createDownloadWithBlob },
         DOM: { applyDragFileListListener },
         Input: { KeyCommand: { createKeyCommandHub } }
@@ -229,7 +235,7 @@ const mainScriptInit = () => {
   }
 
   const addLog = ({ id, text, className }) => appendLog(
-    cE('pre', { innerText: text, ondblclick: (event) => window.getSelection().selectAllChildren(event.currentTarget.parentNode.querySelector('pre')) }),
+    cE('pre', { innerText: text, ondblclick: (event) => getSelection().selectAllChildren(event.currentTarget.parentNode.querySelector('pre')) }),
     idTag(id, className),
     timeTag()
   )
@@ -247,7 +253,7 @@ const mainScriptInit = () => {
   const clearLog = () => qS('#log', '')
 
   const getWebSocketGroupUrl = (groupPath, id) => {
-    const { protocol, host } = window.location
+    const { protocol, host } = location
     return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURI(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
@@ -292,17 +298,18 @@ const mainScriptInit = () => {
   clearLog()
 
   const requestFile = (id, fileId) => {
-    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { fileId, intent: 'request' } })))
+    STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { fileId, intent: 'request' } })))
   }
 
   const toggleWebSocket = () => {
     if (STATE.websocket) {
-      STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_CLOSE })))
+      STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_CLOSE })))
       return
     }
     const groupPath = qS('#group-path').value.trim() || 'public'
     const id = qS('#id').value.trim() || getRandomUserId()
-    const websocket = new window.WebSocket(getWebSocketGroupUrl(groupPath, id), 'group-binary-packet')
+    const websocket = new WebSocket(getWebSocketGroupUrl(groupPath, id), 'group-binary-packet')
+    websocket.binaryType = 'arraybuffer'
     const onOpenInfo = (id) => {
       qS('#group-path').value = groupPath
       qS('#id').value = id
@@ -313,7 +320,7 @@ const mainScriptInit = () => {
       ? onCloseWebSocket()
       : onErrorRetry(new Error(`server close with code: ${code}`))
     )
-    websocket.addEventListener('message', ({ data }) => onMessage(data, onOpenInfo))
+    websocket.addEventListener('message', ({ data: arrayBuffer }) => onMessage(arrayBuffer, onOpenInfo))
   }
 
   const getRandomUserId = () => {
@@ -321,8 +328,8 @@ const mainScriptInit = () => {
     return `User-${tagList[ getRandomInt(tagList.length - 1) ]}`
   }
 
-  const onMessage = async (data, onOpenInfo) => {
-    const [ headerString, payloadBlob ] = await parseBlobPacket(data)
+  const onMessage = async (arrayBuffer, onOpenInfo) => {
+    const [ headerString, payloadArrayBuffer ] = await parseArrayBufferPacket(arrayBuffer)
     const { type, targetId, payload } = JSON.parse(headerString)
     if (type === TYPE_INFO_USER) {
       onOpenInfo(payload.id)
@@ -336,21 +343,24 @@ const mainScriptInit = () => {
       text && addLog({ id, text })
       fileName && addLogWithFile({ id, fileName, fileSize, fileId })
     } else if (type === TYPE_BUFFER_SINGLE) {
-      if (targetId !== STATE.id) throw new Error(`Strange mismatch`) // TODO: test, should not mis send
+      if (targetId !== STATE.id) throw new Error(`Strange mismatch`) // TODO: test, should not mis-send
       const { id, intent } = payload
       if (intent === 'request') {
         const { fileId } = payload
         const file = STATE.fileWeakMap.get(qS(`#${fileId}`))
         const fileName = file && file.name
         const fileType = file && file.type
-        STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { intent: 'response', ok: Boolean(file), fileName, fileType } }), file))
+        STATE.websocket.send(packArrayBufferPacket(
+          JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { intent: 'response', ok: Boolean(file), fileName, fileType } }),
+          await parseBlobAsArrayBuffer(file)
+        ))
         addLogSystem(file
           ? `Send file: ${fileName} to ${id}`
           : `Miss file request from ${id}`
         )
       } else if (intent === 'response') {
         const { ok, fileName, fileType } = payload
-        ok && createDownloadWithBlob(fileName, new window.Blob([ payloadBlob ], { type: fileType }))
+        ok && createDownloadWithBlob(fileName, new Blob([ payloadArrayBuffer ], { type: fileType }))
         addLogSystem(ok
           ? `Get file: ${fileName} from ${id}`
           : `Miss file response from ${id}`
@@ -368,10 +378,10 @@ const mainScriptInit = () => {
     if (!text && !file) return
     const fileName = file && file.name
     const fileSize = file && file.size
-    if (fileSize > FRAME_LENGTH_LIMIT) return window.alert(`fill size too big! max: ${binary(FRAME_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
+    if (fileSize > FRAME_LENGTH_LIMIT) return alert(`fill size too big! max: ${binary(FRAME_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
     text && addLog({ id: STATE.id, text, className: 'color-self' })
     const fileTag = fileName && addLogWithFile({ isSend: true, id: STATE.id, fileName, fileSize, className: 'color-self' })
-    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
+    STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
     fileName && STATE.fileWeakMap.set(fileTag, file)
   }
 

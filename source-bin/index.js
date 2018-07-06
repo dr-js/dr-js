@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { createReadStream, createWriteStream, writeFileSync } from 'fs'
+import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { cpus } from 'os'
 
 import { getEndianness } from 'dr-js/module/env'
-import { generateCheckCode, verifyCheckCode } from 'dr-js/module/common/module/TimedLookup'
-import { generateLookupData, saveLookupFile, loadLookupFile } from 'dr-js/module/node/module/TimedLookup'
+import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
 import { fetch } from 'dr-js/module/node/net'
+import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList } from 'dr-js/module/node/file/Directory'
@@ -102,14 +102,14 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
     }
     case 'timed-lookup-file-generate': {
-      const outputFile = getSingleOptionOptional('output-file')
+      const outputFile = getSingleOption('output-file')
       const [ tag, size, tokenSize, timeGap ] = argumentList
-      return saveLookupFile(outputFile, await generateLookupData({ tag, size, tokenSize, timeGap }))
+      return writeFileSync(outputFile, Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap }))))
     }
     case 'timed-lookup-check-code-generate':
-      return console.log(generateCheckCode(await loadLookupFile(getSingleOptionOptional('input-file'))))
+      return console.log(generateCheckCode(parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file'))))))
     case 'timed-lookup-check-code-verify':
-      verifyCheckCode(await loadLookupFile(getSingleOptionOptional('input-file')), argumentList[ 0 ])
+      verifyCheckCode(parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))), argumentList[ 0 ])
       return console.log('valid checkCode')
   }
 }

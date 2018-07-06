@@ -1,24 +1,23 @@
 import { global } from 'source/env'
 
-const getClock = () => {
-  try {
-    const clock = global.performance.now // msec
+const tryClock = () => {
+  try { // browser
+    const { performance } = global
+    const clock = performance.now.bind(performance)
     const time = clock()
     if (time <= clock()) return clock
-  } catch (error) { }
-  try {
-    const clock = global.performance.now.bind(global.performance)
-    const time = clock()
-    if (time <= clock()) return clock
-  } catch (error) { }
-  try {
+  } catch (error) { __DEV__ && console.log(`[tryClock] browser`, error) }
+
+  try { // node
+    const { process } = global
     const clock = () => {
-      const [ seconds, nanoseconds ] = global.process.hrtime()
+      const [ seconds, nanoseconds ] = process.hrtime()
       return seconds * 1000 + nanoseconds * 0.000001
     }
     const time = clock()
     if (time <= clock()) return clock
-  } catch (error) { }
+  } catch (error) { __DEV__ && console.log(`[tryClock] node`, error) }
+
   return Date.now // last fallback
 }
 
@@ -26,7 +25,7 @@ const CLOCK_PER_SECOND = 1000
 const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
 const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 
-const clock = getClock() // return running time in milliseconds
+const clock = tryClock() // return running time in milliseconds
 const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: needed? return running time in seconds
 const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
 

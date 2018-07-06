@@ -1,4 +1,6 @@
 import { equal } from 'assert'
+import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
+import { toArrayBuffer } from './Buffer'
 import { packBufferPacket, parseBufferPacket } from './BufferPacket'
 
 const { describe, it } = global
@@ -9,7 +11,7 @@ describe('Node.Data.BufferPacket', () => {
 
   it('packBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
-    equal(packet.length, 2 + Buffer.byteLength(headerString) + payloadBuffer.length)
+    equal(packet.length, packArrayBufferPacket(headerString, toArrayBuffer(payloadBuffer)).byteLength)
   })
 
   it('parseBufferPacket()', () => {

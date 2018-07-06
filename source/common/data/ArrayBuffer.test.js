@@ -1,50 +1,54 @@
-import { ok } from 'assert'
+import { equal } from 'assert'
+import { getSampleRange } from 'source/common/math/sample'
 import {
-  packBufferString,
-  parseBufferString,
-
-  packUint16String,
-  parseUint16String,
-
-  compareArrayBuffer
+  isEqualArrayBuffer,
+  concatArrayBuffer,
+  fromString,
+  toString
 } from './ArrayBuffer'
 
 const { describe, it } = global
 
 describe('Common.Data.ArrayBuffer', () => {
-  describe('BufferString', () => {
-    it('test odd', () => {
-      const odd = Uint8Array.of(1, 2, 3, 4, 5)
-      const bo = odd.buffer
-      const bso = packBufferString(bo)
-      const pso = parseBufferString(bso)
-      ok(compareArrayBuffer(bo, pso))
-    })
+  // test full 16bit range, both odd and event
+  const byteList0 = getSampleRange(0, 65535).reduce((o, uint16) => {
+    o.push(uint16 >> 8, uint16 % 256)
+    return o
+  }, [])
+  const byteList1 = [ 0, ...byteList0 ]
 
-    it('test even', () => {
-      const even = Uint8Array.of(1, 2, 3, 4)
-      const be = even.buffer
-      const bse = packBufferString(be)
-      const pse = parseBufferString(bse)
-      ok(compareArrayBuffer(be, pse))
-    })
+  const arrayBuffer0 = Uint8Array.from(byteList0).buffer
+  const arrayBuffer1 = Uint8Array.from(byteList1).buffer
+
+  const string0 = byteList0.map((v) => String.fromCharCode(v)).join('')
+  const string1 = byteList1.map((v) => String.fromCharCode(v)).join('')
+
+  it('isEqualArrayBuffer()', () => {
+    equal(isEqualArrayBuffer(new ArrayBuffer(0), new ArrayBuffer(0)), true)
+    equal(isEqualArrayBuffer(new ArrayBuffer(64), new ArrayBuffer(64)), true)
+    equal(isEqualArrayBuffer(arrayBuffer0, arrayBuffer0), true)
+    equal(isEqualArrayBuffer(arrayBuffer1, arrayBuffer1), true)
+    equal(isEqualArrayBuffer(arrayBuffer0, arrayBuffer1), false)
+    equal(isEqualArrayBuffer(arrayBuffer1, arrayBuffer0), false)
+    equal(isEqualArrayBuffer(arrayBuffer0, new ArrayBuffer(0)), false)
   })
 
-  describe('Uint16String', () => {
-    it('test odd', () => {
-      const odd = Uint8Array.of(1, 2, 3, 4, 5)
-      const bo = odd.buffer
-      const bso = packUint16String(bo)
-      const pso = parseUint16String(bso)
-      ok(compareArrayBuffer(bo, pso))
-    })
+  it('concatArrayBuffer()', () => {
+    equal(isEqualArrayBuffer(
+      concatArrayBuffer([ arrayBuffer1, new ArrayBuffer(0), arrayBuffer1 ]),
+      Uint8Array.from([ ...byteList1, ...byteList1 ]).buffer
+    ), true)
+    equal(isEqualArrayBuffer(
+      concatArrayBuffer([ arrayBuffer1, arrayBuffer0, arrayBuffer1 ]),
+      Uint8Array.from([ ...byteList1, ...byteList0, ...byteList1 ]).buffer
+    ), true)
+  })
 
-    it('test even', () => {
-      const even = Uint8Array.of(1, 2, 3, 4)
-      const be = even.buffer
-      const bse = packUint16String(be)
-      const pse = parseUint16String(bse)
-      ok(compareArrayBuffer(be, pse))
-    })
+  it('StringArrayBuffer', () => {
+    equal(string0, toString(fromString(string0)))
+    equal(string1, toString(fromString(string1)))
+
+    equal(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
+    equal(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
   })
 })

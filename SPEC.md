@@ -16,7 +16,7 @@
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
-  - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
+  - `packBlobPacket`, `parseBlobPacket`
 + 📄 [source/browser/font/fontGenerator.js](source/browser/font/fontGenerator.js)
   - `createFontGenerator`
 + 📄 [source/browser/font/fontGeneratorBitmap.js](source/browser/font/fontGeneratorBitmap.js)
@@ -45,8 +45,6 @@
   - `createInterpolationAutoTimer`, `createVectorAccumulator`
 + 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
   - `createSyncStateStorage`
-+ 📄 [source/browser/module/TimedLookup.js](source/browser/module/TimedLookup.js)
-  - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -62,7 +60,9 @@
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
-  - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
+  - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
++ 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
+  - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `createCache`, `createCacheMap`
 + 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
@@ -108,7 +108,7 @@
 + 📄 [source/common/math/easing.js](source/common/math/easing.js)
   - `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
-  - `getRandomId`, `getRandomInt`, `getRandomIntList`
+  - `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
   - `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
@@ -130,7 +130,7 @@
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `generateCheckCode`, `packDataString`, `parseDataString`, `verifyCheckCode`, `verifyOption`
+  - `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -158,7 +158,7 @@
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
   - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
-  - `MAX_BUFFER_PACKET_SIZE`, `packBufferPacket`, `parseBufferPacket`
+  - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
@@ -187,8 +187,6 @@
   - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
-+ 📄 [source/node/module/TimedLookup.js](source/node/module/TimedLookup.js)
-  - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
@@ -236,7 +234,7 @@
     - **Blob**
       - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
     - **BlobPacket**
-      - `MAX_BLOB_PACKET_SIZE`, `packBlobPacket`, `parseBlobPacket`
+      - `packBlobPacket`, `parseBlobPacket`
   - **Font**
     - `createFontGenerator`, `createFontGeneratorBitmap`, `createFontMapper`, `createFontRender`, `createFontRenderBitmap`
   - **Graphic**
@@ -260,8 +258,6 @@
       - `createInterpolationAutoTimer`, `createVectorAccumulator`
     - **StateStorage**
       - `createSyncStateStorage`
-    - **TimedLookup**
-      - `generateLookupData`, `packLookupBlob`, `parseLookupBlob`
   - **DOM**
     - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
@@ -271,7 +267,9 @@
 - **Common**
   - **Data**
     - **ArrayBuffer**
-      - `compareArrayBuffer`, `packBufferString`, `packUint16String`, `parseBufferString`, `parseUint16String`
+      - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
+    - **ArrayBufferPacket**
+      - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **CacheMap**
       - `createCache`, `createCacheMap`
     - **IdPool**
@@ -312,7 +310,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSampleRange`, `getSampleRate`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
@@ -345,7 +343,7 @@
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **TimedLookup**
-      - `generateCheckCode`, `packDataString`, `parseDataString`, `verifyCheckCode`, `verifyOption`
+      - `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
@@ -370,7 +368,7 @@
     - **Buffer**
       - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
     - **BufferPacket**
-      - `MAX_BUFFER_PACKET_SIZE`, `packBufferPacket`, `parseBufferPacket`
+      - `packBufferPacket`, `parseBufferPacket`
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
@@ -399,8 +397,6 @@
       - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
     - **SafeWrite**
       - `createSafeWriteStream`
-    - **TimedLookup**
-      - `generateLookupData`, `loadLookupFile`, `packLookupBuffer`, `parseLookupBuffer`, `saveLookupFile`
   - **Server**
     - **Responder**
       - **Common**
