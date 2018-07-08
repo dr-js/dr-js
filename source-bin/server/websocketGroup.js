@@ -99,14 +99,14 @@ const upgradeRequestProtocol = (store) => {
 
 const FRAME_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
-const responderWebsocketGroupUpgrade = async (store) => {
+const responderWebSocketGroupUpgrade = async (store) => {
   const { origin, protocolList, isSecure } = store.webSocket
-  __DEV__ && console.log('[responderWebsocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
+  __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
   const groupPath = getRouteParamAny(store)
   const id = store.getState().url.searchParams.get('id')
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
   if (!groupPath || !id || !protocol) return
-  __DEV__ && console.log('[responderWebsocketGroupUpgrade] pass', { groupPath, id, protocol })
+  __DEV__ && console.log('[responderWebSocketGroupUpgrade] pass', { groupPath, id, protocol })
   store.setState({ protocol, groupPath, id: fixUserIdClash(groupPath, id) })
   upgradeRequestProtocol(store)
 }
@@ -148,7 +148,7 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
       responderList: [
         createResponderParseURL(option),
         createResponderRouter(createRouteMap([
-          [ '/websocket-group/*', 'GET', responderWebsocketGroupUpgrade ]
+          [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ]
         ]))
       ]
     }),
@@ -211,11 +211,10 @@ const mainScriptInit = () => {
         Time: { setTimeoutAsync },
         Function: { lossyAsync },
         Math: { getRandomInt, getRandomId },
-        Format: { binary },
-        Data: { ArrayBufferPacket: { packArrayBufferPacket, parseArrayBufferPacket } }
+        Format: { binary }
       },
       Browser: {
-        Data: { Blob: { parseBlobAsArrayBuffer } },
+        Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
         Resource: { createDownloadWithBlob },
         DOM: { applyDragFileListListener },
         Input: { KeyCommand: { createKeyCommandHub } }
@@ -298,18 +297,18 @@ const mainScriptInit = () => {
   clearLog()
 
   const requestFile = (id, fileId) => {
-    STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { fileId, intent: 'request' } })))
+    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { fileId, intent: 'request' } })))
   }
 
   const toggleWebSocket = () => {
     if (STATE.websocket) {
-      STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_CLOSE })))
+      STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_CLOSE })))
       return
     }
     const groupPath = qS('#group-path').value.trim() || 'public'
     const id = qS('#id').value.trim() || getRandomUserId()
     const websocket = new WebSocket(getWebSocketGroupUrl(groupPath, id), 'group-binary-packet')
-    websocket.binaryType = 'arraybuffer'
+    websocket.binaryType = 'blob'
     const onOpenInfo = (id) => {
       qS('#group-path').value = groupPath
       qS('#id').value = id
@@ -320,7 +319,7 @@ const mainScriptInit = () => {
       ? onCloseWebSocket()
       : onErrorRetry(new Error(`server close with code: ${code}`))
     )
-    websocket.addEventListener('message', ({ data: arrayBuffer }) => onMessage(arrayBuffer, onOpenInfo))
+    websocket.addEventListener('message', ({ data }) => onMessage(data, onOpenInfo))
   }
 
   const getRandomUserId = () => {
@@ -328,8 +327,8 @@ const mainScriptInit = () => {
     return `User-${tagList[ getRandomInt(tagList.length - 1) ]}`
   }
 
-  const onMessage = async (arrayBuffer, onOpenInfo) => {
-    const [ headerString, payloadArrayBuffer ] = await parseArrayBufferPacket(arrayBuffer)
+  const onMessage = async (data, onOpenInfo) => {
+    const [ headerString, payloadBlob ] = await parseBlobPacket(data)
     const { type, targetId, payload } = JSON.parse(headerString)
     if (type === TYPE_INFO_USER) {
       onOpenInfo(payload.id)
@@ -350,9 +349,9 @@ const mainScriptInit = () => {
         const file = STATE.fileWeakMap.get(qS(`#${fileId}`))
         const fileName = file && file.name
         const fileType = file && file.type
-        STATE.websocket.send(packArrayBufferPacket(
+        STATE.websocket.send(packBlobPacket(
           JSON.stringify({ type: TYPE_BUFFER_SINGLE, targetId: id, payload: { intent: 'response', ok: Boolean(file), fileName, fileType } }),
-          await parseBlobAsArrayBuffer(file)
+          file
         ))
         addLogSystem(file
           ? `Send file: ${fileName} to ${id}`
@@ -360,7 +359,7 @@ const mainScriptInit = () => {
         )
       } else if (intent === 'response') {
         const { ok, fileName, fileType } = payload
-        ok && createDownloadWithBlob(fileName, new Blob([ payloadArrayBuffer ], { type: fileType }))
+        ok && createDownloadWithBlob(fileName, new Blob([ payloadBlob ], { type: fileType }))
         addLogSystem(ok
           ? `Get file: ${fileName} from ${id}`
           : `Miss file response from ${id}`
@@ -381,7 +380,7 @@ const mainScriptInit = () => {
     if (fileSize > FRAME_LENGTH_LIMIT) return alert(`fill size too big! max: ${binary(FRAME_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
     text && addLog({ id: STATE.id, text, className: 'color-self' })
     const fileTag = fileName && addLogWithFile({ isSend: true, id: STATE.id, fileName, fileSize, className: 'color-self' })
-    STATE.websocket.send(packArrayBufferPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
+    STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
     fileName && STATE.fileWeakMap.set(fileTag, file)
   }
 
