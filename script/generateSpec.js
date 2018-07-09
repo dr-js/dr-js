@@ -17,17 +17,8 @@ const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
 const collectSourceRouteMap = async ({ logger }) => {
   const { parseExport, getSourceRouteMap } = createExportParser({ logger })
-
-  await parseExport(fromRoot('source', 'env.js'))
-  await parseExport(fromRoot('source', 'common'))
-  await parseExport(fromRoot('source', 'node'))
-  await parseExport(fromRoot('source', 'browser'))
-
   const parseWalkExport = (path, name) => parseExport(resolve(path, name))
-  await walkDirectoryContent(await getDirectoryContent(fromRoot('source/common')), parseWalkExport)
-  await walkDirectoryContent(await getDirectoryContent(fromRoot('source/node')), parseWalkExport)
-  await walkDirectoryContent(await getDirectoryContent(fromRoot('source/browser')), parseWalkExport)
-
+  await walkDirectoryContent(await getDirectoryContent(fromRoot('source')), parseWalkExport)
   return getSourceRouteMap()
 }
 

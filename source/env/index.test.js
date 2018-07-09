@@ -1,5 +1,6 @@
 import { equal, notEqual, throws, doesNotThrow } from 'assert'
-import { getGlobal, getEnvironment, getEndianness, assert } from './env'
+import { getGlobal, getEnvironment } from './global'
+import { getEndianness, assert } from './function'
 
 const { describe, it } = global
 

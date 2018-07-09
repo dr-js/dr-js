@@ -21,10 +21,7 @@ runMain(async (logger) => {
     babelrc: false,
     cacheDirectory: isProduction,
     presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ],
-    plugins: [
-      [ '@babel/proposal-class-properties' ],
-      isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ]
-    ].filter(Boolean)
+    plugins: [ isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ] ].filter(Boolean)
   }
 
   const config = {

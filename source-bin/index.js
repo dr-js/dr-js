@@ -3,21 +3,21 @@
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { cpus } from 'os'
 
-import { getEndianness } from 'dr-js/module/env'
+import { getEndianness } from 'dr-js/module/env/function'
 import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
 import { fetch } from 'dr-js/module/node/net'
 import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
-import { createDirectory } from 'dr-js/module/node/file/File'
-import { getFileList } from 'dr-js/module/node/file/Directory'
+import { FILE_TYPE, createDirectory } from 'dr-js/module/node/file/File'
+import { getFileList, getDirectoryContent } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
+import { autoTestServerPort } from 'dr-js/module/node/server/function'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
-import { autoTestServerPort, getPathContent } from './server/function'
 import { createServerTestConnection } from './server/testConnection'
 import { createServerServeStatic } from './server/serveStatic'
 import { createServerWebSocketGroup } from './server/websocketGroup'
@@ -125,6 +125,17 @@ const getVersion = () => ({
   processorEndianness: getEndianness(),
   processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: check Termux fix
 })
+
+const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
+  const content = await getDirectoryContent(rootPath, undefined, true) // single level deep
+  return {
+    directoryList: Array.from(content[ FILE_TYPE.Directory ].keys()),
+    fileList: content[ FILE_TYPE.File ],
+    linkList: content[ FILE_TYPE.SymbolicLink ],
+    otherList: content[ FILE_TYPE.Other ],
+    errorList: content[ FILE_TYPE.Error ]
+  }
+}
 
 const main = async () => {
   const optionData = await parseOption()

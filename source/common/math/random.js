@@ -1,4 +1,4 @@
-import { global } from 'source/env'
+import { tryRequire } from 'source/env/tryRequire'
 
 // range [from, to] // this will not auto swap, meaning <from> should be smaller than <to>
 const RANDOM_INT = (from, to) => Math.floor(Math.random() * (to - from + 1) + from)
@@ -18,7 +18,7 @@ const tryGetRandomArrayBuffer = () => {
   } catch (error) { __DEV__ && console.log(`[tryGetRandomArrayBuffer] browser`, error) }
 
   try { // node
-    const { randomFillSync } = global.TRY_REQUIRE('crypto')
+    const { randomFillSync } = tryRequire('crypto')
     const getRandomArrayBuffer = (byteLength) => {
       const dataView = new DataView(new ArrayBuffer(byteLength))
       randomFillSync(dataView)

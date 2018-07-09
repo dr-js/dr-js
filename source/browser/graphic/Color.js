@@ -1,4 +1,4 @@
-import { getEndianness } from 'source/env'
+import { getEndianness } from 'source/env/function'
 
 // operation
 const getUint32RGBA = getEndianness() === 'little'

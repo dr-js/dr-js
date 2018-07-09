@@ -5,8 +5,6 @@
 * [Bin Option Format](#bin-option-format)
 
 #### Export Path
-+ 📄 [source/env.js](source/env.js)
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
   - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
@@ -151,6 +149,12 @@
   - `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
   - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
++ 📄 [source/env/function.js](source/env/function.js)
+  - `assert`, `getEndianness`
++ 📄 [source/env/global.js](source/env/global.js)
+  - `getEnvironment`, `getGlobal`, `global`
++ 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
+  - `tryRequire`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetch`, `ping`, `requestAsync`, `urlToOption`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -363,6 +367,8 @@
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
     - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
+- **Env**
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`
 - **Node**
   - **Data**
     - **Buffer**
@@ -444,8 +450,6 @@
     - `fetch`, `ping`, `requestAsync`, `urlToOption`
   - **Resource**
     - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
-- **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)

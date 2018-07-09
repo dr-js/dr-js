@@ -146,7 +146,6 @@ const ENHANCED_POINTER_EVENT_TYPE = {
 }
 
 const applyEnhancedPointerEventListener = ({
-  element,
   onEnhancedEvent, // (type, eventState) => {}
   onEvent, // (type, event, calcState) => {}, optional, for original PointerEvent
   holdDurationThreshold = 500, // in msec
@@ -177,7 +176,7 @@ const applyEnhancedPointerEventListener = ({
     onEvent && onEvent(name, event, calcState)
   }
 
-  return applyPointerEventListener({ element, onEvent: enhancedOnEvent, ...extraOption })
+  return applyPointerEventListener({ onEvent: enhancedOnEvent, ...extraOption })
 }
 
 export {
