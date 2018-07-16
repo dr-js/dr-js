@@ -9,7 +9,7 @@ import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/Ex
 import { renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
 
 import { stringIndentLine } from 'source/common/format'
-import { getDirectoryContent, walkDirectoryContent } from 'source/node/file/Directory'
+import { getDirectoryInfoTree, walkDirectoryInfoTree } from 'source/node/file/Directory'
 import { formatUsage } from 'source-bin/option'
 
 const PATH_ROOT = resolve(__dirname, '..')
@@ -17,8 +17,8 @@ const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
 const collectSourceRouteMap = async ({ logger }) => {
   const { parseExport, getSourceRouteMap } = createExportParser({ logger })
-  const parseWalkExport = (path, name) => parseExport(resolve(path, name))
-  await walkDirectoryContent(await getDirectoryContent(fromRoot('source')), parseWalkExport)
+  const parseWalkExport = ({ path }) => parseExport(path)
+  await walkDirectoryInfoTree(await getDirectoryInfoTree(fromRoot('source')), parseWalkExport)
   return getSourceRouteMap()
 }
 

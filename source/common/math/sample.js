@@ -1,7 +1,25 @@
+const getSample = (func, size) => {
+  const result = []
+  for (let index = 0; index < size; index++) result.push(func(index))
+  return result
+}
+
+// from <= to
 // returns [ from, from + 1, from + 2, ..., to -2, to - 1, to ]
-const getSampleRange = (from, to) => ' '.repeat(to - from + 1).split('').map((v, i) => (i + from))
+const getSampleRange = (from, to) => getSample(
+  (i) => (i + from),
+  to - from + 1
+)
 
+// divide = 1, 2, 3, ...
 // returns [ 0, 1 / divide, 2 / divide, ..., (divide - 1) / divide, 1 ]
-const getSampleRate = (divide) => getSampleRange(0, divide).map((v) => v / (divide))
+const getSampleRate = (divide) => getSample(
+  (i) => i / divide,
+  1 + divide
+)
 
-export { getSampleRange, getSampleRate }
+export {
+  getSample,
+  getSampleRange,
+  getSampleRate
+}

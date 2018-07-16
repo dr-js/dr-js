@@ -1,3 +1,4 @@
+import { Stats } from 'fs'
 import { dirname } from 'path'
 import {
   lstatAsync,
@@ -8,85 +9,88 @@ import {
   copyFileAsync
 } from './function'
 
+const ERROR_STAT = new Stats(
+  -1, // dev
+  -1, // mode
+  0, // nlink
+  -1, // uid
+  -1, // gid
+  -1, // rdev
+  0, // blksize
+  0, // ino
+  0, // size
+  0, // blocks
+  0, // atim_msec
+  0, // mtim_msec
+  0, // ctim_msec
+  0 // birthtim_msec
+)
+
 const FILE_TYPE = {
   File: 'File',
   Directory: 'Directory',
   SymbolicLink: 'SymbolicLink',
-  Other: 'Other',
-  Error: 'Error'
+  Other: 'Other', // maybe device, socket or else
+  Error: 'Error' // non exist
 }
+
+const pathStatError = (error) => {
+  __DEV__ && console.log('[pathStatError]', error)
+  return ERROR_STAT
+}
+
+const getPathStat = (path) => lstatAsync(path).catch(pathStatError)
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
     : stat.isSymbolicLink() ? FILE_TYPE.SymbolicLink
-      : FILE_TYPE.Other
+      : stat !== ERROR_STAT ? FILE_TYPE.Other
+        : FILE_TYPE.Error
 
-const pathTypeError = (error) => {
-  __DEV__ && console.log('[pathTypeError]', error)
-  return FILE_TYPE.Error
-}
-
-const getPathType = (path) => lstatAsync(path).then(getPathTypeFromStat, pathTypeError)
-
-const createDirectory = async (path, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(path)
-  if (pathType === FILE_TYPE.Directory) return // directory exist, pass
-  if (pathType !== FILE_TYPE.Error) throw new Error('[createDirectory] path already taken by non-directory')
+const createDirectory = async (path, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (pathStat.isDirectory()) return // directory exist, pass
+  if (pathStat !== ERROR_STAT) throw new Error('[createDirectory] path already taken by non-directory')
 
   // check up
   const upperPath = dirname(path)
-  const upperPathType = await getPathType(upperPath)
-  if (upperPathType !== FILE_TYPE.Directory) await createDirectory(upperPath, upperPathType)
+  const upperPathStat = await getPathStat(upperPath)
+  !upperPathStat.isDirectory() && await createDirectory(upperPath, upperPathStat)
 
   // create directory
-  if (pathType !== FILE_TYPE.Directory) await mkdirAsync(path)
+  await mkdirAsync(path)
 }
 
 // NOT recursive operation
-const copyPath = async (pathFrom, pathTo, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(pathFrom)
-  if (await getPathType(pathTo) === pathType && pathType === FILE_TYPE.Directory) {
-    __DEV__ && console.log('[copyPath] directory exist, skipped')
-    return
-  }
-  switch (pathType) {
-    case FILE_TYPE.File:
-    case FILE_TYPE.SymbolicLink:
-      return copyFileAsync(pathFrom, pathTo)
-    case FILE_TYPE.Directory:
-      return mkdirAsync(pathTo)
-  }
-  throw new Error(`[copyPath] error pathType ${pathType} for ${pathFrom}`)
+const movePath = async (pathFrom, pathTo, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
+  if (pathStat === ERROR_STAT) throw new Error(`[movePath] missing path from ${pathFrom}`)
+  return renameAsync(pathFrom, pathTo)
 }
-const movePath = async (pathFrom, pathTo, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(pathFrom)
-  switch (pathType) {
-    case FILE_TYPE.File:
-    case FILE_TYPE.SymbolicLink:
-    case FILE_TYPE.Directory:
-      return renameAsync(pathFrom, pathTo)
-  }
-  throw new Error(`[movePath] error pathType ${pathType} for ${pathFrom}`)
+const copyPath = async (pathFrom, pathTo, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
+  if (pathStat.isDirectory() && (await getPathStat(pathTo)).isDirectory()) return __DEV__ && console.log('[copyPath] both directory exist, skipped')
+  return pathStat.isDirectory()
+    ? mkdirAsync(pathTo)
+    : copyFileAsync(pathFrom, pathTo)
 }
-const deletePath = async (path, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(path)
-  switch (pathType) {
-    case FILE_TYPE.File:
-    case FILE_TYPE.SymbolicLink:
-      return unlinkAsync(path)
-    case FILE_TYPE.Directory:
-      return rmdirAsync(path)
-  }
-  throw new Error(`[deletePath] error pathType ${pathType} for ${path}`)
+const deletePath = async (path, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(path)
+  return pathStat.isDirectory()
+    ? rmdirAsync(path)
+    : unlinkAsync(path)
 }
 
 export {
+  ERROR_STAT,
   FILE_TYPE,
 
-  getPathType,
+  getPathStat,
+  getPathTypeFromStat,
+
   createDirectory,
 
-  deletePath,
   movePath,
-  copyPath
+  copyPath,
+  deletePath
 }

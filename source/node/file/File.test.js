@@ -1,11 +1,13 @@
 import { resolve } from 'path'
 import { equal } from 'assert'
 import {
+  ERROR_STAT,
   FILE_TYPE,
-  getPathType,
+  getPathStat,
+  getPathTypeFromStat,
   createDirectory,
-  copyPath,
   movePath,
+  copyPath,
   deletePath
 } from './File'
 
@@ -45,20 +47,21 @@ after('clear', async () => {
 })
 
 describe('Node.File.File', () => {
-  it('getPathType()', async () => {
-    equal(await getPathType(SOURCE_FILE), FILE_TYPE.File)
-    equal(await getPathType(SOURCE_DIRECTORY), FILE_TYPE.Directory)
-    equal(await getPathType(SOURCE_DIRECTORY_TRIM), FILE_TYPE.Directory)
-    equal(await getPathType(invalidPath), FILE_TYPE.Error)
+  it('getPathStat()', async () => {
+    equal(getPathTypeFromStat(await getPathStat(SOURCE_FILE)), FILE_TYPE.File)
+    equal(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY)), FILE_TYPE.Directory)
+    equal(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY_TRIM)), FILE_TYPE.Directory)
+    equal(await getPathStat(invalidPath), ERROR_STAT)
+    equal(getPathTypeFromStat(await getPathStat(invalidPath)), FILE_TYPE.Error)
   })
 
   it('createDirectory()', async () => {
     await createDirectory(directoryPath2)
     await createDirectory(directoryPath0)
     await createDirectory(directoryPath1)
-    equal(await getPathType(directoryPath0), FILE_TYPE.Directory)
-    equal(await getPathType(directoryPath1), FILE_TYPE.Directory)
-    equal(await getPathType(directoryPath2), FILE_TYPE.Directory)
+    equal(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Directory)
+    equal(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Directory)
+    equal(getPathTypeFromStat(await getPathStat(directoryPath2)), FILE_TYPE.Directory)
 
     let getExpectedError = false
     try { await createDirectory(SOURCE_FILE) } catch (error) { getExpectedError = true }
@@ -67,7 +70,7 @@ describe('Node.File.File', () => {
 
   it('copyPath()', async () => {
     await copyPath(SOURCE_FILE, filePath0)
-    equal(await getPathType(filePath0), FILE_TYPE.File)
+    equal(getPathTypeFromStat(await getPathStat(filePath0)), FILE_TYPE.File)
 
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
@@ -79,8 +82,8 @@ describe('Node.File.File', () => {
     await copyPath(directoryPath2, directoryPath3)
     await copyPath(directoryPath2, directoryPath3)
 
-    equal(await getPathType(filePath1), FILE_TYPE.File)
-    equal(await getPathType(directoryPath3), FILE_TYPE.Directory)
+    equal(getPathTypeFromStat(await getPathStat(filePath1)), FILE_TYPE.File)
+    equal(getPathTypeFromStat(await getPathStat(directoryPath3)), FILE_TYPE.Directory)
   })
 
   it('movePath()', async () => {
@@ -91,10 +94,10 @@ describe('Node.File.File', () => {
     await movePath(filePath1, filePath2)
     await movePath(directoryPath3, directoryPath4)
 
-    equal(await getPathType(filePath1), FILE_TYPE.Error)
-    equal(await getPathType(directoryPath3), FILE_TYPE.Error)
-    equal(await getPathType(filePath2), FILE_TYPE.File)
-    equal(await getPathType(directoryPath4), FILE_TYPE.Directory)
+    equal(await getPathStat(filePath1), ERROR_STAT)
+    equal(await getPathStat(directoryPath3), ERROR_STAT)
+    equal(getPathTypeFromStat(await getPathStat(filePath2)), FILE_TYPE.File)
+    equal(getPathTypeFromStat(await getPathStat(directoryPath4)), FILE_TYPE.Directory)
   })
 
   it('deletePath()', async () => {
@@ -107,6 +110,6 @@ describe('Node.File.File', () => {
     await deletePath(directoryPath0)
     await deletePath(filePath0)
 
-    equal(await getPathType(filePath0), FILE_TYPE.Error)
+    equal(await getPathStat(filePath0), ERROR_STAT)
   })
 })

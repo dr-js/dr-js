@@ -1,114 +1,99 @@
 import { join as joinPath, dirname, basename } from 'path'
 import { readdirAsync } from './function'
-import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
+import { FILE_TYPE, getPathStat, getPathTypeFromStat, createDirectory, deletePath, movePath, copyPath } from './File'
 
-const getDirectoryContentNameList = async (path, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(path)
-  if (pathType !== FILE_TYPE.Directory) throw new Error(`[getDirectoryContent] error pathType: ${pathType} for ${path}`)
-  return readdirAsync(path)
+const getDirectorySubInfoList = async (path, pathStat) => {
+  // __DEV__ && console.log('getDirectorySubInfoList', { path, pathStat: Boolean(pathStat) })
+  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (!pathStat.isDirectory()) throw new Error(`[getDirectorySubInfoList] error pathType: ${getPathTypeFromStat(pathStat)} for ${path}`)
+  const subInfoList = []
+  for (const name of await readdirAsync(path)) {
+    const subPath = joinPath(path, name)
+    const stat = await getPathStat(subPath)
+    const type = getPathTypeFromStat(stat)
+    subInfoList.push({ path: subPath, name, stat, type })
+  }
+  return subInfoList
 }
 
-// will check recursively
-const getDirectoryContent = async (path, pathType, isShallow = false) => {
-  if (pathType === undefined) pathType = await getPathType(path)
-  const subNameList = await getDirectoryContentNameList(path, pathType)
-  const content = {
-    path,
-    pathType,
-    [ FILE_TYPE.Directory ]: new Map(), // name - sub Directory
-    [ FILE_TYPE.File ]: [],
-    [ FILE_TYPE.SymbolicLink ]: [],
-    [ FILE_TYPE.Other ]: [],
-    [ FILE_TYPE.Error ]: []
+const getDirectoryInfoTree = async (path, pathStat) => {
+  // __DEV__ && console.log('getDirectoryInfoTree', { path, pathStat: Boolean(pathStat) })
+  const subInfoListMap = {}
+  const queue = [ { path, stat: pathStat } ]
+  while (queue.length) {
+    const { path, stat } = queue.shift()
+    const subInfoList = await getDirectorySubInfoList(path, stat)
+    subInfoListMap[ path ] = subInfoList
+    subInfoList.forEach((subInfo) => subInfo.stat.isDirectory() && queue.push(subInfo))
   }
-  for (let index = 0, indexMax = subNameList.length; index < indexMax; index++) {
-    const name = subNameList[ index ]
-    const subPath = joinPath(path, name)
-    const subPathType = await getPathType(subPath)
-    switch (subPathType) {
-      case FILE_TYPE.Directory:
-        content[ subPathType ].set(name, isShallow ? null : await getDirectoryContent(subPath, subPathType, false))
-        break
-      default:
-        content[ subPathType ].push(name)
-        break
+  return { root: path, subInfoListMap }
+}
+
+const walkDirectoryInfoTree = async ({ root, subInfoListMap }, callback) => {
+  const queue = [ { path: root } ]
+  while (queue.length) {
+    const { path } = queue.shift()
+    for (const subInfo of subInfoListMap[ path ]) {
+      subInfo.stat.isDirectory() && queue.push(subInfo)
+      await callback(subInfo)
     }
   }
-  return content
-}
-const getDirectoryContentShallow = (path, pathType) => getDirectoryContent(path, pathType, true)
-
-const WALK_FILE_TYPE_LIST = [ FILE_TYPE.File, FILE_TYPE.SymbolicLink, FILE_TYPE.Other ]
-
-const walkDirectoryContent = async (content, callback) => {
-  for (const fileType of WALK_FILE_TYPE_LIST) {
-    const nameList = content[ fileType ]
-    for (const name of nameList) await callback(content.path, name, fileType)
-  }
-  const subDirectoryMap = content[ FILE_TYPE.Directory ]
-  for (let [ name, subContent ] of subDirectoryMap) {
-    await callback(content.path, name, FILE_TYPE.Directory)
-    await walkDirectoryContent(subContent, callback) // next level
-  }
 }
 
-const walkDirectoryContentBottomUp = async (content, callback) => {
-  const subDirectoryMap = content[ FILE_TYPE.Directory ]
-  for (let [ name, subContent ] of subDirectoryMap) {
-    await walkDirectoryContentBottomUp(subContent, callback) // next level
-    await callback(content.path, name, FILE_TYPE.Directory)
-  }
-  for (const fileType of WALK_FILE_TYPE_LIST) {
-    const nameList = content[ fileType ]
-    for (const name of nameList) await callback(content.path, name, fileType)
+const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback) => {
+  const rootInfo = { path: root }
+  const stack = [ [ rootInfo, [ rootInfo ] ] ]
+  while (stack.length) {
+    const [ upperInfo, infoList ] = stack[ stack.length - 1 ]
+    if (infoList.length === 0) {
+      upperInfo !== rootInfo && await callback(upperInfo)
+      stack.pop()
+    } else {
+      const info = infoList.shift()
+      const subInfoList = []
+      for (const subInfo of subInfoListMap[ info.path ]) {
+        subInfo.stat.isDirectory()
+          ? subInfoList.push(subInfo)
+          : await callback(subInfo)
+      }
+      stack.push([ info, subInfoList ])
+    }
   }
 }
 
-const walkDirectoryContentShallow = async (content, callback) => {
-  for (const fileType of WALK_FILE_TYPE_LIST) {
-    const nameList = content[ fileType ]
-    for (const name of nameList) await callback(content.path, name, fileType)
-  }
-  const subDirectoryMap = content[ FILE_TYPE.Directory ]
-  for (let [ name ] of subDirectoryMap) await callback(content.path, name, FILE_TYPE.Directory)
-}
-
-const copyDirectoryContent = async (content, pathTo) => {
+const copyDirectoryInfoTree = async (infoTree, pathTo) => {
   await createDirectory(pathTo)
-  const pathToMap = { [ content.path ]: pathTo }
-  return walkDirectoryContent(content, (path, name, pathType) => {
-    const pathFrom = joinPath(path, name)
-    const pathTo = joinPath(pathToMap[ path ], name)
-    pathToMap[ pathFrom ] = pathTo
-    return copyPath(pathFrom, pathTo, pathType)
-  }, true)
+  const pathToMap = { [ infoTree.root ]: pathTo }
+  return walkDirectoryInfoTree(infoTree, ({ path, name, stat }) => {
+    const upperPath = dirname(path)
+    const pathTo = joinPath(pathToMap[ upperPath ], name)
+    pathToMap[ path ] = pathTo
+    return copyPath(path, pathTo, stat)
+  })
 }
 
-const moveDirectoryContent = async (content, pathTo) => {
+const moveDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
   await createDirectory(pathTo)
-  return walkDirectoryContentShallow(content, (path, name, pathType) => movePath(
-    joinPath(path, name),
-    joinPath(pathTo, name),
-    pathType
-  ))
+  for (const { path, name, stat } of subInfoListMap[ root ]) await movePath(path, joinPath(pathTo, name), stat)
 }
 
-const deleteDirectoryContent = async (content) => walkDirectoryContentBottomUp(content, (path, name, pathType) => deletePath(
-  joinPath(path, name),
-  pathType
-))
+const deleteDirectoryInfoTree = async (infoTree) => walkDirectoryInfoTreeBottomUp(
+  infoTree,
+  ({ path, stat }) => deletePath(path, stat)
+)
 
 const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
   const fileList = []
-  const pathType = await getPathType(path)
+  const pathStat = await getPathStat(path)
+  const pathType = getPathTypeFromStat(pathStat)
   switch (pathType) {
     case FILE_TYPE.File:
-      fileCollector(fileList, dirname(path), basename(path))
+      fileCollector(fileList, { path, name: basename(path), stat: pathStat, type: pathType })
       break
     case FILE_TYPE.Directory:
-      await walkDirectoryContent(
-        await getDirectoryContent(path, pathType),
-        (path, name, type) => { type === FILE_TYPE.File && fileCollector(fileList, path, name) }
+      await walkDirectoryInfoTree(
+        await getDirectoryInfoTree(path, pathStat),
+        (info) => info.type === FILE_TYPE.File && fileCollector(fileList, info)
       )
       break
     default:
@@ -116,21 +101,15 @@ const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
   }
   return fileList
 }
-const DEFAULT_FILE_COLLECTOR = (fileList, path, name) => fileList.push(joinPath(path, name))
+const DEFAULT_FILE_COLLECTOR = (fileList, { path }) => fileList.push(path)
 
 export {
-  getDirectoryContentNameList,
-
-  getDirectoryContent,
-  getDirectoryContentShallow,
-
-  walkDirectoryContent,
-  walkDirectoryContentBottomUp,
-  walkDirectoryContentShallow,
-
-  copyDirectoryContent,
-  moveDirectoryContent,
-  deleteDirectoryContent,
-
+  getDirectorySubInfoList,
+  getDirectoryInfoTree,
+  walkDirectoryInfoTree,
+  walkDirectoryInfoTreeBottomUp,
+  copyDirectoryInfoTree,
+  moveDirectoryInfoTree,
+  deleteDirectoryInfoTree,
   getFileList
 }

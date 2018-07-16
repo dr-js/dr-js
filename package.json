@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.16.0-dev.8",
+  "version": "0.16.0-dev.9",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -30,7 +30,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "mocha --require @babel/register \"source/common/data/ArrayBuffer.test.js\"",
+    "test-mocha-dev": "mocha --require @babel/register \"source/node/file/File.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -49,7 +49,7 @@
   "devDependencies": {
     "dev-dep-tool": "0.3.1-dev.2",
     "dev-dep-web": "0.3.1-dev.2",
-    "dr-js": "0.16.0-dev.7",
+    "dr-js": "0.16.0-dev.8",
     "webpack-bundle-analyzer": "^2.13.1"
   },
   "sideEffects": false

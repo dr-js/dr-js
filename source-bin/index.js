@@ -8,8 +8,8 @@ import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBu
 import { fetch } from 'dr-js/module/node/net'
 import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
 import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
-import { FILE_TYPE, createDirectory } from 'dr-js/module/node/file/File'
-import { getFileList, getDirectoryContent } from 'dr-js/module/node/file/Directory'
+import { createDirectory } from 'dr-js/module/node/file/File'
+import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
@@ -126,16 +126,11 @@ const getVersion = () => ({
   processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: check Termux fix
 })
 
-const getPathContent = async (rootPath) => { // The resulting path is normalized and trailing slashes are removed unless the path is resolved to the root directory.
-  const content = await getDirectoryContent(rootPath, undefined, true) // single level deep
-  return {
-    directoryList: Array.from(content[ FILE_TYPE.Directory ].keys()),
-    fileList: content[ FILE_TYPE.File ],
-    linkList: content[ FILE_TYPE.SymbolicLink ],
-    otherList: content[ FILE_TYPE.Other ],
-    errorList: content[ FILE_TYPE.Error ]
-  }
-}
+const getPathContent = async (rootPath) => (await getDirectorySubInfoList(rootPath)).map( // single level deep
+  ({ name, stat }) => stat.isDirectory()
+    ? `${name}/`
+    : name
+)
 
 const main = async () => {
   const optionData = await parseOption()

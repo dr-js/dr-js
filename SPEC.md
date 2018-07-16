@@ -108,7 +108,7 @@
 + 📄 [source/common/math/random.js](source/common/math/random.js)
   - `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
-  - `getSampleRange`, `getSampleRate`
+  - `getSample`, `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
   - `createAsyncTaskQueue`
 + 📄 [source/common/module/BlockChart.js](source/common/module/BlockChart.js)
@@ -172,11 +172,11 @@
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `copyDirectoryContent`, `deleteDirectoryContent`, `getDirectoryContent`, `getDirectoryContentNameList`, `getDirectoryContentShallow`, `getFileList`, `moveDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`
+  - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
 + 📄 [source/node/file/File.js](source/node/file/File.js)
-  - `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathType`, `movePath`
+  - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
-  - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `moveDirectory`, `moveFile`, `withTempDirectory`
+  - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
@@ -314,7 +314,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSampleRange`, `getSampleRate`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
@@ -384,11 +384,11 @@
     - **Compress**
       - `checkBloat`, `compressFile`, `compressFileList`
     - **Directory**
-      - `copyDirectoryContent`, `deleteDirectoryContent`, `getDirectoryContent`, `getDirectoryContentNameList`, `getDirectoryContentShallow`, `getFileList`, `moveDirectoryContent`, `walkDirectoryContent`, `walkDirectoryContentBottomUp`, `walkDirectoryContentShallow`
+      - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
     - **File**
-      - `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathType`, `movePath`
+      - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`
     - **Modify**
-      - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `moveDirectory`, `moveFile`, `withTempDirectory`
+      - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
     - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`

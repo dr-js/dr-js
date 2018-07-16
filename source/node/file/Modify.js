@@ -1,51 +1,42 @@
 import { resolve, relative, dirname } from 'path'
 import { catchAsync } from 'source/common/error'
 import { nearestExistAsync, trimPathDepth } from './function'
-import { FILE_TYPE, getPathType, createDirectory, deletePath, movePath, copyPath } from './File'
-import { getDirectoryContent, copyDirectoryContent, deleteDirectoryContent } from './Directory'
+import { getPathStat, createDirectory, deletePath, movePath, copyPath } from './File'
+import { getDirectoryInfoTree, copyDirectoryInfoTree, deleteDirectoryInfoTree } from './Directory'
 
-const copyFile = async (pathFrom, pathTo, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(pathFrom)
+const move = async (pathFrom, pathTo, pathStat) => {
   await createDirectory(dirname(pathTo))
-  return copyPath(pathFrom, pathTo, pathType)
+  return movePath(pathFrom, pathTo, pathStat)
 }
-const moveFile = async (pathFrom, pathTo, pathType) => {
-  await createDirectory(dirname(pathTo))
-  return movePath(pathFrom, pathTo, pathType)
-}
-const deleteFile = (path, pathType) => deletePath(path, pathType)
 
-const copyDirectory = async (pathFrom, pathTo, pathType) => copyDirectoryContent(
-  await getDirectoryContent(pathFrom, pathType),
+const copyFile = async (pathFrom, pathTo, pathStat) => {
+  await createDirectory(dirname(pathTo))
+  return copyPath(pathFrom, pathTo, pathStat)
+}
+const deleteFile = (path, pathStat) => deletePath(path, pathStat)
+
+const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirectoryInfoTree(
+  await getDirectoryInfoTree(pathFrom, pathStat),
   pathTo
 )
-const moveDirectory = async (pathFrom, pathTo, pathType) => {
-  if (pathType === undefined) pathType = await getPathType(pathFrom)
-  if (pathType !== FILE_TYPE.Directory) throw new Error(`[moveDirectory] error pathType ${pathType}`)
-  await createDirectory(dirname(pathTo))
-  return movePath(pathFrom, pathTo, pathType)
-}
-const deleteDirectory = async (path, pathType) => {
-  await deleteDirectoryContent(await getDirectoryContent(path, pathType))
+const deleteDirectory = async (path, pathStat) => {
+  await deleteDirectoryInfoTree(await getDirectoryInfoTree(path, pathStat))
   return deletePath(path)
 }
 
 const modify = {
-  copy: async (pathFrom, pathTo, pathType) => {
-    if (pathType === undefined) pathType = await getPathType(pathFrom)
-    return pathType === FILE_TYPE.Directory
-      ? copyDirectory(pathFrom, pathTo, pathType)
-      : copyFile(pathFrom, pathTo, pathType)
+  move,
+  copy: async (pathFrom, pathTo, pathStat) => {
+    if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
+    return pathStat.isDirectory()
+      ? copyDirectory(pathFrom, pathTo, pathStat)
+      : copyFile(pathFrom, pathTo, pathStat)
   },
-  move: async (pathFrom, pathTo, pathType) => {
-    await createDirectory(dirname(pathTo))
-    return movePath(pathFrom, pathTo, pathType)
-  },
-  delete: async (path, pathType) => {
-    if (pathType === undefined) pathType = await getPathType(path)
-    return pathType === FILE_TYPE.Directory
-      ? deleteDirectory(path, pathType)
-      : deleteFile(path, pathType)
+  delete: async (path, pathStat) => {
+    if (pathStat === undefined) pathStat = await getPathStat(path)
+    return pathStat.isDirectory()
+      ? deleteDirectory(path, pathStat)
+      : deleteFile(path, pathStat)
   }
 }
 
@@ -62,11 +53,10 @@ const withTempDirectory = async (tempPath, asyncTask) => {
 }
 
 export {
+  move,
   copyFile,
-  moveFile,
   deleteFile,
   copyDirectory,
-  moveDirectory,
   deleteDirectory,
   modify,
   withTempDirectory

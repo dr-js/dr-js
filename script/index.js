@@ -20,10 +20,6 @@ const execOptionRoot = { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore',
 const execOptionOutput = { cwd: fromOutput(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit', shell: true }
 
 const buildOutput = async ({ logger: { padLog } }) => {
-  padLog(`verify no gitignore file left`)
-  const badFileList = (await getFileList(fromRoot('source'))).filter((path) => path.includes('gitignore'))
-  ok(!badFileList.length, `bad file:\n - ${badFileList.join('\n - ')}`)
-
   padLog(`generate index.js & spec doc`)
   execSync('npm run script-generate-spec', execOptionRoot)
 
@@ -97,6 +93,10 @@ const verifyOutput = async ({ packageJSON, logger: { padLog, log } }) => {
 
 runMain(async (logger) => {
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
+
+  logger.padLog(`verify no gitignore file left`)
+  const badFileList = (await getFileList(fromRoot('source'))).filter((path) => path.includes('gitignore'))
+  ok(!badFileList.length, `bad file:\n - ${badFileList.join('\n - ')}`)
 
   if (!argvFlag('pack')) return
 

@@ -1,16 +1,15 @@
-import { equal } from 'assert'
-import { join as joinPath, resolve } from 'path'
+import { equal, deepEqual } from 'assert'
+import { join as joinPath, dirname, resolve } from 'path'
+import { getSample } from 'source/common/math/sample'
 import { FILE_TYPE, createDirectory, deletePath } from './File'
 import {
-  getDirectoryContentNameList,
-  getDirectoryContent,
-  getDirectoryContentShallow,
-  walkDirectoryContent,
-  walkDirectoryContentBottomUp,
-  walkDirectoryContentShallow,
-  copyDirectoryContent,
-  moveDirectoryContent,
-  deleteDirectoryContent,
+  getDirectorySubInfoList,
+  getDirectoryInfoTree,
+  walkDirectoryInfoTree,
+  walkDirectoryInfoTreeBottomUp,
+  copyDirectoryInfoTree,
+  moveDirectoryInfoTree,
+  deleteDirectoryInfoTree,
   getFileList
 } from './Directory'
 
@@ -37,139 +36,107 @@ before('prepare', async () => {
 })
 
 after('clear', async () => {
-  await deleteDirectoryContent(await getDirectoryContent(TEST_ROOT))
+  await deleteDirectoryInfoTree(await getDirectoryInfoTree(TEST_ROOT))
   await deletePath(TEST_ROOT)
 })
 
 describe('Node.File.Directory', () => {
-  it('getDirectoryContentNameList()', async () => {
+  it('getDirectorySubInfoList()', async () => {
     let getExpectedError = false
-    try { await getDirectoryContentNameList(invalidPath) } catch (error) { getExpectedError = true }
+    try { await getDirectorySubInfoList(invalidPath) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await getDirectoryContentNameList(SOURCE_FILE) } catch (error) { getExpectedError = true }
+    try { await getDirectorySubInfoList(SOURCE_FILE) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
-    await getDirectoryContentNameList(SOURCE_DIRECTORY)
-    await getDirectoryContentNameList(SOURCE_DIRECTORY_UPPER)
-    await getDirectoryContentNameList(TEST_ROOT)
+    await getDirectorySubInfoList(SOURCE_DIRECTORY)
+    await getDirectorySubInfoList(SOURCE_DIRECTORY_UPPER)
+    await getDirectorySubInfoList(TEST_ROOT)
   })
 
-  it('getDirectoryContent()', async () => {
+  it('getDirectoryInfoTree()', async () => {
     let getExpectedError = false
-    try { await getDirectoryContent(invalidPath) } catch (error) { getExpectedError = true }
+    try { await getDirectoryInfoTree(invalidPath) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
     getExpectedError = false
-    try { await getDirectoryContent(SOURCE_FILE) } catch (error) { getExpectedError = true }
+    try { await getDirectoryInfoTree(SOURCE_FILE) } catch (error) { getExpectedError = true }
     equal(getExpectedError, true)
 
-    await getDirectoryContent(SOURCE_DIRECTORY)
-    await getDirectoryContent(SOURCE_DIRECTORY_UPPER)
-    const content = await getDirectoryContent(TEST_ROOT)
+    await getDirectoryInfoTree(SOURCE_DIRECTORY)
+    await getDirectoryInfoTree(SOURCE_DIRECTORY_UPPER)
+    const infoTree = await getDirectoryInfoTree(TEST_ROOT)
 
-    // console.log(content)
+    // console.log(infoTree)
 
-    equal(content[ FILE_TYPE.Directory ].size, 2)
-    equal(content[ FILE_TYPE.File ].length, 0)
-    equal(content[ FILE_TYPE.SymbolicLink ].length, 0)
-    equal(content[ FILE_TYPE.Other ].length, 0)
+    equal(infoTree.root, TEST_ROOT)
+    equal(infoTree.subInfoListMap[ infoTree.root ].length, 2)
+    equal(Object.keys(infoTree.subInfoListMap).length, 11)
+    deepEqual(
+      infoTree.subInfoListMap[ infoTree.root ].map(({ type }) => type),
+      getSample(() => FILE_TYPE.Directory, infoTree.subInfoListMap[ infoTree.root ].length)
+    )
   })
 
-  it('getDirectoryContentShallow()', async () => {
-    let getExpectedError = false
-    try { await getDirectoryContentShallow(invalidPath) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirectoryContentShallow(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
-
-    await getDirectoryContentShallow(SOURCE_DIRECTORY)
-    await getDirectoryContentShallow(SOURCE_DIRECTORY_UPPER)
-    const content = await getDirectoryContentShallow(TEST_ROOT)
-
-    // console.log(content)
-
-    equal(content[ FILE_TYPE.Directory ].size, 2)
-    equal(content[ FILE_TYPE.File ].length, 0)
-    equal(content[ FILE_TYPE.SymbolicLink ].length, 0)
-    equal(content[ FILE_TYPE.Other ].length, 0)
-  })
-
-  it('walkDirectoryContent()', async () => {
+  it('walkDirectoryInfoTree()', async () => {
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(TEST_ROOT), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(TEST_ROOT), (info) => {
+      // console.log(' - - info', info)
       callbackCount++
     })
     equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
-    await walkDirectoryContent(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
-      equal(name, checkNameList.shift())
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath2), (info) => {
+      // console.log(' - - info', info)
+      equal(info.name, checkNameList.shift())
     })
   })
 
-  it('walkDirectoryContentBottomUp()', async () => {
+  it('walkDirectoryInfoTreeBottomUp()', async () => {
     let callbackCount = 0
-    await walkDirectoryContentBottomUp(await getDirectoryContent(TEST_ROOT), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
+    await walkDirectoryInfoTreeBottomUp(await getDirectoryInfoTree(TEST_ROOT), (info) => {
+      // console.log(' - - info', info)
       callbackCount++
     })
     equal(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
-    await walkDirectoryContentBottomUp(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
-      equal(name, checkNameList.pop())
+    await walkDirectoryInfoTreeBottomUp(await getDirectoryInfoTree(directoryPath2), (info) => {
+      // console.log(' - - info', info)
+      equal(info.name, checkNameList.pop())
     })
   })
 
-  it('walkDirectoryContentShallow()', async () => {
-    let callbackCount = 0
-    await walkDirectoryContentShallow(await getDirectoryContent(TEST_ROOT), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
-      callbackCount++
-    })
-    equal(callbackCount, 2)
-
-    await walkDirectoryContentShallow(await getDirectoryContent(directoryPath2), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
-      equal(name, '2')
-    })
-  })
-
-  it('copyDirectoryContent()', async () => {
-    await copyDirectoryContent(await getDirectoryContent(directoryPath3), directoryPath4)
+  it('copyDirectoryInfoTree()', async () => {
+    await copyDirectoryInfoTree(await getDirectoryInfoTree(directoryPath3), directoryPath4)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath4), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath4), (info) => {
+      // console.log(' - - info', info)
       callbackCount++
     })
     equal(callbackCount, 4)
   })
 
-  it('moveDirectoryContent()', async () => {
-    await moveDirectoryContent(await getDirectoryContentShallow(directoryPath4), directoryPath5)
+  it('moveDirectoryInfoTree()', async () => {
+    await moveDirectoryInfoTree(await getDirectoryInfoTree(directoryPath4), directoryPath5)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath5), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), (info) => {
+      // console.log(' - - info', info)
       callbackCount++
     })
     equal(callbackCount, 4)
   })
 
-  it('deleteDirectoryContent()', async () => {
-    await deleteDirectoryContent(await getDirectoryContent(directoryPath5), directoryPath5)
+  it('deleteDirectoryInfoTree()', async () => {
+    await deleteDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), directoryPath5)
 
     let callbackCount = 0
-    await walkDirectoryContent(await getDirectoryContent(directoryPath5), (path, name, fileType) => {
-      // console.log({ path, name, fileType })
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), (info) => {
+      // console.log(' - - info', info)
       callbackCount++
     })
     equal(callbackCount, 0)
@@ -179,10 +146,10 @@ describe('Node.File.Directory', () => {
     const LIST_FILE = resolve(__dirname, './function.js')
     const LIST_DIRECTORY = resolve(__dirname, '../')
 
-    const createSuffixFilterFileCollector = (suffix) => (fileList, path, name) => name.endsWith(suffix) && fileList.push(joinPath(path, name))
-    const createPrefixMapperFileCollector = (prefix) => (fileList, path, name) => fileList.push([
-      joinPath(path, name),
-      joinPath(path, prefix + name)
+    const createSuffixFilterFileCollector = (suffix) => (fileList, { path, name }) => name.endsWith(suffix) && fileList.push(path)
+    const createPrefixMapperFileCollector = (prefix) => (fileList, { path, name }) => fileList.push([
+      path,
+      joinPath(dirname(path), prefix + name)
     ])
 
     it('getFileList() File', async () => {
