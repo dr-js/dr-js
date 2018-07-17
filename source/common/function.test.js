@@ -1,10 +1,12 @@
-import { deepEqual, strictEqual } from 'assert'
+import { throws, deepEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
   lossyAsync,
   withDelayArgvQueue,
   withRepeat,
+  withRepeatAsync,
+  withRetry,
   withRetryAsync,
   createInsideOutPromise
 } from './function'
@@ -243,6 +245,52 @@ describe('Common.Function', () => {
     }, 5)
     strictEqual(repeatSum, 0 + 1 + 2 + 3 + 4)
     strictEqual(repeatCount, 5)
+  })
+
+  it('withRepeatAsync()', async () => {
+    let repeatSum = 0
+    let repeatCount = 0
+    await withRepeatAsync(async (looped, count) => {
+      await setTimeoutAsync(5)
+      strictEqual(repeatCount, looped)
+      strictEqual(5, count)
+      repeatCount++
+      repeatSum += looped
+    }, 5)
+    strictEqual(repeatSum, 0 + 1 + 2 + 3 + 4)
+    strictEqual(repeatCount, 5)
+  })
+
+  it('withRetry()', async () => {
+    const createCallCheck = ({ expectFail, expectMaxRetry }) => {
+      let called = 0
+      return {
+        checkFunc: (failed, maxRetry) => {
+          if (expectMaxRetry !== maxRetry) throw new Error(`[createCallCheck] expectMaxRetry: ${expectMaxRetry}, maxRetry: ${maxRetry}`)
+          if (called !== failed) throw new Error(`[createCallCheck] called: ${called}, failed: ${failed}`)
+          if (called > expectFail) throw new Error(`[createCallCheck] called: ${called}, expectFail: ${expectFail}`)
+          if (called !== expectFail) {
+            called++
+            throw new Error(`[createCallCheck] called: ${called}`)
+          }
+        }
+      }
+    }
+
+    {
+      const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: Infinity })
+      withRetry(checkFunc)
+    }
+
+    {
+      const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 5 })
+      withRetry(checkFunc, 5)
+    }
+
+    {
+      const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 3 })
+      throws(() => withRetry(checkFunc, 3), `error expected when maxRetry is reached`)
+    }
   })
 
   it('withRetryAsync()', async () => {

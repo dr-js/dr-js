@@ -77,7 +77,28 @@ const withRepeat = (func, count = 0) => {
   }
 }
 
+const withRepeatAsync = async (func, count = 0, wait = 0) => {
+  let looped = 0
+  while (count > looped) {
+    const startTime = clock()
+    await func(looped, count)
+    looped++
+    const remainingTime = wait - (clock() - startTime)
+    if (remainingTime > 0) await setTimeoutAsync(remainingTime)
+  }
+}
+
 // if maxRetry is always 0, should just skip this wrap
+const withRetry = (func, maxRetry = Infinity) => {
+  let failed = 0
+  while (true) {
+    try { return func(failed, maxRetry) } catch (error) {
+      failed++
+      if (maxRetry < failed) throw error
+    }
+  }
+}
+
 const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
   let failed = 0
   while (true) {
@@ -117,6 +138,8 @@ export {
   lossyAsync,
   withDelayArgvQueue,
   withRepeat,
+  withRepeatAsync,
+  withRetry,
   withRetryAsync,
   createInsideOutPromise
 }
