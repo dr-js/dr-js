@@ -17,9 +17,11 @@ window.addContent(`
 `, () => {
   const {
     Dr: {
-      Common: { Math: { clamp, easeOutCubic, easeInOutQuad }, Geometry: { D2: { Vector } } },
+      Common: {
+        Math: { clamp, easeOutCubic, easeInOutQuad },
+        Geometry: { D2: { Vector } }
+      },
       Browser: {
-        // DOM: { getPathElementList },
         Input: {
           PointerEvent: { applyEnhancedPointerEventListener },
           EnhancedEventProcessor: { createSwipeEnhancedEventProcessor }
@@ -154,7 +156,6 @@ window.addContent(`
 
   const bindEdgeSwipeElement = (element = document.createElement('div')) => {
     let startEdge
-    // let lockScrollList = []
 
     const updateRectStyle = ({ x, y }) => {
       qS('#INDICATOR-H').style.transform = `translate(0,${Math.round(y)}px)`
@@ -172,10 +173,6 @@ window.addContent(`
       }
     }
 
-    // const muteFix = (event) => { startEdge && event.preventDefault() }
-    // element.addEventListener('touchmove', muteFix)
-    // document.addEventListener('touchmove', muteFix)
-
     const { onEnhancedEvent, onEvent } = createSwipeEnhancedEventProcessor({
       getPointStart: (eventState) => {
         const pointStart = limitWithinClient(eventState.point)
@@ -186,11 +183,6 @@ window.addContent(`
           eventState.event.preventDefault()
           qS('#INDICATOR-MASK').style.display = ''
           qS('#INDICATOR-MASK').style.backgroundColor = `rgba(0,0,0,0)`
-          // lockScrollList = getPathElementList(document.documentElement, event.target).map((element) => {
-          //   const { touchAction } = element.style
-          //   element.style.touchAction = 'none'
-          //   return [ element, touchAction ]
-          // })
         }
         Object.assign(qS('#INDICATOR-RECT').style, startEdge === 'left' || startEdge === 'right' ? { width: '0', height: '100vh', transform: '' }
           : startEdge === 'top' || startEdge === 'bottom' ? { width: '100vw', height: '0', transform: '' }
@@ -233,8 +225,6 @@ window.addContent(`
       onEvent: (name, event, calcState) => {
         if (name === 'START') {
           qS('#INDICATOR-MASK').style.display = 'none'
-          // lockScrollList.forEach(([ element, touchAction ]) => { element.style.touchAction = touchAction })
-          // lockScrollList.length = 0
         }
         onEvent(name, event, calcState)
       },

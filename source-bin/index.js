@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { cpus } from 'os'
+import { normalize } from 'path'
+import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 
 import { getEndianness } from 'dr-js/module/env/function'
 import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
@@ -36,7 +37,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
 
   const getServerConfig = async () => {
     const hostname = getSingleOptionOptional('hostname') || '0.0.0.0'
-    const port = getSingleOptionOptional('port') || await autoTestServerPort([ 80, 8080, 8888, 8000 ], hostname) // for more stable port
+    const port = getSingleOptionOptional('port') || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) // for more stable port
     return { hostname, port: Number(port) }
   }
 
@@ -53,8 +54,10 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
       const flags = modeFormat.name === 'write' ? 'w' : 'a'
       return pipeStreamAsync(createWriteStream(argumentList[ 0 ] || process.cwd(), { flags }), process.stdin)
-    case 'open':
-      return runSync({ command: getDefaultOpen(), argList: [ argumentList[ 0 ] || '.' ] }) // can be url
+    case 'open': {
+      const uri = argumentList[ 0 ] || '.' // can be url or path
+      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
+    }
     case 'status':
       return getOptionOptional('help')
         ? console.log(describeSystemStatus())
@@ -123,7 +126,7 @@ const getVersion = () => ({
   nodeVersion: process.version,
   processorArchitecture: process.arch,
   processorEndianness: getEndianness(),
-  processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: check Termux fix
+  processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: fix Termux, check: https://github.com/termux/termux-app/issues/299
 })
 
 const getPathContent = async (rootPath) => (await getDirectorySubInfoList(rootPath)).map( // single level deep

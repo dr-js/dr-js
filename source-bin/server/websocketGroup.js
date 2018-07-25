@@ -102,7 +102,7 @@ const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
 const responderWebSocketGroupUpgrade = async (store) => {
   const { origin, protocolList, isSecure } = store.webSocket
   __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
-  const groupPath = getRouteParamAny(store)
+  const groupPath = decodeURIComponent(getRouteParamAny(store) || '')
   const id = store.getState().url.searchParams.get('id')
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
   if (!groupPath || !id || !protocol) return
@@ -253,7 +253,7 @@ const mainScriptInit = () => {
 
   const getWebSocketGroupUrl = (groupPath, id) => {
     const { protocol, host } = location
-    return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURI(groupPath)}?id=${encodeURIComponent(id)}`
+    return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURIComponent(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
   const STATE = {

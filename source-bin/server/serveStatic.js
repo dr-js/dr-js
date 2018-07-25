@@ -13,7 +13,7 @@ import { getServerInfo, commonCreateServer } from './function'
 
 const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
-  const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
+  const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
 
   const routeConfigList = isSimpleServe ? [
@@ -46,25 +46,31 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
       mainStyle
     ], [
       `<b class="auto-height">${titleHTML}</b>`,
-      relativeRoot && renderItem([ '/list', dirname(relativeRoot) ], '🔙|..'),
-      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem([ '/list', relativeRoot, name ], `📁|${name}/`, 0, mtimeMs)),
-      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem([ '/file', relativeRoot, name ], `📄|${name}`, size, mtimeMs))
+      relativeRoot && renderItem('/list', [ dirname(relativeRoot) ], '🔙|..'),
+      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem('/list', [ relativeRoot, name ], `📁|${name}/`, 0, mtimeMs)),
+      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem('/file', [ relativeRoot, name ], `📄|${name}`, size, mtimeMs))
     ]))
   })
 }
 
 const mainStyle = `<style>
+body { overflow: auto; display: flex; flex-flow: column; white-space: pre; }
 a, b { display: flex; align-items: center; }
 a { text-decoration: none; border-top: 1px solid #ddd; }
 a:hover { background: #eee; }
-span { padding-left: 1em; text-align: right; opacity: 0.5 }
-span.flex { flex: 1; }
-body { overflow: auto; display: flex; flex-flow: column; white-space: pre; }
+p.name { overflow: hidden; text-overflow: ellipsis; }
+p.size, p.date { padding-left: 1em; text-align: right; opacity: 0.5 }
+p.size { flex: 1; }
+@media only screen and (max-width: 768px) { p.date { display: none; } }
 </style>`
 
 const compareInfo = ({ name: a }, { name: b }) => compareString(a, b)
-const formatPathHref = (fragList) => encodeURI(toPosixPath(joinPath(...fragList)))
+const formatPathHref = (fragList) => encodeURIComponent(toPosixPath(joinPath(...fragList)))
 const formatPathHTML = (name) => escapeHTML(toPosixPath(name))
-const renderItem = (hrefFragList, text, size, mtimeMs) => `<a class="auto-height" href="${formatPathHref(hrefFragList)}">${formatPathHTML(text)}<span class="flex">${size ? `${binary(size)}B` : ''}</span><span>${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</span></a>`
+const renderItem = (hrefPrefix, hrefFragList, text, size, mtimeMs) => `<a class="auto-height" href="${hrefPrefix}/${formatPathHref(hrefFragList)}">
+<p class="name">${formatPathHTML(text)}</p>
+<p class="size">${size ? `${binary(size)}B` : ''}</p>
+<p class="date">${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</p>
+</a>`
 
 export { createServerServeStatic }

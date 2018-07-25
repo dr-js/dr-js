@@ -11,7 +11,7 @@ const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => 
   const request = new XMLHttpRequest()
   request.open(method, url)
   headers && Object.entries(headers).forEach(([ key, value ]) => request.setRequestHeader(key, value))
-  request.withCredentials = credentials === 'include'
+  request.withCredentials = credentials === 'include' // Setting withCredentials has no effect on same-site requests. check: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
   request.timeout = timeout || 0 // in millisecond, 0 for no timeout
   request.responseType = 'arraybuffer'
   request.onerror = () => reject(getError('NETWORK_ERROR', -1))
@@ -19,7 +19,10 @@ const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => 
   request.onreadystatechange = () => {
     const { readyState, status } = request
     if (readyState !== 2) return // HEADERS_RECEIVED
-    if (status === 0) return reject(getError('HEADER_STATUS_ERROR', -1)) // can be timeout
+    if (status === 0) {
+      request.abort()
+      return reject(getError('HEADER_STATUS_ERROR', -1)) // can be timeout
+    }
     const headers = request.getAllResponseHeaders().split(/[\r\n]+/).reduce((o, rawHeader) => {
       const [ key, ...valueList ] = rawHeader.split(':')
       if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
