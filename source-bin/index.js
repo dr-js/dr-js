@@ -110,9 +110,16 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return writeFileSync(outputFile, Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap }))))
     }
     case 'timed-lookup-check-code-generate':
-      return console.log(generateCheckCode(parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file'))))))
+      return console.log(generateCheckCode(
+        parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
+        Number(argumentList[ 0 ]) || undefined
+      ))
     case 'timed-lookup-check-code-verify':
-      verifyCheckCode(parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))), argumentList[ 0 ])
+      verifyCheckCode(
+        parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
+        argumentList[ 0 ],
+        Number(argumentList[ 1 ]) || undefined
+      )
       return console.log('valid checkCode')
   }
 }

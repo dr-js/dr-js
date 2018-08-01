@@ -41,8 +41,10 @@ const COMMON_SCRIPT = (injectMap) => {
     qSA: querySelectorAllFunc,
     cE: createElementFunc,
     aCL: appendChildListFunc,
-    mECN: modifyElementClassName,
-    mEA: modifyElementAttribute,
+    mECN: modifyElementClassNameFunc,
+    mEA: modifyElementAttributeFunc,
+    iDR: isDocumentReadyFunc,
+    tDR: tillDocumentReadyFunc,
     ...injectMap
   }).forEach(([ key, value ]) => {
     if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${value.toString()}</script>`)
@@ -67,8 +69,18 @@ const createElementFunc = (tagName, attributeMap = {}, childElementList = []) =>
   return element
 }
 const appendChildListFunc = (element, childElementList = []) => childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
-const modifyElementClassName = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
-const modifyElementAttribute = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
+const modifyElementClassNameFunc = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
+const modifyElementAttributeFunc = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
+const isDocumentReadyFunc = () => document.readyState === 'complete'
+const tillDocumentReadyFunc = (func) => {
+  if (window.iDR()) return func()
+  const onReady = () => {
+    if (!window.iDR()) return
+    document.removeEventListener('readystatechange', onReady)
+    func()
+  }
+  document.addEventListener('readystatechange', onReady)
+}
 
 // TODO: this is relative to top package version
 const DR_BROWSER_SCRIPT = () => `<script>${readFileSync(require.resolve('dr-js/library/Dr.browser'), 'utf8')}</script>`

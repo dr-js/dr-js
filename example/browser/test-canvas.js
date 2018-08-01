@@ -30,7 +30,10 @@ window.addContent(``, `
 `, () => {
   const {
     Dr: {
-      Common: { Time: { now }, Data: { Toggle: { createToggle } } },
+      Common: {
+        Time: { CLOCK_TO_SECOND, clock },
+        Data: { Toggle: { createToggle } }
+      },
       Browser: {
         Input: { PointerEvent: { applyPointerEventListener, applyEnhancedPointerEventListener } },
         Graphic: { ImageData: { applyImageElementExt, applyCanvasElementExt, applyCanvasImageDataExt } }
@@ -82,10 +85,12 @@ window.addContent(``, `
   const canvasElementExt = applyCanvasElementExt(testCanvasElement)
   const canvasImageDataExt = applyCanvasImageDataExt(testCanvasImageData)
 
-  let timer = now()
+  let timer = clock()
   const logTime = (...args) => {
-    log(`[${(now() - timer).toFixed(4)}sec|${(1 / (now() - timer)).toFixed(2)}hz]`, ...args)
-    timer = now()
+    const prevTimer = timer
+    timer = clock()
+    const deltaTime = (timer - prevTimer) * CLOCK_TO_SECOND
+    log(`[${deltaTime.toFixed(4)}sec|${(1 / deltaTime).toFixed(2)}hz]`, ...args)
   }
 
   const loopCount = 100

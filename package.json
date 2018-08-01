@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.16.1-dev.2",
+  "version": "0.16.1-dev.3",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -30,7 +30,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "mocha --require @babel/register \"source/node/net.test.js\"",
+    "test-mocha-dev": "mocha --require @babel/register \"source/common/module/TimedLookup.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -38,7 +38,7 @@
     "test-mocha-output-library": "mocha \"output-gitignore/library/**/*.test.js\"",
     "test-mocha-output-module": "mocha --require @babel/register \"output-gitignore/module/**/*.test.js\"",
     "// =============================": "",
-    "analyze-stat": "webpack-bundle-analyzer ./profile-stat-gitignore.json",
+    "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json",
     "test": "npm run script-pack-test",
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
@@ -47,10 +47,9 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-js": "0.16.1-dev.0",
+    "dr-js": "0.16.1-dev.2",
     "dev-dep-tool": "^0.3.1",
-    "dev-dep-web": "^0.3.1",
-    "webpack-bundle-analyzer": "^2.13.1"
+    "dev-dep-web": "^0.3.1"
   },
   "sideEffects": false
 }

@@ -484,8 +484,8 @@
 >   --server-test-connection --stc [OPTIONAL]
 >   --server-cache-http-proxy --schp [OPTIONAL] [ARGUMENT=1-2]
 >   --timed-lookup-file-generate --tlfg [OPTIONAL] [ARGUMENT=0-4]
->   --timed-lookup-check-code-generate --tlccg [OPTIONAL]
->   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1]
+>   --timed-lookup-check-code-generate --tlccg [OPTIONAL] [ARGUMENT=0-1]
+>   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1-2]
 >   --hostname -H [OPTIONAL] [ARGUMENT=1]
 >       for 'server'
 >   --port -P [OPTIONAL] [ARGUMENT=1]
@@ -523,8 +523,8 @@
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
 >     export DR_JS_SERVER_CACHE_HTTP_PROXY="[OPTIONAL] [ARGUMENT=1-2]"
 >     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL] [ARGUMENT=0-4]"
->     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL]"
->     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
 >     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
@@ -557,8 +557,8 @@
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
 >     "drJsServerCacheHttpProxy": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
 >     "drJsTimedLookupFileGenerate": [ "[OPTIONAL] [ARGUMENT=0-4]" ],
->     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL]" ],
->     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
 >     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],

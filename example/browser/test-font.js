@@ -1,4 +1,4 @@
-window.addContent('', `
+window.addContent(``, `
 <div class="flex-column" style="overflow: auto; width: 100vw; align-items: center; font-family: monospace;">
   <textarea id="textSoftKeyboardTextarea" style="z-index: -1; width: 1px; height: 1px;"></textarea>
   <canvas id="testFont" width="400" height="200"></canvas>

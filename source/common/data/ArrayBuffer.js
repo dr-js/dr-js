@@ -26,7 +26,11 @@ const decatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0) =
   return arrayBuffer
 })
 
+// NOTE: not safe for localStorage (OK in Chrome, but Firefox will filter as UTF-16 on save, and load with altered bits)
 // NOTE: string is considered as Uint16ArrayBuffer
+// targeted usage:
+//  - change data form and later read pack, like during network transmitting
+//  - do not send the string though UTF-16 filter
 // string to arrayBuffer will use more space (in string unicode encode use 8bit instead of 16bit for char like [a-z])
 // but invalid UTF-16 char does not get changed (like 57236 -> 65533 in TextEncoder/TextDecoder/Buffer.toString)
 const PREFIX_ODD = Uint8Array.of(0x00)

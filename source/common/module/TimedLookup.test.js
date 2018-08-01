@@ -65,14 +65,25 @@ describe('Common.Module.TimedLookup', () => {
   })
 
   it('verifyCheckCode()', () => {
+    const timestamp = getTimestamp()
     const checkCode0 = generateCheckCode(defaultLookupData, 0)
-    const checkCodeTimestamp = generateCheckCode(defaultLookupData)
+    const checkCodeTimestamp = generateCheckCode(defaultLookupData, timestamp)
 
     verifyCheckCode(defaultLookupData, checkCode0, 0)
+    verifyCheckCode(defaultLookupData, checkCode0, 0 + defaultLookupData.timeGap)
+    verifyCheckCode(defaultLookupData, checkCode0, 0 - defaultLookupData.timeGap)
+
     verifyCheckCode(defaultLookupData, checkCodeTimestamp)
+    verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp + defaultLookupData.timeGap)
+    verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp - defaultLookupData.timeGap)
 
     throws(() => verifyCheckCode(defaultLookupData, checkCode0), 'should throw on invalid checkCode')
+    throws(() => verifyCheckCode(defaultLookupData, checkCode0, 0 + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    throws(() => verifyCheckCode(defaultLookupData, checkCode0, 0 - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
+
     throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, 0), 'should throw on invalid checkCode')
+    throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
 
     throws(() => verifyCheckCode(defaultLookupData, 0, 0), 'should throw on invalid checkCode')
     throws(() => verifyCheckCode(defaultLookupData, '', 0), 'should throw on invalid checkCode')

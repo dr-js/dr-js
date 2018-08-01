@@ -1,6 +1,8 @@
 import { resolve as resolvePath } from 'path'
 import { DefinePlugin } from 'webpack'
 
+import { createDirectory } from 'source/node/file/File'
+
 import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { compileWithWebpack } from 'dev-dep-tool/library/webpack'
 import { getLogger } from 'dev-dep-tool/library/logger'
@@ -12,16 +14,21 @@ const fromOutput = (...args) => resolvePath(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
   const mode = argvFlag('development', 'production') || 'production'
-  const profileOutput = argvFlag('profile') ? fromRoot('profile-stat-gitignore.json') : null
   const isWatch = argvFlag('watch')
   const isProduction = mode === 'production'
+
+  const profileOutput = argvFlag('profile') ? fromRoot('.temp-gitignore/profile-stat.json') : null
+  profileOutput && await createDirectory(fromRoot('.temp-gitignore'))
 
   const babelOption = {
     configFile: false,
     babelrc: false,
     cacheDirectory: isProduction,
     presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ],
-    plugins: [ isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ] ].filter(Boolean)
+    plugins: [
+      // NOTE: for Edge(17.17134) support check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals
+      isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ]
+    ].filter(Boolean)
   }
 
   const config = {

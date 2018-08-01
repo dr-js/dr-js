@@ -23,10 +23,8 @@ const tryClock = () => {
 
 const CLOCK_PER_SECOND = 1000
 const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
-const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
 const clock = tryClock() // return running/relative time in milliseconds
-const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: DEPRECATED: confusing naming, just use Date.now()
 const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
 // Usage:
@@ -63,16 +61,20 @@ const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTi
   return { start, stop, isActive }
 }
 
+const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // TODO: DEPRECATED: UTC, integer
+const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: DEPRECATED: confusing naming, just use Date.now()
+
 export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,
-  TIMESTAMP_START,
   clock,
-  now, // TODO: DEPRECATED
   getTimestamp,
   setTimeoutAsync,
   setTimeoutPromise,
   requestFrameUpdate,
   cancelFrameUpdate,
-  createTimer
+  createTimer,
+
+  TIMESTAMP_START, // TODO: DEPRECATED
+  now // TODO: DEPRECATED
 }

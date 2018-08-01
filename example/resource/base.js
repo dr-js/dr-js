@@ -1,39 +1,70 @@
-const qS = (selector) => document.querySelector(selector)
-const qSS = (selector, innerHTML) => { qS(selector).innerHTML = innerHTML }
-const cT = (tagName, attributeMap, ...childTagList) => {
-  const tag = Object.assign(document.createElement(tagName), attributeMap)
-  childTagList.forEach((childTag) => childTag && tag.appendChild(childTag))
-  return tag
+// common quick function
+const querySelectorFunc = (selector, innerHTML = undefined) => {
+  const element = document.querySelector(selector)
+  if (element && typeof (innerHTML) === 'string') element.innerHTML = innerHTML
+  return element
 }
-const pHTML = (HTML) => {
-  const divElement = document.createElement('div')
-  divElement.innerHTML = HTML
-  const elementList = Array.from(divElement.children)
+const querySelectorAllFunc = (selector) => [ ...document.querySelectorAll(selector) ]
+const createElementFunc = (tagName, attributeMap = {}, childElementList = []) => {
+  const element = Object.assign(document.createElement(tagName), attributeMap)
+  childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
+  return element
+}
+const appendChildListFunc = (element, childElementList = []) => childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
+const modifyElementClassNameFunc = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
+const modifyElementAttributeFunc = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
+const isDocumentReadyFunc = () => document.readyState === 'complete'
+const tillDocumentReadyFunc = (func) => {
+  if (window.iDR()) return func()
+  const onReady = () => {
+    if (!window.iDR()) return
+    document.removeEventListener('readystatechange', onReady)
+    func()
+  }
+  document.addEventListener('readystatechange', onReady)
+}
+
+const parseHTMLFunc = (HTML) => {
+  const elementList = [ ...window.cE('div', { innerHTML: HTML }).children ]
   elementList.forEach((element) => element.remove())
   return elementList
 }
-const isDocReady = () => document.readyState === 'complete'
-const tillDocReady = (func) => isDocReady() ? func() : document.addEventListener('readystatechange', () => isDocReady() && func())
-const addContent = (headHTML, bodyHTML, func) => tillDocReady(() => {
-  headHTML && pHTML(headHTML).forEach((element) => document.head.appendChild(element))
-  bodyHTML && pHTML(bodyHTML).forEach((element) => document.body.appendChild(element))
-  func()
+
+Object.assign(window, {
+  qS: querySelectorFunc,
+  qSA: querySelectorAllFunc,
+  cE: createElementFunc,
+  aCL: appendChildListFunc,
+  mECN: modifyElementClassNameFunc,
+  mEA: modifyElementAttributeFunc,
+  iDR: isDocumentReadyFunc,
+  tDR: tillDocumentReadyFunc,
+  pHTML: parseHTMLFunc,
+  addContent: (headHTML, bodyHTML, func) => window.tDR(() => {
+    headHTML && window.pHTML(headHTML).forEach((element) => document.head.appendChild(element))
+    bodyHTML && window.pHTML(bodyHTML).forEach((element) => document.body.appendChild(element))
+    func()
+  })
 })
 
-window.qS = qS
-window.qSS = qSS
-window.cT = cT
-window.pHTML = pHTML
-window.tillDocReady = tillDocReady
-window.addContent = addContent
-
-addContent(`
+window.addContent(`
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.3); }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; outline-color: #f00; }
+::-webkit-scrollbar-thumb { background: #0004; }
+::-webkit-scrollbar-thumb:hover { background: #0006; }
+button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: hsla(0, 0%, 70%, 0.4); box-shadow: inset 0 0 0 1px #888; }
+button:hover, .button:hover { background: hsla(0, 0%, 80%, 0.4); box-shadow: inset 0 0 0 1px #aaa; }
+button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; box-shadow: inset 0 0 0 1px #e00; }
+button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: hsla(0, 0%, 100%, 0.4); box-shadow: unset; }
+@media (pointer: fine) { 
+  ::-webkit-scrollbar { width: 14px; height: 14px; }
+  button, .button, .auto-height { min-height: 20px; font-size: 14px; } 
+}
+@media (pointer: coarse) { 
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  button, .button, .auto-height { min-height: 32px; font-size: 18px; } 
+}
 
-button { font: inherit; }
 textarea { outline: none; resize: none; background: transparent; }
 canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-rendering: pixelated; }
 
@@ -48,17 +79,26 @@ canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-renderi
   <pre id="LOG" style="font-size: 10px; color: #666;">Log</pre>
 </div>
 `, () => {
-  const { Dr: { Common: { Time: { now }, Module: { UpdateLoop: { createUpdateLoop } } } } } = window
+  const {
+    Dr: {
+      Common: {
+        Time: { CLOCK_TO_SECOND, clock },
+        Module: { UpdateLoop: { createUpdateLoop } }
+      }
+    }
+  } = window
 
-  const createLogList = (maxLength = 20, logList = [], prevTime = now()) => (text, currentTime = now()) => {
-    logList.unshift(`[+${(currentTime - prevTime).toFixed(4)}s] ${text}`) // add to head of the array
+  const createLogList = (maxLength = 20, logList = [], prevTime = clock()) => (text, currentTime = clock()) => {
+    const deltaTime = (currentTime - prevTime) * CLOCK_TO_SECOND
+    logList.unshift(`[+${deltaTime.toFixed(4)}s] ${text}`) // add to head of the array
     prevTime = currentTime
     logList.length = maxLength
     return logList.join('<br />')
   }
 
-  const getFpsStep = (maxLength = 20, fpsList = [], prevTime = now()) => (currentTime = now()) => {
-    fpsList.unshift(1 / (currentTime - prevTime))
+  const getFpsStep = (maxLength = 20, fpsList = [], prevTime = clock()) => (currentTime = clock()) => {
+    const deltaTime = (currentTime - prevTime) * CLOCK_TO_SECOND
+    fpsList.unshift(deltaTime === 0 ? 0 : 1 / deltaTime)
     prevTime = currentTime
     fpsList.length = maxLength
     const [ sum, min, max ] = fpsList.reduce(([ sum, min, max ], v) => [ sum + v, Math.min(min, v), Math.max(max, v) ], [ 0, Infinity, -Infinity ])
@@ -70,13 +110,15 @@ canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-renderi
 
   const updateLoop = createUpdateLoop()
   updateLoop.start()
-  updateLoop.setFunc('fps', () => qSS('#FPS', stepFps()))
-  window.updateLoop = updateLoop
+  updateLoop.setFunc('fps', () => window.qS('#FPS', stepFps()))
 
   const log = (...args) => {
     console.log(...args)
-    qSS('#LOG', logList(args.join(' ')))
+    window.qS('#LOG', logList(args.join(' ')))
   }
-  log(`init at: ${now()}`)
+
+  log('init')
+
+  window.updateLoop = updateLoop
   window.log = log
 })
