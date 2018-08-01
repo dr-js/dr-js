@@ -1,4 +1,4 @@
-import { equal } from 'assert'
+import { strictEqual } from 'assert'
 import { resolve } from 'path'
 import { ERROR_STAT, FILE_TYPE, getPathStat, getPathTypeFromStat, createDirectory } from './File'
 import {
@@ -34,47 +34,47 @@ after('clear', async () => {
 describe('Node.File.Modify', () => {
   it('copyFile()/move()/delete() File', async () => {
     await copyFile(SOURCE_FILE, filePath0)
-    equal(getPathTypeFromStat(await getPathStat(filePath0)), FILE_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathStat(filePath0)), FILE_TYPE.File)
 
     await move(filePath0, filePath1)
-    equal(await getPathStat(filePath0), ERROR_STAT)
-    equal(getPathTypeFromStat(await getPathStat(filePath1)), FILE_TYPE.File)
+    strictEqual(await getPathStat(filePath0), ERROR_STAT)
+    strictEqual(getPathTypeFromStat(await getPathStat(filePath1)), FILE_TYPE.File)
 
     await deleteFile(filePath1)
-    equal(await getPathStat(filePath1), ERROR_STAT)
+    strictEqual(await getPathStat(filePath1), ERROR_STAT)
   })
 
   it('copyFile()/move()/delete() Directory', async () => {
     await copyFile(SOURCE_DIRECTORY, directoryPath0)
-    equal(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Directory)
 
     await move(directoryPath0, directoryPath1)
-    equal(await getPathStat(directoryPath0), ERROR_STAT)
-    equal(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Directory)
+    strictEqual(await getPathStat(directoryPath0), ERROR_STAT)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Directory)
 
     await deleteFile(directoryPath1)
-    equal(await getPathStat(directoryPath1), ERROR_STAT)
+    strictEqual(await getPathStat(directoryPath1), ERROR_STAT)
   })
 
   it('copyDirectory()/delete() File', async () => {
     let getExpectedError = false
     try { await copyDirectory(filePath2, filePath0) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
 
     getExpectedError = false
     try { await deleteDirectory(filePath2) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
   })
 
   it('copyDirectory()/move()/delete() Directory', async () => {
     await copyDirectory(SOURCE_DIRECTORY, directoryPath0)
-    equal(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Directory)
 
     await move(directoryPath0, directoryPath1)
-    equal(await getPathStat(directoryPath0), ERROR_STAT)
-    equal(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Directory)
+    strictEqual(await getPathStat(directoryPath0), ERROR_STAT)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Directory)
 
     await deleteDirectory(directoryPath1)
-    equal(await getPathStat(directoryPath1), ERROR_STAT)
+    strictEqual(await getPathStat(directoryPath1), ERROR_STAT)
   })
 })

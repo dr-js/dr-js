@@ -1,4 +1,4 @@
-import { equal } from 'assert'
+import { strictEqual } from 'assert'
 import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
 import { toArrayBuffer } from './Buffer'
 import { packBufferPacket, parseBufferPacket } from './BufferPacket'
@@ -11,13 +11,13 @@ describe('Node.Data.BufferPacket', () => {
 
   it('packBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
-    equal(packet.length, packArrayBufferPacket(headerString, toArrayBuffer(payloadBuffer)).byteLength)
+    strictEqual(packet.length, packArrayBufferPacket(headerString, toArrayBuffer(payloadBuffer)).byteLength)
   })
 
   it('parseBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
     const [ parsedHeaderString, parsedPayloadBuffer ] = parseBufferPacket(packet)
-    equal(headerString, parsedHeaderString)
-    equal(payloadBuffer.compare(parsedPayloadBuffer), 0)
+    strictEqual(headerString, parsedHeaderString)
+    strictEqual(payloadBuffer.compare(parsedPayloadBuffer), 0)
   })
 })

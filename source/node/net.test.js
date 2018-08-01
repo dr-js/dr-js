@@ -1,4 +1,4 @@
-import { deepEqual, strictEqual } from 'assert'
+import { deepStrictEqual, strictEqual } from 'assert'
 import { resolve } from 'path'
 import { URL } from 'url'
 import { unlinkSync, writeFileSync } from 'fs'
@@ -86,7 +86,7 @@ describe('Node.Net', () => {
       await fetch(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.text()),
       'TEST BUFFER'
     )
-    deepEqual(
+    deepStrictEqual(
       await fetch(`${serverUrl}/test-json`, { timeout: 50 }).then((response) => response.json()),
       { testKey: 'testValue' }
     )

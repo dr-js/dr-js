@@ -1,4 +1,4 @@
-import { throws, deepEqual, strictEqual } from 'assert'
+import { throws, deepStrictEqual, strictEqual } from 'assert'
 import {
   debounce,
   throttle,
@@ -193,7 +193,7 @@ describe('Common.Function', () => {
       delayedFunc('Good')
       await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
-      deepEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
+      deepStrictEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
     }
 
     await test() // 1st try
@@ -225,7 +225,7 @@ describe('Common.Function', () => {
       delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
       await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
-      deepEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
+      deepStrictEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
     }
 
     await test() // 1st try

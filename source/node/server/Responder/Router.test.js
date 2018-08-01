@@ -1,4 +1,4 @@
-import { equal, throws, doesNotThrow } from 'assert'
+import { strictEqual, throws, doesNotThrow } from 'assert'
 import { URL } from 'url'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import {
@@ -15,19 +15,19 @@ describe('Node.Server.Responder.Router', () => {
   it('appendRouteMap()', () => {
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '', 'GET', () => {})
-      equal(routeMap[ '' ][ '/GET' ].route, '')
+      strictEqual(routeMap[ '' ][ '/GET' ].route, '')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/', 'GET', () => {})
-      equal(routeMap[ '' ][ '' ][ '/GET' ].route, '/')
+      strictEqual(routeMap[ '' ][ '' ][ '/GET' ].route, '/')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c', 'GET', () => {})
-      equal(routeMap[ '' ].a.b.c[ '/GET' ].route, '/a/b/c')
+      strictEqual(routeMap[ '' ].a.b.c[ '/GET' ].route, '/a/b/c')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c/', 'GET', () => {})
-      equal(routeMap[ '' ].a.b.c[ '' ][ '/GET' ].route, '/a/b/c/')
+      strictEqual(routeMap[ '' ].a.b.c[ '' ][ '/GET' ].route, '/a/b/c/')
     })
   })
 
@@ -87,35 +87,35 @@ describe('Node.Server.Responder.Router', () => {
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-basic') })
       const { tag, route, paramMap } = responderRouter(store)
-      equal(tag, 'A')
-      equal(route, '/test-basic')
-      equal(Object.keys(paramMap).length, 0)
+      strictEqual(tag, 'A')
+      strictEqual(route, '/test-basic')
+      strictEqual(Object.keys(paramMap).length, 0)
     }
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-any/a/b/c/d/e?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
-      equal(tag, 'B')
-      equal(route, '/test-param-any/*')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParamAny(store), 'a/b/c/d/e')
+      strictEqual(tag, 'B')
+      strictEqual(route, '/test-param-any/*')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParamAny(store), 'a/b/c/d/e')
     }
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa-aaa?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
-      equal(tag, 'C')
-      equal(route, '/test-param-a/:param-a')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParam(store, 'param-a'), 'aaa-aaa')
+      strictEqual(tag, 'C')
+      strictEqual(route, '/test-param-a/:param-a')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParam(store, 'param-a'), 'aaa-aaa')
     }
     {
       const store = createStateStoreLite({ method: 'HEAD', url: new URL('aa://B/test-param-b/bbb-bbb/ccc-ccc/ddd-ddd/eee?f#g') })
       const { tag, route, paramMap } = responderRouter(store)
-      equal(tag, 'D')
-      equal(route, '/test-param-b/:param-b/:param-c/:param-d/eee')
-      equal(Object.keys(paramMap).length, 3)
-      equal(getRouteParam(store, 'param-b'), 'bbb-bbb')
-      equal(getRouteParam(store, 'param-c'), 'ccc-ccc')
-      equal(getRouteParam(store, 'param-d'), 'ddd-ddd')
+      strictEqual(tag, 'D')
+      strictEqual(route, '/test-param-b/:param-b/:param-c/:param-d/eee')
+      strictEqual(Object.keys(paramMap).length, 3)
+      strictEqual(getRouteParam(store, 'param-b'), 'bbb-bbb')
+      strictEqual(getRouteParam(store, 'param-c'), 'ccc-ccc')
+      strictEqual(getRouteParam(store, 'param-d'), 'ddd-ddd')
     }
   })
 })

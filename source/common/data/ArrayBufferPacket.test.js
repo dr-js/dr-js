@@ -1,4 +1,4 @@
-import { equal } from 'assert'
+import { strictEqual } from 'assert'
 import { isEqualArrayBuffer, fromString } from './ArrayBuffer'
 import {
   HEADER_BYTE_SIZE,
@@ -23,11 +23,11 @@ describe('Common.Data.ArrayBufferPacket', () => {
   ]
 
   it('packArrayBufferPacket()', () => {
-    equal(
+    strictEqual(
       packArrayBufferPacket(headerString).byteLength,
       HEADER_BYTE_SIZE + headerArrayBuffer.byteLength
     )
-    equal(
+    strictEqual(
       packArrayBufferPacket(headerString, payloadArrayBuffer).byteLength,
       HEADER_BYTE_SIZE + headerArrayBuffer.byteLength + payloadArrayBuffer.byteLength
     )
@@ -36,24 +36,24 @@ describe('Common.Data.ArrayBufferPacket', () => {
   it('parseArrayBufferPacket()', () => {
     {
       const [ parsedHeaderString, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString))
-      equal(headerString, parsedHeaderString)
-      equal(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload), true)
+      strictEqual(headerString, parsedHeaderString)
+      strictEqual(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload), true)
     }
 
     {
       const [ parsedHeaderString, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString, payloadArrayBuffer))
-      equal(headerString, parsedHeaderString)
-      equal(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload), true)
+      strictEqual(headerString, parsedHeaderString)
+      strictEqual(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload), true)
     }
   })
 
   it('ChainArrayBufferPacket', () => {
     const chainArrayBufferPacket = packChainArrayBufferPacket(arrayBufferList)
     const parsedArrayBufferList = parseChainArrayBufferPacket(chainArrayBufferPacket)
-    arrayBufferList.forEach((arrayBuffer, index) => equal(
+    arrayBufferList.forEach((arrayBuffer, index) => strictEqual(
       isEqualArrayBuffer(arrayBuffer, parsedArrayBufferList[ index ]),
       true,
-      `check equal arrayBufferList[${index}]`
+      `check strictEqual arrayBufferList[${index}]`
     ))
   })
 })

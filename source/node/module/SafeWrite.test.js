@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { equal } from 'assert'
+import { strictEqual } from 'assert'
 import { readFileSync } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
 import { createDirectory } from 'source/node/file/File'
@@ -23,7 +23,7 @@ describe('Node.Module.SafeWrite', () => {
     write('4')
     write('5')
     end()
-    equal(readFileSync(pathOutputFile, 'utf8'), `12345`)
+    strictEqual(readFileSync(pathOutputFile, 'utf8'), `12345`)
   })
 
   it('createSafeWriteStream() async write 1', async () => {
@@ -40,7 +40,7 @@ describe('Node.Module.SafeWrite', () => {
     write('5')
     end()
     await setTimeoutAsync(10)
-    equal(readFileSync(pathOutputFile, 'utf8'), `12345`)
+    strictEqual(readFileSync(pathOutputFile, 'utf8'), `12345`)
   })
 
   it('createSafeWriteStream() async write 2', async () => {
@@ -56,7 +56,7 @@ describe('Node.Module.SafeWrite', () => {
     await setTimeoutAsync(10)
     write('5')
     end()
-    equal(readFileSync(pathOutputFile, 'utf8'), `12345`)
+    strictEqual(readFileSync(pathOutputFile, 'utf8'), `12345`)
   })
 
   it('createSafeWriteStream() async write 3', async () => {
@@ -70,7 +70,7 @@ describe('Node.Module.SafeWrite', () => {
     write('5')
     await setTimeoutAsync(10)
     end()
-    equal(readFileSync(pathOutputFile, 'utf8'), `12345`)
+    strictEqual(readFileSync(pathOutputFile, 'utf8'), `12345`)
   })
 
   it('createSafeWriteStream() async write 4', async () => {
@@ -83,6 +83,6 @@ describe('Node.Module.SafeWrite', () => {
     write('4')
     write('5')
     end()
-    equal(readFileSync(pathOutputFile, 'utf8'), `12345`)
+    strictEqual(readFileSync(pathOutputFile, 'utf8'), `12345`)
   })
 })

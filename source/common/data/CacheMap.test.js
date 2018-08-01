@@ -1,4 +1,4 @@
-import { equal, deepEqual } from 'assert'
+import { strictEqual, deepStrictEqual } from 'assert'
 import { createCacheMap } from './CacheMap'
 
 const { describe, it } = global
@@ -10,7 +10,7 @@ const getTestData = (valueSizeSumMax) => {
 }
 
 const doSanityTest = (cacheMap, length) => {
-  it('should has matched cacheMap.getSize', () => equal(cacheMap.getSize(), length))
+  it('should has matched cacheMap.getSize', () => strictEqual(cacheMap.getSize(), length))
 }
 
 describe('Common.Data.CacheMap', () => {
@@ -34,21 +34,21 @@ describe('Common.Data.CacheMap', () => {
     cacheMap.set(dataList[ 1 ].key, dataList[ 1 ].value)
     cacheMap.set(dataList[ 2 ].key, dataList[ 2 ].value)
     cacheMap.set(dataList[ 2 ].key, dataList[ 2 ].value)
-    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => equal(cacheMap.get(key), index <= 2 ? value : undefined)))
+    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => strictEqual(cacheMap.get(key), index <= 2 ? value : undefined)))
     doSanityTest(cacheMap, 3) // 2 of 5 busted
   })
 
   describe('CacheMap.get', () => {
     const { cacheMap, dataList } = getTestData()
     dataList.forEach(({ key, value }) => cacheMap.set(key, value))
-    dataList.forEach(({ key, value }) => it('should has matched cacheValue', () => equal(cacheMap.get(key), value)))
+    dataList.forEach(({ key, value }) => it('should has matched cacheValue', () => strictEqual(cacheMap.get(key), value)))
     doSanityTest(cacheMap, 5)
   })
 
   describe('CacheMap.get expired', () => {
     const { cacheMap, dataList } = getTestData()
     dataList.forEach(({ key, value }, index) => cacheMap.set(key, value, 1, index <= 2 ? -1 : undefined))
-    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => equal(cacheMap.get(key), index <= 2 ? undefined : value)))
+    dataList.forEach(({ key, value }, index) => it('should has match cacheValue', () => strictEqual(cacheMap.get(key), index <= 2 ? undefined : value)))
     doSanityTest(cacheMap, 2) // 3 of 5 expired
   })
 
@@ -67,7 +67,7 @@ describe('Common.Data.CacheMap', () => {
     // console.log('packDataList', packDataList)
 
     const reloadPackDataList = JSON.parse(JSON.stringify(packDataList))
-    deepEqual(reloadPackDataList, packDataList)
+    deepStrictEqual(reloadPackDataList, packDataList)
 
     cacheMap.parseList(packDataList)
     doSanityTest(cacheMap, 3)
@@ -79,6 +79,6 @@ describe('Common.Data.CacheMap', () => {
     const repackDataList = loadCacheMap.packList()
     // console.log('repackDataList', repackDataList)
 
-    deepEqual(repackDataList, packDataList)
+    deepStrictEqual(repackDataList, packDataList)
   })
 })

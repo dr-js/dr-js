@@ -1,4 +1,4 @@
-import { deepEqual, strictEqual } from 'assert'
+import { deepStrictEqual, strictEqual } from 'assert'
 import { fetch } from 'source/node/net'
 import { bufferToStream } from 'source/node/data/Stream'
 import { createServer, createRequestListener } from './Server'
@@ -46,13 +46,13 @@ describe('Node.Server.Server', () => {
 
     start()
 
-    deepEqual(
+    deepStrictEqual(
       await fetch(`${option.baseUrl}/test-param/AAA`).then((response) => response.json()),
       { param: 'AAA' },
       'fetch /test-param/AAA'
     )
 
-    deepEqual(
+    deepStrictEqual(
       await fetch(`${option.baseUrl}/test-param-any/aaa/bbb/ccc`).then((response) => response.json()),
       { param: 'aaa/bbb/ccc' },
       'fetch /test-param-any/aaa/bbb/ccc'
@@ -90,7 +90,7 @@ describe('Node.Server.Server', () => {
       'fetch /test-stream-gzip'
     )
 
-    deepEqual(
+    deepStrictEqual(
       await fetch(`${option.baseUrl}/test-json`).then((response) => response.json()),
       { testKey: 'testValue' },
       'fetch /test-json'

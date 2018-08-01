@@ -1,4 +1,4 @@
-import { equal } from 'assert'
+import { strictEqual } from 'assert'
 import { getSampleRange } from 'source/common/math/sample'
 import {
   isEqualArrayBuffer,
@@ -24,31 +24,31 @@ describe('Common.Data.ArrayBuffer', () => {
   const string1 = byteList1.map((v) => String.fromCharCode(v)).join('')
 
   it('isEqualArrayBuffer()', () => {
-    equal(isEqualArrayBuffer(new ArrayBuffer(0), new ArrayBuffer(0)), true)
-    equal(isEqualArrayBuffer(new ArrayBuffer(64), new ArrayBuffer(64)), true)
-    equal(isEqualArrayBuffer(arrayBuffer0, arrayBuffer0), true)
-    equal(isEqualArrayBuffer(arrayBuffer1, arrayBuffer1), true)
-    equal(isEqualArrayBuffer(arrayBuffer0, arrayBuffer1), false)
-    equal(isEqualArrayBuffer(arrayBuffer1, arrayBuffer0), false)
-    equal(isEqualArrayBuffer(arrayBuffer0, new ArrayBuffer(0)), false)
+    strictEqual(isEqualArrayBuffer(new ArrayBuffer(0), new ArrayBuffer(0)), true)
+    strictEqual(isEqualArrayBuffer(new ArrayBuffer(64), new ArrayBuffer(64)), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, arrayBuffer0), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer1, arrayBuffer1), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, arrayBuffer1), false)
+    strictEqual(isEqualArrayBuffer(arrayBuffer1, arrayBuffer0), false)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, new ArrayBuffer(0)), false)
   })
 
   it('concatArrayBuffer()', () => {
-    equal(isEqualArrayBuffer(
+    strictEqual(isEqualArrayBuffer(
       concatArrayBuffer([ arrayBuffer1, new ArrayBuffer(0), arrayBuffer1 ]),
       Uint8Array.from([ ...byteList1, ...byteList1 ]).buffer
     ), true)
-    equal(isEqualArrayBuffer(
+    strictEqual(isEqualArrayBuffer(
       concatArrayBuffer([ arrayBuffer1, arrayBuffer0, arrayBuffer1 ]),
       Uint8Array.from([ ...byteList1, ...byteList0, ...byteList1 ]).buffer
     ), true)
   })
 
   it('StringArrayBuffer', () => {
-    equal(string0, toString(fromString(string0)))
-    equal(string1, toString(fromString(string1)))
+    strictEqual(string0, toString(fromString(string0)))
+    strictEqual(string1, toString(fromString(string1)))
 
-    equal(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
-    equal(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
   })
 })

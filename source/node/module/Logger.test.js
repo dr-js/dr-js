@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { equal, ok } from 'assert'
+import { strictEqual, ok } from 'assert'
 import { readFileSync, statSync } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
 import { createDirectory } from 'source/node/file/File'
@@ -26,7 +26,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(pathOutputFile).size
     // console.log('4', size)
-    equal(size, 0)
+    strictEqual(size, 0)
 
     add('5')
     await setTimeoutAsync(10)
@@ -50,7 +50,7 @@ describe('Node.Module.Logger', () => {
     // console.log('7', size)
     ok(size > prevSize)
 
-    equal(readFileSync(pathOutputFile, { encoding: 'utf8' }), '1\n2\n3\n4\n5\n6\n7\n')
+    strictEqual(readFileSync(pathOutputFile, { encoding: 'utf8' }), '1\n2\n3\n4\n5\n6\n7\n')
   })
 
   it('createLogger()', async () => {
@@ -75,7 +75,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('4', size)
-    equal(size, 0, 'check 0')
+    strictEqual(size, 0, 'check 0')
 
     add('5')
     await setTimeoutAsync(10)
@@ -98,7 +98,7 @@ describe('Node.Module.Logger', () => {
     ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 3')
     size = statSync(getCurrentLogPath()).size
     // console.log('7', size)
-    equal(size, 0, 'check 4')
+    strictEqual(size, 0, 'check 4')
     prevSize = size
 
     add('8', [ 'A' ])
@@ -107,7 +107,7 @@ describe('Node.Module.Logger', () => {
     ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 5')
     size = statSync(getCurrentLogPath()).size
     // console.log('9', size)
-    equal(size, 0, 'check 6')
+    strictEqual(size, 0, 'check 6')
     prevSize = size
 
     add('10')
@@ -118,8 +118,8 @@ describe('Node.Module.Logger', () => {
     // console.log('11', size)
     ok(size > prevSize, 'check 7')
 
-    equal(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`), { encoding: 'utf8' }), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')
-    equal(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`), { encoding: 'utf8' }), `8 A\n9 ${{}} should auto split\n`)
-    equal(readFileSync(getCurrentLogPath(), { encoding: 'utf8' }), '10\n11\n')
+    strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`), { encoding: 'utf8' }), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')
+    strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`), { encoding: 'utf8' }), `8 A\n9 ${{}} should auto split\n`)
+    strictEqual(readFileSync(getCurrentLogPath(), { encoding: 'utf8' }), '10\n11\n')
   })
 })

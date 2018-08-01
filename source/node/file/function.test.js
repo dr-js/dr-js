@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { ok, equal, throws } from 'assert'
+import { ok, strictEqual, throws } from 'assert'
 import { // TODO: add more test
   statAsync,
   // lstatAsync,
@@ -52,9 +52,9 @@ describe('Node.File.function', () => {
   it('createPathPrefixLock()', () => {
     const checkPath = (getPathFromRoot, rootPath) => {
       const expectedPath = resolve(`${rootPath}/a/b/c`)
-      equal(getPathFromRoot('a/b/c'), expectedPath)
-      equal(getPathFromRoot('./a/b/c'), expectedPath)
-      equal(getPathFromRoot('a/d/../b/c'), expectedPath)
+      strictEqual(getPathFromRoot('a/b/c'), expectedPath)
+      strictEqual(getPathFromRoot('./a/b/c'), expectedPath)
+      strictEqual(getPathFromRoot('a/d/../b/c'), expectedPath)
       throws(() => getPathFromRoot('..'), `should throw Error for to much '../'`)
       throws(() => getPathFromRoot('a/../../b'), `should throw Error for to much '../'`)
     }

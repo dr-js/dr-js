@@ -41,15 +41,15 @@ const checkArgumentList = (optionMap) => {
   ok(optionMap[ 'option-name-cc' ].argumentList[ 3 ] === 4.4)
 }
 
-describe('Common.Module.OptionParser', () => {
-  describe('OptionParser.formatUsage', () => {
+describe('Common.Module.Option', () => {
+  describe('Option.formatUsage', () => {
     const message = 'TEST_MESSAGE'
     it('should pass formatUsage()', () => ok(formatUsage().length > 0))
     it('should pass formatUsage(message)', () => ok(formatUsage(message).includes(message)))
     it('should pass formatUsage(error)', () => ok(formatUsage(new Error(message)).includes(message)))
   })
 
-  describe('OptionParser.parseCLI', () => {
+  describe('Option.parseCLI', () => {
     const optionMap0 = parseCLI([
       // 'NODE',
       // 'SCRIPT.js',
@@ -92,7 +92,7 @@ describe('Common.Module.OptionParser', () => {
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
   })
 
-  describe('OptionParser.parseENV', () => {
+  describe('Option.parseENV', () => {
     const optionMap = parseENV({
       PREFIX_ENV_OPTION_NAME_A: '[]',
       PREFIX_ENV_OPTION_NAME_B: '[ "1" ]',
@@ -106,7 +106,7 @@ describe('Common.Module.OptionParser', () => {
     it('should pass checkArgumentList use nameENV', () => checkArgumentList(optionMap))
   })
 
-  describe('OptionParser.parseJSON', () => {
+  describe('Option.parseJSON', () => {
     const optionMap = parseJSON({
       prefixJSONOptionNameA: [],
       prefixJSONOptionNameB: [ 1 ],
@@ -120,7 +120,7 @@ describe('Common.Module.OptionParser', () => {
     it('should pass checkArgumentList use nameJSON', () => checkArgumentList(optionMap))
   })
 
-  describe('OptionParser test optional && extendFormatList', () => {
+  describe('Option test optional && extendFormatList', () => {
     const optionData1 = {
       prefixENV: 'prefix-ENV',
       prefixJSON: 'prefix-JSON',

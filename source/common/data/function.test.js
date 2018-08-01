@@ -1,4 +1,4 @@
-import { equal, notEqual, strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert'
 import {
   hashStringToNumber,
   tryParseJSONObject,
@@ -12,12 +12,12 @@ const OBJECT_DATA = { a: 1, A: SAMPLE_ARRAY }
 
 describe('Common.Data.function', () => {
   it('hashStringToNumber()', () => {
-    equal(hashStringToNumber('a'), hashStringToNumber('a'))
-    notEqual(hashStringToNumber('a'), hashStringToNumber('b'))
-    notEqual(hashStringToNumber('a'), hashStringToNumber('aa'))
-    notEqual(hashStringToNumber('a'), hashStringToNumber('a '))
-    notEqual(hashStringToNumber('a'), hashStringToNumber('a', 1))
-    notEqual(hashStringToNumber('a'), hashStringToNumber('a', 9))
+    strictEqual(hashStringToNumber('a'), hashStringToNumber('a'))
+    notStrictEqual(hashStringToNumber('a'), hashStringToNumber('b'))
+    notStrictEqual(hashStringToNumber('a'), hashStringToNumber('aa'))
+    notStrictEqual(hashStringToNumber('a'), hashStringToNumber('a '))
+    notStrictEqual(hashStringToNumber('a'), hashStringToNumber('a', 1))
+    notStrictEqual(hashStringToNumber('a'), hashStringToNumber('a', 9))
   })
 
   it('tryParseJSONObject()', () => {

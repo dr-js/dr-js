@@ -1,4 +1,4 @@
-import { equal, deepEqual } from 'assert'
+import { strictEqual, deepStrictEqual } from 'assert'
 import { join as joinPath, dirname, resolve } from 'path'
 import { getSample } from 'source/common/math/sample'
 import { FILE_TYPE, createDirectory, deletePath } from './File'
@@ -44,11 +44,11 @@ describe('Node.File.Directory', () => {
   it('getDirectorySubInfoList()', async () => {
     let getExpectedError = false
     try { await getDirectorySubInfoList(invalidPath) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
 
     getExpectedError = false
     try { await getDirectorySubInfoList(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
 
     await getDirectorySubInfoList(SOURCE_DIRECTORY)
     await getDirectorySubInfoList(SOURCE_DIRECTORY_UPPER)
@@ -58,11 +58,11 @@ describe('Node.File.Directory', () => {
   it('getDirectoryInfoTree()', async () => {
     let getExpectedError = false
     try { await getDirectoryInfoTree(invalidPath) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
 
     getExpectedError = false
     try { await getDirectoryInfoTree(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    equal(getExpectedError, true)
+    strictEqual(getExpectedError, true)
 
     await getDirectoryInfoTree(SOURCE_DIRECTORY)
     await getDirectoryInfoTree(SOURCE_DIRECTORY_UPPER)
@@ -70,10 +70,10 @@ describe('Node.File.Directory', () => {
 
     // console.log(infoTree)
 
-    equal(infoTree.root, TEST_ROOT)
-    equal(infoTree.subInfoListMap[ infoTree.root ].length, 2)
-    equal(Object.keys(infoTree.subInfoListMap).length, 11)
-    deepEqual(
+    strictEqual(infoTree.root, TEST_ROOT)
+    strictEqual(infoTree.subInfoListMap[ infoTree.root ].length, 2)
+    strictEqual(Object.keys(infoTree.subInfoListMap).length, 11)
+    deepStrictEqual(
       infoTree.subInfoListMap[ infoTree.root ].map(({ type }) => type),
       getSample(() => FILE_TYPE.Directory, infoTree.subInfoListMap[ infoTree.root ].length)
     )
@@ -85,12 +85,12 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    equal(callbackCount, 10)
+    strictEqual(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath2), (info) => {
       // console.log(' - - info', info)
-      equal(info.name, checkNameList.shift())
+      strictEqual(info.name, checkNameList.shift())
     })
   })
 
@@ -100,12 +100,12 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    equal(callbackCount, 10)
+    strictEqual(callbackCount, 10)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryInfoTreeBottomUp(await getDirectoryInfoTree(directoryPath2), (info) => {
       // console.log(' - - info', info)
-      equal(info.name, checkNameList.pop())
+      strictEqual(info.name, checkNameList.pop())
     })
   })
 
@@ -117,7 +117,7 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    equal(callbackCount, 4)
+    strictEqual(callbackCount, 4)
   })
 
   it('moveDirectoryInfoTree()', async () => {
@@ -128,7 +128,7 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    equal(callbackCount, 4)
+    strictEqual(callbackCount, 4)
   })
 
   it('deleteDirectoryInfoTree()', async () => {
@@ -139,7 +139,7 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    equal(callbackCount, 0)
+    strictEqual(callbackCount, 0)
   })
 
   describe('getFileList()', () => {
@@ -154,44 +154,44 @@ describe('Node.File.Directory', () => {
 
     it('getFileList() File', async () => {
       const fileList = await getFileList(LIST_FILE)
-      equal(fileList.length, 1)
-      equal(fileList[ 0 ], LIST_FILE)
+      strictEqual(fileList.length, 1)
+      strictEqual(fileList[ 0 ], LIST_FILE)
     })
 
     it('getFileList() Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY)
-      equal(fileList.length >= 2, true)
-      equal(fileList.includes(LIST_FILE), true)
+      strictEqual(fileList.length >= 2, true)
+      strictEqual(fileList.includes(LIST_FILE), true)
     })
 
     it('getFileList(createSuffixFilterFileCollector) File', async () => {
       const jsFileList = await getFileList(LIST_FILE, createSuffixFilterFileCollector('.js'))
       const abcdefghFileList = await getFileList(LIST_FILE, createSuffixFilterFileCollector('.abcdefgh'))
-      equal(jsFileList.length, 1)
-      equal(jsFileList[ 0 ], LIST_FILE)
-      equal(abcdefghFileList.length, 0)
+      strictEqual(jsFileList.length, 1)
+      strictEqual(jsFileList[ 0 ], LIST_FILE)
+      strictEqual(abcdefghFileList.length, 0)
     })
 
     it('getFileList(createSuffixFilterFileCollector) Directory', async () => {
       const jsFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.js'))
       const abcdefghFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.abcdefgh'))
-      equal(jsFileList.length >= 2, true)
-      equal(jsFileList.includes(LIST_FILE), true)
-      equal(abcdefghFileList.length, 0)
+      strictEqual(jsFileList.length >= 2, true)
+      strictEqual(jsFileList.includes(LIST_FILE), true)
+      strictEqual(abcdefghFileList.length, 0)
     })
 
     it('getFileList(createPrefixMapperFileCollector) File', async () => {
       const fileList = await getFileList(LIST_FILE, createPrefixMapperFileCollector('PREFIX-'))
-      equal(fileList.length, 1)
-      equal(fileList[ 0 ][ 0 ], LIST_FILE)
-      equal(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
+      strictEqual(fileList.length, 1)
+      strictEqual(fileList[ 0 ][ 0 ], LIST_FILE)
+      strictEqual(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
     })
 
     it('getFileList(createPrefixMapperFileCollector) Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY, createPrefixMapperFileCollector('PREFIX-'))
-      equal(fileList.length >= 2, true)
-      equal(fileList.map((v) => v[ 0 ]).includes(LIST_FILE), true)
-      equal(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
+      strictEqual(fileList.length >= 2, true)
+      strictEqual(fileList.map((v) => v[ 0 ]).includes(LIST_FILE), true)
+      strictEqual(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
     })
   })
 })

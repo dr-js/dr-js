@@ -1,4 +1,4 @@
-import { equal, deepEqual, throws, doesNotThrow } from 'assert'
+import { strictEqual, deepStrictEqual, throws, doesNotThrow } from 'assert'
 import {
   parseRouteToMap,
   findRouteFromMap,
@@ -16,48 +16,48 @@ describe('Common.Module.RouteMap', () => {
     doesNotThrow(() => {
       const routeMap = {}
       const { routeNode } = parseRouteToMap(routeMap, '')
-      equal(findRouteFromMap(routeMap, '').routeNode, routeNode)
+      strictEqual(findRouteFromMap(routeMap, '').routeNode, routeNode)
     })
     doesNotThrow(() => {
       const routeMap = {}
       const { routeNode } = parseRouteToMap(routeMap, '/')
-      equal(findRouteFromMap(routeMap, '/').routeNode, routeNode)
+      strictEqual(findRouteFromMap(routeMap, '/').routeNode, routeNode)
     })
     doesNotThrow(() => {
       const routeMap = {}
       const { routeNode } = parseRouteToMap(routeMap, '/a/b/c')
-      equal(findRouteFromMap(routeMap, '/a/b/c').routeNode, routeNode)
+      strictEqual(findRouteFromMap(routeMap, '/a/b/c').routeNode, routeNode)
     })
     doesNotThrow(() => {
       const routeMap = {}
       const { routeNode } = parseRouteToMap(routeMap, '/a/b/c/')
-      equal(findRouteFromMap(routeMap, '/a/b/c/').routeNode, routeNode)
+      strictEqual(findRouteFromMap(routeMap, '/a/b/c/').routeNode, routeNode)
     })
     doesNotThrow(() => {
       const routeMap = {}
       const { routeNode, paramNameList } = parseRouteToMap(routeMap, '/:a/:b/:c/')
-      deepEqual(paramNameList, [ 'a', 'b', 'c' ])
-      equal(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').routeNode, routeNode)
-      deepEqual(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').paramValueList, [ 'AAA', 'BBB', 'CCC' ])
+      deepStrictEqual(paramNameList, [ 'a', 'b', 'c' ])
+      strictEqual(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').routeNode, routeNode)
+      deepStrictEqual(findRouteFromMap(routeMap, '/AAA/BBB/CCC/').paramValueList, [ 'AAA', 'BBB', 'CCC' ])
     })
   })
 
   it('appendRouteMap()', () => {
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '', 'CUSTOM-DATA')
-      equal(routeMap[ '' ][ '/DATA' ].route, '')
+      strictEqual(routeMap[ '' ][ '/DATA' ].route, '')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/', 'CUSTOM-DATA')
-      equal(routeMap[ '' ][ '' ][ '/DATA' ].route, '/')
+      strictEqual(routeMap[ '' ][ '' ][ '/DATA' ].route, '/')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c', 'CUSTOM-DATA')
-      equal(routeMap[ '' ].a.b.c[ '/DATA' ].route, '/a/b/c')
+      strictEqual(routeMap[ '' ].a.b.c[ '/DATA' ].route, '/a/b/c')
     })
     doesNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c/', 'CUSTOM-DATA')
-      equal(routeMap[ '' ].a.b.c[ '' ][ '/DATA' ].route, '/a/b/c/')
+      strictEqual(routeMap[ '' ].a.b.c[ '' ][ '/DATA' ].route, '/a/b/c/')
     })
   })
 
@@ -103,46 +103,46 @@ describe('Common.Module.RouteMap', () => {
     throws(() => parseRouteUrl(routeMap, '/test-param-b/b/c/d/ee')) // wrong frag
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-basic')
-      equal(route, '/test-basic')
-      equal(Object.keys(paramMap).length, 0)
+      strictEqual(route, '/test-basic')
+      strictEqual(Object.keys(paramMap).length, 0)
     }
   })
 
   it('getRouteParamAny()', () => {
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-param-any/')
-      equal(route, '/test-param-any/*')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParamAny({ route, paramMap }), '')
+      strictEqual(route, '/test-param-any/*')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParamAny({ route, paramMap }), '')
     }
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-param-any/a---e')
-      equal(route, '/test-param-any/*')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParamAny({ route, paramMap }), 'a---e')
+      strictEqual(route, '/test-param-any/*')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParamAny({ route, paramMap }), 'a---e')
     }
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-param-any/a/b/c/d/e')
-      equal(route, '/test-param-any/*')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParamAny({ route, paramMap }), 'a/b/c/d/e')
+      strictEqual(route, '/test-param-any/*')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParamAny({ route, paramMap }), 'a/b/c/d/e')
     }
   })
 
   it('getRouteParam()', () => {
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-param-a/aaa-aaa')
-      equal(route, '/test-param-a/:param-a')
-      equal(Object.keys(paramMap).length, 1)
-      equal(getRouteParam({ route, paramMap }, 'param-a'), 'aaa-aaa')
+      strictEqual(route, '/test-param-a/:param-a')
+      strictEqual(Object.keys(paramMap).length, 1)
+      strictEqual(getRouteParam({ route, paramMap }, 'param-a'), 'aaa-aaa')
     }
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-param-b/bbb-bbb/ccc-ccc/ddd-ddd/eee')
-      equal(route, '/test-param-b/:param-b/:param-c/:param-d/eee')
-      equal(Object.keys(paramMap).length, 3)
-      equal(getRouteParam({ route, paramMap }, 'param-b'), 'bbb-bbb')
-      equal(getRouteParam({ route, paramMap }, 'param-c'), 'ccc-ccc')
-      equal(getRouteParam({ route, paramMap }, 'param-d'), 'ddd-ddd')
+      strictEqual(route, '/test-param-b/:param-b/:param-c/:param-d/eee')
+      strictEqual(Object.keys(paramMap).length, 3)
+      strictEqual(getRouteParam({ route, paramMap }, 'param-b'), 'bbb-bbb')
+      strictEqual(getRouteParam({ route, paramMap }, 'param-c'), 'ccc-ccc')
+      strictEqual(getRouteParam({ route, paramMap }, 'param-d'), 'ddd-ddd')
     }
   })
 })

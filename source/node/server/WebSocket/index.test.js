@@ -1,4 +1,4 @@
-import { equal, deepStrictEqual } from 'assert'
+import { strictEqual, deepStrictEqual } from 'assert'
 
 import { getUnusedPort } from 'source/node/server/function'
 import { createServer } from 'source/node/server/Server'
@@ -52,22 +52,22 @@ describe('Node.Server.WebSocket', () => {
       setTimeout(reject, 500)
     })
 
-    equal(webSocketSet.size, 1)
+    strictEqual(webSocketSet.size, 1)
 
     // console.log(`>> OPEN`)
 
     {
       webSocket.sendText(TEST_STRING) // big string
       const { dataType, dataBuffer } = await getNextFrame()
-      equal(dataType, DATA_TYPE_MAP.OPCODE_TEXT)
-      equal(dataBuffer.toString(), TEST_STRING)
+      strictEqual(dataType, DATA_TYPE_MAP.OPCODE_TEXT)
+      strictEqual(dataBuffer.toString(), TEST_STRING)
     }
 
     {
       webSocket.sendBuffer(TEST_BUFFER) // big buffer
       const { dataType, dataBuffer } = await getNextFrame()
-      equal(dataType, DATA_TYPE_MAP.OPCODE_BINARY)
-      equal(dataBuffer.size, TEST_BUFFER.size)
+      strictEqual(dataType, DATA_TYPE_MAP.OPCODE_BINARY)
+      strictEqual(dataBuffer.size, TEST_BUFFER.size)
     }
 
     webSocket.close(1000, 'CLOSE') // close

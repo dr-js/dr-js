@@ -1,4 +1,4 @@
-import { equal, deepEqual, deepStrictEqual, notEqual, notDeepEqual, throws, doesNotThrow } from 'assert'
+import { strictEqual, deepStrictEqual, notStrictEqual, notDeepStrictEqual, throws, doesNotThrow } from 'assert'
 import { objectMerge } from './Object'
 import { createInsideOutPromise } from 'source/common/function'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
@@ -6,9 +6,9 @@ import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from
 const { describe, it } = global
 
 const verifyBasicStateGetSet = (store, initialState) => {
-  equal(typeof (store.getState), 'function')
-  equal(typeof (store.setState), 'function')
-  equal(typeof (store.getState()), 'object')
+  strictEqual(typeof (store.getState), 'function')
+  strictEqual(typeof (store.setState), 'function')
+  strictEqual(typeof (store.getState()), 'object')
   deepStrictEqual(store.setState({}), store.getState())
 
   deepStrictEqual(store.setState({}), initialState)
@@ -17,24 +17,24 @@ const verifyBasicStateGetSet = (store, initialState) => {
   deepStrictEqual(store.setState({}), store.getState())
 
   const alteredState = store.setState({ test: 'value' })
-  notEqual(alteredState, initialState)
-  notEqual(store.setState({}), initialState)
-  notEqual(store.setState(initialState), initialState)
+  notStrictEqual(alteredState, initialState)
+  notStrictEqual(store.setState({}), initialState)
+  notStrictEqual(store.setState(initialState), initialState)
   deepStrictEqual(store.setState({}), store.getState())
   deepStrictEqual(store.setState({}), alteredState)
   deepStrictEqual(store.setState(initialState), alteredState)
 }
 
 const verifyBasicSubscribeUnsubscribe = (store) => {
-  equal(typeof (store.subscribe), 'function')
-  equal(typeof (store.unsubscribe), 'function')
+  strictEqual(typeof (store.subscribe), 'function')
+  strictEqual(typeof (store.unsubscribe), 'function')
 
   const listener = (state, prevState) => {
-    notDeepEqual(state, prevState)
+    notDeepStrictEqual(state, prevState)
     callCount++
   }
   const listenerAlter = (state, prevState) => {
-    notDeepEqual(state, prevState)
+    notDeepStrictEqual(state, prevState)
     callCount++
   }
   let callCount = 0
@@ -43,41 +43,41 @@ const verifyBasicSubscribeUnsubscribe = (store) => {
 
   callCount = 0
   store.setState({})
-  equal(callCount, 0)
+  strictEqual(callCount, 0)
 
   callCount = 0
   store.setState({ key1: 'value1' })
-  equal(callCount, 0)
+  strictEqual(callCount, 0)
 
   callCount = 0
   store.setState({ add: 'valueNew' })
-  equal(callCount, 1)
+  strictEqual(callCount, 1)
   store.setState({ add: 'valueNew' }) // not change second time
-  equal(callCount, 1)
+  strictEqual(callCount, 1)
 
   store.subscribe(listener) // same will deduplicate
 
   callCount = 0
   store.setState({ add1: 'valueNew1' })
-  equal(callCount, 1)
+  strictEqual(callCount, 1)
 
   store.subscribe(listenerAlter) // 2 listener
 
   callCount = 0
   store.setState({ add2: 'valueNew2' })
-  equal(callCount, 2)
+  strictEqual(callCount, 2)
 
   store.unsubscribe(listenerAlter) // 1 listener
 
   callCount = 0
   store.setState({ add3: 'valueNew3' })
-  equal(callCount, 1)
+  strictEqual(callCount, 1)
 
   store.unsubscribe(listener) // 0 listener
 
   callCount = 0
   store.setState({ add4: 'valueNew4' })
-  equal(callCount, 0)
+  strictEqual(callCount, 0)
 }
 
 const INITIAL_STATE = { key1: 'value1', sub: { key2: 'value2' } }
@@ -148,25 +148,25 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: {} })
-      equal(callCount, 0)
+      strictEqual(callCount, 0)
       deepStrictEqual(store.getState(), INITIAL_STATE)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { new: 'value' } })
-      equal(callCount, 1)
-      notEqual(store.getState(), INITIAL_STATE)
+      strictEqual(callCount, 1)
+      notStrictEqual(store.getState(), INITIAL_STATE)
     })
 
     it('should pass sub dispatch', () => {
       const enhancer = (enhancerStore, { type, payload: { count } }) => {
-        equal(store.getState().count, 10) // not being reduced yet
+        strictEqual(store.getState().count, 10) // not being reduced yet
         count++
         if (count < 10) enhancerStore.dispatch({ type, payload: { count, [ `v${count}` ]: `v${count}` } })
       }
@@ -175,15 +175,15 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
 
-      equal(callCount, 1) // batched sub dispatch state
-      deepEqual(store.getState(), {
+      strictEqual(callCount, 1) // batched sub dispatch state
+      deepStrictEqual(store.getState(), {
         v9: 'v9',
         v8: 'v8',
         v7: 'v7',
@@ -208,30 +208,30 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      deepEqual(store.getState(), { value: 10 })
-      equal(callCount, 0)
+      deepStrictEqual(store.getState(), { value: 10 })
+      strictEqual(callCount, 0)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { set: 0 } })
-      deepEqual(store.getState(), { value: 0 })
-      equal(callCount, 1)
+      deepStrictEqual(store.getState(), { value: 0 })
+      strictEqual(callCount, 1)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { add: 5 } })
-      deepEqual(store.getState(), { value: 5 })
-      equal(callCount, 1)
+      deepStrictEqual(store.getState(), { value: 5 })
+      strictEqual(callCount, 1)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { set: 20, add: 100 } })
-      deepEqual(store.getState(), { value: 120 })
-      equal(callCount, 1)
+      deepStrictEqual(store.getState(), { value: 120 })
+      strictEqual(callCount, 1)
     })
 
     it('should pass check reducer', () => {
@@ -280,19 +280,19 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         callCount++
       }
       store.subscribe(listener)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      equal(callCount, 1)
-      deepEqual(store.getState(), { count: 0 })
+      strictEqual(callCount, 1)
+      deepStrictEqual(store.getState(), { count: 0 })
 
       await promise
-      equal(callCount, 2)
-      deepEqual(store.getState(), { count: 1, v1: 'v1' })
+      strictEqual(callCount, 2)
+      deepStrictEqual(store.getState(), { count: 1, v1: 'v1' })
     })
 
     it('should pass listener change in dispatch', () => {
@@ -300,12 +300,12 @@ describe('Common.Immutable.StateStore', () => {
 
       let callCount = 0
       const listener = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         store.unsubscribe(listenerAlter)
         callCount++
       }
       const listenerAlter = (state, prevState) => {
-        notDeepEqual(state, prevState)
+        notDeepStrictEqual(state, prevState)
         store.unsubscribe(listener)
         callCount++
       }
@@ -314,11 +314,11 @@ describe('Common.Immutable.StateStore', () => {
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 0 } })
-      equal(callCount, 2)
+      strictEqual(callCount, 2)
 
       callCount = 0
       store.dispatch({ type: 'trigger', payload: { count: 5 } })
-      equal(callCount, 0)
+      strictEqual(callCount, 0)
     })
   })
 })

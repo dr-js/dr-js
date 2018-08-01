@@ -1,4 +1,4 @@
-import { equal, notEqual, throws, doesNotThrow } from 'assert'
+import { strictEqual, notStrictEqual, throws, doesNotThrow } from 'assert'
 import { getGlobal, getEnvironment } from './global'
 import { getEndianness, assert } from './function'
 
@@ -12,16 +12,16 @@ const wrapMuteConsoleError = (func) => () => {
 }
 
 describe('Env', () => {
-  it('getGlobal() equal global in node', () => {
-    equal(getGlobal(), global)
+  it('getGlobal() strictEqual global in node', () => {
+    strictEqual(getGlobal(), global)
   })
 
   it('getEnvironment().environmentName should be node', () => {
-    equal(getEnvironment().environmentName, 'node')
+    strictEqual(getEnvironment().environmentName, 'node')
   })
 
   it('getEndianness() should not be unknown', () => {
-    notEqual(getEndianness(), 'unknown')
+    notStrictEqual(getEndianness(), 'unknown')
   })
 
   it('assert(true) should not throw', wrapMuteConsoleError(() => {

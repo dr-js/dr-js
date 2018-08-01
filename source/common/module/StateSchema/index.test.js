@@ -1,4 +1,4 @@
-import { deepEqual, strictEqual, notDeepEqual, throws } from 'assert'
+import { deepStrictEqual, strictEqual, notDeepStrictEqual, throws } from 'assert'
 
 import { ObjectAs } from './ObjectAs'
 import { ArrayOf } from './ArrayOf'
@@ -34,23 +34,23 @@ describe('Common.Module.StateSchema', () => {
 
   it('actMap simple', () => {
     const state = schemaC.reducer(undefined, { name: 'SchemaB', type: 'set', payload: { key: 'e', value: 'changedE' } })
-    notDeepEqual(state, schemaC.initialState)
-    notDeepEqual(state.stateB, schemaC.initialState.stateB)
+    notDeepStrictEqual(state, schemaC.initialState)
+    notDeepStrictEqual(state.stateB, schemaC.initialState.stateB)
     strictEqual(state.stateBList, schemaC.initialState.stateBList)
     strictEqual(state.stateB.e, 'changedE')
   })
 
   it('actMap extend', () => {
     const state0 = schemaC.reducer(undefined, { name: 'SchemaBList', type: 'push', payload: { value: { ...schemaB.initialState, id: 0 } } })
-    notDeepEqual(state0, schemaC.initialState)
+    notDeepStrictEqual(state0, schemaC.initialState)
     strictEqual(state0.stateB, schemaC.initialState.stateB)
-    notDeepEqual(state0.stateBList, schemaC.initialState.stateBList)
+    notDeepStrictEqual(state0.stateBList, schemaC.initialState.stateBList)
 
     const state1 = schemaC.reducer(state0, { name: 'SchemaBList', type: 'push', payload: { value: { ...schemaB.initialState, id: 1 } } })
     const state2 = schemaC.reducer(state1, { name: 'SchemaA', type: 'set', payload: { key: 'id', value: 'set value' } })
-    notDeepEqual(state2, schemaC.initialState)
+    notDeepStrictEqual(state2, schemaC.initialState)
     strictEqual(state2.stateB, schemaC.initialState.stateB)
-    notDeepEqual(state2.stateBList, schemaC.initialState.stateBList)
+    notDeepStrictEqual(state2.stateBList, schemaC.initialState.stateBList)
     strictEqual(state2.stateBList.length, 2)
 
     const state3 = schemaC.reducer(state2, {
@@ -81,8 +81,8 @@ describe('Common.Module.StateSchema', () => {
         }
       ]
     })
-    deepEqual(state3b, state3c)
-    deepEqual(state3c, {
+    deepStrictEqual(state3b, state3c)
+    deepStrictEqual(state3c, {
       stateA: { id: 'set value', a: 0, b: {}, c: null },
       stateB: { id: '', a: 0, b: {}, c: null, d: [], e: '' },
       stateBList: [

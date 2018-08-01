@@ -1,4 +1,4 @@
-import { ok, equal } from 'assert'
+import { ok, strictEqual } from 'assert'
 import {
   getRandomInt,
   getRandomIntList,
@@ -10,8 +10,8 @@ const { describe, it } = global
 
 describe('Common.Math.Random', () => {
   it('getRandomInt()', () => {
-    equal(getRandomInt(0), 0)
-    equal(getRandomInt(10, 10), 10)
+    strictEqual(getRandomInt(0), 0)
+    strictEqual(getRandomInt(10, 10), 10)
     ok(getRandomInt(8, 10) <= 10, true)
     ok(getRandomInt(8, 10) <= 10, true)
     ok(getRandomInt(8, 10) >= 8, true)
@@ -19,9 +19,9 @@ describe('Common.Math.Random', () => {
   })
 
   it('getRandomIntList()', () => {
-    equal(getRandomIntList(0, 10, 2).length, 2)
-    equal(getRandomIntList(0, 10, 4).length, 4)
-    equal(getRandomIntList(0, 10, 6).length, 6)
+    strictEqual(getRandomIntList(0, 10, 2).length, 2)
+    strictEqual(getRandomIntList(0, 10, 4).length, 4)
+    strictEqual(getRandomIntList(0, 10, 6).length, 6)
   })
 
   it('getRandomId()', () => {
@@ -30,9 +30,9 @@ describe('Common.Math.Random', () => {
   })
 
   it('getRandomArrayBuffer()', () => {
-    equal(getRandomArrayBuffer(1 << 1).byteLength, 1 << 1)
-    equal(getRandomArrayBuffer(1 << 8).byteLength, 1 << 8)
-    equal(getRandomArrayBuffer(1 << 16).byteLength, 1 << 16)
-    equal(getRandomArrayBuffer(1 << 24).byteLength, 1 << 24)
+    strictEqual(getRandomArrayBuffer(1 << 1).byteLength, 1 << 1)
+    strictEqual(getRandomArrayBuffer(1 << 8).byteLength, 1 << 8)
+    strictEqual(getRandomArrayBuffer(1 << 16).byteLength, 1 << 16)
+    strictEqual(getRandomArrayBuffer(1 << 24).byteLength, 1 << 24)
   })
 })
