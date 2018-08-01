@@ -5,12 +5,18 @@ const { XMLHttpRequest, Blob, TextDecoder } = global
 // TODO: later replace with fetch + AbortController
 // fetch-like XMLHttpRequest() with timeout
 // timeout in msec, result in error with status: -1, message: TIMEOUT_ERROR
-const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => {
-  const { method = 'GET', headers, body, credentials, timeout, onProgress } = option
+const fetchLikeRequest = (url, {
+  method = 'GET',
+  headers: requestHeaders,
+  body,
+  credentials,
+  timeout,
+  onProgress
+} = {}) => new Promise((resolve, reject) => {
   const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
   const request = new XMLHttpRequest()
   request.open(method, url)
-  headers && Object.entries(headers).forEach(([ key, value ]) => request.setRequestHeader(key, value))
+  requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.withCredentials = credentials === 'include' // Setting withCredentials has no effect on same-site requests. check: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
   request.timeout = timeout || 0 // in millisecond, 0 for no timeout
   request.responseType = 'arraybuffer'
@@ -23,14 +29,14 @@ const fetchLikeRequest = (url, option = {}) => new Promise((resolve, reject) => 
       request.abort()
       return reject(getError('HEADER_STATUS_ERROR', -1)) // can be timeout
     }
-    const headers = request.getAllResponseHeaders().split(/[\r\n]+/).reduce((o, rawHeader) => {
+    const responseHeaders = request.getAllResponseHeaders().split(/[\r\n]+/).reduce((o, rawHeader) => {
       const [ key, ...valueList ] = rawHeader.split(':')
       if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
       return o
     }, {})
     const ok = (status >= 200 && status < 300)
     const { arrayBuffer, blob, text, json } = getPayloadGetter(request, getError)
-    resolve({ headers, status, ok, arrayBuffer, blob, text, json })
+    resolve({ headers: responseHeaders, status, ok, arrayBuffer, blob, text, json })
   }
   if (onProgress) request.onprogress = ({ lengthComputable, loaded, total }) => { lengthComputable && onProgress(loaded, total) }
   request.send(body || null)

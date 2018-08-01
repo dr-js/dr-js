@@ -31,11 +31,15 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
 //   These method can only be called once.
 //   If not, on nextTick, the data will be dropped.
 const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
-const fetch = async (url, config = {}) => {
-  const { method, headers: requestHeaders, body, timeout = DEFAULT_TIMEOUT } = config
+const fetch = async (url, {
+  method,
+  headers: requestHeaders,
+  body,
+  timeout = DEFAULT_TIMEOUT
+} = {}) => {
   const option = { ...urlToOption(new URL(url)), method, headers: { 'accept-encoding': 'gzip', ...requestHeaders }, timeout } // will result in error if timeout
   const response = await requestAsync(option, body)
-  const headers = response.headers
+  const responseHeaders = response.headers
   const status = response.statusCode
   const ok = (status >= 200 && status < 300)
   let isBufferDropped = false
@@ -54,7 +58,7 @@ const fetch = async (url, config = {}) => {
   }
   const text = () => buffer().then((buffer) => buffer.toString())
   const json = () => text().then((text) => JSON.parse(text))
-  return { headers, status, ok, buffer, text, json }
+  return { headers: responseHeaders, status, ok, buffer, text, json }
 }
 
 // ping with a status code of 500 is still a successful ping

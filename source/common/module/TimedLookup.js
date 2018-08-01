@@ -7,6 +7,7 @@ const CHECK_CODE_SEP = '-'
 const CHAR_CODE_1 = '1'.charCodeAt(0)
 
 const calcCode = (size, tokenSize, dataView, seed = 0) => {
+  seed = Math.floor(seed)
   const seedBinaryString = seed.toString(2)
   const valueMax = Math.pow(16, tokenSize)
   let index = seed % size
@@ -24,27 +25,30 @@ const calcCode = (size, tokenSize, dataView, seed = 0) => {
 }
 
 const verifyOption = ({
-  tag = Math.floor(getTimestamp()).toString(36), // /^\w*$/ only, public visible
-  size = 64 * 1024, // in byte, 32 based
-  tokenSize = 8, // in byte, max 13byte, 32bit (limited by calc step `Math.pow(16, tokenSize)`)
-  timeGap = 30 // in sec, min 1sec
+  tag = getTimestamp().toString(36), // /^\w*$/ only, public visible, set a long tag will cause long checkCode
+  size = 64 * 1024, // in byte, 32 based, min 1024byte
+  tokenSize = 8, // in byte, min 2byte, max 13byte, 32bit (limited by calc step `Math.pow(16, tokenSize)`)
+  timeGap = 30 // in sec, min 1sec, set amount of client-server time diff is accepted
 }) => {
   if (!/^\w*$/.test(tag)) throw new Error(`invalid tag: ${tag}`)
-  if (!Number.isInteger(size) || size % 32) throw new Error(`invalid size: ${size}`)
+  if (!Number.isInteger(size) || size <= 1024 || size % 32) throw new Error(`invalid size: ${size}`)
   if (!Number.isInteger(tokenSize) || tokenSize > 13 || tokenSize < 2) throw new Error(`invalid tokenSize: ${tokenSize}`)
   if (!Number.isInteger(timeGap) || timeGap < 1) throw new Error(`invalid timeGap: ${timeGap}`)
   return { tag, size, tokenSize, timeGap }
+}
+
+const generateLookupData = (option) => {
+  option = verifyOption(option)
+  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) }
 }
 
 const generateCheckCode = (
   { tag, size, tokenSize, timeGap, dataView },
   timestamp = getTimestamp()
 ) => {
-  const seed = Math.ceil(timestamp / timeGap)
-  __DEV__ && console.log('generateCheckCode', tokenSize, timeGap, timestamp, seed)
-  const code = calcCode(size, tokenSize, dataView, seed)
-  __DEV__ && console.log('generateCheckCode', code)
-  return swapObfuscateString(`${tag}${CHECK_CODE_SEP}${seed.toString(36)}${CHECK_CODE_SEP}${code}`)
+  const code = calcCode(size, tokenSize, dataView, timestamp / timeGap)
+  __DEV__ && console.log('generateCheckCode', tokenSize, timeGap, timestamp, code)
+  return swapObfuscateString([ tag, timestamp.toString(36), code ].join(CHECK_CODE_SEP))
 }
 
 const verifyCheckCode = (
@@ -54,17 +58,20 @@ const verifyCheckCode = (
 ) => {
   if (typeof (checkCode) !== 'string' || checkCode.length < tokenSize) throw new Error(`invalid checkCode: ${checkCode}`)
   __DEV__ && console.log('verifyCheckCode', tokenSize, timeGap, checkCode, timestamp)
-  const [ tagString, seedString, codeString ] = swapObfuscateString(checkCode).split(CHECK_CODE_SEP)
+  const [ tagString, timestampString, codeString ] = swapObfuscateString(checkCode).split(CHECK_CODE_SEP)
   if (tagString !== tag) throw new Error(`tag not match: ${tagString}, expected: ${tag}`)
-  const seed = Number.parseInt(seedString, 36)
-  if (Math.abs(timestamp / timeGap - seed) > 1) throw new Error(`seed time not match: ${seed}, expected: ${timestamp / timeGap}±1`)
-  const code = calcCode(size, tokenSize, dataView, seed)
+  const checkTimestamp = Number.parseInt(timestampString, 36)
+  if (Math.abs(timestamp - checkTimestamp) > timeGap) {
+    if (Math.abs(timestamp - checkTimestamp * timeGap) <= timeGap) { // TODO: LEGACY: patch for previous in accurate time diff implementation (<=0.16.1-dev.0), where seed is passed directly (resulting in jumpy time diff, and reject some valid client checkCode)
+      const seed = checkTimestamp
+      const code = calcCode(size, tokenSize, dataView, seed)
+      if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
+      return
+    }
+    throw new Error(`timestamp not match: ${checkTimestamp}, expected: ${timestamp}±${timeGap}`)
+  }
+  const code = calcCode(size, tokenSize, dataView, checkTimestamp / timeGap)
   if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
-}
-
-const generateLookupData = (option) => {
-  option = verifyOption(option)
-  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) }
 }
 
 const packDataArrayBuffer = ({ tag, size, tokenSize, timeGap, dataView }) => packArrayBufferPacket(
@@ -79,10 +86,11 @@ const parseDataArrayBuffer = (dataArrayBuffer) => {
 }
 
 export {
+  calcCode,
   verifyOption,
+  generateLookupData,
   generateCheckCode,
   verifyCheckCode,
-  generateLookupData,
   packDataArrayBuffer,
   parseDataArrayBuffer
 }

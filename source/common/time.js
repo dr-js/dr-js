@@ -23,11 +23,11 @@ const tryClock = () => {
 
 const CLOCK_PER_SECOND = 1000
 const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
-const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
+const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
-const clock = tryClock() // return running time in milliseconds
-const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: needed? return running time in seconds
-const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC
+const clock = tryClock() // return running/relative time in milliseconds
+const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: DEPRECATED: confusing naming, just use Date.now()
+const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
 // Usage:
 // const getData = async () => {
@@ -68,7 +68,7 @@ export {
   CLOCK_TO_SECOND,
   TIMESTAMP_START,
   clock,
-  now,
+  now, // TODO: DEPRECATED
   getTimestamp,
   setTimeoutAsync,
   setTimeoutPromise,

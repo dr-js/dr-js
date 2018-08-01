@@ -33,7 +33,7 @@ button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover
 }
 </style>`
 
-const COMMON_SCRIPT = (injectMap = {}) => {
+const COMMON_SCRIPT = (injectMap) => {
   const valueObject = {}
   const functionScriptList = []
   Object.entries({

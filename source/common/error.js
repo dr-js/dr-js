@@ -1,5 +1,3 @@
-const devWarnError = (error) => { __DEV__ && console.warn(error) }
-
 const rethrowError = (error) => {
   console.warn(error)
   throw error
@@ -31,7 +29,6 @@ const catchAsync = async (func, ...args) => {
 }
 
 export {
-  devWarnError,
   rethrowError,
   throwInfo,
   tryCall,

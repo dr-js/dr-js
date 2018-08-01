@@ -48,7 +48,7 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
+  - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -128,7 +128,7 @@
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
   - `createTaskRunner`, `createTaskRunnerCluster`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
+  - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -347,7 +347,7 @@
     - **TaskRunner**
       - `createTaskRunner`, `createTaskRunnerCluster`
     - **TimedLookup**
-      - `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
+      - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
@@ -358,7 +358,7 @@
   - **Compare**
     - `compareString`, `compareStringLocale`
   - **Error**
-    - `catchAsync`, `catchSync`, `devWarnError`, `rethrowError`, `throwInfo`, `tryCall`
+    - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
     - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
