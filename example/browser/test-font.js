@@ -1,113 +1,93 @@
 window.addContent(``, `
 <div class="flex-column" style="overflow: auto; width: 100vw; align-items: center; font-family: monospace;">
-  <textarea id="textSoftKeyboardTextarea" style="z-index: -1; width: 1px; height: 1px;"></textarea>
-  <canvas id="testFont" width="400" height="200"></canvas>
-  <canvas id="testFontBitmap" width="400" height="200"></canvas>
+  <canvas id="testFont" width="300" height="200"></canvas>
+  <hr />
+  <canvas id="testFontBitmap" width="300" height="200"></canvas>
+  <hr />
+  <div id="soft-keyboard" style="width: 300px;"></div>
 </div>
-`, () => {
+`, async () => {
   const {
+    qS,
+    cE,
+    aCL,
     Dr: {
-      Common: { Module: { Event: { createEventEmitter } } },
       Browser: {
         Font: { createFontRender, createFontRenderBitmap },
         Graphic: {
-          ImageData: { applyCanvasElementExt, createCanvasElement, canvasElementToCanvasImageData },
+          Color: { getUint32RGBA },
           CanvasImageDataOperation: { floodFill },
-          Color: { getUint32RGBA }
+          ImageData: { applyCanvasElementExt, createCanvasElement, canvasElementToCanvasImageData }
         }
       }
-    },
-    qS
+    }
   } = window
 
-  // test font
-  const testFontCanvas = qS('#testFont')
-  const testFontCanvasContext2d = testFontCanvas.getContext('2d')
+  const FONT_SIZE = 12
+  const LINE_HEIGHT = FONT_SIZE + 4
+  const SCALE_RATIO = 2.0
+  const LIMIT_WIDTH = 300
 
-  const testFontBitmapCanvas = qS('#testFontBitmap')
-  const testFontBitmapCanvasContext2d = testFontBitmapCanvas.getContext('2d')
+  const cursorCanvasContext2d = createCanvasElement(
+    Math.ceil(LINE_HEIGHT * SCALE_RATIO * 0.1),
+    LINE_HEIGHT * SCALE_RATIO
+  ).getContext('2d')
+  const cursorCanvasImageData = canvasElementToCanvasImageData(cursorCanvasContext2d.canvas)
+  floodFill(cursorCanvasImageData, { x: 0, y: 0 }, getUint32RGBA(255, 0, 0, 255))
+  cursorCanvasContext2d.putImageData(cursorCanvasImageData, 0, 0)
+  const cursorCanvasElementExt = applyCanvasElementExt(cursorCanvasContext2d.canvas)
 
-  let textValue = 'You can input by tapping some key...'
-  const textFontSize = 12
-  const textLineHeight = textFontSize + 4
-  const textScaleRatio = 2.0
-  const textLimitWidth = 300
+  {
+    const fontCanvasContext2d = qS('#testFont').getContext('2d')
+    const fontBitmapCanvasContext2d = qS('#testFontBitmap').getContext('2d')
 
-  const testCanvasElementCursor = createCanvasElement(Math.ceil(textLineHeight * textScaleRatio * 0.1), textLineHeight * textScaleRatio)
-  const testCanvasImageDataCursor = canvasElementToCanvasImageData(testCanvasElementCursor)
-  floodFill(testCanvasImageDataCursor, { x: 0, y: 0 }, getUint32RGBA(255, 0, 0, 255))
-  testCanvasElementCursor.getContext('2d').putImageData(testCanvasImageDataCursor, 0, 0)
-  const testCanvasElementExtCursor = applyCanvasElementExt(testCanvasElementCursor)
+    const fontRender = createFontRender()
+    fontRender.applyFontConfig({ fontSize: FONT_SIZE, lineHeight: LINE_HEIGHT, fontStyle: 'normal', fontFamily: 'monospace', fillStyle: '#F00' })
 
-  const testFontRender = createFontRender()
-  testFontRender.applyFontConfig({ fontSize: textFontSize, lineHeight: textLineHeight, fontStyle: 'normal', fontFamily: 'monospace', fillStyle: '#F00' })
-  let isBitmapLoaded = false
-  const testFontRenderBitmap = createFontRenderBitmap()
-  testFontRenderBitmap.loadBitmapFontData('../resource/fontBitmap.json', textFontSize, textLineHeight).then(() => {
-    isBitmapLoaded = true
-    updateRenderedText(textValue)
-  })
+    const fontRenderBitmap = createFontRenderBitmap()
+    await fontRenderBitmap.loadBitmapFontData('../resource/fontBitmap.json', FONT_SIZE, LINE_HEIGHT)
 
-  const bufferCanvasElement = createCanvasElement(0, 0)
-  const updateRenderedText = (textValue) => {
-    testFontCanvas.width += 0 // clear canvas
-    const renderedText = testFontRender.renderText(textValue, textScaleRatio, textLimitWidth, bufferCanvasElement)
-    testFontCanvasContext2d.drawImage(renderedText.textCanvasElement, 0, 0)
-    testCanvasElementExtCursor.draw(testFontCanvasContext2d, renderedText.textEndPosition.x + 2, renderedText.textEndPosition.y)
+    const updateRenderedText = (textValue) => {
+      fontCanvasContext2d.canvas.width += 0 // clear canvas
+      const renderedText = fontRender.renderText(textValue, SCALE_RATIO, LIMIT_WIDTH)
+      renderedText.textCanvasElement.width && fontCanvasContext2d.drawImage(renderedText.textCanvasElement, 0, 0)
+      cursorCanvasElementExt.draw(fontCanvasContext2d, renderedText.textEndPosition.x + 2, renderedText.textEndPosition.y)
 
-    if (!isBitmapLoaded) return
-    testFontBitmapCanvas.width += 0 // clear canvas
-    const renderedBitmapText = testFontRenderBitmap.renderText(textValue, textScaleRatio, textLimitWidth, bufferCanvasElement)
-    testFontBitmapCanvasContext2d.drawImage(renderedBitmapText.textCanvasElement, 0, 0)
-    testCanvasElementExtCursor.draw(testFontBitmapCanvasContext2d, renderedBitmapText.textEndPosition.x + 2, renderedBitmapText.textEndPosition.y)
+      fontBitmapCanvasContext2d.canvas.width += 0 // clear canvas
+      const renderedBitmapText = fontRenderBitmap.renderText(textValue, SCALE_RATIO, LIMIT_WIDTH)
+      renderedBitmapText.textCanvasElement.width && fontBitmapCanvasContext2d.drawImage(renderedBitmapText.textCanvasElement, 0, 0)
+      cursorCanvasElementExt.draw(fontBitmapCanvasContext2d, renderedBitmapText.textEndPosition.x + 2, renderedBitmapText.textEndPosition.y)
+    }
+
+    let text = 'You can input by tapping some key...'
+
+    updateRenderedText(text)
+
+    document.addEventListener('keydown', (event) => { // check if filter special key
+      if (event.key === 'Backspace') text = text.slice(0, -1)
+      else if (event.key === 'Tab') text += '\t'
+      else if (event.key === 'Enter') text += '\n'
+      else return // don't filter, wait for key press
+      event.preventDefault()
+      updateRenderedText(text)
+    })
+    document.addEventListener('keypress', (event) => { // processed key code
+      text += event.key
+      updateRenderedText(text)
+    })
   }
-  updateRenderedText(textValue)
 
-  // =========================================================================================
-
-  document.addEventListener('keydown', (event) => { // check if filter special key
-    if (event.key === 'Backspace') textValue = textValue.slice(0, -1)
-    else if (event.key === 'Tab') textValue += '\t'
-    else if (event.key === 'Enter') textValue += '\n'
-    else return // don't filter, wait for key press
-    event.preventDefault()
-    updateRenderedText(textValue)
-  })
-  document.addEventListener('keypress', (event) => { // processed key code
-    textValue += event.key
-    updateRenderedText(textValue)
-  })
-
-  // =========================================================================================
-
-  const testEventEmitter = createEventEmitter()
-
-  testEventEmitter.on('TEXT_CONTENT', (nextTextValue) => {
-    textValue = nextTextValue
-    updateRenderedText(textValue)
-  })
-  const updateTextValue = (nextTextValue) => (nextTextValue !== textValue && testEventEmitter.emit('TEXT_CONTENT', nextTextValue))
-
-  // soft keyboard
-  testFontCanvas.addEventListener('click', () => textSoftKeyboardTextarea.focus())
-  testFontBitmapCanvas.addEventListener('click', () => textSoftKeyboardTextarea.focus())
-
-  const textSoftKeyboardTextarea = qS('#textSoftKeyboardTextarea')
-  textSoftKeyboardTextarea.addEventListener('focus', () => (textSoftKeyboardTextarea.value = textValue))
-  textSoftKeyboardTextarea.addEventListener('input', () => updateTextValue(textSoftKeyboardTextarea.value))
-  textSoftKeyboardTextarea.addEventListener('blur', () => updateTextValue(textSoftKeyboardTextarea.value))
-  textSoftKeyboardTextarea.addEventListener('keydown', (event) => { // check if filter special key
-    if (event.key === 'Backspace') textValue = textValue.slice(0, -1)
-    else if (event.key === 'Tab') textValue += '\t'
-    else if (event.key === 'Enter') textValue += '\n'
-    else return // don't filter, wait for key press
-    event.preventDefault()
-    textSoftKeyboardTextarea.value = textValue
-    updateRenderedText(textValue)
-  })
-  textSoftKeyboardTextarea.addEventListener('keypress', (event) => { // processed key code
-    textValue += event.key
-    textSoftKeyboardTextarea.value = textValue
-    updateRenderedText(textValue)
-  })
+  aCL(qS('#soft-keyboard'), [
+    ...('!@#$%^&*'.split('')),
+    ...('12345678'.split('')),
+    ...('qwertyui'.split('')),
+    ...('QWERTYUI'.split('')),
+    ' ',
+    'Tab',
+    'Enter',
+    'Backspace'
+  ].map((key) => cE('button', {
+    innerText: key === ' ' ? 'Space' : key,
+    onclick: () => document.dispatchEvent(new window.KeyboardEvent(key.length === 1 ? 'keypress' : 'keydown', { key }))
+  })))
 })

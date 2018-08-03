@@ -13,15 +13,13 @@ const main = async () => {
 
   addExitListenerSync((event) => {
     console.log('listenerSync', event)
-    factDB.add({ key1: 2 })
-    factDB.add({ key2: 4 })
-    factDB.add({ key3: 6 })
+    factDB.add({ key1: 3, key2: 6, key3: 9 })
     factDB.add({ exitAt: (new Date()).toString() })
     logFactDBState()
     factDB.end()
   })
 
-  console.log('init:', factDB)
+  console.log('init')
   logFactDBState()
 
   factDB.add({ key1: 1 })
@@ -42,17 +40,13 @@ const main = async () => {
   // factDB.add(null) // will fail
   logFactDBState()
 
-  factDB.add({ key1: 1 })
-  factDB.add({ key2: 2 })
-  factDB.add({ key3: 3 })
+  factDB.add({ key1: 1, key2: 2, key3: 3 })
   logFactDBState()
 
   factDB.add({ saveAt: (new Date()).toString() })
   factDB.save()
 
-  factDB.add({ key1: 2 })
-  factDB.add({ key2: 4 })
-  factDB.add({ key3: 6 })
+  factDB.add({ key1: 2, key2: 4, key3: 6 })
   logFactDBState()
 
   // setTimeout(() => process.exit(), 1)

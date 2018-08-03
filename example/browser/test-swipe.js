@@ -1,12 +1,13 @@
 window.addContent(`
 <style>
-#root { overflow: auto; width: 100vw; min-height: 100vh; align-items: center; font-family: monospace; }
 .drag-box, .indicator { position: fixed; top: 0; left: 0; }
 .drag-box { touch-action: none; width: 64px; height: 64px; box-shadow: inset 0 0 32px 4px #faa; }
 .indicator { width: 100vw; height: 100vh; background: rgba(255,0,0,0.5); }
 </style>
 `, `
-<div id="root" class="flex-column">${`<button>AAA</button><hr /><p>BBB</p><hr />`.repeat(100)}</div>
+<div id="root" class="flex-column" style="overflow: auto; width: 100vw; min-height: 100vh; align-items: center; font-family: monospace;">
+${`<button>AAA</button><hr /><p>BBB</p><hr />`.repeat(100)}
+</div>
 <div id="SWIPE-TARGET" class="drag-box" style="transform: translate(300px, 300px); background: rgba(0,255,0,0.8); pointer-events: none;">SWIPE TARGET</div>
 <div id="SWIPE" class="drag-box" style="transform: translate(300px, 300px);">SWIPE</div>
 <div id="SCROLL" class="drag-box" style="transform: translate(300px, 400px);">SCROLL</div>
@@ -16,6 +17,7 @@ window.addContent(`
 <div id="INDICATOR-V" class="indicator" style="width: 1px;"></div>
 `, () => {
   const {
+    log,
     Dr: {
       Common: {
         Math: { clamp, easeOutCubic, easeInOutQuad },
@@ -177,7 +179,7 @@ window.addContent(`
       getPointStart: (eventState) => {
         const pointStart = limitWithinClient(eventState.point)
         startEdge = isClientEdge(limitWithinClient(eventState.point))
-        window.log('getPointStart', JSON.stringify({ pointStart, startEdge }))
+        log('getPointStart', JSON.stringify({ pointStart, startEdge }))
 
         if (startEdge) {
           eventState.event.preventDefault()
@@ -199,7 +201,7 @@ window.addContent(`
           getMainValueMap[ startEdge ](getEdgeMap[ startEdge ](window.innerWidth, window.innerHeight, pointCurrent)) -
           getMainValueMap[ startEdge ](pointCurrent)
         ) / RECT_SIZE
-        window.log('rate', rate)
+        log('rate', rate)
 
         qS('#INDICATOR-MASK').style.backgroundColor = `rgba(0,0,0,${0.4 * easeInOutQuad(clamp(rate, 0, 1))})`
       },
@@ -235,10 +237,10 @@ window.addContent(`
 
   bindSwipeElement(qS('#SWIPE'), qS('#SWIPE-TARGET'))
   bindScrollElement(qS('#SCROLL'))
-  bindEdgeSwipeElement(qS('#root'))
+  bindEdgeSwipeElement(document.body)
 
-  window.log(window.innerWidth, window.innerHeight)
-  window.log(JSON.stringify(qS('#root').getBoundingClientRect())) // TODO: on mobile the rect is bigger
+  log(window.innerWidth, window.innerHeight)
+  log(JSON.stringify(document.body.getBoundingClientRect())) // TODO: on mobile the rect is bigger
 
-  window.addEventListener('error', (error) => window.log('[ERROR]', error.stack || error))
+  window.addEventListener('error', (error) => log('[ERROR]', error.stack || error))
 })

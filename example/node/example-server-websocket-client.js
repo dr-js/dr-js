@@ -7,10 +7,7 @@ const fromPath = (...args) => resolve(__dirname, ...args)
 
 createWebSocketClient({
   urlString: 'ws://localhost:3000',
-  option: {
-    requestProtocolString: [ 'json', 'a', 'b' ].join(',')
-  },
-  onError: (error) => console.warn('[createWebSocketClient][Error]', error),
+  option: { requestProtocolString: [ 'json', 'a', 'b' ].join(',') },
   onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
     // return webSocket.doCloseSocket() // can just close here
 
@@ -30,5 +27,9 @@ createWebSocketClient({
     webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
       console.log(`>> CLOSE`)
     })
+  },
+  onError: (error) => {
+    console.warn('[createWebSocketClient][Error]', error)
+    console.warn('[createWebSocketClient] start "example-server.js" first?')
   }
 })

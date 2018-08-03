@@ -21,6 +21,8 @@ const main = async () => {
   await setup(`${__dirname}/file-watcher-gitignore/a/b`)
   // await setup(`${__dirname}/file-watcher-gitignore/a/b/file`)
 
+  // un-comment to test if will log [subscribe called]
+
   // await renameAsync(resolve(TEMP_PATH, 'a/b'), resolve(TEMP_PATH, 'a/b-rename'))
   // await renameAsync(resolve(TEMP_PATH, 'a/b/c'), resolve(TEMP_PATH, 'a/b/c-rename'))
   //

@@ -15,20 +15,6 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
 
   const setOnMissingRequest = (nextOnMissingRequest) => { onMissingRequest = nextOnMissingRequest }
 
-  const autoIncreasePosition = (cursorPosition, deltaX) => { cursorPosition.x += deltaX } // limit height, width grow ('\n' will cause height increase)
-
-  // map speedup
-  let mapLimitWidth = 0
-  let mapLineHeight = 0
-  const autoIncreasePositionLimitWidth = (cursorPosition, deltaX) => {
-    // limit width, height grow
-    cursorPosition.x += deltaX
-    if (cursorPosition.x > mapLimitWidth) { // line break
-      cursorPosition.x = 0
-      cursorPosition.y += mapLineHeight
-    }
-  }
-
   const setConfig = (fontSize, lineHeight) => {
     configFontSize = fontSize
     configLineHeight = lineHeight
@@ -43,11 +29,10 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
   const autoMapping = (text, scaleRatio, limitWidth, callback) => {
     scaleRatio = scaleRatio || 1
 
-    mapLimitWidth = limitWidth || 0
-    mapLineHeight = configLineHeight * scaleRatio
+    const mapLimitWidth = limitWidth || 0
+    const mapLineHeight = configLineHeight * scaleRatio
 
     const cursorPosition = { x: 0, y: 0 } // top-left of symbol
-    const autoIncreasePositionX = mapLimitWidth > 0 ? autoIncreasePositionLimitWidth : autoIncreasePosition
     let widthMax = 0
 
     for (let index = 0, length = text.length; index < length; index++) {
@@ -60,8 +45,6 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
         symbolMetrics = symbolMetricsDefault
       }
 
-      if (callback !== undefined) callback(index, symbol, cursorPosition.x + symbolMetrics.offsetX, cursorPosition.y + symbolMetrics.offsetY) // send current position to callback
-
       switch (symbol) { // increase position
         case '\n':
         case '\r':
@@ -69,10 +52,20 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
           cursorPosition.y += mapLineHeight
           break
         case '\t':
-          autoIncreasePositionX(cursorPosition, symbolMetricsDefault.deltaX * 4 * scaleRatio)
+          cursorPosition.x += symbolMetricsDefault.deltaX * scaleRatio * 4
           break
         default:
-          autoIncreasePositionX(cursorPosition, symbolMetrics.deltaX * scaleRatio)
+          if (mapLimitWidth !== 0 && (cursorPosition.x + symbolMetrics.deltaX * scaleRatio > mapLimitWidth)) {
+            cursorPosition.x = 0
+            cursorPosition.y += mapLineHeight
+          }
+          callback && callback(
+            index,
+            symbol,
+            cursorPosition.x + symbolMetrics.offsetX * scaleRatio,
+            cursorPosition.y + symbolMetrics.offsetY * scaleRatio
+          ) // send current position to callback
+          cursorPosition.x += symbolMetricsDefault.deltaX * scaleRatio
           break
       }
 

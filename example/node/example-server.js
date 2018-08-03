@@ -1,7 +1,7 @@
 const { resolve } = require('path')
 
 const { clock } = require('../../output-gitignore/library/common/time')
-const { time: formatTime } = require('../../output-gitignore/library/common/format')
+const Format = require('../../output-gitignore/library/common/format')
 
 const { readFileAsync, createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
@@ -23,7 +23,7 @@ const responderLogEnd = createResponderLogEnd(console.log)
 const responderLogTimeStep = () => (store) => {
   const state = store.getState()
   const stepTime = clock()
-  console.log(`${new Date().toISOString()} [STEP] ${formatTime(stepTime - (state.stepTime || state.time))}`)
+  console.log(`${new Date().toISOString()} [STEP] ${Format.time(stepTime - (state.stepTime || state.time))}`)
   store.setState({ stepTime })
 }
 const responderServeStatic = createResponderServeStatic({})
@@ -60,9 +60,11 @@ const webSocketSet = enableWebSocketServer({
     webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async ({ dataType, dataBuffer }) => {
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
 
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8'))
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico')))
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT) {
+        if (dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
+        if (dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8'))
+        if (dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico')))
+      }
 
       // echo back
       dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())

@@ -1,4 +1,4 @@
-import { resolve as resolvePath } from 'path'
+import { resolve, dirname } from 'path'
 import { DefinePlugin } from 'webpack'
 
 import { createDirectory } from 'source/node/file/File'
@@ -7,10 +7,10 @@ import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { compileWithWebpack } from 'dev-dep-tool/library/webpack'
 import { getLogger } from 'dev-dep-tool/library/logger'
 
-const PATH_ROOT = resolvePath(__dirname, '..')
-const PATH_OUTPUT = resolvePath(__dirname, '../output-gitignore')
-const fromRoot = (...args) => resolvePath(PATH_ROOT, ...args)
-const fromOutput = (...args) => resolvePath(PATH_OUTPUT, ...args)
+const PATH_ROOT = resolve(__dirname, '..')
+const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
+const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
+const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
   const mode = argvFlag('development', 'production') || 'production'
@@ -18,7 +18,7 @@ runMain(async (logger) => {
   const isProduction = mode === 'production'
 
   const profileOutput = argvFlag('profile') ? fromRoot('.temp-gitignore/profile-stat.json') : null
-  profileOutput && await createDirectory(fromRoot('.temp-gitignore'))
+  profileOutput && await createDirectory(dirname(profileOutput))
 
   const babelOption = {
     configFile: false,

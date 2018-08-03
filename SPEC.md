@@ -10,7 +10,7 @@
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
+  - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
@@ -267,7 +267,7 @@
   - **Net**
     - `fetchLikeRequest`
   - **Resource**
-    - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `loadImage`, `loadScript`, `loadText`
+    - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 - **Common**
   - **Data**
     - **ArrayBuffer**

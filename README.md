@@ -1,9 +1,10 @@
 # dr-js
 
 [![i:npm]][l:npm]
-[![i:npm-dev]][l:npm]
 [![i:ci]][l:ci]
+[![i:size]][l:size]
 [![i:lint]][l:lint]
+[![i:npm-dev]][l:npm]
 
 A collection of strange functions
 
@@ -12,5 +13,7 @@ A collection of strange functions
 [l:npm]: https://www.npmjs.com/package/dr-js
 [i:ci]: https://img.shields.io/travis/dr-js/dr-js/master.svg
 [l:ci]: https://travis-ci.org/dr-js/dr-js
+[i:size]: https://packagephobia.now.sh/badge?p=dr-js
+[l:size]: https://packagephobia.now.sh/result?p=dr-js
 [i:lint]: https://img.shields.io/badge/code_style-standard-yellow.svg
 [l:lint]: https://standardjs.com
