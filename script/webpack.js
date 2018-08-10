@@ -37,7 +37,7 @@ runMain(async (logger) => {
     output: { path: fromOutput('library'), filename: '[name].js', library: 'Dr', libraryTarget: 'umd' },
     entry: { 'Dr.browser': 'source/Dr.browser' },
     resolve: { alias: { source: fromRoot('source') } },
-    module: { rules: [ { test: /\.js$/, exclude: /node_modules/, use: { loader: 'babel-loader', options: babelOption } } ] },
+    module: { rules: [ { test: /\.js$/, use: { loader: 'babel-loader', options: babelOption } } ] },
     plugins: [ new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode), __DEV__: !isProduction }) ]
   }
 

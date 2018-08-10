@@ -344,7 +344,7 @@ const createFrameDecoder = (frameLengthLimit) => {
   }
 }
 
-// TODO: will change buffer, optimize speed?
+// TODO: will overwrite buffer, consider optimize speed?
 const applyBufferMaskQuadlet = (buffer, maskQuadletBuffer) => {
   for (let index = 0, indexMax = buffer.length; index < indexMax; index++) buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
 }

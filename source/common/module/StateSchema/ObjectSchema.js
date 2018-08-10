@@ -47,4 +47,4 @@ const createObjectSchema = ({ name, struct, actMap }) => {
   return { SCHEMA_MARK, name, struct, initialState, acceptNameSet, reducer, toStructJSON }
 }
 
-export { createObjectSchema }
+export { createObjectSchema } // TODO: DEPRECATED: move out since not that essential

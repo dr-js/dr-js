@@ -1,7 +1,7 @@
 import { global } from './global'
 
-// TODO: will cause webpack warning `Critical dependency: the request of a dependency is an expression`, but whatever
-// TODO: put in separate folder here so webpack will not assume whole package is required
+// TODO: NOTE: will cause webpack warning `Critical dependency: the request of a dependency is an expression`, but whatever
+// TODO: NOTE: put in separate folder here so webpack will not assume whole package is required
 // check: https://github.com/webpack/webpack/issues/196
 // check: https://github.com/sindresorhus/got/commit/a4ce0a738b25a02c2b6b50a4a52e94e5974f2f8b
 // - - If the module source contains a require that cannot be statically analyzed, the context is the current directory.

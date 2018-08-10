@@ -3,7 +3,7 @@ import { receiveBufferAsync } from 'source/node/data/Buffer'
 
 const getEntityTagByContentHash = (buffer) => {
   const length = buffer.length.toString(16)
-  const hashString = createHash('sha1').update(buffer).digest('base64') // TODO: this is sync code
+  const hashString = createHash('sha1').update(buffer).digest('base64')
   return `"${length}-${hashString}"`
 }
 

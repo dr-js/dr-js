@@ -37,10 +37,9 @@ const INITIAL_FACT_INFO = {
   factLogFile: ''
 }
 
+// TODO: consider if the log must be encoded with out the '\n' (limited encode fact to JSON)?
 // TODO: consider use [ base36, base36 ] for Id?
-// TODO: consider support gzip?
-// TODO: consider support encodeFact with BufferPacket?
-// TODO: consider support drop id, or drop head log (cache + part of log)?
+// TODO: consider explicit support for drop leading log and only use cache + part of log?
 
 const createFactDatabase = async ({
   initialFactInfo,
@@ -99,7 +98,7 @@ const createFactDatabase = async ({
     unsubscribe,
     add: (fact) => {
       if (!isActive) return
-      if (factId === Number.MAX_SAFE_INTEGER) throw new Error(`[FactDatabase] factId is Number.MAX_SAFE_INTEGER: ${factId}`) // TODO: may explode Integer
+      if (factId >= Number.MAX_SAFE_INTEGER) throw new Error(`[FactDatabase] factId is Number.MAX_SAFE_INTEGER: ${factId}`) // TODO: handle Integer explode
       fact.id = factId + 1
       factId++
       factLogger.add(encodeFact(fact))
@@ -178,7 +177,6 @@ const tryLoadFactInfoFromLog = async (factInfo, { factLogFileList, decodeFact, a
   return { ...factInfo, factId, factState, factLogFile }
 }
 
-// TODO: remove extra cache file?
 const tryDeleteExtraCache = async ({
   pathFactDirectory,
   nameFactCacheFile = DEFAULT_CACHE_FILE_NAME,

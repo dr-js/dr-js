@@ -49,4 +49,4 @@ const arrayActMap = {
   findSet: (state, { find, value }) => arrayFindSet(state, find, value)
 }
 
-export { objectActMap, arrayActMap }
+export { objectActMap, arrayActMap } // TODO: DEPRECATED: move out since not that essential

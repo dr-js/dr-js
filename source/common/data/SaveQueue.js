@@ -1,29 +1,39 @@
 import { catchAsync } from 'source/common/error'
 
-const createSaveQueue = ({ beforeSave, doSave, afterSave, onError }) => {
+const NULL_FUNC = () => {}
+
+const createSaveQueue = ({
+  onError,
+  doSave,
+  beforeSave = NULL_FUNC,
+  afterSave = NULL_FUNC
+}) => {
   let dataQueue = []
   let isSaving = false
+  let savingState = {} // for doSave to expose save state, do not leak unnecessary info
 
+  const setSavingState = (nextSavingState) => { savingState = nextSavingState }
   const saveAsync = async () => {
-    if (isSaving) throw new Error(`[saveAsync] already saving`)
-    if (!dataQueue.length) return
+    beforeSave()
     const savingDataQueue = dataQueue
     dataQueue = []
     isSaving = true
-    beforeSave && beforeSave()
-    const { error } = await catchAsync(doSave, savingDataQueue)
+    const { error } = await catchAsync(doSave, savingDataQueue, setSavingState)
     isSaving = false
-    afterSave && afterSave()
-    error && onError(error)
+    savingState = {}
+    if (error) throw error
+    afterSave()
   }
 
-  const getLength = () => dataQueue.length
-  const getIsSaving = () => isSaving
-  const clear = () => { dataQueue = [] }
-  const add = (data) => dataQueue.push(data)
-  const save = () => { !isSaving && saveAsync() }
-
-  return { getLength, getIsSaving, clear, add, save }
+  return {
+    clear: () => { dataQueue = [] },
+    add: (data) => dataQueue.push(data),
+    save: () => { !isSaving && dataQueue.length && saveAsync().catch(onError) },
+    filter: (filterFunc) => { dataQueue = dataQueue.filter(filterFunc) },
+    getLength: () => dataQueue.length,
+    getIsSaving: () => isSaving,
+    getSavingState: () => savingState
+  }
 }
 
 export { createSaveQueue }

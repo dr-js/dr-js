@@ -24,7 +24,7 @@ const exitListenerAsync = async (event) => {
   unbindExitListener()
   for (const listenerAsync of Array.from(listenerAsyncSet)) await catchAsync(listenerAsync, event)
   exitListenerSync(event)
-  // TODO: do not prevent process exit, even if it can be done
+  // TODO: NOTE: do not try prevent process exit, even if it can be done for some event
   process.exit(event.code || (event.error ? -1 : 0))
 }
 

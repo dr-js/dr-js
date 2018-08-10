@@ -26,9 +26,9 @@ const getReducer = ({ name, initialState, acceptNameSet, actionReducer, structRe
 }
 
 export {
-  SCHEMA_MARK,
-  isSchemaObject,
-  toStructJSONWithCheck,
-  getActionReducer,
-  getReducer
+  SCHEMA_MARK, // TODO: DEPRECATED: move out since not that essential
+  isSchemaObject, // TODO: DEPRECATED: move out since not that essential
+  toStructJSONWithCheck, // TODO: DEPRECATED: move out since not that essential
+  getActionReducer, // TODO: DEPRECATED: move out since not that essential
+  getReducer // TODO: DEPRECATED: move out since not that essential
 }

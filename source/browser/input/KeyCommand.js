@@ -1,7 +1,7 @@
 import { getRandomId } from 'source/common/math/random'
 import { isObjectContain } from 'source/common/check'
 
-// TODO: single key, not key sequence
+// TODO: for single key, not support key sequence
 const createKeyCommandHub = ({
   eventSource = window.document,
   isSkipPreventDefault = false // normally preventDefault won't hurt

@@ -2,28 +2,7 @@ import { resolve } from 'path'
 import { ok, strictEqual, throws } from 'assert'
 import { // TODO: add more test
   statAsync,
-  // lstatAsync,
-  // renameAsync,
-  // unlinkAsync,
-  // accessAsync,
-  // visibleAsync,
-  // readableAsync,
-  // writableAsync,
-  // executableAsync,
-  // mkdirAsync,
-  // rmdirAsync,
-  // readdirAsync,
-  // readFileAsync,
-  // writeFileAsync,
-  // copyFileAsync,
-  // nearestExistAsync,
-  // createReadStream,
-  // createWriteStream,
   createPathPrefixLock
-  // createReadlineFromStreamAsync,
-  // createReadlineFromFileAsync,
-  // trimPathDepth,
-  // toPosixPath
 } from './function'
 
 const { describe, it } = global

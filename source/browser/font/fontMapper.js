@@ -8,7 +8,7 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
   let symbolMetricsDefault
 
   // offset: to top-left
-  const setDefaultSymbol = (symbol = '', deltaX = configFontSize, offsetX = 0, offsetY = 0) => {
+  const setDefaultSymbol = (symbol = '?', deltaX = configFontSize, offsetX = 0, offsetY = 0) => {
     symbolDefault = symbol
     symbolMetricsDefault = { deltaX, offsetX, offsetY }
   }
@@ -65,7 +65,7 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
             cursorPosition.x + symbolMetrics.offsetX * scaleRatio,
             cursorPosition.y + symbolMetrics.offsetY * scaleRatio
           ) // send current position to callback
-          cursorPosition.x += symbolMetricsDefault.deltaX * scaleRatio
+          cursorPosition.x += symbolMetrics.deltaX * scaleRatio
           break
       }
 
@@ -78,7 +78,7 @@ const createFontMapper = (fontSize = 16, lineHeight = 20, onMissingRequest = DEF
     }
   }
 
-  setDefaultSymbol(' ')
+  setDefaultSymbol('?')
 
   return {
     setDefaultSymbol,

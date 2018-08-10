@@ -20,10 +20,10 @@ const createStateStore = (state) => {
   return { subscribe, unsubscribe, getState, setState }
 }
 
-// for basic use, no check for speed
+// for basic use, no merge check & listener for speed
 const createStateStoreLite = (state) => ({
   getState: () => state,
-  setState: (nextState) => (state = { ...state, ...nextState }) // TODO: CHECK: if should use `objectMerge`
+  setState: (nextState) => (state = { ...state, ...nextState })
 })
 
 // for Redux-like use

@@ -5,7 +5,6 @@ const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 const createCache = (key, value, size, expireAt) => ({ ...createNode(value), key, size, expireAt })
 
-// TODO: add pack & load as JSON
 // Time aware Least Recently Used (TLRU)
 const createCacheMap = ({
   valueSizeSumMax,
@@ -36,7 +35,7 @@ const createCacheMap = ({
     subscribe,
     unsubscribe,
     getSize: () => cacheMap.size,
-    clear: () => cacheMap.forEach(cacheDelete), // TODO: NOTE: not clearHub
+    clear: () => cacheMap.forEach(cacheDelete), // TODO: NOTE: not calling clearHub, so listener is kept
     set: (key, value, size = 1, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
       const prevCache = cacheMap.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache

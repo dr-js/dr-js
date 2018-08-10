@@ -46,7 +46,8 @@ const createWebSocket = ({
     if (readyState === CLOSED) return
     __DEV__ && console.log('[WebSocket] doCloseSocket')
 
-    readyState === CONNECTING && socket.writable && socket.write('HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n') // TODO: HACK: socket.writable not in Official API
+    // TODO: HACK: socket.writable not in Official API
+    readyState === CONNECTING && socket.writable && socket.write('HTTP/1.1 400 Bad Request\r\nconnection: close\r\n\r\n')
     readyState = CLOSED
 
     closeTimeoutToken && clearTimeout(closeTimeoutToken)
@@ -66,7 +67,7 @@ const createWebSocket = ({
     socket.on('error', NULL_ERROR_LISTENER)
     socket.destroyed || socket.destroy()
 
-    eventEmitter.emit(WEB_SOCKET_EVENT_MAP.CLOSE) // TODO: remove
+    eventEmitter.emit(WEB_SOCKET_EVENT_MAP.CLOSE) // TODO: remove all listeners also?
   }
 
   let frameDataType = null

@@ -1,8 +1,10 @@
 window.addContent(``, `
 <div class="flex-column" style="overflow: auto; width: 100vw; align-items: center; font-family: monospace;">
-  <canvas id="testFont" width="300" height="200"></canvas>
+  <canvas id="testFont" width="300" height="120"></canvas>
   <hr />
-  <canvas id="testFontBitmap" width="300" height="200"></canvas>
+  <canvas id="testFontMono" width="300" height="120"></canvas>
+  <hr />
+  <canvas id="testFontBitmap" width="300" height="120"></canvas>
   <hr />
   <div id="soft-keyboard" style="width: 300px;"></div>
 </div>
@@ -23,7 +25,7 @@ window.addContent(``, `
     }
   } = window
 
-  const FONT_SIZE = 12
+  const FONT_SIZE = 10
   const LINE_HEIGHT = FONT_SIZE + 4
   const SCALE_RATIO = 2.0
   const LIMIT_WIDTH = 300
@@ -39,10 +41,14 @@ window.addContent(``, `
 
   {
     const fontCanvasContext2d = qS('#testFont').getContext('2d')
+    const fontMonoCanvasContext2d = qS('#testFontMono').getContext('2d')
     const fontBitmapCanvasContext2d = qS('#testFontBitmap').getContext('2d')
 
     const fontRender = createFontRender()
-    fontRender.applyFontConfig({ fontSize: FONT_SIZE, lineHeight: LINE_HEIGHT, fontStyle: 'normal', fontFamily: 'monospace', fillStyle: '#F00' })
+    fontRender.applyFontConfig({ fontSize: FONT_SIZE, lineHeight: LINE_HEIGHT, fontStyle: 'normal', fontFamily: `Arial`, fillStyle: '#F00' })
+
+    const fontRenderMono = createFontRender()
+    fontRenderMono.applyFontConfig({ fontSize: FONT_SIZE, lineHeight: LINE_HEIGHT, fontStyle: 'normal', fontFamily: `monospace`, fillStyle: '#00F' })
 
     const fontRenderBitmap = createFontRenderBitmap()
     await fontRenderBitmap.loadBitmapFontData('../resource/fontBitmap.json', FONT_SIZE, LINE_HEIGHT)
@@ -52,6 +58,11 @@ window.addContent(``, `
       const renderedText = fontRender.renderText(textValue, SCALE_RATIO, LIMIT_WIDTH)
       renderedText.textCanvasElement.width && fontCanvasContext2d.drawImage(renderedText.textCanvasElement, 0, 0)
       cursorCanvasElementExt.draw(fontCanvasContext2d, renderedText.textEndPosition.x + 2, renderedText.textEndPosition.y)
+
+      fontMonoCanvasContext2d.canvas.width += 0 // clear canvas
+      const renderedMonoText = fontRenderMono.renderText(textValue, SCALE_RATIO, LIMIT_WIDTH)
+      renderedMonoText.textCanvasElement.width && fontMonoCanvasContext2d.drawImage(renderedMonoText.textCanvasElement, 0, 0)
+      cursorCanvasElementExt.draw(fontMonoCanvasContext2d, renderedMonoText.textEndPosition.x + 2, renderedMonoText.textEndPosition.y)
 
       fontBitmapCanvasContext2d.canvas.width += 0 // clear canvas
       const renderedBitmapText = fontRenderBitmap.renderText(textValue, SCALE_RATIO, LIMIT_WIDTH)
@@ -78,14 +89,8 @@ window.addContent(``, `
   }
 
   aCL(qS('#soft-keyboard'), [
-    ...('!@#$%^&*'.split('')),
-    ...('12345678'.split('')),
-    ...('qwertyui'.split('')),
-    ...('QWERTYUI'.split('')),
-    ' ',
-    'Tab',
-    'Enter',
-    'Backspace'
+    ' ', 'Tab', 'Enter', 'Backspace',
+    ...[ '!@#$%^&', '1234567', 'braid', 'PHANTOM', '玩游戏' ].join('').split('')
   ].map((key) => cE('button', {
     innerText: key === ' ' ? 'Space' : key,
     onclick: () => document.dispatchEvent(new window.KeyboardEvent(key.length === 1 ? 'keypress' : 'keydown', { key }))

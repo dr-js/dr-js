@@ -24,7 +24,8 @@ const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuff
   error && webSocket.close(1000, error.toString())
 }
 
-// TODO: keep some message history?
+// TODO: keep limited message history?
+
 const groupInfoMap = {}
 const groupIdSetMap = {}
 

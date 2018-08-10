@@ -63,7 +63,7 @@ const createPathPrefixLock = (rootPath) => {
 // TODO: not able to pause & resume the line-reading to run some async code
 const createReadlineFromStreamAsync = (readStream, onLineSync) => new Promise((resolve, reject) => {
   const readlineInterface = createInterface({ input: readStream, historySize: 0, crlfDelay: Infinity })
-  readlineInterface.on('error', (error) => { // TODO: this is not documented, don't know if this will be called some how
+  readlineInterface.on('error', (error) => { // TODO: this is not documented, don't know if this will be called or not
     __DEV__ && console.log(`[Readline] error`, error)
     readlineInterface.close()
     reject(error)

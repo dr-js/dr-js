@@ -60,7 +60,7 @@ const applyPointerEventListener = ({
       : { x: event.clientX, y: event.clientY }
 
   const calcState = (event) => {
-    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`) // TODO: check is needed
+    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`)
     if (__DEV__ && !event) throw new Error('[calcState] event expected')
     if (event !== prevEvent) {
       const time = clock()
@@ -155,7 +155,7 @@ const applyEnhancedPointerEventListener = ({
   let isDragging = false
 
   const enhancedOnEvent = (name, event, calcState) => {
-    const eventState = calcState(event) // TODO: check eventState, should not be null
+    const eventState = calcState(event)
     switch (name) {
       case POINTER_EVENT_TYPE.START:
         isDragging = false

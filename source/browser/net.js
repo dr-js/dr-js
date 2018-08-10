@@ -2,7 +2,7 @@ import { global } from 'source/env/global'
 
 const { XMLHttpRequest, Blob, TextDecoder } = global
 
-// TODO: later replace with fetch + AbortController
+// TODO: later compare & check if should replace with fetch + AbortController
 // fetch-like XMLHttpRequest() with timeout
 // timeout in msec, result in error with status: -1, message: TIMEOUT_ERROR
 const fetchLikeRequest = (url, {

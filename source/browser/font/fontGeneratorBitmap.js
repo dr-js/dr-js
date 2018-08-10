@@ -30,7 +30,7 @@ const createFontGeneratorBitmap = () => {
       bitmapSymbolMetricsMap[ symbol ] = { xInc, xOffset, yOffset }
       bitmapSymbolCanvasElementMap[ symbol ] = symbolCanvasElement
     }
-    defaultSymbol = bitmapDefaultSymbol || ' '
+    defaultSymbol = bitmapDefaultSymbol || '?'
     symbolCanvasElementMap = bitmapSymbolCanvasElementMap
     scaledSymbolCanvasElementMap = {}
   }

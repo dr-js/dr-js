@@ -13,7 +13,7 @@ const createFontRender = (fontMapper = createFontMapper(), fontGenerator = creat
   const applyFontConfig = (nextFontConfig = {}) => {
     fontConfig = fontGenerator.getFontConfig(nextFontConfig)
     const { fontSize, lineHeight } = fontConfig
-    const defaultSymbol = ' '
+    const defaultSymbol = '?'
     const defaultSymbolImageData = fontGenerator.renderSymbol(defaultSymbol, fontConfig)
     fontMapper.setConfig(fontSize, lineHeight)
     fontMapper.setDefaultSymbol(defaultSymbol, defaultSymbolImageData.width, 0, 0)

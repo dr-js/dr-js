@@ -14,7 +14,7 @@ const getSystemPlatform = () => ({
 })
 const describeSystemPlatform = ({ platform, arch, release } = getSystemPlatform()) => `${platform} ${arch} [${release}]`
 
-// TODO: cpus() will return undefined on Android 8 Termux
+// TODO: cpus() will return undefined on Android 8+ Termux
 const getSystemProcessor = () => cpus() || [ { model: 'N/A', speed: 'N/A', times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 } } ]
 const describeSystemProcessor = (processorList = getSystemProcessor()) => processorList
   .map(({ model, speed, times }) => `[${model}] speed:${speed}MHz ${Object.entries(times).map(([ k, v ]) => `${k}:${time(v)}`).join(' ')}`)
