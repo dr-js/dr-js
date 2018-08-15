@@ -3,12 +3,14 @@ import { ConfigPresetNode, prepareOption } from 'dr-js/module/node/module/Option
 const { SingleString, SinglePath, BooleanFlag, Config } = ConfigPresetNode
 
 const MODE_FORMAT_LIST = [
+  [ 'eval', [ 'e' ], '0-1' ],
+  [ 'repl', [ 'i' ] ],
   [ 'echo', [], '0-' ],
   [ 'cat', [], '0-', true ],
   [ 'write', [], 1, true ],
   [ 'append', [], 1, true ],
   [ 'open', [ 'o' ], '0-1' ],
-  [ 'status', [ 's' ], 0 ],
+  [ 'status', [ 's' ] ],
   [ 'file-list', [ 'ls' ], '0-1', true ],
   [ 'file-list-all', [ 'ls-R' ], '0-1', true ],
   [ 'file-create-directory', [ 'mkdir' ], '0-', true ],
@@ -17,15 +19,15 @@ const MODE_FORMAT_LIST = [
   [ 'file-modify-delete', [ 'rm' ], '0-', true ],
   [ 'file-merge', [ 'merge' ], '2-', true ],
   [ 'fetch', [ 'f' ], 1 ],
-  [ 'server-serve-static', [ 'sss' ], 0 ],
-  [ 'server-serve-static-simple', [ 'ssss' ], 0 ],
-  [ 'server-websocket-group', [ 'swg' ], 0 ],
-  [ 'server-test-connection', [ 'stc' ], 0 ],
+  [ 'server-serve-static', [ 'sss' ] ],
+  [ 'server-serve-static-simple', [ 'ssss' ] ],
+  [ 'server-websocket-group', [ 'swg' ] ],
+  [ 'server-test-connection', [ 'stc' ] ],
   [ 'server-cache-http-proxy', [ 'schp' ], '1-2' ],
-  [ 'timed-lookup-file-generate', [ 'tlfg' ], '0-4' ],
-  [ 'timed-lookup-check-code-generate', [ 'tlccg' ], '0-1' ],
-  [ 'timed-lookup-check-code-verify', [ 'tlccv' ], '1-2' ]
-].map(([ name, aliasNameList, argumentCount, isPath = false ]) => ({
+  [ 'timed-lookup-file-generate', [ 'tlfg' ], '0-4' ], // TODO: DEPRECATED: just use mode eval
+  [ 'timed-lookup-check-code-generate', [ 'tlccg' ], '0-1' ], // TODO: DEPRECATED: just use mode eval
+  [ 'timed-lookup-check-code-verify', [ 'tlccv' ], '1-2' ] // TODO: DEPRECATED: just use mode eval
+].map(([ name, aliasNameList, argumentCount = 0, isPath = false ]) => ({
   optional: true, name, aliasNameList, argumentCount, isPath
 }))
 

@@ -4,14 +4,20 @@ const { fetch, navigator, caches, URL, Blob, Request, Response } = window
 
 const createElement = (tagName, attributeMap = {}) => Object.assign(document.createElement(tagName), attributeMap)
 
-const loadText = (url) => fetch(url, { credentials: 'same-origin' }).then((result) => result.text())
-const loadImage = (url) => new Promise((resolve, reject) => {
-  const element = createElement('img', { src: url, onerror: reject, onload: () => resolve(element) })
-})
-const loadScript = (url) => new Promise((resolve, reject) => {
-  const element = createElement('script', { src: url, async: false, type: BASIC_EXTENSION_MAP.js, onerror: reject, onload: () => resolve(element) })
-  document.body.appendChild(element) // TODO: document.body can be null if script is running from <head> tag and page is not fully loaded
-})
+const loadText = async (uri) => (await fetch(uri)).text()
+const loadImage = (uri) => new Promise((resolve, reject) => createElement('img', {
+  src: uri,
+  onerror: reject,
+  onload: (event) => resolve(event.currentTarget)
+}))
+// TODO: document.body can be null if script is running from <head> tag and page is not fully loaded
+const loadScript = (uri) => new Promise((resolve, reject) => document.body.appendChild(createElement('script', {
+  src: uri,
+  async: false,
+  type: BASIC_EXTENSION_MAP.js,
+  onerror: reject,
+  onload: (event) => resolve(event.currentTarget)
+})))
 
 // Download
 const createDownload = (fileName, url) => {

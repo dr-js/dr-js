@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.16.2-dev.0",
+  "version": "0.16.2-dev.1",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -31,7 +31,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "mocha --require @babel/register \"source/node/module/EntityTag.test.js\"",
+    "test-mocha-dev": "mocha --require @babel/register \"source/node/resource.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -48,7 +48,7 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-js": "^0.16.1",
+    "dr-js": "0.16.2-dev.0",
     "dev-dep-tool": "^0.3.1",
     "dev-dep-web": "^0.3.1"
   },

@@ -464,6 +464,8 @@
 >       show help, or request better human readable output
 >   --quiet -q [OPTIONAL] [ARGUMENT=0+]
 >       reduce most output
+>   --eval --e [OPTIONAL] [ARGUMENT=0-1]
+>   --repl --i [OPTIONAL]
 >   --echo [OPTIONAL] [ARGUMENT=0+]
 >   --cat [OPTIONAL] [ARGUMENT=0+]
 >   --write [OPTIONAL] [ARGUMENT=1]
@@ -503,6 +505,8 @@
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_REPL="[OPTIONAL]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
@@ -537,6 +541,8 @@
 >     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsRepl": [ "[OPTIONAL]" ],
 >     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],

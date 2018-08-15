@@ -3,12 +3,13 @@
 import { cpus } from 'os'
 import { normalize } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
+import { start as startREPL } from 'repl'
 
 import { getEndianness } from 'dr-js/module/env/function'
 import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
 import { fetch } from 'dr-js/module/node/net'
 import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
-import { pipeStreamAsync } from 'dr-js/module/node/data/Stream'
+import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
@@ -34,6 +35,11 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
   )
 
   const argumentList = getOptionOptional(modeFormat.name) || []
+  const inputFile = getSingleOptionOptional('input-file')
+  const outputFile = getSingleOptionOptional('output-file')
+  const outputBuffer = (buffer) => outputFile
+    ? writeFileSync(outputFile, buffer)
+    : pipeStreamAsync(process.stdout, bufferToStream(buffer))
 
   const getServerConfig = async () => {
     const hostname = getSingleOptionOptional('hostname') || '0.0.0.0'
@@ -42,6 +48,14 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
   }
 
   switch (modeFormat.name) {
+    case 'eval':
+      return outputBuffer(Buffer.from(JSON.stringify(await eval( // eslint-disable-line no-eval
+        argumentList[ 0 ] ||
+        (inputFile && readFileSync(inputFile).toString()) ||
+        ''
+      ))))
+    case 'repl':
+      return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })
     case 'echo':
       return logJSON(argumentList)
     case 'cat': {
@@ -77,17 +91,15 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       for (const path of argumentList) await logTaskResult(modify.delete, path)
       return
     case 'file-merge': {
-      const [ outputFile, ...fileList ] = argumentList
-      for (const path of fileList) await pipeStreamAsync(createWriteStream(outputFile, { flags: 'a' }), createReadStream(path))
+      const [ mergedFile, ...fileList ] = argumentList
+      for (const path of fileList) await pipeStreamAsync(createWriteStream(mergedFile, { flags: 'a' }), createReadStream(path))
       return
     }
     case 'fetch': {
-      const outputFile = getSingleOptionOptional('output-file')
-      const response = await fetch(argumentList[ 0 ])
-      if (!response.ok) return log(`[fetch] failed for: ${argumentList[ 0 ]}, status: ${response.status}`)
-      return outputFile
-        ? writeFileSync(outputFile, await response.buffer(), { flags: 'a' })
-        : console.log(await response.text())
+      const [ url ] = argumentList
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`[fetch] not ok status: ${JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')}`)
+      return outputBuffer(await response.buffer())
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
@@ -104,17 +116,19 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       const cachePath = getSingleOption('root')
       return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
     }
-    case 'timed-lookup-file-generate': {
-      const outputFile = getSingleOption('output-file')
+    case 'timed-lookup-file-generate': { // TODO: DEPRECATED: just use mode eval
       const [ tag, size, tokenSize, timeGap ] = argumentList
-      return writeFileSync(outputFile, Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap }))))
+      return writeFileSync(
+        getSingleOption('output-file'),
+        Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap })))
+      )
     }
-    case 'timed-lookup-check-code-generate':
+    case 'timed-lookup-check-code-generate': // TODO: DEPRECATED: just use mode eval
       return console.log(generateCheckCode(
         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
         Number(argumentList[ 0 ]) || undefined
       ))
-    case 'timed-lookup-check-code-verify':
+    case 'timed-lookup-check-code-verify': // TODO: DEPRECATED: just use mode eval
       verifyCheckCode(
         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
         argumentList[ 0 ],

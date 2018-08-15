@@ -1,29 +1,25 @@
-import { runInNewContext } from 'vm'
+import { runInThisContext } from 'vm'
 import { fetch } from 'source/node/net'
 import { readFileAsync } from 'source/node/file/function'
 
 // TODO: check if is needed, or simplify
-const loadRemoteScript = async (src, contextObject) => {
-  const response = await fetch(src)
-  return runInNewContext(await response.text(), contextObject, { filename: src })
+const loadRemoteScript = async (uri) => {
+  const scriptString = await (await fetch(uri)).text()
+  return runInThisContext(scriptString, { filename: uri, displayErrors: true })
 }
-const loadLocalScript = async (path, contextObject) => runInNewContext(
-  await readFileAsync(path, 'utf8'),
-  contextObject,
-  { filename: path }
-)
-const loadScript = (src, contextObject) => src.includes('://')
-  ? loadRemoteScript(src, contextObject)
-  : loadLocalScript(src, contextObject)
+const loadLocalScript = async (filePath) => {
+  const scriptString = await readFileAsync(filePath, 'utf8')
+  return runInThisContext(scriptString, { filename: filePath, displayErrors: true })
+}
+const loadScript = (uri) => uri.includes('://')
+  ? loadRemoteScript(uri)
+  : loadLocalScript(uri)
 
-const loadRemoteJSON = async (src) => {
-  const response = await fetch(src)
-  return response.json()
-}
-const loadLocalJSON = async (path) => JSON.parse(await readFileAsync(path, 'utf8'))
-const loadJSON = (src) => src.includes('://')
-  ? loadRemoteJSON(src)
-  : loadLocalJSON(src)
+const loadRemoteJSON = async (uri) => (await fetch(uri)).json()
+const loadLocalJSON = async (filePath) => JSON.parse(await readFileAsync(filePath, 'utf8'))
+const loadJSON = (uri) => uri.includes('://')
+  ? loadRemoteJSON(uri)
+  : loadLocalJSON(uri)
 
 export {
   loadRemoteScript, loadLocalScript, loadScript,

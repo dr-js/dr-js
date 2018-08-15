@@ -12,11 +12,11 @@ import {
 
 const { describe, it, before, after } = global
 
-const BUFFER_SCRIPT = Buffer.from([
-  `// Simple script file, used for js test`,
-  `const a = async (b = 0) => b + 1`,
-  `a().then(console.log)`
-].join('\n'))
+const BUFFER_SCRIPT = Buffer.from(`{
+  // Simple script file, used for js test
+  const a = async (b = 0) => b + 1
+  a().then((result) => { if (result !== 1) throw new Error('unexpected result: ' + result) })
+}`)
 const SOURCE_JSON = resolve(__dirname, '../../package.json')
 const SOURCE_SCRIPT = resolve(__dirname, './test-resource-script-gitignore.js')
 
