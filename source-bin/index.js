@@ -161,11 +161,16 @@ const main = async () => {
   const modeFormat = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name))
 
   if (modeFormat) {
-    await runMode(modeFormat, optionData).catch((error) => {
-      console.warn(`[Error] in mode: ${modeFormat.name}:`, error.stack || error)
-      process.exit(2)
-    })
-  } else optionData.getOptionOptional('version') ? logJSON(getVersion()) : console.log(formatUsage())
+    await runMode(modeFormat, optionData)
+      .catch((error) => {
+        console.warn(`[Error] in mode: ${modeFormat.name}:`, error.stack || error)
+        process.exit(2)
+      })
+  } else {
+    optionData.getOptionOptional('version')
+      ? logJSON(getVersion())
+      : console.log(formatUsage(null, optionData.getOptionOptional('help') ? null : 'simple'))
+  }
 }
 
 main().catch((error) => {

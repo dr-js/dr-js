@@ -101,6 +101,9 @@ const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replac
 const removeInvalidCharXML = (text) => text.replace(/[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm, '') // eslint-disable-line no-control-regex
 
 const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.replace(/\n/g, `\n${indentString}`)}`
+const stringAutoEllipsis = (string = '', limit = 32, head = 16, tail = 8) => string.length > limit
+  ? `${string.slice(0, head)}...${tail > 0 ? string.slice(-tail) : ''} (+${string.length - head - tail})`
+  : string
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
   (o, string, index) => (index >= fromIndex)
     ? o + string[ 0 ].toUpperCase() + string.slice(1)
@@ -124,5 +127,6 @@ export {
   removeInvalidCharXML,
 
   stringIndentLine,
+  stringAutoEllipsis,
   stringListJoinCamelCase
 }

@@ -50,7 +50,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -360,7 +360,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**
@@ -461,17 +461,17 @@
 >   --version -v [OPTIONAL] [ARGUMENT=0+]
 >       set to enable
 >   --help -h [OPTIONAL] [ARGUMENT=0+]
->       show help, or request better human readable output
+>       show help, or human readable output
 >   --quiet -q [OPTIONAL] [ARGUMENT=0+]
->       reduce most output
->   --eval --e [OPTIONAL] [ARGUMENT=0-1]
->   --repl --i [OPTIONAL]
+>       reduce log
+>   --eval --e -e [OPTIONAL] [ARGUMENT=0-1]
+>   --repl --i -i [OPTIONAL]
 >   --echo [OPTIONAL] [ARGUMENT=0+]
 >   --cat [OPTIONAL] [ARGUMENT=0+]
 >   --write [OPTIONAL] [ARGUMENT=1]
 >   --append [OPTIONAL] [ARGUMENT=1]
->   --open --o [OPTIONAL] [ARGUMENT=0-1]
->   --status --s [OPTIONAL]
+>   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
+>   --status --s -s [OPTIONAL]
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
 >   --file-list-all --ls-R [OPTIONAL] [ARGUMENT=0-1]
 >   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
@@ -479,7 +479,7 @@
 >   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
->   --fetch --f [OPTIONAL] [ARGUMENT=1]
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1]
 >   --server-serve-static --sss [OPTIONAL]
 >   --server-serve-static-simple --ssss [OPTIONAL]
 >   --server-websocket-group --swg [OPTIONAL]
@@ -488,16 +488,11 @@
 >   --timed-lookup-file-generate --tlfg [OPTIONAL] [ARGUMENT=0-4]
 >   --timed-lookup-check-code-generate --tlccg [OPTIONAL] [ARGUMENT=0-1]
 >   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1-2]
->   --hostname -H [OPTIONAL] [ARGUMENT=1]
->       for 'server'
->   --port -P [OPTIONAL] [ARGUMENT=1]
->       for 'server'
->   --root -R [OPTIONAL] [ARGUMENT=1]
->       for 'server-serve-static'
->   --input-file -I [OPTIONAL] [ARGUMENT=1]
->       for 'timed-lookup-check-code-generate', 'timed-lookup-check-code-verify'
->   --output-file -O [OPTIONAL] [ARGUMENT=1]
->       for 'fetch', 'timed-lookup-file-generate'
+>   --hostname --H -H [OPTIONAL] [ARGUMENT=1]
+>   --port --P -P [OPTIONAL] [ARGUMENT=1]
+>   --root --R -R [OPTIONAL] [ARGUMENT=1]
+>   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
+>   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
