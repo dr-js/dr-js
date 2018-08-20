@@ -15,7 +15,7 @@ const parseFormat = (modeFormat) => {
 }
 
 const MODE_FORMAT_LIST = [
-  'eval|e|0-1',
+  'eval|e|0-',
   'repl|i',
   'echo||0-',
   'cat||0-|P',
@@ -47,7 +47,7 @@ const OPTION_CONFIG = {
   formatList: [
     Config,
     { ...BooleanFlag, name: 'version', shortName: 'v' },
-    { ...BooleanFlag, name: 'help', shortName: 'h', description: `show help, or human readable output` },
+    { ...BooleanFlag, name: 'help', shortName: 'h', description: `show full help, or human readable output` },
     { ...BooleanFlag, name: 'quiet', shortName: 'q', description: `reduce log` },
     ...MODE_FORMAT_LIST,
     parseFormat('hostname|H|1'),

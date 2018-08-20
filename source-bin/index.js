@@ -6,7 +6,9 @@ import { createReadStream, createWriteStream, readFileSync, writeFileSync } from
 import { start as startREPL } from 'repl'
 
 import { getEndianness } from 'dr-js/module/env/function'
+
 import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
+
 import { fetch } from 'dr-js/module/node/net'
 import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
@@ -34,6 +36,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     (error) => log(`[${modeFormat.name}] error: ${path}\n${error.stack || error}`)
   )
 
+  const isHumanReadableOutput = Boolean(getOptionOptional('help'))
   const argumentList = getOptionOptional(modeFormat.name) || []
   const inputFile = getSingleOptionOptional('input-file')
   const outputFile = getSingleOptionOptional('output-file')
@@ -48,12 +51,11 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
   }
 
   switch (modeFormat.name) {
-    case 'eval':
-      return outputBuffer(Buffer.from(JSON.stringify(await eval( // eslint-disable-line no-eval
-        argumentList[ 0 ] ||
-        (inputFile && readFileSync(inputFile).toString()) ||
-        ''
-      ))))
+    case 'eval': {
+      global.evalArgv = inputFile ? argumentList : argumentList.slice(1) // NOTE: both global.evalArgv / argumentList is accessible from eval
+      const result = await eval(String(inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ])) // eslint-disable-line no-eval
+      return result !== undefined && outputBuffer(Buffer.from(String(result)))
+    }
     case 'repl':
       return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })
     case 'echo':
@@ -73,7 +75,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
     }
     case 'status':
-      return getOptionOptional('help')
+      return isHumanReadableOutput
         ? console.log(describeSystemStatus())
         : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
     case 'file-list':

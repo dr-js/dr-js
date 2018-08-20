@@ -461,10 +461,10 @@
 >   --version -v [OPTIONAL] [ARGUMENT=0+]
 >       set to enable
 >   --help -h [OPTIONAL] [ARGUMENT=0+]
->       show help, or human readable output
+>       show full help, or human readable output
 >   --quiet -q [OPTIONAL] [ARGUMENT=0+]
 >       reduce log
->   --eval --e -e [OPTIONAL] [ARGUMENT=0-1]
+>   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
 >   --repl --i -i [OPTIONAL]
 >   --echo [OPTIONAL] [ARGUMENT=0+]
 >   --cat [OPTIONAL] [ARGUMENT=0+]
@@ -500,7 +500,7 @@
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
@@ -536,7 +536,7 @@
 >     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsRepl": [ "[OPTIONAL]" ],
 >     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
