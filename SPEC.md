@@ -479,7 +479,7 @@
 >   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1]
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >   --server-serve-static --sss [OPTIONAL]
 >   --server-serve-static-simple --ssss [OPTIONAL]
 >   --server-websocket-group --swg [OPTIONAL]
@@ -515,7 +515,7 @@
 >     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
 >     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
->     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
@@ -551,7 +551,7 @@
 >     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
 >     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
->     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],

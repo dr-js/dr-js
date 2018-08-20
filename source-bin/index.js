@@ -7,6 +7,7 @@ import { start as startREPL } from 'repl'
 
 import { getEndianness } from 'dr-js/module/env/function'
 
+import { time, binary } from 'dr-js/module/common/format'
 import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
 
 import { fetch } from 'dr-js/module/node/net'
@@ -98,10 +99,28 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       return
     }
     case 'fetch': {
-      const [ url ] = argumentList
-      const response = await fetch(url)
-      if (!response.ok) throw new Error(`[fetch] not ok status: ${JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')}`)
-      return outputBuffer(await response.buffer())
+      const [ initialUrl, jumpMaxString = '0', timeoutString = '0' ] = argumentList
+      const jumpMax = Number(jumpMaxString) || 0
+      const timeout = Number(timeoutString) || 0 // msec, 0 for none
+      let jumpCount = 0
+      let url = initialUrl
+      let cookieList = []
+      while (true) {
+        log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
+        const response = await fetch(url, { headers: { cookie: cookieList.join(';'), accept: '*/*' }, timeout })
+        const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
+        if (response.ok) {
+          log(`[fetch] get status: ${response.status}, fetch response content (${binary(response.headers[ 'content-length' ])}B)...`)
+          const buffer = await response.buffer()
+          log(`[fetch] get content: ${binary(buffer.length)}B`)
+          return outputBuffer(buffer)
+        } else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
+          jumpCount++
+          if (jumpCount > jumpMax) throw new Error(`[fetch] ${jumpMax} max jump reached: ${getInfo()}`)
+          url = new URL(response.headers[ 'location' ], url)
+          cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
+        } else throw new Error(`[fetch] bad status: ${getInfo()}`)
+      }
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {

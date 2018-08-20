@@ -20,7 +20,7 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
     error.option = option
     reject(error)
   }
-  request.on('timeout', () => endWithError(new Error(`request timeout`)))
+  request.on('timeout', () => endWithError(new Error(`NETWORK_TIMEOUT`)))
   request.on('error', endWithError)
   request.end(body)
 })
@@ -38,6 +38,7 @@ const fetch = async (url, {
   timeout = DEFAULT_TIMEOUT
 } = {}) => {
   const option = { ...urlToOption(new URL(url)), method, headers: { 'accept-encoding': 'gzip', ...requestHeaders }, timeout } // will result in error if timeout
+  __DEV__ && console.log('[fetch]', option)
   const response = await requestAsync(option, body)
   const responseHeaders = response.headers
   const status = response.statusCode
@@ -46,13 +47,28 @@ const fetch = async (url, {
   let bufferPromise
   process.nextTick(() => {
     if (bufferPromise) return
+    __DEV__ && console.log('[fetch] payload dropped', timeout)
     response.destroy() // drop response data
     isBufferDropped = true
   })
   const buffer = async () => {
     if (bufferPromise === undefined) {
-      if (isBufferDropped) throw new Error('[fetch] data already dropped, should call receive data immediately')
+      if (isBufferDropped) throw new Error('PAYLOAD_ALREADY_DROPPED')
+      __DEV__ && console.log('[fetch] pick payload buffer')
+      let isBufferTimeout = false
+      let isBufferReceived = false
+      timeout && setTimeout(() => {
+        if (isBufferReceived) return
+        __DEV__ && console.log('[fetch] payload timeout', timeout)
+        response.destroy()
+        isBufferTimeout = true
+      }, timeout)
       bufferPromise = receiveBufferAsync(response.headers[ 'content-encoding' ] === 'gzip' ? response.pipe(createGunzip()) : response)
+        .then((buffer) => {
+          if (isBufferTimeout) throw new Error('PAYLOAD_TIMEOUT')
+          isBufferReceived = true
+          return buffer
+        })
     }
     return bufferPromise
   }

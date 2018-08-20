@@ -30,7 +30,7 @@ const MODE_FORMAT_LIST = [
   'file-modify-move|mv|2|P',
   'file-modify-delete|rm|0-|P',
   'file-merge|merge|2-|P',
-  'fetch|f|1',
+  'fetch|f|1-3',
   'server-serve-static|sss',
   'server-serve-static-simple|ssss',
   'server-websocket-group|swg',
