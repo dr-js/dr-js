@@ -11,6 +11,8 @@ const { createResponderServeStatic } = require('../../output-gitignore/library/n
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
+const { createExampleServerHTMLResponder } = require('./example-server.html')
+
 const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createPathPrefixLock(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
@@ -36,7 +38,7 @@ server.on('request', createRequestListener({
     responderLogTimeStep,
     createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderServeStatic(store, fromStaticRoot('resource/favicon.ico')) ],
-      [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('node/example-server.html')) ],
+      [ '/', 'GET', createExampleServerHTMLResponder() ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
     ]))
   ],

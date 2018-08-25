@@ -12,10 +12,12 @@ ${`<button>AAA</button><hr /><p>BBB</p><hr />`.repeat(100)}
 <div id="INDICATOR-V" class="indicator" style="width: 1px;"></div>
 `, () => {
   const {
-    qS,
-    log,
+    qS, log,
     Dr: {
-      Common: { Math: { clamp, easeOutCubic, easeInOutQuad }, Geometry: { D2: { Vector } } },
+      Common: {
+        Math: { clamp, easeOutCubic, easeInOutQuad },
+        Geometry: { D2: { Vector } }
+      },
       Browser: {
         Input: {
           PointerEvent: { applyEnhancedPointerEventListener },

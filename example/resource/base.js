@@ -119,6 +119,7 @@ canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-renderi
 
   log('init')
   window.addEventListener('error', (error) => log('[ERROR]', error.stack || error))
+
   window.updateLoop = updateLoop
   window.log = log
 })

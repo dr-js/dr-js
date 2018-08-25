@@ -13,6 +13,8 @@ const { createResponderServeStatic } = require('../../output-gitignore/library/n
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
+const { createExampleServerHTMLResponder } = require('./example-server.html')
+
 const ServerHost = 'localhost'
 const ServerPort = 3000
 const ProxyHost = 'localhost'
@@ -38,7 +40,7 @@ server.on('request', createRequestListener({
     createResponderParseURL(option),
     createResponderRouter(createRouteMap([
       [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
-      [ '/', 'GET', (store) => responderServeStatic(store, fromStaticRoot('/node/example-server.html')) ],
+      [ '/', 'GET', createExampleServerHTMLResponder() ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
       [ '/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE') ],
       [ '/get-get-proxy', 'GET', responderProxy ]

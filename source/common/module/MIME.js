@@ -10,6 +10,7 @@ const BASIC_MIME_DATA_LIST = [
   'audio/webm:weba',
   'audio/x-flac:flac',
   'font/ttf:ttf',
+  'font/otf:otf',
   'font/woff:woff',
   'font/woff2:woff2',
   'image/bmp:bmp',

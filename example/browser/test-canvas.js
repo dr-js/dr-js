@@ -30,9 +30,7 @@ window.addContent(``, `
 </div>
 `, () => {
   const {
-    qS,
-    log,
-    updateLoop,
+    qS, log, updateLoop,
     Dr: {
       Common: {
         Function: { withRepeat },

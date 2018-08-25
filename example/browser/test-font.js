@@ -10,9 +10,7 @@ window.addContent(``, `
 </div>
 `, async () => {
   const {
-    qS,
-    cE,
-    aCL,
+    qS, cE, aCL,
     Dr: {
       Browser: {
         Font: { createFontRender, createFontRenderBitmap },
@@ -70,7 +68,7 @@ window.addContent(``, `
       cursorCanvasElementExt.draw(fontBitmapCanvasContext2d, renderedBitmapText.textEndPosition.x + 2, renderedBitmapText.textEndPosition.y)
     }
 
-    let text = 'You can input by tapping some key...'
+    let text = 'You can input by tapping some key...☕'
 
     updateRenderedText(text)
 
@@ -90,7 +88,7 @@ window.addContent(``, `
 
   aCL(qS('#soft-keyboard'), [
     ' ', 'Tab', 'Enter', 'Backspace',
-    ...[ '!@#$%^&', '1234567', 'braid', 'PHANTOM', '玩游戏' ].join('').split('')
+    ...[ '!@#$%^&-', '12345678', 'braid', 'PHANTOM', '玩游戏', '☢☀⌚⌛☕' ].join('').split('')
   ].map((key) => cE('button', {
     innerText: key === ' ' ? 'Space' : key,
     onclick: () => document.dispatchEvent(new window.KeyboardEvent(key.length === 1 ? 'keypress' : 'keydown', { key }))

@@ -10,7 +10,10 @@ window.addContent(`
   const {
     qS,
     Dr: {
-      Common: { Math: { easeOutCubic, easeInOutQuad }, Geometry: { D2: { Vector } } },
+      Common: {
+        Math: { easeOutCubic, easeInOutQuad },
+        Geometry: { D2: { Vector } }
+      },
       Browser: {
         Input: {
           PointerEvent: { applyEnhancedPointerEventListener },
