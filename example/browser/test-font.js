@@ -49,7 +49,7 @@ window.addContent(``, `
     fontRenderMono.applyFontConfig({ fontSize: FONT_SIZE, lineHeight: LINE_HEIGHT, fontStyle: 'normal', fontFamily: `monospace`, fillStyle: '#00F' })
 
     const fontRenderBitmap = createFontRenderBitmap()
-    await fontRenderBitmap.loadBitmapFontData('../resource/fontBitmap.json', FONT_SIZE, LINE_HEIGHT)
+    await fontRenderBitmap.loadBitmapFontData('./fontBitmap.json', FONT_SIZE, LINE_HEIGHT)
 
     const updateRenderedText = (textValue) => {
       fontCanvasContext2d.canvas.width += 0 // clear canvas

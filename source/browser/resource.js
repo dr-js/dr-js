@@ -32,7 +32,7 @@ const createDownloadWithBlob = (fileName, blob) => {
   createDownload(fileName, objectUrl)
   setTimeout(() => URL.revokeObjectURL(objectUrl), 5000)
 }
-const createDownloadWithString = (fileName, string, type = BASIC_EXTENSION_MAP.txt) => createDownloadWithBlob(new Blob([ string ], { type }))
+const createDownloadWithString = (fileName, string, type = BASIC_EXTENSION_MAP.txt) => createDownloadWithBlob(fileName, new Blob([ string ], { type }))
 const createDownloadWithObject = (fileName, object, type = BASIC_EXTENSION_MAP.json) => createDownloadWithString(fileName, JSON.stringify(object), type)
 
 // ArrayBufferCache

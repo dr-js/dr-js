@@ -1,10 +1,7 @@
-import { resolve, dirname } from 'path'
+import { resolve } from 'path'
 import { DefinePlugin } from 'webpack'
-
-import { createDirectory } from 'source/node/file/File'
-
 import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
-import { compileWithWebpack } from 'dev-dep-tool/library/webpack'
+import { compileWithWebpack, commonFlag } from 'dev-dep-tool/library/webpack'
 import { getLogger } from 'dev-dep-tool/library/logger'
 
 const PATH_ROOT = resolve(__dirname, '..')
@@ -13,12 +10,7 @@ const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
-  const mode = argvFlag('development', 'production') || 'production'
-  const isWatch = argvFlag('watch')
-  const isProduction = mode === 'production'
-
-  const profileOutput = argvFlag('profile') ? fromRoot('.temp-gitignore/profile-stat.json') : null
-  profileOutput && await createDirectory(dirname(profileOutput))
+  const { mode, isWatch, isProduction, profileOutput } = await commonFlag({ argvFlag, fromRoot, logger })
 
   const babelOption = {
     configFile: false,

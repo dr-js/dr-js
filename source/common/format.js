@@ -111,6 +111,47 @@ const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce
   ''
 )
 
+const prettyStringifyJSON = (value, level = 2) => {
+  const resultList = []
+  prettyStringifyJSONSwitch(resultList, value, Math.max(level, 0) || 0, '')
+  return resultList.join('')
+}
+const prettyStringifyJSONSwitch = (resultList, value, level, padString) => {
+  __DEV__ && console.log(' - - Switch', JSON.stringify({ level, padString }))
+  if (level >= 1 && value) {
+    if (Array.isArray(value)) return prettyStringifyJSONArray(resultList, value, level, padString)
+    if (typeof (value) === 'object') return prettyStringifyJSONObject(resultList, value, level, padString)
+  }
+  resultList.push(JSON.stringify(value))
+}
+const prettyStringifyJSONObject = (resultList, object, level, padString) => {
+  const entryList = Object.entries(object)
+  __DEV__ && console.log(' - - Object', JSON.stringify({ level, padString, entryListLength: entryList.length }))
+  if (entryList.length === 0) return resultList.push('{}')
+  resultList.push('{\n')
+  const nextLevel = level - 1
+  const nextPadString = `${padString}  `
+  entryList.forEach(([ key, value ]) => {
+    resultList.push(nextPadString, JSON.stringify(key), ': ')
+    prettyStringifyJSONSwitch(resultList, value, nextLevel, nextPadString)
+    resultList.push(',\n')
+  })
+  resultList[ resultList.length - 1 ] = `\n${padString}}`
+}
+const prettyStringifyJSONArray = (resultList, array, level, padString) => {
+  __DEV__ && console.log(' - - Array', JSON.stringify({ level, padString, arrayLength: array.length }))
+  if (array.length === 0) return resultList.push('[]')
+  resultList.push('[\n')
+  const nextLevel = level - 1
+  const nextPadString = `${padString}  `
+  array.forEach((value) => {
+    resultList.push(nextPadString)
+    prettyStringifyJSONSwitch(resultList, value, nextLevel, nextPadString)
+    resultList.push(',\n')
+  })
+  resultList[ resultList.length - 1 ] = `\n${padString}]`
+}
+
 export {
   describe,
 
@@ -128,5 +169,7 @@ export {
 
   stringIndentLine,
   stringAutoEllipsis,
-  stringListJoinCamelCase
+  stringListJoinCamelCase,
+
+  prettyStringifyJSON
 }

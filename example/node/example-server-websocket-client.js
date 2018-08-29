@@ -1,9 +1,8 @@
-const { resolve } = require('path')
-const { readFileAsync } = require('../../output-gitignore/library/node/file/function')
 const { WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { createWebSocketClient } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketClient')
 
-const fromPath = (...args) => resolve(__dirname, ...args)
+const BIG_STRING = '0123456789abcdef'.repeat(1024)
+const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
 createWebSocketClient({
   urlString: 'ws://localhost:3000',
@@ -17,8 +16,8 @@ createWebSocketClient({
     webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
       console.log(`>> OPEN`)
       webSocket.sendText('WebSocketClient open message: 123ABC!@#')
-      setTimeout(async () => webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8')), 1000) // big string
-      setTimeout(async () => webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico'))), 2000) // big buffer
+      setTimeout(async () => webSocket.sendText(BIG_STRING), 1000) // big string
+      setTimeout(async () => webSocket.sendBuffer(BIG_BUFFER), 2000) // big buffer
       setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
     })
     webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, ({ dataType, dataBuffer }) => {

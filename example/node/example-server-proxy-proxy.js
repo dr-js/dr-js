@@ -1,13 +1,12 @@
 const { resolve } = require('path')
-const { readFileSync } = require('fs')
 const { createServer: createHttpServer } = require('http')
 
-const { readFileAsync, createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
+const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { requestAsync } = require('../../output-gitignore/library/node/net')
 const { receiveBufferAsync } = require('../../output-gitignore/library/node/data/Buffer')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
-const { responderSendBuffer } = require('../../output-gitignore/library/node/server/Responder/Send')
+const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
@@ -21,7 +20,6 @@ const ProxyHost = 'localhost'
 const ProxyPort = 4000
 
 const fromPath = (...args) => resolve(__dirname, ...args)
-const faviconBufferData = { buffer: readFileSync(fromPath('../resource/favicon.ico')), type: 'image/png' }
 const fromStaticRoot = createPathPrefixLock(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
@@ -39,15 +37,18 @@ server.on('request', createRequestListener({
     (store) => { console.log(`[server] get: ${store.request.url}`) },
     createResponderParseURL(option),
     createResponderRouter(createRouteMap([
-      [ '/favicon.ico', 'GET', (store) => responderSendBuffer(store, faviconBufferData) ],
       [ '/', 'GET', createExampleServerHTMLResponder() ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
       [ '/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE') ],
-      [ '/get-get-proxy', 'GET', responderProxy ]
+      [ '/get-get-proxy', 'GET', responderProxy ],
+      [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
     ]))
   ]
 }))
 console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+
+const BIG_STRING = '0123456789abcdef'.repeat(1024)
+const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
 const webSocketSet = enableWebSocketServer({
   server,
@@ -62,8 +63,8 @@ const webSocketSet = enableWebSocketServer({
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
 
       if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8'))
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico')))
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(BIG_STRING)
+      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
 
       // echo back
       dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())

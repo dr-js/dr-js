@@ -3,10 +3,11 @@ const { resolve } = require('path')
 const { clock } = require('../../output-gitignore/library/common/time')
 const Format = require('../../output-gitignore/library/common/format')
 
-const { readFileAsync, createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
+const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
+const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
@@ -37,9 +38,9 @@ server.on('request', createRequestListener({
     createResponderParseURL(option),
     responderLogTimeStep,
     createResponderRouter(createRouteMap([
-      [ '/favicon.ico', 'GET', (store) => responderServeStatic(store, fromStaticRoot('resource/favicon.ico')) ],
       [ '/', 'GET', createExampleServerHTMLResponder() ],
-      [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
+      [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+      [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
     ]))
   ],
   responderEnd: async (store) => {
@@ -47,6 +48,9 @@ server.on('request', createRequestListener({
     await responderLogEnd(store)
   }
 }))
+
+const BIG_STRING = '0123456789abcdef'.repeat(1024)
+const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
 const webSocketSet = enableWebSocketServer({
   server,
@@ -64,8 +68,8 @@ const webSocketSet = enableWebSocketServer({
 
       if (dataType === DATA_TYPE_MAP.OPCODE_TEXT) {
         if (dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-        if (dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(await readFileAsync(fromPath('../resource/favicon.ico'), 'utf8'))
-        if (dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(await readFileAsync(fromPath('../resource/favicon.ico')))
+        if (dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(BIG_STRING)
+        if (dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
       }
 
       // echo back

@@ -17,3 +17,19 @@ A collection of strange functions
 [l:size]: https://packagephobia.now.sh/result?p=dr-js
 [i:lint]: https://img.shields.io/badge/code_style-standard-yellow.svg
 [l:lint]: https://standardjs.com
+
+[//]: # (NON_PACKAGE_CONTENT)
+
+#### Code
+- 📁 [source](source)
+  - main source code, in output package will be:
+    - `dr-js/library`: for direct use, use `require() / exports=` and has `Dr.browser.js`
+    - `dr-js/module`: for re-pack, keep `import / export` and readability
+- 📁 [source-bin](source-bin)
+  - bin source code, in output package will be `dr-js/bin`
+
+#### Reference
+- 📄 [SPEC.md](SPEC.md)
+  - list of all directly accessible codes, sort of an API lockfile
+- 📁 [example](example)
+  - some example (unsorted tests)

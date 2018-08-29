@@ -50,7 +50,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -360,7 +360,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**

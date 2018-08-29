@@ -1,3 +1,4 @@
+// TODO: try directly pull from `source/node/server/commonHTML.js`
 // common quick function
 const querySelectorFunc = (selector, innerHTML = undefined) => {
   const element = document.querySelector(selector)
@@ -23,6 +24,7 @@ const tillDocumentReadyFunc = (func) => {
   }
   document.addEventListener('readystatechange', onReady)
 }
+// TODO: try directly pull from `source/node/server/commonHTML.js`
 
 const parseHTMLFunc = (HTML) => {
   const elementList = [ ...window.cE('div', { innerHTML: HTML }).children ]
@@ -43,7 +45,7 @@ Object.assign(window, {
   addContent: (headHTML, bodyHTML, func) => window.tDR(() => {
     headHTML && window.pHTML(headHTML).forEach((element) => document.head.appendChild(element))
     bodyHTML && window.pHTML(bodyHTML).forEach((element) => document.body.appendChild(element))
-    func()
+    func && func()
   })
 })
 
@@ -74,19 +76,12 @@ canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-renderi
 .flex-column { display: flex; flex-flow: column wrap; }
 </style>
 `, `
-<div style="position: fixed; top: 0; left: 0; width: 100%; z-index: -1;">
-  <pre id="FPS" style="font-size: 12px; color: #900;">FPS</pre>
-  <pre id="LOG" style="font-size: 10px; color: #666;">Log</pre>
+<div style="position: fixed; top: 0; left: 0; pointer-events: none; font-size: 10px;">
+  <pre id="FPS" style="color: #f66;">FPS</pre>
+  <pre id="LOG" style="color: #bbb;">Log</pre>
 </div>
 `, () => {
-  const {
-    Dr: {
-      Common: {
-        Time: { CLOCK_TO_SECOND, clock },
-        Module: { UpdateLoop: { createUpdateLoop } }
-      }
-    }
-  } = window
+  const { Dr: { Common: { Time: { CLOCK_TO_SECOND, clock }, Module: { UpdateLoop: { createUpdateLoop } } } } } = window
 
   const createLogList = (maxLength = 20, logList = [], prevTime = clock()) => (text, currentTime = clock()) => {
     const deltaTime = (currentTime - prevTime) * CLOCK_TO_SECOND

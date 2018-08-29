@@ -1,26 +1,23 @@
 import { resolve, sep } from 'path'
-import { writeFileSync, existsSync } from 'fs'
 import { execSync } from 'child_process'
+import { writeFileSync, existsSync } from 'fs'
 
 import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
 import { getLogger } from 'dev-dep-tool/library/logger'
-import { createExportParser } from 'dev-dep-tool/library/ExportIndex/parseExport'
+import { collectSourceRouteMap } from 'dev-dep-tool/library/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
-import { renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
+import {
+  getMarkdownHeaderLink,
+  renderMarkdownFileLink,
+  renderMarkdownExportPath,
+  renderMarkdownExportTree
+} from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
 
 import { stringIndentLine } from 'source/common/format'
-import { getDirectoryInfoTree, walkDirectoryInfoTree } from 'source/node/file/Directory'
 import { formatUsage } from 'source-bin/option'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
-
-const collectSourceRouteMap = async ({ logger }) => {
-  const { parseExport, getSourceRouteMap } = createExportParser({ logger })
-  const parseWalkExport = ({ path }) => parseExport(path)
-  await walkDirectoryInfoTree(await getDirectoryInfoTree(fromRoot('source')), parseWalkExport)
-  return getSourceRouteMap()
-}
 
 const renderMarkdownBinOptionFormat = () => [
   renderMarkdownFileLink('source-bin/option.js'),
@@ -60,7 +57,7 @@ runMain(async (logger) => {
   }
 
   logger.padLog(`collect sourceRouteMap`)
-  const sourceRouteMap = await collectSourceRouteMap({ logger })
+  const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], logger })
 
   logger.padLog(`generate exportInfo`)
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
@@ -70,9 +67,8 @@ runMain(async (logger) => {
   writeFileSync(fromRoot('SPEC.md'), [
     '# Specification',
     '',
-    '* [Export Path](#export-path)',
-    '* [Export Tree](#export-tree)',
-    '* [Bin Option Format](#bin-option-format)',
+    ...[ 'Export Path', 'Export Tree', 'Bin Option Format' ]
+      .map((text) => `* ${getMarkdownHeaderLink(text)}`),
     '',
     '#### Export Path',
     ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
