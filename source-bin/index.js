@@ -8,10 +8,8 @@ import { start as startREPL } from 'repl'
 import { getEndianness } from 'dr-js/module/env/function'
 
 import { time, binary } from 'dr-js/module/common/format'
-import { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } from 'dr-js/module/common/module/TimedLookup'
 
 import { fetch } from 'dr-js/module/node/net'
-import { toArrayBuffer } from 'dr-js/module/node/data/Buffer'
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
@@ -21,12 +19,13 @@ import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 
-import { name as packageName, version as packageVersion } from '../package.json'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 import { createServerTestConnection } from './server/testConnection'
 import { createServerServeStatic } from './server/serveStatic'
 import { createServerWebSocketGroup } from './server/websocketGroup'
 import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
+
+import { name as packageName, version as packageVersion } from '../package.json'
 
 const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
@@ -137,25 +136,6 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
       const cachePath = getSingleOption('root')
       return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
     }
-    case 'timed-lookup-file-generate': { // TODO: DEPRECATED: just use mode eval
-      const [ tag, size, tokenSize, timeGap ] = argumentList
-      return writeFileSync(
-        getSingleOption('output-file'),
-        Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap })))
-      )
-    }
-    case 'timed-lookup-check-code-generate': // TODO: DEPRECATED: just use mode eval
-      return console.log(generateCheckCode(
-        parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
-        Number(argumentList[ 0 ]) || undefined
-      ))
-    case 'timed-lookup-check-code-verify': // TODO: DEPRECATED: just use mode eval
-      verifyCheckCode(
-        parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('input-file')))),
-        argumentList[ 0 ],
-        Number(argumentList[ 1 ]) || undefined
-      )
-      return console.log('valid checkCode')
   }
 }
 

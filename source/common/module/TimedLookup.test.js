@@ -1,7 +1,6 @@
 import { ok, strictEqual, notStrictEqual, throws } from 'assert'
 import { getTimestamp } from 'source/common/time'
 import { isObjectContain } from 'source/common/check'
-import { swapObfuscateString } from 'source/common/data/function'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import {
   verifyOption,
@@ -102,42 +101,5 @@ describe('Common.Module.TimedLookup', () => {
     const repackedArrayBufferPacket = packDataArrayBuffer({ dataView: parsedDataView, ...parsedOption })
 
     ok(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket))
-  })
-
-  it('LEGACY: patch for old implementation', () => { // TODO: LEGACY
-    const CHECK_CODE_SEP = '-'
-    const CHAR_CODE_1 = '1'.charCodeAt(0)
-
-    const calcCode = (size, tokenSize, dataView, seed = 0) => {
-      const seedBinaryString = seed.toString(2)
-      const valueMax = Math.pow(16, tokenSize)
-      let index = seed % size
-      let value = dataView.getUint8(index) // 0 to 255, 8bit
-      __DEV__ && console.log('calcCode', { seed, seedBinaryString, index, value })
-      for (let seedIndex = 0, seedIndexMax = seedBinaryString.length; seedIndex < seedIndexMax; seedIndex++) {
-        if (seedBinaryString.charCodeAt(seedIndex) === CHAR_CODE_1) index = (index + dataView.getUint8((index + 1) % size)) % size
-        else value = value * 16 // shift 4bit
-
-        value = (value + dataView.getUint8(index)) % valueMax
-        __DEV__ && console.log('calcCode step', { dataViewData: dataView.getUint8(index), index, seedIndex, value })
-      }
-      __DEV__ && console.log('calcCode', { value })
-      return (value % Math.pow(2, 4 * tokenSize)).toString(16).padStart(tokenSize, '0')
-    }
-
-    const generateCheckCodeLegacy = (
-      { tag, size, tokenSize, timeGap, dataView },
-      timestamp = getTimestamp()
-    ) => {
-      const seed = Math.ceil(timestamp / timeGap)
-      const code = calcCode(size, tokenSize, dataView, seed)
-      return swapObfuscateString(`${tag}${CHECK_CODE_SEP}${seed.toString(36)}${CHECK_CODE_SEP}${code}`)
-    }
-
-    const checkCodeLegacy0 = generateCheckCodeLegacy(defaultLookupData, 0)
-    const checkCodeLegacyTimestamp = generateCheckCodeLegacy(defaultLookupData)
-
-    verifyCheckCode(defaultLookupData, checkCodeLegacy0, 0)
-    verifyCheckCode(defaultLookupData, checkCodeLegacyTimestamp)
   })
 })

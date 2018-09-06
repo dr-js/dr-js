@@ -1,90 +1,102 @@
 import { getTimestamp } from 'source/common/time'
 import { createAsyncTaskQueue } from './AsyncTaskQueue'
 
-// const TaskRunnerOptionDebug = {
-//   clearRunner: () => {},
-//   resetRunner: (error, taskId) => error && console.log(`[DebugTaskRunner|${taskId}] error: ${error.stack || error.toString()}`),
-//   getTaskId: (inputData) => inputData.id,
-//   getTaskInitialState: (task) => task,
-//   runTask: async (taskId, { getTaskState, updateTaskState }) => {
-//     console.log(`[DebugTaskRunner|${taskId}] start`)
-//     console.log(JSON.stringify(getTaskState(taskId).inputData))
-//     for (let index = 0, indexMax = getRandomInt(5, 10); index < indexMax; index++) {
-//       await setTimeoutAsync(500)
-//       console.log(`[DebugTaskRunner|${taskId}] step [${index}/${indexMax}]`)
-//       updateTaskState(taskId, { progress: 100 * (index + 1) / indexMax })
-//     }
-//     console.log(`[DebugTaskRunner|${taskId}] complete`)
-//     return { output: 'DebugTaskRunner' }
-//   }
-// }
+// NOTE: usage:
+// - for running async task with taskStatus remaining for later query
+// - endTask / autoEndTask should be called manually to clear the taskState, or cleared by timer
 
-const createTaskRunner = ({ clearRunner, resetRunner, getTaskId, getTaskInitialState, runTask }) => {
+const createTaskRunner = ({
+  clearRunner = () => {}, // clear / reset all, can return promise
+  resetRunner = (error, taskId) => { __DEV__ && console.warn('[resetRunner]', taskId, error) }, // clean up for one task, can return promise, but return error is bad since it's in taskState already
+  getTaskId,
+  getTaskInitialState = (taskState) => taskState,
+  runTask
+}) => {
   const { resetTaskQueue, getTaskQueueSize, pushTask } = createAsyncTaskQueue()
   const taskStateMap = new Map()
-  const clear = async () => {
-    taskStateMap.clear()
-    await clearRunner()
-    resetTaskQueue()
+
+  const createTaskAndPushToTaskQueue = (taskId, option) => {
+    const promise = pushTask(() => runTask(taskId, { getTaskState, updateTaskState }))
+      .then((result) => updateTaskState(taskId, { result, promise: null, endAt: getTimestamp() }))
+      .catch((error) => {
+        updateTaskState(taskId, { error, promise: null, endAt: getTimestamp() })
+        return resetRunner(error, taskId)
+      })
+    const taskState = getTaskInitialState({
+      id: taskId,
+      option,
+      promise, // if promise is cleared, task is considered ended (failed|completed)
+      error: null, // if error is set, task is considered failed (ended)
+      result: null, // optional, set when ended
+      startAt: getTimestamp(), // in second
+      endAt: null // in second, if endAt is set, task is considered ended (failed|completed)
+    })
+    taskStateMap.set(taskId, taskState)
+    return taskState
   }
-  const getStatus = ({ isVerbose }) => ({
-    taskQueueSize: getTaskQueueSize(),
-    taskStateMapSize: taskStateMap.size,
-    taskStateList: isVerbose ? Array.from(taskStateMap.entries()) : undefined
-  })
+
   const getTaskState = (taskId) => taskStateMap.get(taskId)
-  const updateTaskState = (taskId, nextState, state = getTaskState(taskId)) => state && taskStateMap.set(taskId, { ...state, ...nextState })
-  const startTask = (inputData) => {
-    const taskId = getTaskId(inputData)
-    if (!taskStateMap.get(taskId)) {
-      const promise = pushTask(() => runTask(taskId, { getTaskState, updateTaskState }))
-        .then((outputData) => updateTaskState(taskId, { outputData, promise: null, endAt: getTimestamp() }))
-        .catch((error) => {
-          updateTaskState(taskId, { error, promise: null, endAt: getTimestamp() })
-          return resetRunner(error, taskId)
-        })
-      taskStateMap.set(taskId, getTaskInitialState({
-        id: taskId,
-        promise,
-        error: null, // if error is set, task is considered failed
-        inputData,
-        outputData: null, // if outputData is set, task is considered completed
-        startAt: getTimestamp(), // in second
-        endAt: null // if outputData is set, task is considered ended (failed|completed)
-      }))
-    }
-    return taskStateMap.get(taskId)
+  const updateTaskState = (taskId, nextState) => {
+    const state = getTaskState(taskId)
+    state && taskStateMap.set(taskId, { ...state, ...nextState })
   }
   const endTask = (taskId) => taskStateMap.delete(taskId)
-  const autoEndTask = (endDeltaTime) => { // in second
-    const maxEndTime = getTimestamp() - Math.abs(endDeltaTime)
-    taskStateMap.forEach((task, taskId) => { task.endAt && task.endAt <= maxEndTime && endTask(taskId) })
+
+  return {
+    clear: () => { // drop all data
+      resetTaskQueue()
+      taskStateMap.clear()
+      return clearRunner()
+    },
+    getStatus: (isVerbose) => ({
+      taskQueueSize: getTaskQueueSize(),
+      taskStateMapSize: taskStateMap.size,
+      taskStateList: isVerbose ? Array.from(taskStateMap.entries()) : undefined
+    }),
+    getTaskQueueSize,
+    getTaskState,
+    startTask: (option) => {
+      const taskId = getTaskId(option)
+      return taskStateMap.get(taskId) || createTaskAndPushToTaskQueue(taskId, option) // return taskState
+    },
+    endTask,
+    autoEndTask: (minEndedTime) => { // in second (for timestamp)
+      const maxEndTime = getTimestamp() - Math.abs(minEndedTime)
+      taskStateMap.forEach((task, taskId) => { task.endAt && task.endAt <= maxEndTime && endTask(taskId) })
+    }
   }
-  return { clear, getStatus, getTaskQueueSize, getTaskState, startTask, endTask, autoEndTask }
 }
 
-const createTaskRunnerCluster = async ({ clusterSize, createTaskRunner, getRunnerFromTaskId }) => {
-  const taskRunnerList = []
-  for (let clusterIndex = 0; clusterIndex < clusterSize; clusterIndex++) taskRunnerList.push(await createTaskRunner(clusterIndex))
-  const clear = async () => {
-    for (const taskRunner of taskRunnerList) await taskRunner.clear()
-    taskRunnerList.length = 0
-  }
-  const getStatus = (...args) => taskRunnerList.map((taskRunner) => taskRunner.getStatus(...args))
-  const getTaskState = (taskId) => {
-    const taskRunner = getRunnerFromTaskId(taskRunnerList, taskId)
+const createTaskRunnerCluster = ({
+  taskRunnerList = [],
+  getClusterIndexFromTaskId, // (taskId) => clusterIndex
+  selectTaskRunner = selectMinLoadTaskRunner // can return false to drop task, but better not
+}) => ({
+  clear: () => taskRunnerList.map((taskRunner) => taskRunner.clear()),
+  getStatus: (isVerbose) => taskRunnerList.map((taskRunner) => taskRunner.getStatus(isVerbose)),
+  getTaskQueueSize: () => taskRunnerList.map((taskRunner) => taskRunner.getTaskQueueSize()),
+  getTaskState: (taskId) => {
+    const taskRunner = taskRunnerList[ Number(getClusterIndexFromTaskId(taskId)) ]
     return taskRunner && taskRunner.getTaskState(taskId)
-  }
-  const startTask = (inputData) => {
-    const minLoadTaskRunner = taskRunnerList.reduce((o, taskRunner) => o.getTaskQueueSize() > taskRunner.getTaskQueueSize() ? taskRunner : o, taskRunnerList[ 0 ])
-    return minLoadTaskRunner && minLoadTaskRunner.startTask(inputData)
-  }
-  const endTask = (taskId) => {
-    const taskRunner = getRunnerFromTaskId(taskRunnerList, taskId)
+  },
+  startTask: (option) => {
+    const taskRunner = selectTaskRunner(taskRunnerList, option)
+    return taskRunner && taskRunner.startTask(option)
+  },
+  endTask: (taskId) => {
+    const taskRunner = taskRunnerList[ Number(getClusterIndexFromTaskId(taskId)) ]
     return taskRunner && taskRunner.endTask(taskId)
-  }
-  const autoEndTask = (...args) => taskRunnerList.forEach((taskRunner) => taskRunner.autoEndTask(...args))
-  return { clear, getStatus, getTaskState, startTask, endTask, autoEndTask }
-}
+  },
+  autoEndTask: (minEndedTime) => taskRunnerList.forEach((taskRunner) => taskRunner.autoEndTask(minEndedTime))
+})
 
-export { createTaskRunner, createTaskRunnerCluster }
+const selectMinLoadTaskRunner = (taskRunnerList) => taskRunnerList.reduce(
+  (o, taskRunner) => o.getTaskQueueSize() > taskRunner.getTaskQueueSize() ? taskRunner : o,
+  taskRunnerList[ 0 ]
+)
+
+export {
+  createTaskRunner,
+  createTaskRunnerCluster,
+  selectMinLoadTaskRunner
+}

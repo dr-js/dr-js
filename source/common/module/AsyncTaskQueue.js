@@ -4,17 +4,18 @@ const MUTE_ERROR = (error) => { __DEV__ && console.error(error) }
 
 const createQueueStatus = (size = 0, isValid = true) => ({
   getSize: () => size,
-  increaseSize: () => ++size,
-  decreaseSize: () => --size,
+  addSize: () => ++size,
+  subSize: () => --size,
   getIsValid: () => isValid,
   invalid: () => (isValid = false)
 })
 
 const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
-  let queueStatus, queueTail
+  let queueStatus = createQueueStatus()
+  let queueTail = Promise.resolve('QUEUE_HEAD')
 
   const resetTaskQueue = () => {
-    queueStatus && queueStatus.invalid()
+    queueStatus.invalid()
     queueStatus = createQueueStatus()
     queueTail = Promise.resolve('QUEUE_HEAD')
   }
@@ -25,15 +26,13 @@ const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
     taskPromise
       .catch(onQueueError) // should not re-throw error for the queue to keep running
       .then(() => {
-        queueStatus.decreaseSize()
+        queueStatus.subSize()
         queueStatus.getIsValid() && resolve()
       }) // the promise chain is not chained up directly
-    queueStatus.increaseSize()
+    queueStatus.addSize()
     queueTail = promise
     return taskPromise
   }
-
-  resetTaskQueue()
 
   return { resetTaskQueue, getTaskQueueSize, pushTask }
 }

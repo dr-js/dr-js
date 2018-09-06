@@ -81,6 +81,7 @@ const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
 
 runMain(async (logger) => {
   await verifyNoGitignore({ path: fromRoot('source'), logger })
+  await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
 
   if (!argvFlag('pack')) return
@@ -95,7 +96,7 @@ runMain(async (logger) => {
   }
 
   await clearOutput({ packageJSON, logger })
-  await verifyOutputBinVersion({ fromOutput, packageJSON, logger })
+  await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
   await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
 }, getLogger(process.argv.slice(2).join('+'), argvFlag('quiet')))

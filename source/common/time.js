@@ -61,9 +61,6 @@ const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTi
   return { start, stop, isActive }
 }
 
-const TIMESTAMP_START = Math.floor(Date.now() * CLOCK_TO_SECOND) // TODO: DEPRECATED: UTC, integer
-const now = () => (Date.now() * CLOCK_TO_SECOND - TIMESTAMP_START) // TODO: DEPRECATED: confusing naming, just use Date.now()
-
 export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,
@@ -73,8 +70,5 @@ export {
   setTimeoutPromise,
   requestFrameUpdate,
   cancelFrameUpdate,
-  createTimer,
-
-  TIMESTAMP_START, // TODO: DEPRECATED
-  now // TODO: DEPRECATED
+  createTimer
 }

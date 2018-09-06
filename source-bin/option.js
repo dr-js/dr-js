@@ -35,10 +35,7 @@ const MODE_FORMAT_LIST = [
   'server-serve-static-simple|ssss',
   'server-websocket-group|swg',
   'server-test-connection|stc',
-  'server-cache-http-proxy|schp|1-2',
-  'timed-lookup-file-generate|tlfg|0-4', // TODO: DEPRECATED: just use mode eval
-  'timed-lookup-check-code-generate|tlccg|0-1', // TODO: DEPRECATED: just use mode eval
-  'timed-lookup-check-code-verify|tlccv|1-2' // TODO: DEPRECATED: just use mode eval
+  'server-cache-http-proxy|schp|1-2'
 ].map(parseFormat)
 
 const OPTION_CONFIG = {

@@ -61,15 +61,7 @@ const verifyCheckCode = (
   const [ tagString, timestampString, codeString ] = swapObfuscateString(checkCode).split(CHECK_CODE_SEP)
   if (tagString !== tag) throw new Error(`tag not match: ${tagString}, expected: ${tag}`)
   const checkTimestamp = Number.parseInt(timestampString, 36)
-  if (Math.abs(timestamp - checkTimestamp) > timeGap) {
-    if (Math.abs(timestamp - checkTimestamp * timeGap) <= timeGap) { // TODO: LEGACY: patch for previous in accurate time diff implementation (<=0.16.1-dev.0), where seed is passed directly (resulting in jumpy time diff, and reject some valid client checkCode)
-      const seed = checkTimestamp
-      const code = calcCode(size, tokenSize, dataView, seed)
-      if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
-      return
-    }
-    throw new Error(`timestamp not match: ${checkTimestamp}, expected: ${timestamp}±${timeGap}`)
-  }
+  if (Math.abs(timestamp - checkTimestamp) > timeGap) throw new Error(`timestamp not match: ${checkTimestamp}, expected: ${timestamp}±${timeGap}`)
   const code = calcCode(size, tokenSize, dataView, checkTimestamp / timeGap)
   if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
 }

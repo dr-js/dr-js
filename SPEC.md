@@ -54,7 +54,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
@@ -126,7 +126,7 @@
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
-  - `createTaskRunner`, `createTaskRunnerCluster`
+  - `createTaskRunner`, `createTaskRunnerCluster`, `selectMinLoadTaskRunner`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
@@ -135,18 +135,6 @@
   - `createOptionParser`
 + 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
   - `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
-+ 📄 [source/common/module/StateSchema/ArrayOf.js](source/common/module/StateSchema/ArrayOf.js)
-  - `ArrayOf`
-+ 📄 [source/common/module/StateSchema/ArraySchema.js](source/common/module/StateSchema/ArraySchema.js)
-  - `createArraySchema`
-+ 📄 [source/common/module/StateSchema/ObjectAs.js](source/common/module/StateSchema/ObjectAs.js)
-  - `ObjectAs`
-+ 📄 [source/common/module/StateSchema/ObjectSchema.js](source/common/module/StateSchema/ObjectSchema.js)
-  - `createObjectSchema`
-+ 📄 [source/common/module/StateSchema/actMap.js](source/common/module/StateSchema/actMap.js)
-  - `arrayActMap`, `objectActMap`
-+ 📄 [source/common/module/StateSchema/function.js](source/common/module/StateSchema/function.js)
-  - `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
   - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
 + 📄 [source/env/function.js](source/env/function.js)
@@ -225,8 +213,6 @@
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
-+ 📄 [source/node/system/REPL.js](source/node/system/REPL.js)
-  - `startREPL`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
@@ -318,16 +304,6 @@
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
-    - **StateSchema**
-      - **ArrayOf**
-        - `ArrayOf`
-      - **ArraySchema**
-        - `createArraySchema`
-      - **ObjectAs**
-        - `ObjectAs`
-      - **ObjectSchema**
-        - `createObjectSchema`
-      - `arrayActMap`, `objectActMap`, `SCHEMA_MARK`, `getActionReducer`, `getReducer`, `isSchemaObject`, `toStructJSONWithCheck`
     - **AsyncTaskQueue**
       - `createAsyncTaskQueue`
     - **BlockChart**
@@ -345,7 +321,7 @@
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TaskRunner**
-      - `createTaskRunner`, `createTaskRunnerCluster`
+      - `createTaskRunner`, `createTaskRunnerCluster`, `selectMinLoadTaskRunner`
     - **TimedLookup**
       - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
@@ -364,7 +340,7 @@
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `TIMESTAMP_START`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `now`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
     - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 - **Env**
@@ -440,8 +416,6 @@
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
-    - **REPL**
-      - `startREPL`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
@@ -485,9 +459,6 @@
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
 >   --server-cache-http-proxy --schp [OPTIONAL] [ARGUMENT=1-2]
->   --timed-lookup-file-generate --tlfg [OPTIONAL] [ARGUMENT=0-4]
->   --timed-lookup-check-code-generate --tlccg [OPTIONAL] [ARGUMENT=0-1]
->   --timed-lookup-check-code-verify --tlccv [OPTIONAL] [ARGUMENT=1-2]
 >   --hostname --H -H [OPTIONAL] [ARGUMENT=1]
 >   --port --P -P [OPTIONAL] [ARGUMENT=1]
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
@@ -521,9 +492,6 @@
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
 >     export DR_JS_SERVER_CACHE_HTTP_PROXY="[OPTIONAL] [ARGUMENT=1-2]"
->     export DR_JS_TIMED_LOOKUP_FILE_GENERATE="[OPTIONAL] [ARGUMENT=0-4]"
->     export DR_JS_TIMED_LOOKUP_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_TIMED_LOOKUP_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
 >     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
@@ -557,9 +525,6 @@
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
 >     "drJsServerCacheHttpProxy": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
->     "drJsTimedLookupFileGenerate": [ "[OPTIONAL] [ARGUMENT=0-4]" ],
->     "drJsTimedLookupCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsTimedLookupCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
 >     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
