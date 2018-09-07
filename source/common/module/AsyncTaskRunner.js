@@ -5,14 +5,14 @@ import { createAsyncTaskQueue } from './AsyncTaskQueue'
 // - for running async task with taskStatus remaining for later query
 // - endTask / autoEndTask should be called manually to clear the taskState, or cleared by timer
 
-const createTaskRunner = ({
-  clearRunner = () => {}, // clear / reset all, can return promise
-  resetRunner = (error, taskId) => { __DEV__ && console.warn('[resetRunner]', taskId, error) }, // clean up for one task, can return promise, but return error is bad since it's in taskState already
+const createAsyncTaskRunner = ({
+  clearRunner = () => {}, // clear / reset all, will pass returned promise to outer code
+  resetRunner = (error, taskId) => { __DEV__ && console.warn('[resetRunner]', taskId, error) }, // clean up for single task, will pass returned promise to outer code, should not re throw error
   getTaskId,
   getTaskInitialState = (taskState) => taskState,
   runTask
 }) => {
-  const { resetTaskQueue, getTaskQueueSize, pushTask } = createAsyncTaskQueue()
+  const { reset: resetQueue, getLength: getQueueLength, pushTask } = createAsyncTaskQueue()
   const taskStateMap = new Map()
 
   const createTaskAndPushToTaskQueue = (taskId, option) => {
@@ -44,16 +44,16 @@ const createTaskRunner = ({
 
   return {
     clear: () => { // drop all data
-      resetTaskQueue()
+      resetQueue()
       taskStateMap.clear()
       return clearRunner()
     },
     getStatus: (isVerbose) => ({
-      taskQueueSize: getTaskQueueSize(),
-      taskStateMapSize: taskStateMap.size,
+      taskQueue: getQueueLength(),
+      taskStateMap: taskStateMap.size,
       taskStateList: isVerbose ? Array.from(taskStateMap.entries()) : undefined
     }),
-    getTaskQueueSize,
+    getQueueLength,
     getTaskState,
     startTask: (option) => {
       const taskId = getTaskId(option)
@@ -67,36 +67,33 @@ const createTaskRunner = ({
   }
 }
 
-const createTaskRunnerCluster = ({
-  taskRunnerList = [],
-  getClusterIndexFromTaskId, // (taskId) => clusterIndex
-  selectTaskRunner = selectMinLoadTaskRunner // can return false to drop task, but better not
+const createAsyncTaskRunnerCluster = ({
+  runnerList = [],
+  getRunnerByTaskId, // (runnerList, taskId) => runner
+  selectRunner = selectMinLoadRunner // can return false to drop task, but better not
 }) => ({
-  clear: () => taskRunnerList.map((taskRunner) => taskRunner.clear()),
-  getStatus: (isVerbose) => taskRunnerList.map((taskRunner) => taskRunner.getStatus(isVerbose)),
-  getTaskQueueSize: () => taskRunnerList.map((taskRunner) => taskRunner.getTaskQueueSize()),
+  clear: () => runnerList.map((taskRunner) => taskRunner.clear()),
+  getStatus: (isVerbose) => runnerList.map((taskRunner) => taskRunner.getStatus(isVerbose)),
+  getQueueLength: () => runnerList.map((taskRunner) => taskRunner.getQueueLength()), // NOTE: this is a list of length
   getTaskState: (taskId) => {
-    const taskRunner = taskRunnerList[ Number(getClusterIndexFromTaskId(taskId)) ]
+    const taskRunner = getRunnerByTaskId(runnerList, taskId)
     return taskRunner && taskRunner.getTaskState(taskId)
   },
-  startTask: (option) => {
-    const taskRunner = selectTaskRunner(taskRunnerList, option)
-    return taskRunner && taskRunner.startTask(option)
-  },
+  startTask: (option) => selectRunner(runnerList, option).startTask(option),
   endTask: (taskId) => {
-    const taskRunner = taskRunnerList[ Number(getClusterIndexFromTaskId(taskId)) ]
+    const taskRunner = getRunnerByTaskId(runnerList, taskId)
     return taskRunner && taskRunner.endTask(taskId)
   },
-  autoEndTask: (minEndedTime) => taskRunnerList.forEach((taskRunner) => taskRunner.autoEndTask(minEndedTime))
+  autoEndTask: (minEndedTime) => runnerList.forEach((taskRunner) => taskRunner.autoEndTask(minEndedTime))
 })
 
-const selectMinLoadTaskRunner = (taskRunnerList) => taskRunnerList.reduce(
-  (o, taskRunner) => o.getTaskQueueSize() > taskRunner.getTaskQueueSize() ? taskRunner : o,
-  taskRunnerList[ 0 ]
+const selectMinLoadRunner = (runnerList) => runnerList.reduce(
+  (o, taskRunner) => o.getQueueLength() > taskRunner.getQueueLength() ? taskRunner : o,
+  runnerList[ 0 ]
 )
 
 export {
-  createTaskRunner,
-  createTaskRunnerCluster,
-  selectMinLoadTaskRunner
+  createAsyncTaskRunner,
+  createAsyncTaskRunnerCluster,
+  selectMinLoadRunner
 }

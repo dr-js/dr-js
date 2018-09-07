@@ -5,6 +5,10 @@ import {
   getRouteParamAny as getRouteMapParamAny,
   getRouteParam as getRouteMapParam
 } from 'source/common/module/RouteMap'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
+
+import { COMMON_LAYOUT, COMMON_STYLE } from 'source/node/server/commonHTML'
+import { responderSendBufferCompress, prepareBufferData } from './Send'
 
 const METHOD_MAP = {
   GET: '/GET',
@@ -78,6 +82,25 @@ const describeRouteMap = (routeMap) => {
 //   }
 // }
 
+const createResponderRouteList = (getRouterMap) => {
+  let bufferData
+  return async (store) => {
+    if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouterMap())), BASIC_EXTENSION_MAP.html)
+    return responderSendBufferCompress(store, bufferData)
+  }
+}
+
+const getRouteListHTML = (routeMap) => COMMON_LAYOUT([
+  COMMON_STYLE(),
+  '<style>body { overflow: auto; align-items: start; }</style>'
+], [
+  '<h2>Route List</h2>',
+  '<table>',
+  ...describeRouteMap(routeMap)
+    .map(({ method, route }) => `<tr><td><b>${method}</b></td><td>${method === '/GET' ? `<a href="${route}">${route}</a>` : route}</td></tr>`),
+  '</table>'
+])
+
 export {
   METHOD_MAP,
   createRouteMap,
@@ -85,5 +108,6 @@ export {
   appendRouteMap,
   getRouteParamAny,
   getRouteParam,
-  describeRouteMap
+  describeRouteMap,
+  createResponderRouteList
 }

@@ -109,8 +109,12 @@
   - `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
   - `getSample`, `getSampleRange`, `getSampleRate`
++ 📄 [source/common/module/AsyncTaskLane.js](source/common/module/AsyncTaskLane.js)
+  - `createAsyncTaskLane`, `selectMinLoadLane`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
   - `createAsyncTaskQueue`
++ 📄 [source/common/module/AsyncTaskRunner.js](source/common/module/AsyncTaskRunner.js)
+  - `createAsyncTaskRunner`, `createAsyncTaskRunnerCluster`, `selectMinLoadRunner`
 + 📄 [source/common/module/BlockChart.js](source/common/module/BlockChart.js)
   - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
@@ -125,8 +129,6 @@
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
-+ 📄 [source/common/module/TaskRunner.js](source/common/module/TaskRunner.js)
-  - `createTaskRunner`, `createTaskRunnerCluster`, `selectMinLoadTaskRunner`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
@@ -190,7 +192,7 @@
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
   - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
@@ -304,8 +306,12 @@
   - **Module**
     - **Option**
       - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
+    - **AsyncTaskLane**
+      - `createAsyncTaskLane`, `selectMinLoadLane`
     - **AsyncTaskQueue**
       - `createAsyncTaskQueue`
+    - **AsyncTaskRunner**
+      - `createAsyncTaskRunner`, `createAsyncTaskRunnerCluster`, `selectMinLoadRunner`
     - **BlockChart**
       - `getBlockBar`, `getBlockChart`
     - **Event**
@@ -320,8 +326,6 @@
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
-    - **TaskRunner**
-      - `createTaskRunner`, `createTaskRunnerCluster`, `selectMinLoadTaskRunner`
     - **TimedLookup**
       - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
     - **UpdateLoop**
@@ -386,7 +390,7 @@
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
-        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
         - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
