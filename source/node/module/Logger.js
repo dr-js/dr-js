@@ -8,7 +8,7 @@ const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createL
   queueLengthThreshold
 })
 
-const SAVE_INTERVAL = 5 * 60 * 1000 // in ms, 5min
+const SAVE_INTERVAL = 30 * 1000 // in ms, 30sec
 const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 24day
 
 const createLogger = async ({

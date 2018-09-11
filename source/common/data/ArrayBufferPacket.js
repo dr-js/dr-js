@@ -1,7 +1,7 @@
 import { concatArrayBuffer, decatArrayBuffer, fromString, toString } from './ArrayBuffer'
 
 const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
-const HEADER_BYTE_SIZE = Math.log2(MAX_PACKET_HEADER_SIZE + 1) / 8
+const HEADER_BYTE_SIZE = 4 // Math.ceil(Math.log2(MAX_PACKET_HEADER_SIZE) / 8)
 const EMPTY_ARRAY_BUFFER = new ArrayBuffer(0)
 
 const packArrayBufferHeader = (headerArrayBuffer) => {

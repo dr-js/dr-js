@@ -28,5 +28,7 @@ A collection of strange functions
   - bin source code, in output package will be `dr-js/bin`
 - 📁 [example/](example/)
   - some example (unsorted tests)
+- 📁 [documentation/](documentation/)
+  - a few random documentation
 - 📄 [SPEC.md](SPEC.md)
   - list of all directly accessible codes, sort of an API lockfile

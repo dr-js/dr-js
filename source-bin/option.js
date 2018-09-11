@@ -15,7 +15,8 @@ const parseFormat = (modeFormat) => {
 }
 
 const MODE_FORMAT_LIST = [
-  'eval|e|0-',
+  'eval|e|0-', // -O=outputFile, -I/$1=scriptFile/scriptString, $@: evalArgv
+  'eval-readline|erl|0-', // ...eval, -R=largeReadFile
   'repl|i',
   'echo||0-',
   'cat||0-|P',
@@ -43,15 +44,17 @@ const OPTION_CONFIG = {
   prefixJSON: 'dr-js',
   formatList: [
     Config,
-    { ...BooleanFlag, name: 'version', shortName: 'v' },
     { ...BooleanFlag, name: 'help', shortName: 'h', description: `show full help, or human readable output` },
-    { ...BooleanFlag, name: 'quiet', shortName: 'q', description: `reduce log` },
+    { ...BooleanFlag, name: 'quiet', shortName: 'q', description: `less log` },
+    { ...BooleanFlag, name: 'version', shortName: 'v' },
     ...MODE_FORMAT_LIST,
-    parseFormat('hostname|H|1'),
-    parseFormat('port|P|1'),
-    parseFormat('root|R|1|P'),
-    parseFormat('input-file|I|1|P'),
-    parseFormat('output-file|O|1|P')
+    ...[
+      'hostname|H|1',
+      'port|P|1',
+      'root|R|1|P',
+      'input-file|I|1|P',
+      'output-file|O|1|P'
+    ].map(parseFormat)
   ]
 }
 

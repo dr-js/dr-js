@@ -18,7 +18,7 @@ import { requestAsync } from 'dr-js/module/node/net'
 
 import { getServerInfo, commonCreateServer } from './function'
 
-const createServerCacheHttpProxy = async ({
+const createServerCacheHttpProxy = async ({ // TODO: improve or delete
   hostname,
   port,
   log,

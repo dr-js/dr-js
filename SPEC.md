@@ -436,13 +436,14 @@
 >   --config -c [OPTIONAL] [ARGUMENT=1]
 >       # from JSON: set to 'path/to/config.json'
 >       # from ENV: set to 'env'
->   --version -v [OPTIONAL] [ARGUMENT=0+]
->       set to enable
 >   --help -h [OPTIONAL] [ARGUMENT=0+]
 >       show full help, or human readable output
 >   --quiet -q [OPTIONAL] [ARGUMENT=0+]
->       reduce log
+>       less log
+>   --version -v [OPTIONAL] [ARGUMENT=0+]
+>       set to enable
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
+>   --eval-readline --erl [OPTIONAL] [ARGUMENT=0+]
 >   --repl --i -i [OPTIONAL]
 >   --echo [OPTIONAL] [ARGUMENT=0+]
 >   --cat [OPTIONAL] [ARGUMENT=0+]
@@ -472,10 +473,11 @@
 >   "
 >     #!/usr/bin/env bash
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_EVAL_READLINE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
@@ -505,10 +507,11 @@
 > JSON Usage:
 >   {
 >     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsEvalReadline": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsRepl": [ "[OPTIONAL]" ],
 >     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],

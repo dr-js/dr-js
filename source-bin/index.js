@@ -7,10 +7,12 @@ import { start as startREPL } from 'repl'
 
 import { getEndianness } from 'dr-js/module/env/function'
 
-import { time, binary } from 'dr-js/module/common/format'
+import { clock } from 'dr-js/module/common/time'
+import { time, binary, decimal } from 'dr-js/module/common/format'
 
 import { fetch } from 'dr-js/module/node/net'
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
+import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
@@ -27,17 +29,17 @@ import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
-const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
+const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
     ? () => {}
     : console.log
   const logTaskResult = (task, path) => task(path).then(
-    () => log(`[${modeFormat.name}] done: ${path}`),
-    (error) => log(`[${modeFormat.name}] error: ${path}\n${error.stack || error}`)
+    () => log(`[${modeName}] done: ${path}`),
+    (error) => log(`[${modeName}] error: ${path}\n${error.stack || error}`)
   )
 
   const isHumanReadableOutput = Boolean(getOptionOptional('help'))
-  const argumentList = getOptionOptional(modeFormat.name) || []
+  const argumentList = getOptionOptional(modeName) || []
   const inputFile = getSingleOptionOptional('input-file')
   const outputFile = getSingleOptionOptional('output-file')
   const outputBuffer = (buffer) => outputFile
@@ -50,10 +52,33 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     return { hostname, port: Number(port) }
   }
 
-  switch (modeFormat.name) {
-    case 'eval': {
-      global.evalArgv = inputFile ? argumentList : argumentList.slice(1) // NOTE: both global.evalArgv / argumentList is accessible from eval
-      const result = await eval(String(inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ])) // eslint-disable-line no-eval
+  switch (modeName) {
+    case 'eval':
+    case 'eval-readline': {
+      const scriptFunc = await eval(`(evalArgv) => { ${inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]} }`) // eslint-disable-line no-eval
+      let result = await scriptFunc(inputFile ? argumentList : argumentList.slice(1)) // NOTE: both evalArgv / argumentList is accessible from eval
+      if (modeName === 'eval-readline') {
+        __DEV__ && console.log('[eval-readline] result', result)
+        const {
+          onLineSync, // (lineString, lineCounter) => {}
+          getResult, // () => 'result'
+          logLineInterval = 0 // set number to log line & time
+        } = result
+        const pathFile = getSingleOption('root')
+        const timeStart = clock()
+        let lineCounter = 0
+        let lineString = ''
+        const logLineCheck = logLineInterval
+          ? () => (lineCounter % logLineInterval === 0) && log(`line: ${decimal(lineCounter)} (+${time(clock() - timeStart)})`)
+          : () => {}
+        await createReadlineFromFileAsync(pathFile, (string) => {
+          lineString = string
+          logLineCheck()
+          onLineSync(lineString, lineCounter)
+          lineCounter++
+        })
+        result = getResult()
+      }
       return result !== undefined && outputBuffer(Buffer.from(String(result)))
     }
     case 'repl':
@@ -68,7 +93,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     case 'write':
     case 'append':
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
-      const flags = modeFormat.name === 'write' ? 'w' : 'a'
+      const flags = modeName === 'write' ? 'w' : 'a'
       return pipeStreamAsync(createWriteStream(argumentList[ 0 ] || process.cwd(), { flags }), process.stdin)
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
@@ -123,7 +148,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
-      const isSimpleServe = [ 'server-serve-static-simple', 'ssss' ].includes(modeFormat.name)
+      const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = getSingleOptionOptional('root') || process.cwd()
       return createServerServeStatic({ isSimpleServe, staticRoot, log, ...(await getServerConfig()) })
     }
@@ -132,7 +157,7 @@ const runMode = async (modeFormat, { optionMap, getOption, getOptionOptional, ge
     case 'server-test-connection':
       return createServerTestConnection({ log, ...(await getServerConfig()) })
     case 'server-cache-http-proxy': {
-      const [ remoteUrlPrefix, expireTime = 7 * 24 * 60 * 60 ] = getOption(modeFormat.name) // expireTime: 7days, in seconds
+      const [ remoteUrlPrefix, expireTime = 7 * 24 * 60 * 60 ] = getOption(modeName) // expireTime: 7days, in seconds
       const cachePath = getSingleOption('root')
       return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
     }
@@ -159,16 +184,16 @@ const getPathContent = async (rootPath) => (await getDirectorySubInfoList(rootPa
 
 const main = async () => {
   const optionData = await parseOption()
-  const modeFormat = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name))
+  const { name: modeName } = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name)) || {}
 
-  if (!modeFormat) {
+  if (!modeName) {
     return optionData.getOptionOptional('version')
       ? logJSON(getVersion())
       : console.log(formatUsage(null, optionData.getOptionOptional('help') ? null : 'simple'))
   }
 
-  await runMode(modeFormat, optionData).catch((error) => {
-    console.warn(`[Error] in mode: ${modeFormat.name}:`, error.stack || error)
+  await runMode(modeName, optionData).catch((error) => {
+    console.warn(`[Error] in mode: ${modeName}:`, error.stack || error)
     process.exit(2)
   })
 }

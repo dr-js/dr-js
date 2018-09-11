@@ -12,7 +12,7 @@ const { createResponderServeStatic } = require('../../output-gitignore/library/n
 const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
-const { createExampleServerHTMLResponder } = require('./example-server.html')
+const { createExampleServerHTMLResponder } = require('./example-server-html')
 
 const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createPathPrefixLock(fromPath('../'))
