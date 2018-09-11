@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs'
 import { catchAsync } from 'dr-js/module/common/error'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
@@ -7,7 +8,7 @@ import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/m
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
-import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT, DR_BROWSER_SCRIPT } from 'dr-js/module/node/server/commonHTML'
+import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'dr-js/module/node/server/commonHTML'
 import { getServerInfo, commonCreateServer } from './function'
 
 const TYPE_CLOSE = '#CLOSE'
@@ -133,7 +134,7 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
       FRAME_LENGTH_LIMIT,
       onload: mainScriptInit
     }),
-    DR_BROWSER_SCRIPT()
+    `<script>${readFileSync(`${__dirname}/../../library/Dr.browser.js`, 'utf8')}</script>`
   ])), BASIC_EXTENSION_MAP.html)
 
   const routeConfigList = [

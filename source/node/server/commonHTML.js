@@ -1,5 +1,3 @@
-import { readFileSync } from 'fs'
-
 const COMMON_LAYOUT = (extraHeadList = [], extraBodyList = []) => [
   `<!DOCTYPE html>`,
   `<html>`,
@@ -82,12 +80,8 @@ const tillDocumentReadyFunc = (func) => {
   document.addEventListener('readystatechange', onReady)
 }
 
-// TODO: this is relative to `top` package version (may not be `this` package)
-const DR_BROWSER_SCRIPT = () => `<script>${readFileSync(require.resolve('dr-js/library/Dr.browser'), 'utf8')}</script>`
-
 export {
   COMMON_LAYOUT,
   COMMON_STYLE,
-  COMMON_SCRIPT,
-  DR_BROWSER_SCRIPT
+  COMMON_SCRIPT
 }

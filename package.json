@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.17.0-dev.1",
+  "version": "0.17.0-dev.2",
   "author": "dr-js",
   "license": "MIT",
   "description": "A collection of strange functions",
@@ -21,7 +21,7 @@
     "script-publish": "babel-node ./script pack publish",
     "script-publish-dev": "babel-node ./script pack publish-dev",
     "script-generate-spec": "babel-node ./script/generateSpec",
-    "script-delete-temp-build-file": "dr-js -c ./tempFileDelete.config.json",
+    "script-delete-temp-build-file": "babel-node ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
     "build-bin": "cross-env BABEL_ENV=build-bin babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-bin-dev": "cross-env BABEL_ENV=build-bin-dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
@@ -48,7 +48,6 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-js": "0.17.0-dev.0",
     "dev-dep-tool": "0.3.3-dev.1",
     "dev-dep-web": "0.3.3-dev.1"
   },

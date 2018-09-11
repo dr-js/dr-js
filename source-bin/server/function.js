@@ -4,15 +4,16 @@ import { responderEnd, createResponderParseURL, createResponderLog, createRespon
 import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
-const getServerInfo = (title, protocol, hostname, port, extra = []) => `[${title}]\n  ${[
-  ...extra,
-  'running at:',
-  `  - '${protocol}//${hostname}:${port}'`,
+const getServerInfo = (title, protocol, hostname, port, extra = []) => [
+  `[${title}]`, ...extra,
+  'running at:', `  - '${protocol}//${hostname}:${port}'`,
   ...(hostname === '0.0.0.0' ? [
     'connect at:',
-    ...getNetworkIPv4AddressList().map(({ address }) => `  - '${protocol}//${address}:${port}'`)
+    ...[ { address: 'localhost' }, ...getNetworkIPv4AddressList() ].map(
+      ({ address }) => `  - '${protocol}//${address}:${port}'`
+    )
   ] : [])
-].join('\n  ')}`
+].join('\n  ')
 
 const commonCreateServer = ({ protocol, hostname, port, routeConfigList, isAddFavicon, log }) => {
   const { server, start, option } = createServer({ protocol, hostname, port })
