@@ -1,8 +1,9 @@
 import { resolve } from 'path'
 import { DefinePlugin } from 'webpack'
-import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
-import { compileWithWebpack, commonFlag } from 'dev-dep-tool/library/webpack'
+
+import { argvFlag, runMain } from 'dev-dep-tool/library/main'
 import { getLogger } from 'dev-dep-tool/library/logger'
+import { compileWithWebpack, commonFlag } from 'dev-dep-tool/library/webpack'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
@@ -10,7 +11,7 @@ const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 
 runMain(async (logger) => {
-  const { mode, isWatch, isProduction, profileOutput } = await commonFlag({ argvFlag, fromRoot, logger })
+  const { mode, isWatch, isProduction, profileOutput, assetMapOutput } = await commonFlag({ argvFlag, fromRoot, logger })
 
   const babelOption = {
     configFile: false,
@@ -18,8 +19,7 @@ runMain(async (logger) => {
     cacheDirectory: isProduction,
     presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ],
     plugins: [
-      // NOTE: for Edge(17.17134) support check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals
-      isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ]
+      isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ] // NOTE: for Edge(17.17134) support check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals
     ].filter(Boolean)
   }
 
@@ -35,5 +35,5 @@ runMain(async (logger) => {
   }
 
   logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
-  await compileWithWebpack({ config, isWatch, profileOutput, logger })
+  await compileWithWebpack({ config, isWatch, profileOutput, assetMapOutput, logger })
 }, getLogger(`webpack`, argvFlag('quiet')))

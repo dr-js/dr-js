@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
+import { argvFlag, runMain } from 'dev-dep-tool/library/main'
 import { getLogger } from 'dev-dep-tool/library/logger'
-import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
 import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dev-dep-tool/library/commonOutput'
-import { getUglifyESOption, minifyFileListWithUglifyEs } from 'dev-dep-tool/library/uglify'
+import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
+import { getTerserOption, minifyFileListWithTerser } from 'dev-dep-tool/library/minify'
 
 import { binary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
@@ -50,17 +50,17 @@ const processOutput = async ({ packageJSON, logger }) => {
   const fileListLibraryNoBrowser = fileListLibrary.filter((path) => !path.endsWith('Dr.browser.js'))
 
   padLog(`minify module`)
-  await minifyFileListWithUglifyEs({
+  await minifyFileListWithTerser({
     fileList: fileListModule,
-    option: getUglifyESOption({ isDevelopment: false, isModule: true }),
+    option: getTerserOption({ isModule: true }),
     rootPath: PATH_OUTPUT,
     logger
   })
 
   padLog(`minify library & bin`)
-  await minifyFileListWithUglifyEs({
+  await minifyFileListWithTerser({
     fileList: [ ...fileListBin, ...fileListLibrary ],
-    option: getUglifyESOption({ isDevelopment: false, isModule: false }),
+    option: getTerserOption({ isModule: false }),
     rootPath: PATH_OUTPUT,
     logger
   })

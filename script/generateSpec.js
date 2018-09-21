@@ -2,7 +2,7 @@ import { resolve, sep } from 'path'
 import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
 
-import { argvFlag, runMain } from 'dev-dep-tool/library/__utils__'
+import { argvFlag, runMain } from 'dev-dep-tool/library/main'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { collectSourceRouteMap } from 'dev-dep-tool/library/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
