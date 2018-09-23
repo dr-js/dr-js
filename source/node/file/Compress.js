@@ -20,7 +20,7 @@ const compressFileList = async ({
   fileSuffix = '.gz',
   createCompressStream = createGzip,
   deleteBloat = false,
-  bloatRatio = 1
+  bloatRatio = 1 // expect value >= 1, like 1.10
 }) => {
   for (const filePath of fileList) {
     if (filePath.endsWith(fileSuffix)) continue
