@@ -3,11 +3,13 @@ import { arraySplitChunk } from 'dr-js/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
-import { responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
+import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteList } from 'dr-js/module/node/server/Responder/Router'
-import { getServerInfo, commonCreateServer } from './function'
+import { getServerInfo, commonCreateServer, getDrBrowserScriptHTML } from './function'
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
+
+// TODO: support CORS for testing
 
 const createServerTestConnection = ({ protocol = 'http:', hostname, port, log }) => {
   const bufferData = prepareBufferData(Buffer.from(`TEST CONTENT`))
@@ -22,10 +24,14 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
       log(`[test-describe]\n${describeString}`)
       return responderSendBufferCompress(store, { buffer: Buffer.from(describeString), type: BASIC_EXTENSION_MAP.json })
     } ],
-    [ [ '/test-echo-post', '/test-echo-post/:mime' ], 'POST', async (store) => responderSendBufferCompress(store, {
-      buffer: await receiveBufferAsync(store.request),
-      type: BASIC_EXTENSION_MAP[ getRouteParam(store, 'mime') ]
-    }) ],
+    [ [ '/test-echo-post', '/test-echo-post/:mime' ], 'POST', async (store) => {
+      const { url: { searchParams } } = store.getState()
+      const isCompress = !searchParams.has('no-compress')
+      return (isCompress ? responderSendBufferCompress : responderSendBuffer)(store, {
+        buffer: await receiveBufferAsync(store.request),
+        type: BASIC_EXTENSION_MAP[ getRouteParam(store, 'mime') ]
+      })
+    } ],
     [ '/test-buffer', BASIC_METHOD_LIST, (store) => responderSendBufferCompress(store, bufferData) ],
     [ '/test-json', BASIC_METHOD_LIST, (store) => responderSendJSON(store, { object: { testKey: 'TEST VALUE' } }) ],
     [ '/test-destroy', BASIC_METHOD_LIST, async (store) => store.response.destroy() ],
@@ -49,7 +55,7 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', createResponderRouteList(() => createRouteMap(routeConfigList)) ]
+    [ '/', 'GET', createResponderRouteList(() => createRouteMap(routeConfigList), [ getDrBrowserScriptHTML() ]) ]
   ]
 
   const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })

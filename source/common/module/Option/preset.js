@@ -1,4 +1,4 @@
-import { string, number, integer, arrayLength, oneOf } from 'source/common/verify'
+import { string, number, integer, basicFunction, arrayLength, oneOf } from 'source/common/verify'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 
 const verifySingleArray = (argumentList) => arrayLength(argumentList, 1, 'single argument expected')
@@ -16,37 +16,40 @@ const getVerifyAll = (typeVerify, typeName) => (argumentList) => { argumentList.
 const verifyAllString = getVerifyAll(string, 'String')
 const verifyAllNumber = getVerifyAll(number, 'Number')
 const verifyAllInteger = getVerifyAll(integer, 'Integer')
+const verifyAllFunction = getVerifyAll(basicFunction, 'Function')
 
 const normalizeToString = (argumentList) => argumentList.map(String)
 const normalizeToNumber = (argumentList) => argumentList.map(Number)
 const normalizeToInteger = (argumentList) => argumentList.map(parseInt)
 
-const getPreset = (argumentCount, argumentListNormalize = (v) => v, argumentListVerify = () => {}, description = '', optional = false) => ({
+const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNormalize = (v) => v, description = '', optional = false) => ({
   argumentCount,
   argumentListNormalize,
   argumentListVerify,
   description,
   optional
 })
-const getOneOfPreset = (argumentListNormalize, argumentListVerify) => (selectList) => {
+const getOneOfPreset = (argumentListVerify, argumentListNormalize) => (selectList) => {
   argumentListVerify(selectList)
-  return getPreset(1, argumentListNormalize, verifyOneOf(selectList), `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
+  return getPreset(1, verifyOneOf(selectList), argumentListNormalize, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
 }
 
 const ConfigPreset = {
-  SingleString: getPreset(1, normalizeToString, getVerifySingle(string, 'String')),
-  SingleNumber: getPreset(1, normalizeToNumber, getVerifySingle(number, 'Number')),
-  SingleInteger: getPreset(1, normalizeToInteger, getVerifySingle(integer, 'Integer')),
+  SingleString: getPreset(1, getVerifySingle(string, 'String'), normalizeToString),
+  SingleNumber: getPreset(1, getVerifySingle(number, 'Number'), normalizeToNumber),
+  SingleInteger: getPreset(1, getVerifySingle(integer, 'Integer'), normalizeToInteger),
+  SingleFunction: getPreset(1, getVerifySingle(basicFunction, 'Function'), undefined),
 
-  AllString: getPreset('1-', normalizeToString, verifyAllString),
-  AllNumber: getPreset('1-', normalizeToNumber, verifyAllNumber),
-  AllInteger: getPreset('1-', normalizeToInteger, verifyAllInteger),
+  AllString: getPreset('1-', verifyAllString, normalizeToString),
+  AllNumber: getPreset('1-', verifyAllNumber, normalizeToNumber),
+  AllInteger: getPreset('1-', verifyAllInteger, normalizeToInteger),
+  AllFunction: getPreset('1-', verifyAllFunction, undefined),
 
   OneOfString: getOneOfPreset(normalizeToString, verifyAllString),
   OneOfNumber: getOneOfPreset(normalizeToNumber, verifyAllNumber),
   OneOfInteger: getOneOfPreset(normalizeToInteger, verifyAllInteger),
 
-  BooleanFlag: getPreset('0-', () => ([ true ]), undefined, 'set to enable', true),
+  BooleanFlag: getPreset('0-', undefined, () => ([ true ]), 'set to enable', true),
   Any: getPreset('0-', undefined, undefined, 'optional', true)
 }
 

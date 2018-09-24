@@ -82,15 +82,15 @@ const describeRouteMap = (routeMap) => {
 //   }
 // }
 
-const createResponderRouteList = (getRouterMap) => {
+const createResponderRouteList = (getRouterMap, extraBodyList) => {
   let bufferData
   return async (store) => {
-    if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouterMap())), BASIC_EXTENSION_MAP.html)
+    if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouterMap(), extraBodyList)), BASIC_EXTENSION_MAP.html)
     return responderSendBufferCompress(store, bufferData)
   }
 }
 
-const getRouteListHTML = (routeMap) => COMMON_LAYOUT([
+const getRouteListHTML = (routeMap, extraBodyList = []) => COMMON_LAYOUT([
   COMMON_STYLE(),
   '<style>body { overflow: auto; align-items: start; }</style>'
 ], [
@@ -98,7 +98,8 @@ const getRouteListHTML = (routeMap) => COMMON_LAYOUT([
   '<table>',
   ...describeRouteMap(routeMap)
     .map(({ method, route }) => `<tr><td><b>${method}</b></td><td>${method === '/GET' ? `<a href="${route}">${route}</a>` : route}</td></tr>`),
-  '</table>'
+  '</table>',
+  ...extraBodyList
 ])
 
 export {

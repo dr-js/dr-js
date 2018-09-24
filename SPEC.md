@@ -138,7 +138,7 @@
 + 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
   - `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
-  - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
+  - `objectDepthFirstSearch`, `objectFindKey`, `objectMergeDeep`, `objectSortKey`
 + 📄 [source/env/function.js](source/env/function.js)
   - `assert`, `getEndianness`
 + 📄 [source/env/global.js](source/env/global.js)
@@ -332,7 +332,7 @@
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
     - **Object**
-      - `objectDepthFirstSearch`, `objectMergeDeep`, `objectSortKey`
+      - `objectDepthFirstSearch`, `objectFindKey`, `objectMergeDeep`, `objectSortKey`
   - **Check**
     - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
   - **Compare**

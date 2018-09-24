@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs'
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
@@ -35,7 +36,10 @@ const commonCreateServer = ({ protocol, hostname, port, routeConfigList, isAddFa
   return { server, start, option }
 }
 
+const getDrBrowserScriptHTML = () => `<script>${readFileSync(`${__dirname}/../../library/Dr.browser.js`, 'utf8')}</script>`
+
 export {
   getServerInfo,
-  commonCreateServer
+  commonCreateServer,
+  getDrBrowserScriptHTML
 }

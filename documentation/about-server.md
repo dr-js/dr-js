@@ -122,3 +122,68 @@ in responder, you can get routeParam with `getRouteParam` or `getRouteParamAny`
 for example, check: 📄 [source/node/server/Responder/Router.test.js](../source/node/server/Responder/Router.test.js)
 
 also some server with more specific function: 📁 [source-bin/server/](../source-bin/server/)
+
+
+## `Feature Pack`
+
+separate the `server` and the code run on it
+
+a feature provides by a server should be packed in a `routeList`,
+that is, one or more `route-path + method + responder`,
+or a `Feature Pack`
+
+for `Feature Pack`, the code should be like:
+```js
+const configureFeatruePack = async ({ 
+  option, // server option
+  routePrefix = '', // route prefix/namespace, so upper code can relocate this feature
+  ...featureSpecificConfig
+}) => {
+  // configure the responder
+  const responderA = (store) => {}
+  const responderIndex = (store) => {}
+
+  // return routeList
+  return [
+    [ `${routePrefix}/feature-A`, 'GET', responderA ],
+    [ `${routePrefix}/`, [ 'GET', 'HEAD' ], responderIndex ],
+  ]
+}
+```
+
+and a `server` can be configured with code like:
+```js
+const configureServer = async ({
+  serverConfig = {},
+  configureFeatruePackA, featureConfigA = {},
+  configureFeatruePackB, featureConfigB = {}
+}) => {
+  // server
+  const { server, start, stop, option } = configureServer(serverConfig)
+
+  // route & feature pack
+  const routeListA = await configureFeatruePackA({ option, ...featureConfigA })
+  const routeListB = await configureFeatruePackB({ option, routeRoot: '/feat-b', ...featureConfigB })
+  const routerMap = createRouteMap([
+    ...routeListA,
+    ...routeListB,
+    [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
+  ].filter(Boolean))
+
+  // mount routeResponder to server
+  server.on('request', createRequestListener({
+    responderList: [
+      createResponderParseURL(option),
+      createResponderRouter(routerMap)
+    ]
+  }))
+
+  return { server, start, stop, option }
+}
+```
+
+this way, node server code can be divided to packages like:
+- server init + CLI config + server library
+- feature pack A + library
+- feature pack B + library
+- ...

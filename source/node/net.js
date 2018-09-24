@@ -30,14 +30,18 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
 //   currently should call one of `buffer, text, json` to receive data.
 //   These method can only be called once.
 //   If not, on nextTick, the data will be dropped.
-const DEFAULT_TIMEOUT = 10 * 1000 // in millisecond
 const fetch = async (url, {
-  method,
+  method = 'GET',
   headers: requestHeaders,
   body,
-  timeout = DEFAULT_TIMEOUT
+  timeout = 10 * 1000 // in millisecond, 0 for no timeout, will result in error if timeout
 } = {}) => {
-  const option = { ...urlToOption(new URL(url)), method, headers: { 'accept-encoding': 'gzip', ...requestHeaders }, timeout } // will result in error if timeout
+  const option = {
+    ...urlToOption(new URL(url)),
+    method,
+    headers: { 'accept-encoding': 'gzip', ...requestHeaders },
+    timeout
+  }
   __DEV__ && console.log('[fetch]', option)
   const response = await requestAsync(option, body)
   const responseHeaders = response.headers
@@ -63,12 +67,15 @@ const fetch = async (url, {
         response.destroy()
         isBufferTimeout = true
       }, timeout)
-      bufferPromise = receiveBufferAsync(response.headers[ 'content-encoding' ] === 'gzip' ? response.pipe(createGunzip()) : response)
-        .then((buffer) => {
-          if (isBufferTimeout) throw new Error('PAYLOAD_TIMEOUT')
-          isBufferReceived = true
-          return buffer
-        })
+      bufferPromise = receiveBufferAsync(
+        response.headers[ 'content-encoding' ] === 'gzip'
+          ? response.pipe(createGunzip())
+          : response
+      ).then((buffer) => {
+        if (isBufferTimeout) throw new Error('PAYLOAD_TIMEOUT')
+        isBufferReceived = true
+        return buffer
+      })
     }
     return bufferPromise
   }

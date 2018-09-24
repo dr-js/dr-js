@@ -39,3 +39,36 @@ some helpful quick composed shell scripts:
   >   -e "return require('../library/common/format').prettyStringifyJSON(JSON.parse(require('fs').readFileSync(evalArgv[ 0 ])), evalArgv[ 1 ])"\
   >   ${ARG0_FILE_JSON} ${ARG1_FORMAT_JSON_LEVEL}
   > ```
+
+- simple TimedLookup
+  > ```bash
+  > dr-js -e "$(cat <<- 'EOM'
+  >   const { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } = require('../library/common/module/TimedLookup')
+  >   const { toArrayBuffer } = require('../library/node/data/Buffer')
+  >   const { readFileSync } = require('fs')
+  >   const [ mode, ...extraArgv ] = evalArgv
+  >   switch (mode) {
+  >     case 'file-generate': case 'fg': {
+  >       const [ tag, size, tokenSize, timeGap ] = extraArgv
+  >       return Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap })))
+  >     }
+  >     case 'check-code-generate': case 'ccg': {
+  >       const [ timestamp ] = extraArgv
+  >       return generateCheckCode(
+  >         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('root')))),
+  >         Number(timestamp) || undefined
+  >       )
+  >     }
+  >     case 'check-code-verify': case 'ccv': {
+  >       const [ checkCode, timestamp ] = extraArgv
+  >       return verifyCheckCode(
+  >         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('root')))),
+  >         checkCode,
+  >         Number(timestamp) || undefined
+  >       )
+  >     }
+  >   }
+  >   throw new Error(`unknown mode: ${mode}`)
+  > EOM
+  > )"
+  > ```

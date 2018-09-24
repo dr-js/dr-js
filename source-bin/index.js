@@ -79,7 +79,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
         })
         result = getResult()
       }
-      return result !== undefined && outputBuffer(Buffer.from(String(result)))
+      return result !== undefined && outputBuffer((result instanceof Buffer) ? result : Buffer.from(String(result)))
     }
     case 'repl':
       return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })

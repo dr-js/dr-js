@@ -9,17 +9,14 @@ const fetchLikeRequest = (url, {
   method = 'GET',
   headers: requestHeaders,
   body,
+  timeout = 0, // in millisecond, 0 for no timeout, will result in error if timeout
   credentials,
-  timeout,
-  onProgress
+  onUploadProgress, // ({ lengthComputable, loaded, total }) => {}
+  onDownloadProgress,
+  onProgress // TODO: DEPRECATE // (loaded, total) => {}
 } = {}) => new Promise((resolve, reject) => {
   const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
   const request = new XMLHttpRequest()
-  request.open(method, url)
-  requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
-  request.withCredentials = credentials === 'include' // Setting withCredentials has no effect on same-site requests. check: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
-  request.timeout = timeout || 0 // in millisecond, 0 for no timeout
-  request.responseType = 'arraybuffer'
   request.onerror = () => reject(getError('NETWORK_ERROR', -1))
   request.ontimeout = () => reject(getError('NETWORK_TIMEOUT', -1))
   request.onreadystatechange = () => {
@@ -38,7 +35,14 @@ const fetchLikeRequest = (url, {
     const { arrayBuffer, blob, text, json } = getPayloadGetter(request, getError)
     resolve({ headers: responseHeaders, status, ok, arrayBuffer, blob, text, json })
   }
-  if (onProgress) request.onprogress = ({ lengthComputable, loaded, total }) => { lengthComputable && onProgress(loaded, total) }
+  if (onUploadProgress && request.upload) request.upload.onprogress = onUploadProgress
+  if (onDownloadProgress) request.onprogress = onDownloadProgress
+  if (onProgress) request.addEventListener('progress', ({ lengthComputable, loaded, total }) => { lengthComputable && onProgress(loaded, total) }) // TODO: DEPRECATE
+  request.open(method, url)
+  requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
+  request.responseType = 'arraybuffer'
+  request.timeout = timeout || 0
+  request.withCredentials = (credentials === 'include') // Setting withCredentials has no effect on same-site requests. check: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
   request.send(body || null)
 })
 
