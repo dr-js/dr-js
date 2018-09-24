@@ -13,7 +13,7 @@ const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 24day
 
 const createLogger = async ({
   pathLogDirectory,
-  prefixLogFile = '',
+  prefixLogFile = '', // TODO: DEPRECATE, use `getLogFileName`
   getLogFileName = () => `${prefixLogFile}${(new Date().toISOString()).replace(/\W/g, '-')}.log`,
   saveInterval = SAVE_INTERVAL,
   splitInterval = SPLIT_INTERVAL,

@@ -3,13 +3,13 @@ import { execSync } from 'child_process'
 
 import { argvFlag, runMain } from 'dev-dep-tool/library/main'
 import { getLogger } from 'dev-dep-tool/library/logger'
+import { getScriptFileListFromPathList } from 'dev-dep-tool/library/fileList'
 import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dev-dep-tool/library/commonOutput'
 import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/library/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from 'dev-dep-tool/library/minify'
 
 import { binary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
-import { getFileList } from 'source/node/file/Directory'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
@@ -42,11 +42,9 @@ const processOutput = async ({ packageJSON, logger }) => {
   const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
   const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
 
-  const filterScript = (path) => path.endsWith('.js') && !path.endsWith('.test.js')
-
-  const fileListBin = (await getFileList(fromOutput('bin'))).filter(filterScript)
-  const fileListModule = (await getFileList(fromOutput('module'))).filter(filterScript)
-  const fileListLibrary = (await getFileList(fromOutput('library'))).filter(filterScript)
+  const fileListBin = await getScriptFileListFromPathList([ 'bin' ], fromOutput)
+  const fileListModule = await getScriptFileListFromPathList([ 'module' ], fromOutput)
+  const fileListLibrary = await getScriptFileListFromPathList([ 'library' ], fromOutput)
   const fileListLibraryNoBrowser = fileListLibrary.filter((path) => !path.endsWith('Dr.browser.js'))
 
   padLog(`minify module`)
@@ -60,7 +58,7 @@ const processOutput = async ({ packageJSON, logger }) => {
   padLog(`minify library & bin`)
   await minifyFileListWithTerser({
     fileList: [ ...fileListBin, ...fileListLibrary ],
-    option: getTerserOption({ isModule: false }),
+    option: getTerserOption(),
     rootPath: PATH_OUTPUT,
     logger
   })
@@ -76,7 +74,7 @@ const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
   padLog(`clear output`)
 
   log(`clear test`)
-  const fileList = (await getFileList(fromOutput())).filter((filePath) => filePath.endsWith('.test.js'))
+  const fileList = await getScriptFileListFromPathList([ '.' ], fromOutput, (path) => path.endsWith('.test.js'))
   for (const filePath of fileList) await modify.delete(filePath)
 }
 

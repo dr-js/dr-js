@@ -1,5 +1,7 @@
 import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 
+// TODO: NOTE: currently all option format must be named, which is good and slightly inconvenient
+
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',
 //   prefixJSON: 'prefix-JSON',

@@ -6,14 +6,10 @@ import { argvFlag, runMain } from 'dev-dep-tool/library/main'
 import { getLogger } from 'dev-dep-tool/library/logger'
 import { collectSourceRouteMap } from 'dev-dep-tool/library/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
-import {
-  getMarkdownHeaderLink,
-  renderMarkdownFileLink,
-  renderMarkdownExportPath,
-  renderMarkdownExportTree
-} from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
+import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
 
 import { stringIndentLine } from 'source/common/format'
+
 import { formatUsage } from 'source-bin/option'
 
 const PATH_ROOT = resolve(__dirname, '..')
@@ -67,17 +63,16 @@ runMain(async (logger) => {
   writeFileSync(fromRoot('SPEC.md'), [
     '# Specification',
     '',
-    ...[ 'Export Path', 'Export Tree', 'Bin Option Format' ]
-      .map((text) => `* ${getMarkdownHeaderLink(text)}`),
-    '',
-    '#### Export Path',
-    ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
-    '',
-    '#### Export Tree',
-    ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList }),
-    '',
-    '#### Bin Option Format',
-    ...renderMarkdownBinOptionFormat(),
+    ...autoAppendMarkdownHeaderLink(
+      '#### Export Path',
+      ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
+      '',
+      '#### Export Tree',
+      ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList }),
+      '',
+      '#### Bin Option Format',
+      ...renderMarkdownBinOptionFormat()
+    ),
     ''
   ].join('\n'))
 

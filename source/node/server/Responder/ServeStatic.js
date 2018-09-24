@@ -3,10 +3,8 @@ import { getMIMETypeFromFileName } from 'source/common/module/MIME'
 import { statAsync, readFileAsync, createReadStream } from 'source/node/file/function'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import {
-  responderSendBuffer,
-  responderSendBufferRange,
-  responderSendStream,
-  responderSendStreamRange
+  responderSendBuffer, responderSendBufferRange, responderSendBufferCompress,
+  responderSendStream, responderSendStreamRange
 } from './Send'
 
 const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
@@ -15,19 +13,25 @@ const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_BUFFER_SIZE_SUM_MAX })
 
 const createResponderBufferCache = ({
-  getBufferData, // (store, cacheKey) => ({ buffer, length, type, entityTag })
+  getBufferData, // (store, cacheKey) => ({ buffer, bufferGzip, length, type, entityTag })
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
+  isEnableGzip = false, // will try use `bufferGzip` or compress every time (not good), if `accept-encoding` has `gzip`
   serveCacheMap = GET_DEFAULT_CACHE_MAP()
-}) => async (store, cacheKey) => {
-  let bufferData = serveCacheMap.get(cacheKey)
-  __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
-  if (!bufferData) {
-    bufferData = await getBufferData(store, cacheKey)
-    __DEV__ && console.log(`[${bufferData.length <= sizeSingleMax ? 'SET' : 'BAIL'}] CACHE: ${cacheKey}`)
-    bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, Date.now() + expireTime)
+}) => {
+  const responderSendCacheBuffer = isEnableGzip
+    ? responderSendBufferCompress
+    : responderSendBuffer
+  return async (store, cacheKey) => {
+    let bufferData = serveCacheMap.get(cacheKey)
+    __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
+    if (!bufferData) {
+      bufferData = await getBufferData(store, cacheKey)
+      __DEV__ && console.log(`[${bufferData.length <= sizeSingleMax ? 'SET' : 'BAIL'}] CACHE: ${cacheKey}`)
+      bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, Date.now() + expireTime)
+    }
+    return responderSendCacheBuffer(store, bufferData)
   }
-  return responderSendBuffer(store, bufferData)
 }
 
 const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
@@ -36,7 +40,7 @@ const REGEXP_ENCODING_GZIP = /gzip/i
 const createResponderServeStatic = ({
   sizeSingleMax = CACHE_FILE_SIZE_MAX,
   expireTime = CACHE_EXPIRE_TIME,
-  isEnableGzip = false, // will look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
+  isEnableGzip = false, // will try look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
   isEnableRange = true, // only when content is not gzip
   serveCacheMap = GET_DEFAULT_CACHE_MAP()
 }) => {
@@ -88,10 +92,10 @@ const createResponderServeStatic = ({
   }
 }
 
-const REGEXP_RANGE = /bytes=(\d+)-(\d+)?$/i
+const REGEXP_HEADER_RANGE = /bytes=(\d+)-(\d+)?$/i
 
 const parseRangeHeader = (rangeString) => {
-  const result = REGEXP_RANGE.exec(rangeString)
+  const result = REGEXP_HEADER_RANGE.exec(rangeString)
   if (!result) return
   const [ , startString, endString ] = result
   const start = parseInt(startString)

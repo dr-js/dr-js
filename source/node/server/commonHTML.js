@@ -21,11 +21,11 @@ button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 
 button:hover, .button:hover { background: hsla(0, 0%, 80%, 0.4); box-shadow: inset 0 0 0 1px #aaa; }
 button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; box-shadow: inset 0 0 0 1px #e00; }
 button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: hsla(0, 0%, 100%, 0.4); box-shadow: unset; }
-@media (pointer: fine) { 
+@media (pointer: fine) {
   ::-webkit-scrollbar { width: 14px; height: 14px; }
   button, .button, .auto-height { min-height: 20px; font-size: 14px; } 
 }
-@media (pointer: coarse) { 
+@media (pointer: coarse) {
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   button, .button, .auto-height { min-height: 32px; font-size: 18px; } 
 }

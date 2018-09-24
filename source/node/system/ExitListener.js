@@ -16,6 +16,7 @@ const EXIT_LISTENER_LIST = [
   ].map((event) => ({ event, listener: () => exitListenerAsync({ eventType: 'signal', signalEventType: event }) }))
 ]
 
+// TODO: NOTE: sort of global variable, may be wrap in a create func, but `process` is also global, not decided
 const listenerSyncSet = new Set()
 const listenerAsyncSet = new Set()
 

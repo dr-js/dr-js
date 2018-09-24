@@ -3,10 +3,10 @@
 📁 [source/node/server/](../source/node/server/)
 
 the concept list:
-- server
-- store
-- responder
-- router/route
+- server: plain node http/https server
+- store: created for each request, a place to hold state
+- responder: unit to process request, a pattern, an async function
+- router/route: to match request url path, very simple match
 
 #### server
 

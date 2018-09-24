@@ -69,7 +69,7 @@ const responderSendStreamCompress = async (store, { stream, streamGzip, entityTa
   return shouldSendContent && length && pipeStreamAsync(store.response, shouldGzip ? (streamGzip || stream.pipe(createGzip())) : stream)
 }
 
-const responderSendJSON = (store, { object, entityTag }) => responderSendBuffer(store, {
+const responderSendJSON = (store, { object, entityTag }) => responderSendBufferCompress(store, {
   buffer: Buffer.from(JSON.stringify(object)),
   type: BASIC_EXTENSION_MAP.json,
   entityTag
