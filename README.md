@@ -10,7 +10,7 @@ A collection of strange functions
 
 [i:npm]: https://img.shields.io/npm/v/dr-js.svg?colorB=blue
 [i:npm-dev]: https://img.shields.io/npm/v/dr-js/dev.svg
-[l:npm]: https://www.npmjs.com/package/dr-js
+[l:npm]: https://npm.im/dr-js
 [i:ci]: https://img.shields.io/travis/dr-js/dr-js/master.svg
 [l:ci]: https://travis-ci.org/dr-js/dr-js
 [i:size]: https://packagephobia.now.sh/badge?p=dr-js
