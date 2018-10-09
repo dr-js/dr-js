@@ -134,20 +134,30 @@ or a `Feature Pack`
 
 for `Feature Pack`, the code should be like:
 ```js
-const configureFeatruePack = async ({ 
+const configureFeatruePack = async ({
   option, // server option
   routePrefix = '', // route prefix/namespace, so upper code can relocate this feature
   ...featureSpecificConfig
 }) => {
+  // define the route path
+  const URL_FEATURE_A = `${routePrefix}/feature-a`
+  const URL_FEATURE_B = `${routePrefix}/feature-b`
+  
   // configure the responder
   const responderA = (store) => {}
   const responderIndex = (store) => {}
 
-  // return routeList
-  return [
-    [ `${routePrefix}/feature-A`, 'GET', responderA ],
-    [ `${routePrefix}/`, [ 'GET', 'HEAD' ], responderIndex ],
+  const routeList = [
+    [ URL_FEATURE_A, 'GET', responderA ],
+    [ URL_FEATURE_B, [ 'GET', 'HEAD' ], responderIndex ],
   ]
+
+  // return routeList and maybe more data
+  return {
+    URL_FEATURE_A,
+    URL_FEATURE_B,
+    routeList
+  }
 }
 ```
 
@@ -159,11 +169,11 @@ const configureServer = async ({
   configureFeatruePackB, featureConfigB = {}
 }) => {
   // server
-  const { server, start, stop, option } = configureServer(serverConfig)
+  const { server, start, stop, option } = configureServerBase(serverConfig)
 
   // route & feature pack
-  const routeListA = await configureFeatruePackA({ option, ...featureConfigA })
-  const routeListB = await configureFeatruePackB({ option, routeRoot: '/feat-b', ...featureConfigB })
+  const { routeList: routeListA, URL_A } = await configureFeatruePackA({ option, ...featureConfigA })
+  const { routeList: routeListB } = await configureFeatruePackB({ option, routeRoot: '/feat-b', URL_A, ...featureConfigB })
   const routerMap = createRouteMap([
     ...routeListA,
     ...routeListB,

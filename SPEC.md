@@ -146,7 +146,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `fetch`, `ping`, `requestAsync`, `urlToOption`
+  - `fetch`, `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -425,7 +425,7 @@
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
-    - `fetch`, `ping`, `requestAsync`, `urlToOption`
+    - `fetch`, `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
   - **Resource**
     - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 

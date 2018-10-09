@@ -1,5 +1,5 @@
 import { deepStrictEqual, strictEqual } from 'assert'
-import { fetch } from 'source/node/net'
+import { fetchLikeRequest } from 'source/node/net'
 import { bufferToStream } from 'source/node/data/Stream'
 import { createServer, createRequestListener } from './Server'
 import { getUnusedPort } from './function'
@@ -47,51 +47,51 @@ describe('Node.Server.Server', () => {
     start()
 
     deepStrictEqual(
-      await fetch(`${option.baseUrl}/test-param/AAA`).then((response) => response.json()),
+      await fetchLikeRequest(`${option.baseUrl}/test-param/AAA`).then((response) => response.json()),
       { param: 'AAA' },
       'fetch /test-param/AAA'
     )
 
     deepStrictEqual(
-      await fetch(`${option.baseUrl}/test-param-any/aaa/bbb/ccc`).then((response) => response.json()),
+      await fetchLikeRequest(`${option.baseUrl}/test-param-any/aaa/bbb/ccc`).then((response) => response.json()),
       { param: 'aaa/bbb/ccc' },
       'fetch /test-param-any/aaa/bbb/ccc'
     )
 
     strictEqual(
-      await fetch(`${option.baseUrl}/test-buffer`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-buffer`).then((response) => response.text()),
       TEST_BUFFER_TEXT,
       'fetch /test-buffer'
     )
     strictEqual(
-      await fetch(`${option.baseUrl}/test-buffer-range`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-buffer-range`).then((response) => response.text()),
       TEST_BUFFER.slice(4, 8 + 1).toString(),
       'fetch /test-buffer-range'
     )
     strictEqual(
-      await fetch(`${option.baseUrl}/test-buffer-gzip`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-buffer-gzip`).then((response) => response.text()),
       TEST_BUFFER_TEXT,
       'fetch /test-buffer-gzip'
     )
 
     strictEqual(
-      await fetch(`${option.baseUrl}/test-stream`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-stream`).then((response) => response.text()),
       TEST_BUFFER_TEXT,
       'fetch /test-stream'
     )
     strictEqual(
-      await fetch(`${option.baseUrl}/test-stream-range`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-stream-range`).then((response) => response.text()),
       TEST_BUFFER.slice(4, 8 + 1).toString(),
       'fetch /test-stream-range'
     )
     strictEqual(
-      await fetch(`${option.baseUrl}/test-stream-gzip`).then((response) => response.text()),
+      await fetchLikeRequest(`${option.baseUrl}/test-stream-gzip`).then((response) => response.text()),
       TEST_BUFFER_TEXT,
       'fetch /test-stream-gzip'
     )
 
     deepStrictEqual(
-      await fetch(`${option.baseUrl}/test-json`).then((response) => response.json()),
+      await fetchLikeRequest(`${option.baseUrl}/test-json`).then((response) => response.json()),
       { testKey: 'testValue' },
       'fetch /test-json'
     )

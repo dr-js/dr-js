@@ -8,7 +8,7 @@ import { responderEndWithStatusCode, createResponderParseURL } from 'source/node
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import { setTimeoutAsync } from 'source/common/time'
-import { urlToOption, fetch, ping } from './net'
+import { urlToOption, ping, fetchLikeRequest } from './net'
 
 const { describe, it, before, after } = global
 
@@ -62,37 +62,37 @@ describe('Node.Net', () => {
     strictEqual(option.path, '/ddd?eee=fff')
   })
 
-  it('fetch() option: timeout', withTestServer(async (serverUrl) => {
-    await fetch(`${serverUrl}/test-timeout`, { timeout: 10 }).then(
+  it('fetchLikeRequest() option: timeout', withTestServer(async (serverUrl) => {
+    await fetchLikeRequest(`${serverUrl}/test-timeout`, { timeout: 10 }).then(
       () => { throw new Error('should throw time out error') },
       (error) => `good, expected Error: ${error}`
     )
-    await fetch(`${serverUrl}/test-timeout`, { timeout: 50 }).then(
+    await fetchLikeRequest(`${serverUrl}/test-timeout`, { timeout: 50 }).then(
       () => { throw new Error('should throw time out error') },
       (error) => `good, expected Error: ${error}`
     )
-    await fetch(`${serverUrl}/test-timeout`, { timeout: 80 }).then(
+    await fetchLikeRequest(`${serverUrl}/test-timeout`, { timeout: 80 }).then(
       () => `good, should pass`,
       (error) => { throw new Error(`should not timeout: ${error}`) }
     )
   }))
 
-  it('fetch() buffer(), text(), json()', withTestServer(async (serverUrl) => {
+  it('fetchLikeRequest(): buffer(), text(), json()', withTestServer(async (serverUrl) => {
     strictEqual(Buffer.compare(
-      await fetch(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.buffer()),
+      await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.buffer()),
       Buffer.from('TEST BUFFER')
     ), 0)
     strictEqual(
-      await fetch(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.text()),
+      await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.text()),
       'TEST BUFFER'
     )
     deepStrictEqual(
-      await fetch(`${serverUrl}/test-json`, { timeout: 50 }).then((response) => response.json()),
+      await fetchLikeRequest(`${serverUrl}/test-json`, { timeout: 50 }).then((response) => response.json()),
       { testKey: 'testValue' }
     )
 
     // multi-call
-    const response = await fetch(`${serverUrl}/test-buffer`, { timeout: 50 })
+    const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
     const bufferPromise0 = response.buffer()
     const bufferPromise1 = response.buffer()
     strictEqual(Buffer.compare(await bufferPromise0, Buffer.from('TEST BUFFER')), 0)
@@ -100,8 +100,8 @@ describe('Node.Net', () => {
     strictEqual(await response.text(), 'TEST BUFFER')
   }))
 
-  it('fetch() should allow receive response data multiple times (cached)', withTestServer(async (serverUrl) => {
-    const response = await fetch(`${serverUrl}/test-buffer`, { timeout: 50 })
+  it('fetchLikeRequest() should allow receive response data multiple times (cached)', withTestServer(async (serverUrl) => {
+    const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
     strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
     strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
     await setTimeoutAsync(0)
@@ -109,8 +109,8 @@ describe('Node.Net', () => {
     strictEqual(await response.text(), 'TEST BUFFER')
   }))
 
-  it('fetch() unreceived response should clear up on next tick and throw when try to access', withTestServer(async (serverUrl) => {
-    const response = await fetch(`${serverUrl}/test-buffer`, { timeout: 50 })
+  it('fetchLikeRequest() unreceived response should clear up on next tick and throw when try to access', withTestServer(async (serverUrl) => {
+    const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
     await setTimeoutAsync(0)
     await response.buffer().then(
       () => { throw new Error('should throw data already dropped error') },

@@ -10,7 +10,7 @@ import { getEndianness } from 'dr-js/module/env/function'
 import { clock } from 'dr-js/module/common/time'
 import { time, binary, decimal } from 'dr-js/module/common/format'
 
-import { fetch } from 'dr-js/module/node/net'
+import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -131,7 +131,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       let cookieList = []
       while (true) {
         log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
-        const response = await fetch(url, { headers: { cookie: cookieList.join(';'), accept: '*/*' }, timeout })
+        const response = await fetchLikeRequest(url, { headers: { cookie: cookieList.join(';'), accept: '*/*' }, timeout })
         const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
         if (response.ok) {
           log(`[fetch] get status: ${response.status}, fetch response content (${binary(response.headers[ 'content-length' ])}B)...`)

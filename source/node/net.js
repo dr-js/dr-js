@@ -25,12 +25,21 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
   request.end(body)
 })
 
+// ping with a status code of 500 is still a successful ping
+const ping = async ({ url, body, wait = 5000, maxRetry = 0, ...option }) => {
+  option = { ...option, ...urlToOption(new URL(url)), timeout: wait } // will result in error if timeout
+  await withRetryAsync(async () => {
+    const response = await requestAsync(option, body)
+    response.destroy() // skip response data
+  }, maxRetry, wait)
+}
+
 // TODO: native fetch do not use timeout but AsyncController
 // NOTE:
 //   currently should call one of `buffer, text, json` to receive data.
 //   These method can only be called once.
 //   If not, on nextTick, the data will be dropped.
-const fetch = async (url, {
+const fetchLikeRequest = async (url, {
   method = 'GET',
   headers: requestHeaders,
   body,
@@ -84,18 +93,13 @@ const fetch = async (url, {
   return { headers: responseHeaders, status, ok, buffer, text, json }
 }
 
-// ping with a status code of 500 is still a successful ping
-const ping = async ({ url, body, wait = 5000, maxRetry = 0, ...option }) => {
-  option = { ...option, ...urlToOption(new URL(url)), timeout: wait } // will result in error if timeout
-  await withRetryAsync(async () => {
-    const response = await requestAsync(option, body)
-    response.destroy() // skip response data
-  }, maxRetry, wait)
-}
+const fetch = fetchLikeRequest // TODO: DEPRECATED
 
 export {
   urlToOption,
   requestAsync,
-  fetch,
-  ping
+  ping,
+  fetchLikeRequest,
+
+  fetch // TODO: DEPRECATED
 }
