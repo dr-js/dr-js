@@ -12,8 +12,7 @@ const fetchLikeRequest = (url, {
   timeout = 0, // in millisecond, 0 for no timeout, will result in error if timeout
   credentials,
   onUploadProgress, // ({ lengthComputable, loaded, total }) => {}
-  onDownloadProgress,
-  onProgress // TODO: DEPRECATE // (loaded, total) => {}
+  onDownloadProgress
 } = {}) => new Promise((resolve, reject) => {
   const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
   const request = new XMLHttpRequest()
@@ -37,7 +36,6 @@ const fetchLikeRequest = (url, {
   }
   if (onUploadProgress && request.upload) request.upload.onprogress = onUploadProgress
   if (onDownloadProgress) request.onprogress = onDownloadProgress
-  if (onProgress) request.addEventListener('progress', ({ lengthComputable, loaded, total }) => { lengthComputable && onProgress(loaded, total) }) // TODO: DEPRECATE
   request.open(method, url)
   requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.responseType = 'arraybuffer'

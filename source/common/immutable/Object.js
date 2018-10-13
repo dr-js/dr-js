@@ -26,6 +26,12 @@ const objectPickKey = (object, keyList) => {
   return result
 }
 
+const objectMap = (object, mapFunc) => {
+  const result = {}
+  for (const [ key, value ] of Object.entries(object)) result[ key ] = mapFunc(value, key)
+  return result
+}
+
 const objectDeleteUndefined = (object) => {
   let result
   for (const [ key, value ] of Object.entries(object)) { // check if has new data
@@ -40,6 +46,7 @@ export {
   objectSet,
   objectDelete,
   objectMerge,
+  objectMap,
   objectPickKey,
   objectDeleteUndefined
 }

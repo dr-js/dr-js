@@ -94,7 +94,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectDeleteUndefined`, `objectMerge`, `objectPickKey`, `objectSet`
+  - `objectDelete`, `objectDeleteUndefined`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -146,7 +146,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `fetch`, `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
+  - `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -170,7 +170,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -297,7 +297,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectDeleteUndefined`, `objectMerge`, `objectPickKey`, `objectSet`
+      - `objectDelete`, `objectDeleteUndefined`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
@@ -371,7 +371,7 @@
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `lstatAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -425,7 +425,7 @@
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
-    - `fetch`, `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
+    - `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
   - **Resource**
     - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 

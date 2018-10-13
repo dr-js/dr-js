@@ -93,13 +93,9 @@ const fetchLikeRequest = async (url, {
   return { headers: responseHeaders, status, ok, buffer, text, json }
 }
 
-const fetch = fetchLikeRequest // TODO: DEPRECATED
-
 export {
   urlToOption,
   requestAsync,
   ping,
-  fetchLikeRequest,
-
-  fetch // TODO: DEPRECATED
+  fetchLikeRequest
 }

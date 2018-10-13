@@ -2,7 +2,7 @@ import { dirname } from 'path'
 import { watch } from 'fs'
 import { throttle } from 'source/common/function'
 import { createHub } from 'source/common/module/Event'
-import { lstatAsync, nearestExistAsync } from './function'
+import { statAsync, nearestExistAsync } from './function'
 
 // single node only: a file, or one level of directory
 // will throttle event
@@ -36,7 +36,7 @@ const createFileWatcher = ({
   const emitThrottled = throttle(async () => {
     // path change: create/delete(also for rename since this watches single node)
     // content change: path-change/file-content/directory-file-list
-    const targetStat = await lstatAsync(targetPath).catch(getNull)
+    const targetStat = await statAsync(targetPath).catch(getNull)
     const isPathChange = Boolean(prevTargetStat) !== Boolean(targetStat)
 
     if (!targetStat && targetPath === watcherPath) await setupWatch() // renamed, not the target any more
@@ -70,7 +70,7 @@ const createFileWatcher = ({
   }
 
   const setupWatch = async () => {
-    const targetStat = await lstatAsync(targetPath).catch(getNull)
+    const targetStat = await statAsync(targetPath).catch(getNull)
 
     if (targetStat) {
       clearWatch()

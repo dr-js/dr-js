@@ -1,7 +1,7 @@
 import { Stats } from 'fs'
 import { dirname } from 'path'
 import {
-  lstatAsync,
+  statAsync,
   mkdirAsync,
   rmdirAsync,
   renameAsync,
@@ -29,7 +29,6 @@ const ERROR_STAT = new Stats(
 const FILE_TYPE = {
   File: 'File',
   Directory: 'Directory',
-  SymbolicLink: 'SymbolicLink',
   Other: 'Other', // maybe device, socket or else
   Error: 'Error' // non exist
 }
@@ -39,13 +38,12 @@ const pathStatError = (error) => {
   return ERROR_STAT
 }
 
-const getPathStat = (path) => lstatAsync(path).catch(pathStatError)
+const getPathStat = (path) => statAsync(path).catch(pathStatError)
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
-    : stat.isSymbolicLink() ? FILE_TYPE.SymbolicLink
-      : stat !== ERROR_STAT ? FILE_TYPE.Other
-        : FILE_TYPE.Error
+    : stat !== ERROR_STAT ? FILE_TYPE.Other
+      : FILE_TYPE.Error
 
 const createDirectory = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(path)

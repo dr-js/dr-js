@@ -1,17 +1,15 @@
 import { resolve as resolvePath, normalize, dirname, sep } from 'path'
 import {
-  stat, lstat, access, rename, unlink,
+  stat, access, rename, unlink,
   readFile, writeFile, copyFile,
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
-  constants as fsConstants,
-  open, fstat
+  constants as fsConstants
 } from 'fs'
 import { promisify } from 'util'
 import { createInterface } from 'readline'
 
 const statAsync = promisify(stat)
-const lstatAsync = promisify(lstat)
 const renameAsync = promisify(rename)
 const unlinkAsync = promisify(unlink)
 const accessAsync = promisify(access)
@@ -26,25 +24,7 @@ const readdirAsync = promisify(readdir)
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
-const copyFileAsync = copyFile
-  ? promisify(copyFile) // since 8.5.0
-  : (() => {
-    const openAsync = promisify(open)
-    const fstatAsync = promisify(fstat)
-    return async (pathFrom, pathTo) => {
-      const fdFrom = await openAsync(pathFrom, 'r')
-      const stat = await fstatAsync(fdFrom)
-      const fdTo = await openAsync(pathTo, 'w', stat.mode)
-      const readStream = createReadStream(undefined, { fd: fdFrom })
-      const writeStream = createWriteStream(undefined, { fd: fdTo, mode: stat.mode })
-      await new Promise((resolve, reject) => {
-        readStream.on('error', reject)
-        writeStream.on('error', reject)
-        writeStream.on('close', resolve)
-        readStream.pipe(writeStream)
-      })
-    }
-  })()
+const copyFileAsync = promisify(copyFile) // since 8.5.0
 
 const nearestExistAsync = async (path) => {
   while (path && !await visibleAsync(path)) path = dirname(path)
@@ -86,7 +66,6 @@ const toPosixPath = sep === '\\'
 
 export {
   statAsync,
-  lstatAsync,
   renameAsync,
   unlinkAsync,
   accessAsync,

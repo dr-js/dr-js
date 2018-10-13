@@ -21,8 +21,8 @@ const objectSortKey = (object, compare = compareStringLocale) => {
   return object
 }
 
-const objectFindKey = (map, findEntryFunc) => { // TODO: not actually mutate, move to better place
-  const entry = Object.entries(map).find(findEntryFunc)
+const objectFindKey = (object, findEntryFunc) => { // TODO: not actually mutate, move to better place
+  const entry = Object.entries(object).find(findEntryFunc)
   return entry && entry[ 0 ] // return String or undefined
 }
 
