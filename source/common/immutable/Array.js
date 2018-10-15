@@ -37,8 +37,8 @@ const arrayShift = (array) => {
   return result
 }
 
-const arrayConcat = (array, concat) => (concat && concat.length)
-  ? [ ...array, ...concat ]
+const arrayConcat = (array, concatArray) => (concatArray && concatArray.length)
+  ? [ ...array, ...concatArray ]
   : array
 
 const arrayMatchPush = (array, value) => !array.includes(value)
@@ -59,26 +59,26 @@ const arrayMatchMove = (array, index, value) => {
     : array
 }
 
-const arrayFindPush = (array, find, value) => array.find(find) === undefined
+const arrayFindPush = (array, findFunc, value) => array.find(findFunc) === undefined
   ? [ ...array, value ]
   : array
 
-const arrayFindDelete = (array, find) => {
-  const index = array.findIndex(find)
+const arrayFindDelete = (array, findFunc) => {
+  const index = array.findIndex(findFunc)
   return ~index
     ? [ ...array.slice(0, index), ...array.slice(index + 1) ]
     : array
 }
 
-const arrayFindMove = (array, find, index) => {
-  const fromIndex = array.findIndex(find)
+const arrayFindMove = (array, findFunc, index) => {
+  const fromIndex = array.findIndex(findFunc)
   return ~fromIndex
     ? arrayMove(array, index, fromIndex)
     : array
 }
 
-const arrayFindSet = (array, find, value) => {
-  const index = array.findIndex(find)
+const arrayFindSet = (array, findFunc, value) => {
+  const index = array.findIndex(findFunc)
   if (!~index || array[ index ] === value) return array
   const result = [ ...array ]
   result[ index ] = value

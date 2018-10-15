@@ -94,7 +94,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectDeleteUndefined`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+  - `objectDelete`, `objectDeleteUndefined`, `objectDepthFirstSearch`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -138,7 +138,7 @@
 + 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
   - `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
-  - `objectDepthFirstSearch`, `objectFindKey`, `objectMergeDeep`, `objectSortKey`
+  - `objectMergeDeep`, `objectSortKey`
 + 📄 [source/env/function.js](source/env/function.js)
   - `assert`, `getEndianness`
 + 📄 [source/env/global.js](source/env/global.js)
@@ -297,7 +297,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectDeleteUndefined`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+      - `objectDelete`, `objectDeleteUndefined`, `objectDepthFirstSearch`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
@@ -332,7 +332,7 @@
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
     - **Object**
-      - `objectDepthFirstSearch`, `objectFindKey`, `objectMergeDeep`, `objectSortKey`
+      - `objectMergeDeep`, `objectSortKey`
   - **Check**
     - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
   - **Compare**
