@@ -5,7 +5,7 @@ import { argvFlag, runMain } from 'dev-dep-tool/module/main'
 import { getLogger } from 'dev-dep-tool/module/logger'
 import { getScriptFileListFromPathList } from 'dev-dep-tool/module/fileList'
 import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dev-dep-tool/module/commonOutput'
-import { wrapFileProcessor, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/module/fileProcessor'
+import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dev-dep-tool/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from 'dev-dep-tool/module/minify'
 
 import { binary } from 'source/common/format'
@@ -38,42 +38,26 @@ const buildOutput = async ({ logger: { padLog } }) => {
 }
 
 const processOutput = async ({ packageJSON, logger }) => {
-  const { padLog, log } = logger
-  const processBabel = wrapFileProcessor({ processor: fileProcessorBabel, logger })
-  const processWebpack = wrapFileProcessor({ processor: fileProcessorWebpack, logger })
-
   const fileListBin = await getScriptFileListFromPathList([ 'bin' ], fromOutput)
   const fileListModule = await getScriptFileListFromPathList([ 'module' ], fromOutput)
   const fileListLibrary = await getScriptFileListFromPathList([ 'library' ], fromOutput)
   const fileListLibraryNoBrowser = fileListLibrary.filter((path) => !path.endsWith('Dr.browser.js'))
 
-  padLog(`minify module`)
-  await minifyFileListWithTerser({
-    fileList: fileListModule,
-    option: getTerserOption({ isModule: true }),
-    rootPath: PATH_OUTPUT,
-    logger
-  })
+  let sizeReduce = 0
 
-  padLog(`minify library & bin`)
-  await minifyFileListWithTerser({
-    fileList: [ ...fileListBin, ...fileListLibrary ],
-    option: getTerserOption(),
-    rootPath: PATH_OUTPUT,
-    logger
-  })
+  sizeReduce += await minifyFileListWithTerser({ fileList: fileListModule, option: getTerserOption({ isModule: true }), rootPath: PATH_OUTPUT, logger })
+  sizeReduce += await minifyFileListWithTerser({ fileList: [ ...fileListBin, ...fileListLibrary ], option: getTerserOption(), rootPath: PATH_OUTPUT, logger })
 
-  padLog(`process code`)
-  let sizeCodeReduce = 0
-  for (const filePath of [ ...fileListBin, ...fileListModule, ...fileListLibraryNoBrowser ]) sizeCodeReduce += await processBabel(filePath)
-  sizeCodeReduce += await processWebpack(fromOutput('library/Dr.browser.js'))
-  log(`total size reduce: ${binary(sizeCodeReduce)}B`)
+  sizeReduce += await processFileList({ fileList: [ ...fileListBin, ...fileListModule, ...fileListLibraryNoBrowser ], processor: fileProcessorBabel, rootPath: PATH_OUTPUT, logger })
+  sizeReduce += await processFileList({ fileList: [ fromOutput('library/Dr.browser.js') ], processor: fileProcessorWebpack, rootPath: PATH_OUTPUT, logger })
+
+  logger.padLog(`total size reduce: ${binary(sizeReduce)}B`)
 }
 
-const clearOutput = async ({ packageJSON, logger: { padLog, log } }) => {
-  padLog(`clear output`)
+const clearOutput = async ({ logger }) => {
+  logger.padLog(`clear output`)
 
-  log(`clear test`)
+  logger.log(`clear test`)
   const fileList = await getScriptFileListFromPathList([ '.' ], fromOutput, (path) => path.endsWith('.test.js'))
   for (const filePath of fileList) await modify.delete(filePath)
 }

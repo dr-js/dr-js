@@ -1,4 +1,4 @@
-import { objectDepthFirstSearch } from 'source/common/mutable/Object'
+import { objectDepthFirstSearch } from 'source/common/immutable/Object'
 import {
   parseRouteToMap,
   findRouteFromMap,

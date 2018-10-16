@@ -13,8 +13,8 @@ module.exports = {
     [ 'module-resolver', {
       root: [ './' ],
       alias: isModule ? undefined : {
-        'dr-js/module/(.+)': isBuildBin ? './library/' : './source/',
-        'dev-dep-tool/module/(.+)': 'dev-dep-tool/library/'
+        'dev-dep-tool/module/(.+)': 'dev-dep-tool/library/',
+        'dr-js/module/(.+)': isBuildBin ? './library/' : './source/'
       }
     } ]
   ].filter(Boolean),
