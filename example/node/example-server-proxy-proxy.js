@@ -45,7 +45,6 @@ server.on('request', createRequestListener({
     ]))
   ]
 }))
-console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
 
 const BIG_STRING = '0123456789abcdef'.repeat(1024)
 const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
@@ -78,7 +77,9 @@ const webSocketSet = enableWebSocketServer({
   }
 })
 
-start()
+start().then(() => {
+  console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+})
 
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)

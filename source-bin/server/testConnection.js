@@ -11,7 +11,7 @@ const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
 // TODO: support CORS for testing
 
-const createServerTestConnection = ({ protocol = 'http:', hostname, port, log }) => {
+const createServerTestConnection = async ({ protocol = 'http:', hostname, port, log }) => {
   const bufferData = prepareBufferData(Buffer.from(`TEST CONTENT`))
 
   const routeConfigList = [
@@ -60,7 +60,7 @@ const createServerTestConnection = ({ protocol = 'http:', hostname, port, log })
 
   const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })
 
-  start()
+  await start()
 
   log(getServerInfo('ServerTestConnection', protocol, hostname, port))
 }

@@ -53,6 +53,7 @@ const fetchLikeRequest = async (url, {
   }
   __DEV__ && console.log('[fetch]', option)
   const response = await requestAsync(option, body)
+  __DEV__ && response.socket.on('close', () => console.log(`[fetch socket closed] !!`))
   const responseHeaders = response.headers
   const status = response.statusCode
   const ok = (status >= 200 && status < 300)
@@ -70,7 +71,7 @@ const fetchLikeRequest = async (url, {
       __DEV__ && console.log('[fetch] pick payload buffer')
       let isBufferTimeout = false
       let isBufferReceived = false
-      timeout && setTimeout(() => {
+      const timeoutToken = timeout && setTimeout(() => {
         if (isBufferReceived) return
         __DEV__ && console.log('[fetch] payload timeout', timeout)
         response.destroy()
@@ -82,6 +83,7 @@ const fetchLikeRequest = async (url, {
           : response
       ).then((buffer) => {
         if (isBufferTimeout) throw new Error('PAYLOAD_TIMEOUT')
+        timeoutToken && clearTimeout(timeoutToken)
         isBufferReceived = true
         return buffer
       })

@@ -2,11 +2,11 @@ import { resolve, sep } from 'path'
 import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
 
-import { argvFlag, runMain } from 'dev-dep-tool/library/main'
-import { getLogger } from 'dev-dep-tool/library/logger'
-import { collectSourceRouteMap } from 'dev-dep-tool/library/ExportIndex/parseExport'
-import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/library/ExportIndex/generateInfo'
-import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/library/ExportIndex/renderMarkdown'
+import { argvFlag, runMain } from 'dev-dep-tool/module/main'
+import { getLogger } from 'dev-dep-tool/module/logger'
+import { collectSourceRouteMap } from 'dev-dep-tool/module/ExportIndex/parseExport'
+import { generateIndexScript, generateExportInfo } from 'dev-dep-tool/module/ExportIndex/generateInfo'
+import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dev-dep-tool/module/ExportIndex/renderMarkdown'
 
 import { stringIndentLine } from 'source/common/format'
 

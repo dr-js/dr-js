@@ -36,7 +36,7 @@ describe('Node.Server.WebSocket', () => {
       }
     })
 
-    start()
+    await start()
 
     const webSocket = await new Promise((resolve, reject) => createWebSocketClient({
       urlString: `ws://${serverHostname}:${serverPort}`,
@@ -76,6 +76,6 @@ describe('Node.Server.WebSocket', () => {
       setTimeout(reject, 500)
     })
 
-    stop()
+    await stop()
   })
 })

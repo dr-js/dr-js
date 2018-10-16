@@ -27,8 +27,8 @@ check the function: `createServer()`, basically:
 const createServer = (option) => ({ // option check `DEFAULT_HTTPS_OPTION` and `DEFAULT_HTTP_OPTION`
   server, // from createHttpServer or createHttpsServer
   option,
-  start: () => {},
-  stop: () => {}
+  start: async () => {},
+  stop: async () => {}
 })
 ```
 

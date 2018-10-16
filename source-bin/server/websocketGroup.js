@@ -118,7 +118,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log }) => {
+const createServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, log }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -156,7 +156,7 @@ const createServerWebSocketGroup = ({ protocol = 'http:', hostname, port, log })
     frameLengthLimit: FRAME_LENGTH_LIMIT
   })
 
-  start()
+  await start()
 
   log(getServerInfo('ServerWebSocketGroup', protocol, hostname, port))
 }

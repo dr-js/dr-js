@@ -142,12 +142,12 @@ const createServerCacheHttpProxy = async ({ // TODO: improve or delete
   ]
   const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, log })
 
-  start()
+  await start()
 
   log(getServerInfo('CacheHttpProxy', protocol, hostname, port, [
-    ` - remoteUrlPrefix: ${remoteUrlPrefix}`,
-    ` - cachePath:       ${cachePath}`,
-    ` - expireTime:      ${formatTime(expireTime * 1000)}`
+    `  - remoteUrlPrefix: ${remoteUrlPrefix}`,
+    `  - cachePath: ${cachePath}`,
+    `  - expireTime: ${formatTime(expireTime * 1000)}`
   ]))
 }
 

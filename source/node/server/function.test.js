@@ -30,13 +30,13 @@ describe('Node.Server.function', () => {
     const port = await getUnusedPort()
 
     const { start, stop } = createServer({ protocol: 'http:', hostname: '0.0.0.0', port })
-    start()
+    await start()
 
     await getUnusedPort(port, '0.0.0.0').then(
       () => { throw new Error('should throw port token error') },
       (error) => `good, expected Error: ${error}`
     )
 
-    stop()
+    await stop()
   })
 })

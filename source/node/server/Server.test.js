@@ -44,7 +44,7 @@ describe('Node.Server.Server', () => {
       ]
     }))
 
-    start()
+    await start()
 
     deepStrictEqual(
       await fetchLikeRequest(`${option.baseUrl}/test-param/AAA`).then((response) => response.json()),
@@ -96,6 +96,6 @@ describe('Node.Server.Server', () => {
       'fetch /test-json'
     )
 
-    stop()
+    await stop()
   })
 })

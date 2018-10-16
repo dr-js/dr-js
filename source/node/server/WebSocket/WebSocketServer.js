@@ -13,7 +13,7 @@ const parseUpgradeRequest = (webSocket, request) => {
     request.headers.upgrade.toLowerCase() !== 'websocket'
   ) return webSocket.doCloseSocket(new Error('invalid upgrade request'))
   webSocket.origin = request.headers[ 'origin' ]
-  webSocket.isSecure = Boolean(request.connection.authorized || request.connection.encrypted)
+  webSocket.isSecure = Boolean(request.socket.authorized || request.socket.encrypted)
   webSocket.protocolList = (request.headers[ 'sec-websocket-protocol' ] || '').split(/, */)
   return { responseKey: getRespondKey(requestKey) }
 }

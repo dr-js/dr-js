@@ -41,9 +41,9 @@ const withTestServer = (asyncTest) => async () => {
       ]))
     ]
   }))
-  start()
+  await start()
   await asyncTest(option.baseUrl)
-  stop()
+  await stop()
 }
 
 before('prepare', () => {

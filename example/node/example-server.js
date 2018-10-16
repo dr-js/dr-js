@@ -84,5 +84,6 @@ const webSocketSet = enableWebSocketServer({
   }
 })
 
-start()
-console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+start().then(() => {
+  console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+})

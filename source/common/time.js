@@ -27,6 +27,7 @@ const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
 const clock = tryClock() // return running/relative time in milliseconds
 const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
+// NOTE: no way to cancel the timeout, may keep node running longer than expected
 // Usage:
 // const getData = async () => {
 //   await setTimeoutAsync(500)

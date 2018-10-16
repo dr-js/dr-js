@@ -51,11 +51,23 @@ const createServer = ({ protocol, ...option }) => {
 
   const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // NOTE: the argument is different for https/http.createServer
   option.isSecure && applyServerSessionCache(server)
+
+  __DEV__ && server.on('connection', (conn) => {
+    console.log('connection ++')
+    conn.on('close', () => console.log('connection --'))
+  })
+
   return {
     server,
     option,
-    start: () => { !server.listening && server.listen(option.port, option.hostname) },
-    stop: () => { server.listening && server.close() }
+    start: async () => !server.listening && new Promise((resolve, reject) => {
+      server.on('error', reject)
+      server.listen(option.port, option.hostname, () => {
+        server.removeListener('error', reject)
+        resolve()
+      })
+    }),
+    stop: async () => server.listening && new Promise((resolve) => server.close(resolve))
   }
 }
 

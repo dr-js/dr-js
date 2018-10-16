@@ -11,7 +11,7 @@ import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/S
 import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML'
 import { getServerInfo, commonCreateServer } from './function'
 
-const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
+const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
@@ -26,7 +26,7 @@ const createServerServeStatic = ({ staticRoot, protocol = 'http:', hostname, por
 
   const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: !isSimpleServe, log })
 
-  start()
+  await start()
 
   log(getServerInfo(`ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`, protocol, hostname, port, [ `staticRoot:`, `  - '${staticRoot}'` ]))
 }
