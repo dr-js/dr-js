@@ -45,6 +45,10 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
     : pipeStreamAsync(process.stdout, bufferToStream(buffer))
+  const outputStream = (stream) => pipeStreamAsync(
+    outputFile ? createWriteStream(outputFile) : process.stdout,
+    stream
+  )
 
   const getServerConfig = async () => {
     const hostname = getSingleOptionOptional('hostname') || '0.0.0.0'
@@ -126,18 +130,17 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       const [ initialUrl, jumpMaxString = '0', timeoutString = '0' ] = argumentList
       const jumpMax = Number(jumpMaxString) || 0
       const timeout = Number(timeoutString) || 0 // msec, 0 for none
-      let jumpCount = 0
       let url = initialUrl
+      let jumpCount = 0
       let cookieList = []
       while (true) {
         log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
         const response = await fetchLikeRequest(url, { headers: { cookie: cookieList.join(';'), accept: '*/*' }, timeout })
         const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
         if (response.ok) {
-          log(`[fetch] get status: ${response.status}, fetch response content (${binary(response.headers[ 'content-length' ])}B)...`)
-          const buffer = await response.buffer()
-          log(`[fetch] get content: ${binary(buffer.length)}B`)
-          return outputBuffer(buffer)
+          const contentLength = Number(response.headers[ 'content-length' ])
+          log(`[fetch] get status: ${response.status}, fetch response content (${contentLength ? binary(contentLength) : '???'}B)...`)
+          return outputStream(response.stream())
         } else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
           jumpCount++
           if (jumpCount > jumpMax) throw new Error(`[fetch] ${jumpMax} max jump reached: ${getInfo()}`)

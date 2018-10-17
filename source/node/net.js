@@ -4,7 +4,7 @@ import { URL } from 'url'
 import { createGunzip } from 'zlib'
 
 import { withRetryAsync } from 'source/common/function'
-import { receiveBufferAsync } from 'source/node/data/Buffer'
+import { receiveBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 
 const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, username, password }) => {
   const option = { protocol, hostname, hash, search, pathname, href, path: `${pathname}${search}` }
@@ -53,47 +53,49 @@ const fetchLikeRequest = async (url, {
   }
   __DEV__ && console.log('[fetch]', option)
   const response = await requestAsync(option, body)
-  __DEV__ && response.socket.on('close', () => console.log(`[fetch socket closed] !!`))
-  const responseHeaders = response.headers
+  // __DEV__ && response.socket.on('close', () => console.log(`[fetch] socket closed`))
   const status = response.statusCode
-  const ok = (status >= 200 && status < 300)
-  let isBufferDropped = false
-  let bufferPromise
-  process.nextTick(() => {
-    if (bufferPromise) return
-    __DEV__ && console.log('[fetch] payload dropped', timeout)
-    response.destroy() // drop response data
-    isBufferDropped = true
-  })
-  const buffer = async () => {
-    if (bufferPromise === undefined) {
-      if (isBufferDropped) throw new Error('PAYLOAD_ALREADY_DROPPED')
-      __DEV__ && console.log('[fetch] pick payload buffer')
-      let isBufferTimeout = false
-      let isBufferReceived = false
-      const timeoutToken = timeout && setTimeout(() => {
-        if (isBufferReceived) return
-        __DEV__ && console.log('[fetch] payload timeout', timeout)
-        response.destroy()
-        isBufferTimeout = true
-      }, timeout)
-      bufferPromise = receiveBufferAsync(
-        response.headers[ 'content-encoding' ] === 'gzip'
-          ? response.pipe(createGunzip())
-          : response
-      ).then((buffer) => {
-        if (isBufferTimeout) throw new Error('PAYLOAD_TIMEOUT')
-        timeoutToken && clearTimeout(timeoutToken)
-        isBufferReceived = true
-        return buffer
-      })
-    }
-    return bufferPromise
+  return {
+    status,
+    ok: (status >= 200 && status < 300),
+    headers: response.headers,
+    ...wrapPayload(response, timeout)
   }
-  const text = () => buffer().then((buffer) => buffer.toString())
-  const json = () => text().then((text) => JSON.parse(text))
-  return { headers: responseHeaders, status, ok, buffer, text, json }
 }
+
+const wrapPayload = (response, timeout) => {
+  let isKeep
+  let isDropped
+  process.nextTick(() => {
+    if (isKeep) return
+    response.destroy() // drop response data
+    isDropped = true
+    __DEV__ && console.log('[fetch] payload dropped')
+  })
+  const stream = () => { // TODO: also use async?
+    if (isKeep) throw new Error('PAYLOAD_ALREADY_USED') // not receive body twice
+    if (isDropped) throw new Error('PAYLOAD_ALREADY_DROPPED')
+    __DEV__ && console.log('[fetch] keep payload')
+    isKeep = true
+    const timeoutToken = timeout && setTimeout(() => {
+      // TODO: NOTE: IncomingMessage do not emit `error` event, even when destroy is called here, so manual emit error event
+      response.destroy()
+      response.emit('error', new Error('PAYLOAD_TIMEOUT'))
+      __DEV__ && console.log('[fetch] payload timeout', timeout)
+    }, timeout)
+    response.on('end', () => timeoutToken && clearTimeout(timeoutToken))
+    return response.headers[ 'content-encoding' ] === 'gzip'
+      ? response.pipe(createGunzip())
+      : response
+  }
+  const buffer = async () => receiveBufferAsync(stream()) // use async to keep error inside promise
+  const arrayBuffer = () => buffer().then(toArrayBuffer)
+  const text = () => buffer().then(toText)
+  const json = () => text().then(parseJSON)
+  return { stream, buffer, arrayBuffer, text, json }
+}
+const toText = (buffer) => buffer.toString()
+const parseJSON = (text) => JSON.parse(text)
 
 export {
   urlToOption,

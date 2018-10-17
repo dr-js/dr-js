@@ -30,9 +30,12 @@ const fetchLikeRequest = (url, {
       if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
       return o
     }, {})
-    const ok = (status >= 200 && status < 300)
-    const { arrayBuffer, blob, text, json } = getPayloadGetter(request, getError)
-    resolve({ headers: responseHeaders, status, ok, arrayBuffer, blob, text, json })
+    resolve({
+      status,
+      ok: (status >= 200 && status < 300),
+      headers: responseHeaders,
+      ...wrapPayload(request, getError)
+    })
   }
   if (onUploadProgress && request.upload) request.upload.onprogress = onUploadProgress
   if (onDownloadProgress) request.onprogress = onDownloadProgress
@@ -44,33 +47,35 @@ const fetchLikeRequest = (url, {
   request.send(body || null)
 })
 
-const getPayloadGetter = (request, getError) => {
-  let isDropped = false
-  let receivePromise
+const wrapPayload = (request, getError) => {
+  let isKeep
+  let isDropped
   setTimeout(() => {
-    if (receivePromise) return
-    request.abort() // drop response data
+    if (isKeep) return
     isDropped = true
+    request.abort() // drop response data
   })
   const arrayBuffer = () => {
-    if (receivePromise === undefined) {
-      if (isDropped) throw getError('PAYLOAD_ALREADY_DROPPED', -1)
-      receivePromise = new Promise((resolve, reject) => {
-        request.onerror = () => reject(getError('PAYLOAD_ERROR', -1))
-        request.ontimeout = () => reject(getError('PAYLOAD_TIMEOUT', -1))
-        request.onreadystatechange = () => {
-          if (request.readyState !== 4) return // DONE
-          if (request.status === 0) return reject(getError('PAYLOAD_STATUS_ERROR', -1)) // can be timeout
-          resolve(request.response)
-        }
-      })
-    }
-    return receivePromise
+    if (isKeep) throw getError('PAYLOAD_ALREADY_USED', -1) // not receive body twice
+    if (isDropped) throw getError('PAYLOAD_ALREADY_DROPPED', -1)
+    isKeep = true
+    return new Promise((resolve, reject) => {
+      request.onerror = () => reject(getError('PAYLOAD_ERROR', -1))
+      request.ontimeout = () => reject(getError('PAYLOAD_TIMEOUT', -1))
+      request.onreadystatechange = () => {
+        if (request.readyState !== 4) return // DONE
+        if (request.status === 0) return reject(getError('PAYLOAD_STATUS_ERROR', -1)) // can be timeout
+        resolve(request.response)
+      }
+    })
   }
-  const blob = () => arrayBuffer().then((arrayBuffer) => new Blob([ arrayBuffer ]))
-  const text = () => arrayBuffer().then((arrayBuffer) => new TextDecoder().decode(arrayBuffer))
-  const json = () => text().then((text) => JSON.parse(text))
+  const blob = () => arrayBuffer().then(toBlob)
+  const text = () => arrayBuffer().then(toText)
+  const json = () => text().then(parseJSON)
   return { arrayBuffer, blob, text, json }
 }
+const toBlob = (arrayBuffer) => new Blob([ arrayBuffer ])
+const toText = (arrayBuffer) => new TextDecoder().decode(arrayBuffer)
+const parseJSON = (text) => JSON.parse(text)
 
 export { fetchLikeRequest }

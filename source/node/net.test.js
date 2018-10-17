@@ -2,9 +2,11 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { resolve } from 'path'
 import { URL } from 'url'
 import { unlinkSync, writeFileSync } from 'fs'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
+import { receiveBufferAsync, sendBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 import { getUnusedPort } from 'source/node/server/function'
 import { createServer, createRequestListener } from 'source/node/server/Server'
-import { responderEndWithStatusCode, createResponderParseURL } from 'source/node/server/Responder/Common'
+import { responderEnd, responderEndWithStatusCode, createResponderParseURL } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import { setTimeoutAsync } from 'source/common/time'
@@ -31,6 +33,14 @@ const withTestServer = (asyncTest) => async () => {
         [ '/test-timeout', 'GET', async (store) => {
           await setTimeoutAsync(60)
           return responderEndWithStatusCode(store, { statusCode: 204 })
+        } ],
+        [ '/test-timeout-payload', 'GET', async (store) => {
+          store.response.writeHead(200, { 'content-length': BUFFER_SCRIPT.length * 2 })
+          await setTimeoutAsync(40)
+          await sendBufferAsync(store.response, BUFFER_SCRIPT)
+          await setTimeoutAsync(40)
+          await sendBufferAsync(store.response, BUFFER_SCRIPT)
+          return responderEnd(store)
         } ],
         [ '/test-retry', 'GET', async (store) => {
           retryCount++
@@ -75,38 +85,48 @@ describe('Node.Net', () => {
       () => `good, should pass`,
       (error) => { throw new Error(`should not timeout: ${error}`) }
     )
+    await fetchLikeRequest(`${serverUrl}/test-timeout-payload`, { timeout: 40 }).then(
+      (response) => response.buffer(),
+      (error) => { throw new Error(`should not timeout: ${error}`) }
+    ).then(
+      (buffer) => {
+        console.log(buffer.length, BUFFER_SCRIPT.length)
+        throw new Error('should throw time out error')
+      },
+      (error) => `good, expected Error: ${error}`
+    )
   }))
 
-  it('fetchLikeRequest(): buffer(), text(), json()', withTestServer(async (serverUrl) => {
+  it('fetchLikeRequest(): stream(), buffer(), arrayBuffer(), text(), json()', withTestServer(async (serverUrl) => {
     strictEqual(Buffer.compare(
-      await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.buffer()),
+      await receiveBufferAsync((await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })).stream()),
       Buffer.from('TEST BUFFER')
     ), 0)
+    strictEqual(Buffer.compare(
+      await (await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })).buffer(),
+      Buffer.from('TEST BUFFER')
+    ), 0)
+    strictEqual(isEqualArrayBuffer(
+      await (await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })).arrayBuffer(),
+      toArrayBuffer(Buffer.from('TEST BUFFER'))
+    ), true)
     strictEqual(
-      await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 }).then((response) => response.text()),
+      await (await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })).text(),
       'TEST BUFFER'
     )
     deepStrictEqual(
-      await fetchLikeRequest(`${serverUrl}/test-json`, { timeout: 50 }).then((response) => response.json()),
+      await (await fetchLikeRequest(`${serverUrl}/test-json`, { timeout: 50 })).json(),
       { testKey: 'testValue' }
     )
+  }))
 
-    // multi-call
+  it('fetchLikeRequest() should not allow receive response data multiple times', withTestServer(async (serverUrl) => {
     const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
     const bufferPromise0 = response.buffer()
     const bufferPromise1 = response.buffer()
     strictEqual(Buffer.compare(await bufferPromise0, Buffer.from('TEST BUFFER')), 0)
-    strictEqual(Buffer.compare(await bufferPromise1, Buffer.from('TEST BUFFER')), 0) // again
-    strictEqual(await response.text(), 'TEST BUFFER')
-  }))
-
-  it('fetchLikeRequest() should allow receive response data multiple times (cached)', withTestServer(async (serverUrl) => {
-    const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
-    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
-    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
-    await setTimeoutAsync(0)
-    strictEqual(Buffer.compare(await response.buffer(), Buffer.from('TEST BUFFER')), 0)
-    strictEqual(await response.text(), 'TEST BUFFER')
+    strictEqual(await bufferPromise1.catch(() => 'error'), 'error') // again
+    strictEqual(await response.text().catch(() => 'error'), 'error') // and again
   }))
 
   it('fetchLikeRequest() unreceived response should clear up on next tick and throw when try to access', withTestServer(async (serverUrl) => {

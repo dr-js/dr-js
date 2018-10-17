@@ -5,7 +5,7 @@ const createToggle = () => {
     data.set(key, value)
     return value
   }
-  toggle.get = data.get.bind(data)
+  toggle.get = (key) => data.get(key)
   return toggle
 }
 

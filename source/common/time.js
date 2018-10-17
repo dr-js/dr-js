@@ -3,7 +3,7 @@ import { global } from 'source/env/global'
 const tryClock = () => {
   try { // browser
     const { performance } = global
-    const clock = performance.now.bind(performance)
+    const clock = () => performance.now()
     const time = clock()
     if (time <= clock()) return clock
   } catch (error) { __DEV__ && console.log(`[tryClock] browser`, error) }
