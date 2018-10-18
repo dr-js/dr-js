@@ -3,13 +3,20 @@
 
 ## Bin mode: `eval`
 
+run script string or load script file, with `require('dr-js')` available
+
+NOTE: (of the weirdness, may get changed later)
+- `evalArgv` is array of input arguments (without the script string, if used)
+- `evalCwd` is the directory if the script file, or cwd if with script string
+- `require()` starts from `dr-js/bin/index`,
+   so `require('dr-js/library/common/format')` or `require('../library/common/format')` both works
+- the `require()` in files outside of the start file,
+   should not call `require('dr-js')`,
+   because `module.paths` has changed, and reverse lookup will not find the right `node_modules`
+
 basic usage syntax:
 
 - eval script string
-  > NOTE: 
-  > - `require()` starts from `dr-js/bin/index`,
-  >    so `require('dr-js/library/common/format')` or `require('../library/common/format')` both works
-  > - `evalArgv` is array of input arguments (without the script string, if used)
   > ```bash
   > dr-js\
   >   -e "return require('dr-js/library/common/format').describe(evalArgv)"\

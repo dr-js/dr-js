@@ -12,7 +12,7 @@ import { createInterface } from 'readline'
 const statAsync = promisify(stat)
 const renameAsync = promisify(rename)
 const unlinkAsync = promisify(unlink)
-const accessAsync = promisify(access)
+const accessAsync = promisify(access) // TODO: NOTE: will throw if not accessible
 const visibleAsync = (path) => new Promise((resolve) => access(path, fsConstants.F_OK, (error) => resolve(!error)))
 const readableAsync = (path) => new Promise((resolve) => access(path, fsConstants.R_OK, (error) => resolve(!error)))
 const writableAsync = (path) => new Promise((resolve) => access(path, fsConstants.W_OK, (error) => resolve(!error)))

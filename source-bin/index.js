@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { cpus } from 'os'
-import { normalize } from 'path'
+import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
@@ -21,11 +21,12 @@ import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 
-import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 import { createServerTestConnection } from './server/testConnection'
 import { createServerServeStatic } from './server/serveStatic'
 import { createServerWebSocketGroup } from './server/websocketGroup'
 import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
+
+import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
@@ -59,8 +60,8 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
   switch (modeName) {
     case 'eval':
     case 'eval-readline': {
-      const scriptFunc = await eval(`(evalArgv) => { ${inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]} }`) // eslint-disable-line no-eval
-      let result = await scriptFunc(inputFile ? argumentList : argumentList.slice(1)) // NOTE: both evalArgv / argumentList is accessible from eval
+      const scriptFunc = await eval(`(evalArgv, evalCwd) => { ${inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]} }`) // eslint-disable-line no-eval
+      let result = await scriptFunc(inputFile ? argumentList : argumentList.slice(1), inputFile ? dirname(inputFile) : process.cwd()) // NOTE: both evalArgv / argumentList is accessible from eval
       if (modeName === 'eval-readline') {
         __DEV__ && console.log('[eval-readline] result', result)
         const {
@@ -135,16 +136,17 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       let cookieList = []
       while (true) {
         log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
-        const response = await fetchLikeRequest(url, { headers: { cookie: cookieList.join(';'), accept: '*/*' }, timeout })
+        const response = await fetchLikeRequest(url, { headers: { 'cookie': cookieList.join(';'), 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout })
         const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
         if (response.ok) {
           const contentLength = Number(response.headers[ 'content-length' ])
-          log(`[fetch] get status: ${response.status}, fetch response content (${contentLength ? binary(contentLength) : '???'}B)...`)
-          return outputStream(response.stream())
+          log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
+          await outputStream(response.stream())
+          return log(`[fetch] done`)
         } else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
           jumpCount++
           if (jumpCount > jumpMax) throw new Error(`[fetch] ${jumpMax} max jump reached: ${getInfo()}`)
-          url = new URL(response.headers[ 'location' ], url)
+          url = new URL(response.headers[ 'location' ], url).href
           cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
         } else throw new Error(`[fetch] bad status: ${getInfo()}`)
       }
