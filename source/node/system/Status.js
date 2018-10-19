@@ -4,7 +4,7 @@ import {
   totalmem, freemem, loadavg, uptime
 } from 'os'
 
-import { percent, time, binary, stringIndentLine } from 'source/common/format'
+import { percent, time, binary, stringIndentLine, stringIndentList } from 'source/common/format'
 import { tryCall } from 'source/common/error'
 
 const getSystemPlatform = () => ({
@@ -36,11 +36,10 @@ const getSystemNetwork = () => ({
 })
 const describeSystemNetwork = ({ hostname, networkInterface } = getSystemNetwork()) => [
   `[hostname] ${hostname}`,
-  `[interface]`,
-  ...Object.entries(networkInterface).reduce((o, [ name, addressList ]) => {
-    o.push(`  ${name}`)
-    return o.concat(addressList.map(({ address, netmask, mac, internal, family, cidr }) => `   - [${family}${internal ? '|INTERNAL' : ''}] ${cidr || address} (${mac})`))
-  }, [])
+  ...Object.entries(networkInterface).map(([ name, addressList ]) => stringIndentList(
+    `[interface] ${name}`,
+    addressList.map(({ address, netmask, mac, internal, family, cidr }) => `[${family}${internal ? '|INTERNAL' : ''}] ${cidr || address} (${mac})`)
+  ))
 ].join('\n')
 
 const getSystemActivity = () => ({

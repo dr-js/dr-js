@@ -1,34 +1,29 @@
 #!/usr/bin/env node
 
-import { cpus } from 'os'
 import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { getEndianness } from 'dr-js/module/env/function'
+import { time, binary } from 'dr-js/module/common/format'
 
-import { clock } from 'dr-js/module/common/time'
-import { time, binary, decimal } from 'dr-js/module/common/format'
-
-import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
-import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
+import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
-import { autoTestServerPort } from 'dr-js/module/node/server/function'
 
-import { createServerTestConnection } from './server/testConnection'
 import { createServerServeStatic } from './server/serveStatic'
+import { createServerTestConnection } from './server/testConnection'
 import { createServerWebSocketGroup } from './server/websocketGroup'
 import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
 
+import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump } from './function'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
-import { name as packageName, version as packageVersion } from '../package.json'
+const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
 
 const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
@@ -60,31 +55,15 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
   switch (modeName) {
     case 'eval':
     case 'eval-readline': {
-      const scriptFunc = await eval(`(evalArgv, evalCwd) => { ${inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]} }`) // eslint-disable-line no-eval
-      let result = await scriptFunc(inputFile ? argumentList : argumentList.slice(1), inputFile ? dirname(inputFile) : process.cwd()) // NOTE: both evalArgv / argumentList is accessible from eval
-      if (modeName === 'eval-readline') {
-        __DEV__ && console.log('[eval-readline] result', result)
-        const {
-          onLineSync, // (lineString, lineCounter) => {}
-          getResult, // () => 'result'
-          logLineInterval = 0 // set number to log line & time
-        } = result
-        const pathFile = getSingleOption('root')
-        const timeStart = clock()
-        let lineCounter = 0
-        let lineString = ''
-        const logLineCheck = logLineInterval
-          ? () => (lineCounter % logLineInterval === 0) && log(`line: ${decimal(lineCounter)} (+${time(clock() - timeStart)})`)
-          : () => {}
-        await createReadlineFromFileAsync(pathFile, (string) => {
-          lineString = string
-          logLineCheck()
-          onLineSync(lineString, lineCounter)
-          lineCounter++
-        })
-        result = getResult()
-      }
-      return result !== undefined && outputBuffer((result instanceof Buffer) ? result : Buffer.from(String(result)))
+      let result = await evalScript(
+        inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ],
+        inputFile ? argumentList : argumentList.slice(1),
+        inputFile ? dirname(inputFile) : process.cwd()
+      )
+      if (modeName === 'eval-readline') result = await evalReadlineExtend(result, getSingleOption('root'), log)
+      return result !== undefined && outputBuffer((result instanceof Buffer)
+        ? result
+        : Buffer.from(String(result)))
     }
     case 'repl':
       return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })
@@ -109,7 +88,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
         ? console.log(describeSystemStatus())
         : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
     case 'file-list':
-      return logJSON(await getPathContent(argumentList[ 0 ] || process.cwd()))
+      return logJSON((await getDirectorySubInfoList(argumentList[ 0 ] || process.cwd())).map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name))
     case 'file-list-all':
       return logJSON(await getFileList(argumentList[ 0 ] || process.cwd()))
     case 'file-create-directory':
@@ -129,27 +108,18 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     }
     case 'fetch': {
       const [ initialUrl, jumpMaxString = '0', timeoutString = '0' ] = argumentList
-      const jumpMax = Number(jumpMaxString) || 0
+      const jumpMax = Number(jumpMaxString) || 0 // use 'Infinity' for unlimited jump
       const timeout = Number(timeoutString) || 0 // msec, 0 for none
-      let url = initialUrl
-      let jumpCount = 0
-      let cookieList = []
-      while (true) {
-        log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
-        const response = await fetchLikeRequest(url, { headers: { 'cookie': cookieList.join(';'), 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout })
-        const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
-        if (response.ok) {
-          const contentLength = Number(response.headers[ 'content-length' ])
-          log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
-          await outputStream(response.stream())
-          return log(`[fetch] done`)
-        } else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
-          jumpCount++
-          if (jumpCount > jumpMax) throw new Error(`[fetch] ${jumpMax} max jump reached: ${getInfo()}`)
-          url = new URL(response.headers[ 'location' ], url).href
-          cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
-        } else throw new Error(`[fetch] bad status: ${getInfo()}`)
-      }
+      const response = await fetchWithJump(
+        initialUrl,
+        { headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout },
+        jumpMax,
+        (url, jumpCount, cookieList) => log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
+      )
+      const contentLength = Number(response.headers[ 'content-length' ])
+      log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
+      await outputStream(response.stream())
+      return log(`[fetch] done`)
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
@@ -168,24 +138,6 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     }
   }
 }
-
-const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
-
-const getVersion = () => ({
-  packageName,
-  packageVersion,
-  platform: process.platform,
-  nodeVersion: process.version,
-  processorArchitecture: process.arch,
-  processorEndianness: getEndianness(),
-  processorCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: fix Termux, check: https://github.com/termux/termux-app/issues/299
-})
-
-const getPathContent = async (rootPath) => (await getDirectorySubInfoList(rootPath)).map( // single level deep
-  ({ name, stat }) => stat.isDirectory()
-    ? `${name}/`
-    : name
-)
 
 const main = async () => {
   const optionData = await parseOption()

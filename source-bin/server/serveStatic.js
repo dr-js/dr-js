@@ -1,7 +1,9 @@
 import { relative, dirname, join as joinPath } from 'path'
+
 import { compareString } from 'dr-js/module/common/compare'
 import { escapeHTML, binary } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
 import { getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
@@ -9,7 +11,8 @@ import { responderSendBufferCompress } from 'dr-js/module/node/server/Responder/
 import { getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
 import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML'
-import { getServerInfo, commonCreateServer } from './function'
+
+import { commonStartServer } from '../function'
 
 const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
@@ -24,11 +27,16 @@ const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostnam
     [ [ '/', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
   ]
 
-  const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: !isSimpleServe, log })
-
-  await start()
-
-  log(getServerInfo(`ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`, protocol, hostname, port, [ `staticRoot:`, `  - '${staticRoot}'` ]))
+  await commonStartServer({
+    protocol,
+    hostname,
+    port,
+    routeConfigList,
+    isAddFavicon: !isSimpleServe,
+    title: `ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`,
+    extraInfoList: [ `staticRoot: '${staticRoot}'` ],
+    log
+  })
 }
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {

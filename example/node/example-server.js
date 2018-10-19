@@ -1,8 +1,5 @@
 const { resolve } = require('path')
 
-const { clock } = require('../../output-gitignore/library/common/time')
-const Format = require('../../output-gitignore/library/common/format')
-
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
@@ -21,22 +18,14 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const ServerHost = 'localhost'
 const ServerPort = 3000
 
-const responderLog = createResponderLog(console.log)
 const responderLogEnd = createResponderLogEnd(console.log)
-const responderLogTimeStep = () => (store) => {
-  const state = store.getState()
-  const stepTime = clock()
-  console.log(`${new Date().toISOString()} [STEP] ${Format.time(stepTime - (state.stepTime || state.time))}`)
-  store.setState({ stepTime })
-}
 const responderServeStatic = createResponderServeStatic({})
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
-    responderLog,
+    createResponderLog(console.log),
     createResponderParseURL(option),
-    responderLogTimeStep,
     createResponderRouter(createRouteMap([
       [ '/', 'GET', createExampleServerHTMLResponder() ],
       [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],

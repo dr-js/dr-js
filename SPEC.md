@@ -50,7 +50,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -188,7 +188,7 @@
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
-  - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+  - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
@@ -340,7 +340,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**
@@ -386,7 +386,7 @@
   - **Server**
     - **Responder**
       - **Common**
-        - `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+        - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**

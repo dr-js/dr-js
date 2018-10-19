@@ -3,7 +3,7 @@ import { clock } from 'source/common/time'
 import { time as formatTime } from 'source/common/format'
 
 const responderEnd = (store) => {
-  if (store.response.finished) return store // NOTE: normally this should be it, the request is handled and response ended
+  if (store.response.finished) return // NOTE: normally this should be it, the request is handled and response ended
   const { error } = store.getState()
   !store.response.headersSent && store.response.writeHead(error ? 500 : 400)
   __DEV__ && error && store.response.write(`[ERROR] ${describeRequest(store.request)}\n${error.stack || error}`)
@@ -12,22 +12,29 @@ const responderEnd = (store) => {
 }
 
 const responderEndWithStatusCode = (store, { statusCode = 500, headerMap }) => {
-  if (store.response.finished) return store
+  if (store.response.finished) return
   !store.response.headersSent && store.response.writeHead(statusCode, headerMap)
   store.response.end()
 }
 
 const responderEndWithRedirect = (store, { statusCode = 302, redirectUrl }) => {
-  if (store.response.finished) return store
+  if (store.response.finished) return
   !store.response.headersSent && store.response.writeHead(statusCode, { 'location': redirectUrl })
   store.response.end()
 }
 
 const responderSetHeaderCacheControlImmutable = (store) => { store.response.setHeader('cache-control', 'max-age=315360000, public, immutable') }
 
+// NOTE: normally just pass the server option here
 const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl) }) => (store) => {
   const { url: urlString, method } = store.request
   store.setState({ url: new URL(urlString, baseUrlObject), method })
+}
+
+const createResponderHostMapper = (hostMap, responderDefault) => (store) => {
+  const { headers: { host } } = store.request
+  const responder = hostMap[ host || '' ] || responderDefault
+  return responder && responder(store)
 }
 
 const describeRequest = ({
@@ -66,6 +73,7 @@ export {
   responderSetHeaderCacheControlImmutable,
 
   createResponderParseURL,
+  createResponderHostMapper,
   createResponderLog,
   createResponderLogEnd,
   createResponderSetHeaderHSTS

@@ -1,11 +1,13 @@
 import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { arraySplitChunk } from 'dr-js/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteList } from 'dr-js/module/node/server/Responder/Router'
-import { getServerInfo, commonCreateServer, getDrBrowserScriptHTML } from './function'
+
+import { commonStartServer, getDrBrowserScriptHTML } from '../function'
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
@@ -58,11 +60,15 @@ const createServerTestConnection = async ({ protocol = 'http:', hostname, port, 
     [ '/', 'GET', createResponderRouteList(() => createRouteMap(routeConfigList), [ getDrBrowserScriptHTML() ]) ]
   ]
 
-  const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, isAddFavicon: true, log })
-
-  await start()
-
-  log(getServerInfo('ServerTestConnection', protocol, hostname, port))
+  await commonStartServer({
+    protocol,
+    hostname,
+    port,
+    routeConfigList,
+    isAddFavicon: true,
+    title: 'TestConnection',
+    log
+  })
 }
 
 export { createServerTestConnection }

@@ -27,7 +27,7 @@ const calcCode = (size, tokenSize, dataView, seed = 0) => {
 const verifyOption = ({
   tag = getTimestamp().toString(36), // /^\w*$/ only, public visible, set a long tag will cause long checkCode
   size = 64 * 1024, // in byte, 32 based, min 1024byte
-  tokenSize = 8, // in byte, min 2byte, max 13byte, 32bit (limited by calc step `Math.pow(16, tokenSize)`)
+  tokenSize = 8, // in byte, min 2byte, max 13byte (limited by calc step `Math.pow(16, tokenSize)`)
   timeGap = 30 // in sec, min 1sec, set amount of client-server time diff is accepted
 }) => {
   if (!/^\w*$/.test(tag)) throw new Error(`invalid tag: ${tag}`)

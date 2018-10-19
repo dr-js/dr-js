@@ -100,7 +100,18 @@ const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replac
 // remove XML invalid Char
 const removeInvalidCharXML = (text) => text.replace(/[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm, '') // eslint-disable-line no-control-regex
 
-const stringIndentLine = (string, indentString = '  ') => `${indentString}${string.replace(/\n/g, `\n${indentString}`)}`
+const stringIndentLine = (string, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${string.replace(/\n/g, `\n${indentString}`)}`
+
+const stringIndentList = (
+  title,
+  itemList = [],
+  indentStringStart = '  - ',
+  indentString = ' '.repeat(indentStringStart.length)
+) => [
+  title,
+  ...itemList.map((item) => stringIndentLine(item, indentString, indentStringStart))
+].join('\n')
+
 const stringAutoEllipsis = (string = '', limit = 32, head = 16, tail = 8) => string.length > limit
   ? `${string.slice(0, head)}...${tail > 0 ? string.slice(-tail) : ''} (+${string.length - head - tail})`
   : string
@@ -161,6 +172,7 @@ export {
   decimal,
   time,
   binary,
+
   padTable,
 
   escapeHTML,
@@ -168,6 +180,8 @@ export {
   removeInvalidCharXML,
 
   stringIndentLine,
+  stringIndentList,
+
   stringAutoEllipsis,
   stringListJoinCamelCase,
 

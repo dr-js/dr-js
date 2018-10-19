@@ -7,18 +7,19 @@ import { time as formatTime } from 'dr-js/module/common/format'
 import { catchAsync } from 'dr-js/module/common/error'
 import { arrayMatchDelete } from 'dr-js/module/common/immutable/Array'
 
+import { requestAsync } from 'dr-js/module/node/net'
+import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { writeFileAsync, readFileAsync, unlinkAsync } from 'dr-js/module/node/file/function'
 import { createDirectory } from 'dr-js/module/node/file/File'
-import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
 import { METHOD_MAP } from 'dr-js/module/node/server/Responder/Router'
 import { createFactDatabase, tryDeleteExtraCache } from 'dr-js/module/node/module/FactDatabase'
 import { addExitListenerSync, addExitListenerAsync } from 'dr-js/module/node/system/ExitListener'
-import { requestAsync } from 'dr-js/module/node/net'
 
-import { getServerInfo, commonCreateServer } from './function'
+import { commonStartServer } from '../function'
 
 const createServerCacheHttpProxy = async ({ // TODO: improve or delete
+  protocol = 'http:',
   hostname,
   port,
   log,
@@ -135,20 +136,24 @@ const createServerCacheHttpProxy = async ({ // TODO: improve or delete
     store.response.end(responseBuffer)
   }
 
-  const protocol = 'http:'
   const routeConfigList = [
     [ [ '/', '/*' ], 'GET', responderProxyWithCache ],
     [ [ '/', '/*' ], arrayMatchDelete(Object.keys(METHOD_MAP), 'GET'), responderProxyPassThough ]
   ]
-  const { start } = commonCreateServer({ protocol, hostname, port, routeConfigList, log })
 
-  await start()
-
-  log(getServerInfo('CacheHttpProxy', protocol, hostname, port, [
-    `  - remoteUrlPrefix: ${remoteUrlPrefix}`,
-    `  - cachePath: ${cachePath}`,
-    `  - expireTime: ${formatTime(expireTime * 1000)}`
-  ]))
+  await commonStartServer({
+    protocol,
+    hostname,
+    port,
+    routeConfigList,
+    title: 'CacheHttpProxy',
+    extraInfoList: [
+      `remoteUrlPrefix: ${remoteUrlPrefix}`,
+      `cachePath: ${cachePath}`,
+      `expireTime: ${formatTime(expireTime * 1000)}`
+    ],
+    log
+  })
 }
 
 export { createServerCacheHttpProxy }
