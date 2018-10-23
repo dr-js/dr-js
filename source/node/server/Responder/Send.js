@@ -11,12 +11,12 @@ const setResponseContent = (store, entityTag, type, length) => {
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   shouldSendContent
-    ? store.response.writeHead(200, { 'content-type': type, 'content-length': length })
+    ? store.response.writeHead(200, length ? { 'content-type': type, 'content-length': length } : { 'content-type': type })
     : store.response.writeHead(304, { 'content-type': type })
   return shouldSendContent
 }
 
-const setResponseContentRange = (store, entityTag, type, length, start, end) => {
+const setResponseContentRange = (store, entityTag, type, length = '*', start, end) => {
   entityTag && store.response.setHeader('etag', entityTag)
   store.response.writeHead(206, { 'content-type': type, 'content-length': end - start + 1, 'content-range': `bytes ${start}-${end}/${length}` })
   return true
@@ -48,12 +48,10 @@ const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTa
 
 const responderSendStream = (store, { stream, entityTag, type = DEFAULT_MIME, length }) =>
   setResponseContent(store, entityTag, type, length) &&
-  length &&
   pipeStreamAsync(store.response, stream)
 
 const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAULT_MIME, length }, [ start, end ]) =>
   setResponseContentRange(store, entityTag, type, length, start, end) &&
-  length &&
   pipeStreamAsync(store.response, streamRange)
 
 const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
@@ -62,7 +60,7 @@ const responderSendStreamCompress = async (store, { stream, streamGzip, entityTa
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')
   shouldSendContent
     ? store.response.writeHead(200, (shouldGzip
-      ? { 'content-type': type, 'transfer-encoding': 'gzip', 'content-encoding': 'gzip' }
+      ? { 'content-type': type, 'content-encoding': 'gzip' } // no length, will be: `Transfer-Encoding: chunked`, check `chunkedEncoding` in: https://github.com/nodejs/node/blob/master/lib/_http_outgoing.js
       : { 'content-type': type, 'content-length': length }
     ))
     : store.response.writeHead(304, { 'content-type': type })

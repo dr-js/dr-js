@@ -9,6 +9,7 @@ const receiveBufferAsync = (readableStream) => new Promise((resolve, reject) => 
 })
 
 const sendBufferAsync = (writableStream, buffer) => new Promise((resolve, reject) => {
+  if (buffer.length === 0) return resolve() // for ServerResponse the callback will miss if the chunk is non-empty. https://nodejs.org/api/http.html#http_request_write_chunk_encoding_callback
   writableStream.on('error', reject)
   writableStream.write(buffer, () => {
     writableStream.removeListener('error', reject)
