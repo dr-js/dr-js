@@ -90,17 +90,21 @@ const applyCellPad = (text, maxWidth, padFunc) => (!padFunc || padFunc === 'L') 
     : padFunc(text, maxWidth)
 
 const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }
+const REGEXP_ESCAPE_HTML = /[&<>]/g
 const replaceEscapeHTML = (substring) => ESCAPE_HTML_MAP[ substring ] || substring
-const escapeHTML = (text) => text && text.replace(/[&<>]/g, replaceEscapeHTML)
+const escapeHTML = (text) => text && text.replace(REGEXP_ESCAPE_HTML, replaceEscapeHTML)
 
 const UNESCAPE_HTML_MAP = { '&amp;': '&', '&lt;': '<', '&gt;': '>' }
+const REGEXP_UNESCAPE_HTML = /(&amp;|&lt;|&gt;)/g
 const replaceUnescapeHTML = (substring) => UNESCAPE_HTML_MAP[ substring ] || substring
-const unescapeHTML = (text) => text && text.replace(/(&amp;|&lt;|&gt;)/g, replaceUnescapeHTML)
+const unescapeHTML = (text) => text && text.replace(REGEXP_UNESCAPE_HTML, replaceUnescapeHTML)
 
 // remove XML invalid Char
-const removeInvalidCharXML = (text) => text.replace(/[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm, '') // eslint-disable-line no-control-regex
+const REGEXP_INVALID_CHAR_XML = /[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm // eslint-disable-line no-control-regex
+const removeInvalidCharXML = (text) => text.replace(REGEXP_INVALID_CHAR_XML, '')
 
-const stringIndentLine = (string, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${string.replace(/\n/g, `\n${indentString}`)}`
+const REGEXP_INDENT_LINE = /\n/g
+const stringIndentLine = (string, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${string.replace(REGEXP_INDENT_LINE, `\n${indentString}`)}`
 
 const stringIndentList = (
   title,

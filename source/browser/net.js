@@ -2,6 +2,8 @@ import { global } from 'source/env/global'
 
 const { XMLHttpRequest, Blob, TextDecoder } = global
 
+const REGEXP_HEADER_SEPARATOR = /[\r\n]+/
+
 // TODO: later compare & check if should replace with fetch + AbortController
 // fetch-like XMLHttpRequest() with timeout
 // timeout in msec, result in error with status: -1, message: TIMEOUT_ERROR
@@ -25,7 +27,7 @@ const fetchLikeRequest = (url, {
       request.abort()
       return reject(getError('HEADER_STATUS_ERROR', -1)) // can be timeout
     }
-    const responseHeaders = request.getAllResponseHeaders().split(/[\r\n]+/).reduce((o, rawHeader) => {
+    const responseHeaders = request.getAllResponseHeaders().split(REGEXP_HEADER_SEPARATOR).reduce((o, rawHeader) => {
       const [ key, ...valueList ] = rawHeader.split(':')
       if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
       return o

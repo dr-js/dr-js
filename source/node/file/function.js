@@ -60,8 +60,10 @@ const createReadlineFromStreamAsync = (readStream, onLineSync) => new Promise((r
 const createReadlineFromFileAsync = (filePath, onLineSync) => createReadlineFromStreamAsync(createReadStream(filePath), onLineSync)
 
 const trimPathDepth = (path, depth) => normalize(path).split(sep).slice(0, depth).join(sep)
+
+const REGEXP_PATH_SEP_WIN32 = /\\/g
 const toPosixPath = sep === '\\'
-  ? (path) => path.replace(/\\/g, '/')
+  ? (path) => path.replace(REGEXP_PATH_SEP_WIN32, '/')
   : (path) => path
 
 export {
