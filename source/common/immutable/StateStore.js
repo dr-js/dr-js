@@ -3,13 +3,13 @@ import { objectMerge } from './Object'
 import { arrayMatchPush, arrayMatchDelete } from './Array'
 
 const createStateStore = (state) => {
-  verifyBasicObject(state, '[createStateStore] initialState should be basic Object')
+  verifyBasicObject(state, 'initialState should be basic Object')
   let listenerList = []
   const subscribe = (listener) => { listenerList = arrayMatchPush(listenerList, listener) }
   const unsubscribe = (listener) => { listenerList = arrayMatchDelete(listenerList, listener) }
   const getState = () => state
   const setState = (nextState) => {
-    verifyBasicObject(nextState, '[setState] state should be basic Object')
+    verifyBasicObject(nextState, 'state should be basic Object')
     nextState = objectMerge(state, nextState)
     if (nextState === state) return state
     const prevState = state
@@ -26,10 +26,10 @@ const createStateStoreLite = (state) => ({
   setState: (nextState) => (state = { ...state, ...nextState })
 })
 
-// for Redux-like use
+// for redux-like use
 const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
-  verifyBasicFunction(enhancer, '[createStateStoreEnhanced] enhancer function required')
-  verifyBasicFunction(reducer, '[createStateStoreEnhanced] reducer function required')
+  verifyBasicFunction(enhancer, 'enhancer function required')
+  verifyBasicFunction(reducer, 'reducer function required')
   const { subscribe, unsubscribe, getState: getStoreState, setState: setStoreState } = createStateStore(initialState)
 
   let dispatchingState = null
@@ -41,7 +41,7 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
 
     isDispatching = true
     enhancer(enhancerStore, action) // may trigger deeper dispatch
-    if (!dispatchingState) throw new Error(`[rootDispatch] dispatchingState from enhancer is invalid, get: ${JSON.stringify(dispatchingState)}`)
+    if (!dispatchingState) throw new Error(`dispatchingState after enhancer is invalid, get: ${JSON.stringify(dispatchingState)}`)
     isDispatching = false
 
     isReducing = true
@@ -54,16 +54,16 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
   }
 
   const subDispatch = (action) => {
-    if (isReducing) throw new Error(`[subDispatch] got reducer caused dispatching, action: ${JSON.stringify(action)}`)
+    if (isReducing) throw new Error(`got reducer caused dispatching, action: ${JSON.stringify(action)}`)
     enhancer(enhancerStore, action)
     dispatchingState = reducer(dispatchingState, action)
-    verifyBasicObject(dispatchingState, '[subDispatch] reducer should return basic Object state')
+    verifyBasicObject(dispatchingState, 'reducer should return basic Object state')
   }
 
   const getState = () => !isDispatching ? getStoreState() : dispatchingState
 
   const dispatch = (action) => {
-    verifyBasicObject(action, '[dispatch] action should be basic Object')
+    verifyBasicObject(action, 'action should be basic Object')
     return !isDispatching ? rootDispatch(action) : subDispatch(action)
   }
 
@@ -72,10 +72,11 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
   return { subscribe, unsubscribe, getState, dispatch }
 }
 
+// for redux-like use, store should be createStateStore or createStateStoreEnhanced
 const toReduxStore = (store) => {
   const { subscribe: subscribeStore, unsubscribe } = store
-  verifyBasicFunction(subscribeStore, '[toReduxStore] store.subscribe required')
-  verifyBasicFunction(unsubscribe, '[toReduxStore] store.unsubscribe required')
+  verifyBasicFunction(subscribeStore, 'store.subscribe required')
+  verifyBasicFunction(unsubscribe, 'store.unsubscribe required')
   const subscribe = (listener) => { // merge unsubscribe into subscribe
     subscribeStore(listener)
     return () => unsubscribe(listener)
@@ -105,8 +106,8 @@ const createEntryEnhancer = (entryMap) => (enhancerStore, action) => { // redux-
   return entryFunction && entryFunction(enhancerStore, action)
 }
 
-const createStoreStateSyncReducer = (actionType, { getState, setState }) => (state, { type, payload }) => {
-  type === actionType && setState({ ...getState(), ...payload })
+const createStoreStateSyncReducer = (actionType, { getState, setState }) => (state, { type, payload }) => { // redux-entry like state sync reducer
+  type === actionType && setState(payload)
   return getState()
 }
 

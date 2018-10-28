@@ -11,6 +11,8 @@ const responderEnd = (store) => {
   store.response.end() // force end the response to prevent pending
 }
 
+// TODO: add responderEndRandomErrorStatus?
+
 const responderEndWithStatusCode = (store, { statusCode = 500, headerMap }) => {
   if (store.response.finished) return
   !store.response.headersSent && store.response.writeHead(statusCode, headerMap)
@@ -31,6 +33,9 @@ const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl
   store.setState({ url: new URL(urlString, baseUrlObject), method })
 }
 
+// TODO: this just solves HTTP host map problem or HTTPS port map
+//   for HTTPS host, use `addContext` to add more host cert config: https://nodejs.org/api/tls.html#tls_server_addcontext_hostname_context
+//   also: https://stackoverflow.com/questions/25952255/serve-two-https-hostnames-from-single-node-process-port
 const createResponderHostMapper = (hostMap, responderDefault) => (store) => {
   const { headers: { host } } = store.request
   const responder = hostMap[ host || '' ] || responderDefault

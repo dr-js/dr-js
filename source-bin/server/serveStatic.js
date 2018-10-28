@@ -19,13 +19,11 @@ const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostnam
   const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
 
-  const routeConfigList = isSimpleServe ? [
-    [ '/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ]
-  ] : [
-    [ '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
-    [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
-    [ [ '/', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
-  ]
+  const routeConfigList = [
+    [ isSimpleServe ? '/*' : '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+    !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
+    !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
+  ].filter(Boolean)
 
   await commonStartServer({
     protocol,
@@ -62,7 +60,7 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
 }
 
 const mainStyle = `<style>
-body { overflow: auto; display: flex; flex-flow: column; white-space: pre; }
+body { white-space: pre; }
 a, b { display: flex; align-items: center; }
 a { text-decoration: none; border-top: 1px solid #ddd; }
 a:hover { background: #eee; }

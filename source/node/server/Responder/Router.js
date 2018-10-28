@@ -92,7 +92,7 @@ const createResponderRouteList = (getRouterMap, extraBodyList) => {
 
 const getRouteListHTML = (routeMap, extraBodyList = []) => COMMON_LAYOUT([
   COMMON_STYLE(),
-  '<style>body { overflow: auto; align-items: start; }</style>'
+  '<style>body { align-items: start; }</style>'
 ], [
   '<h2>Route List</h2>',
   '<table>',

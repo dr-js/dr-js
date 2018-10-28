@@ -1,18 +1,25 @@
 const BASIC_MIME_DATA_LIST = [
+  'application/gzip;gz',
   'application/javascript;js;mjs',
   'application/json',
   'application/pdf',
   'application/xml',
+  'application/x-7z-compressed;7z',
+  'application/x-tar;tar',
+  'application/zip',
+
   'audio/midi;mid',
   'audio/mpeg;mp3',
   'audio/ogg',
   'audio/wav',
   'audio/webm;weba',
   'audio/x-flac;flac',
+
   'font/ttf',
   'font/otf',
   'font/woff',
   'font/woff2',
+
   'image/bmp',
   'image/gif',
   'image/jpeg;jpg',
@@ -20,12 +27,14 @@ const BASIC_MIME_DATA_LIST = [
   'image/svg+xml;svg',
   'image/webp',
   'image/x-icon;ico',
+
   'text/css',
   'text/csv',
   'text/html;htm',
   'text/plain;txt;text;conf;log;ini',
   'text/rtf',
   'text/xml',
+
   'video/mp4;mp4v;mpg4',
   'video/mpeg;mpg',
   'video/webm',

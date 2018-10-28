@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.18.0-dev.8",
+  "version": "0.18.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -44,7 +44,7 @@
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
   "engines": {
-    "node": ">=8.10",
+    "node": ">=8.12",
     "npm": ">=6"
   },
   "devDependencies": {

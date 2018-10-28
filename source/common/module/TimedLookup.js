@@ -39,7 +39,7 @@ const verifyOption = ({
 
 const generateLookupData = (option) => {
   option = verifyOption(option)
-  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) }
+  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) } // TODO: add timestamp & checksum of dataView?
 }
 
 const generateCheckCode = (
