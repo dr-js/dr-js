@@ -7,7 +7,7 @@ const DEFAULT_GET_REQUEST_KEY = (store) => `${store.request.socket.remoteAddress
 const CACHE_SIZE_SUM_MAX = 32 * 1024 // count
 const CACHE_LIMIT_COUNT = 32
 const CACHE_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
-const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_SIZE_SUM_MAX })
+const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_SIZE_SUM_MAX, eventHub: null })
 
 const createResponderRateLimit = ({
   responderNext,

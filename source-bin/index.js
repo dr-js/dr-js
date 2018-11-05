@@ -107,9 +107,9 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       return
     }
     case 'fetch': {
-      const [ initialUrl, jumpMaxString = '0', timeoutString = '0' ] = argumentList
-      const jumpMax = Number(jumpMaxString) || 0 // use 'Infinity' for unlimited jump
-      const timeout = Number(timeoutString) || 0 // msec, 0 for none
+      let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
+      jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
+      timeout = Number(timeout) || 0 // msec, 0 for unlimited
       const response = await fetchWithJump(
         initialUrl,
         { headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout },
@@ -123,18 +123,19 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
+      const [ expireTime = 5 * 60 * 1000 ] = getOption(modeName) // expireTime: 5min, in msec
       const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = getSingleOptionOptional('root') || process.cwd()
-      return createServerServeStatic({ isSimpleServe, staticRoot, log, ...(await getServerConfig()) })
+      return createServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
     }
     case 'server-websocket-group':
       return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
     case 'server-test-connection':
       return createServerTestConnection({ log, ...(await getServerConfig()) })
     case 'server-cache-http-proxy': {
-      const [ remoteUrlPrefix, expireTime = 7 * 24 * 60 * 60 ] = getOption(modeName) // expireTime: 7days, in seconds
+      const [ remoteUrlPrefix, expireTimeSec = 7 * 24 * 60 * 60 ] = getOption(modeName) // expireTime: 7days, in seconds
       const cachePath = getSingleOption('root')
-      return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTime: Number(expireTime), log, ...(await getServerConfig()) })
+      return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTimeSec: Number(expireTimeSec), log, ...(await getServerConfig()) })
     }
   }
 }

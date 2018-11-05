@@ -34,7 +34,7 @@ const VALID_SERVER_PROTOCOL_SET = new Set([
 const SSL_SESSION_CACHE_MAX = 4 * 1024
 const SSL_SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
 const applyServerSessionCache = (server) => {
-  const sslSessionCacheMap = createCacheMap({ valueSizeSumMax: SSL_SESSION_CACHE_MAX })
+  const sslSessionCacheMap = createCacheMap({ valueSizeSumMax: SSL_SESSION_CACHE_MAX, eventHub: null })
   server.on('newSession', (sessionId, sessionData, next) => {
     __DEV__ && console.log('newSession', sessionId.toString('hex'))
     sslSessionCacheMap.set(sessionId.toString('hex'), sessionData, 1, Date.now() + SSL_SESSION_EXPIRE_TIME)

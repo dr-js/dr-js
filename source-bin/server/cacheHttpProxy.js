@@ -25,7 +25,7 @@ const createServerCacheHttpProxy = async ({ // TODO: improve or delete
   log,
   remoteUrlPrefix, // full URL like 'https://aaa:123/path/'
   cachePath, // 'cache-proxy'
-  expireTime // time in seconds
+  expireTimeSec // time in seconds
 }) => {
   const pathCacheState = resolve(cachePath, 'cache-state')
   const pathCachePacket = resolve(cachePath, 'cache-packet')
@@ -58,7 +58,7 @@ const createServerCacheHttpProxy = async ({ // TODO: improve or delete
   const loadCache = async (requestData) => {
     const cacheKey = `[${requestData.method}]${requestData.path}`
     const { cacheName, timestamp } = factDB.getState()[ cacheKey ]
-    if (timestamp + expireTime < getTimestamp()) {
+    if (timestamp + expireTimeSec < getTimestamp()) {
       log(` - [cache-proxy] expire: ${cacheKey}`)
       await unlinkAsync(resolve(pathCachePacket, cacheName))
       factDB.add({ [ cacheKey ]: undefined })
@@ -150,7 +150,7 @@ const createServerCacheHttpProxy = async ({ // TODO: improve or delete
     extraInfoList: [
       `remoteUrlPrefix: ${remoteUrlPrefix}`,
       `cachePath: ${cachePath}`,
-      `expireTime: ${formatTime(expireTime * 1000)}`
+      `expireTimeSec: ${formatTime(expireTimeSec * 1000)}`
     ],
     log
   })

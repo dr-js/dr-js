@@ -164,13 +164,13 @@
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
 + 📄 [source/node/file/File.js](source/node/file/File.js)
-  - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`
+  - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `trimDirectory`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
   - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -366,12 +366,12 @@
     - **Directory**
       - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
     - **File**
-      - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`
+      - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `trimDirectory`
     - **Modify**
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -459,8 +459,8 @@
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
->   --server-serve-static --sss [OPTIONAL]
->   --server-serve-static-simple --ssss [OPTIONAL]
+>   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
+>   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
 >   --server-cache-http-proxy --schp [OPTIONAL] [ARGUMENT=1-2]
@@ -493,8 +493,8 @@
 >     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
->     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL]"
->     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL]"
+>     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
 >     export DR_JS_SERVER_CACHE_HTTP_PROXY="[OPTIONAL] [ARGUMENT=1-2]"
@@ -527,8 +527,8 @@
 >     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
->     "drJsServerServeStatic": [ "[OPTIONAL]" ],
->     "drJsServerServeStaticSimple": [ "[OPTIONAL]" ],
+>     "drJsServerServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
 >     "drJsServerCacheHttpProxy": [ "[OPTIONAL] [ARGUMENT=1-2]" ],

@@ -33,12 +33,16 @@ const FILE_TYPE = {
   Error: 'Error' // non exist
 }
 
-const pathStatError = (error) => {
-  __DEV__ && console.log('[pathStatError]', error)
+const onStatError = (error) => {
+  __DEV__ && console.log('[getPathStat] error', error)
   return ERROR_STAT
 }
+const onTrimError = (error) => {
+  __DEV__ && console.log('[trimDirectory] error', error)
+  return true
+}
 
-const getPathStat = (path) => statAsync(path).catch(pathStatError)
+const getPathStat = (path) => statAsync(path).catch(onStatError)
 
 const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
   : stat.isFile() ? FILE_TYPE.File
@@ -49,14 +53,15 @@ const createDirectory = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(path)
   if (pathStat.isDirectory()) return // directory exist, pass
   if (pathStat !== ERROR_STAT) throw new Error('[createDirectory] path already taken by non-directory')
-
-  // check up
-  const upperPath = dirname(path)
-  const upperPathStat = await getPathStat(upperPath)
-  !upperPathStat.isDirectory() && await createDirectory(upperPath, upperPathStat)
-
-  // create directory
-  await mkdirAsync(path)
+  await createDirectory(dirname(path)) // check up
+  await mkdirAsync(path) // create directory
+}
+const trimDirectory = async (path, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (pathStat === ERROR_STAT) return // directory not exist, pass
+  if (!pathStat.isDirectory()) throw new Error('[trimDirectory] path taken by non-directory')
+  if (await rmdirAsync(path).catch(onTrimError)) return // try delete if empty
+  await trimDirectory(dirname(path)) // check up
 }
 
 // NOT recursive operation
@@ -87,6 +92,7 @@ export {
   getPathTypeFromStat,
 
   createDirectory,
+  trimDirectory,
 
   movePath,
   copyPath,

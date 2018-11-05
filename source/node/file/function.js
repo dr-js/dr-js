@@ -1,7 +1,7 @@
 import { resolve as resolvePath, normalize, dirname, sep } from 'path'
 import {
   stat, access, rename, unlink,
-  readFile, writeFile, copyFile,
+  readFile, writeFile, appendFile, copyFile,
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
   constants as fsConstants
@@ -24,6 +24,7 @@ const readdirAsync = promisify(readdir)
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
+const appendFileAsync = promisify(appendFile)
 const copyFileAsync = promisify(copyFile) // since 8.5.0
 
 const nearestExistAsync = async (path) => {
@@ -80,6 +81,7 @@ export {
   readdirAsync,
   readFileAsync,
   writeFileAsync,
+  appendFileAsync,
   copyFileAsync,
   nearestExistAsync,
 

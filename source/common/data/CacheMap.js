@@ -8,11 +8,19 @@ const createCache = (key, value, size, expireAt) => ({ ...createNode(value), key
 // Time aware Least Recently Used (TLRU)
 const createCacheMap = ({
   valueSizeSumMax,
-  valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1)
+  valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1),
+  eventHub = createHub() // set to null should be faster, if no event is needed
 }) => {
   if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`[CacheMap] invalid valueSizeSumMax: ${valueSizeSumMax}`)
 
-  const { clear: clearHub, subscribe, unsubscribe, send } = createHub()
+  const hasEventHub = Boolean(eventHub)
+  const {
+    clear: clearHub,
+    subscribe,
+    unsubscribe,
+    send
+  } = hasEventHub ? eventHub : {}
+
   const cacheMap = new Map()
   const cacheLinkedList = createDoublyLinkedList()
   let valueSizeSum = 0
@@ -21,21 +29,23 @@ const createCacheMap = ({
     cacheMap.set(cache.key, cache)
     cacheLinkedList.unshift(cache)
     valueSizeSum += cache.size
-    send({ type: 'add', key: cache.key, payload: cache.value })
+    hasEventHub && send({ type: 'add', key: cache.key, payload: cache.value })
   }
   const cacheDelete = (cache) => {
     cacheMap.delete(cache.key)
     cacheLinkedList.remove(cache)
     valueSizeSum -= cache.size
-    send({ type: 'delete', key: cache.key, payload: cache.value })
+    hasEventHub && send({ type: 'delete', key: cache.key, payload: cache.value })
   }
 
   return {
+    hasEventHub,
     clearHub,
     subscribe,
     unsubscribe,
-    getSize: () => cacheMap.size,
     clear: () => cacheMap.forEach(cacheDelete), // TODO: NOTE: not calling clearHub, so listener is kept
+    getSize: () => cacheMap.size,
+    getValueSize: () => valueSizeSum,
     set: (key, value, size = 1, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
       const prevCache = cacheMap.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache

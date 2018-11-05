@@ -15,8 +15,8 @@ const parseFormat = (modeFormat) => {
 }
 
 const MODE_FORMAT_LIST = [
-  'eval|e|0-', // -O=outputFile, -I/$1=scriptFile/scriptString, $@: evalArgv
-  'eval-readline|erl|0-', // ...eval, -R=largeReadFile
+  'eval|e|0-', // ...argumentList // -O=outputFile // -I/$1=scriptFile/scriptString // $@: evalArgv
+  'eval-readline|erl|0-', // ...argumentList // -R=largeReadFile
   'repl|i',
   'echo||0-',
   'cat||0-|P',
@@ -31,12 +31,12 @@ const MODE_FORMAT_LIST = [
   'file-modify-move|mv|2|P',
   'file-modify-delete|rm|0-|P',
   'file-merge|merge|2-|P',
-  'fetch|f|1-3',
-  'server-serve-static|sss',
-  'server-serve-static-simple|ssss',
+  'fetch|f|1-3', // initialUrl, jumpMax = 4, timeout = 0
+  'server-serve-static|sss|0-1', // expireTime = 5 * 60 * 1000
+  'server-serve-static-simple|ssss|0-1', // expireTime = 5 * 60 * 1000
   'server-websocket-group|swg',
   'server-test-connection|stc',
-  'server-cache-http-proxy|schp|1-2'
+  'server-cache-http-proxy|schp|1-2' // remoteUrlPrefix, expireTimeSec = 7 * 24 * 60 * 60
 ].map(parseFormat)
 
 const OPTION_CONFIG = {

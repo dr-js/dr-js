@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert'
-import { getUnusedPort } from './function'
+import { getUnusedPort, autoTestServerPort } from './function'
 import { createServer } from './Server'
 
 const { describe, it } = global
@@ -38,5 +38,31 @@ describe('Node.Server.function', () => {
     )
 
     await stop()
+  })
+
+  it('autoTestServerPort() check', async () => {
+    const occupyPort = async () => {
+      const port = await getUnusedPort()
+      const { start, stop } = createServer({ protocol: 'http:', hostname: '0.0.0.0', port })
+      await start()
+      return { port, stop }
+    }
+
+    const occupyPortServerList = [
+      await occupyPort(),
+      await occupyPort(),
+      await occupyPort()
+    ]
+
+    const expectPort = await getUnusedPort()
+
+    const resultPort = await autoTestServerPort([
+      ...occupyPortServerList.map(({ port }) => port),
+      expectPort
+    ], '0.0.0.0')
+
+    await Promise.all(occupyPortServerList.map(({ stop }) => stop()))
+
+    strictEqual(resultPort, expectPort, 'should pick detected unused port')
   })
 })

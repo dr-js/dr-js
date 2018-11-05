@@ -1,7 +1,7 @@
 import { relative, dirname, join as joinPath } from 'path'
 
 import { compareString } from 'dr-js/module/common/compare'
-import { escapeHTML, binary } from 'dr-js/module/common/format'
+import { escapeHTML, binary, time as formatTime } from 'dr-js/module/common/format'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
@@ -14,10 +14,18 @@ import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML
 
 import { commonStartServer } from '../function'
 
-const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostname, port, isSimpleServe, log }) => {
+const createServerServeStatic = async ({
+  isSimpleServe,
+  expireTime, // in msec
+  staticRoot,
+  protocol = 'http:',
+  hostname,
+  port,
+  log
+}) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
-  const responderServeStatic = createResponderServeStatic({ expireTime: 1000 }) // 1000 ms expire
+  const responderServeStatic = createResponderServeStatic({ expireTime })
 
   const routeConfigList = [
     [ isSimpleServe ? '/*' : '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
@@ -32,7 +40,9 @@ const createServerServeStatic = async ({ staticRoot, protocol = 'http:', hostnam
     routeConfigList,
     isAddFavicon: !isSimpleServe,
     title: `ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`,
-    extraInfoList: [ `staticRoot: '${staticRoot}'` ],
+    extraInfoList: [
+      `staticRoot: '${staticRoot}'`,
+      `expireTime: ${formatTime(expireTime)}` ],
     log
   })
 }

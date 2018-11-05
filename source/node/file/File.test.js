@@ -6,6 +6,7 @@ import {
   getPathStat,
   getPathTypeFromStat,
   createDirectory,
+  trimDirectory,
   movePath,
   copyPath,
   deletePath
@@ -68,7 +69,29 @@ describe('Node.File.File', () => {
     strictEqual(getExpectedError, true)
   })
 
+  it('trimDirectory()', async () => {
+    await createDirectory(directoryPath2)
+
+    await trimDirectory(directoryPath0) // non-empty, should give up
+    await trimDirectory(directoryPath1) // non-empty, should give up
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath2)), FILE_TYPE.Directory)
+
+    await trimDirectory(directoryPath2)
+
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Error)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Error)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath2)), FILE_TYPE.Error)
+
+    let getExpectedError = false
+    try { await trimDirectory(SOURCE_FILE) } catch (error) { getExpectedError = true }
+    strictEqual(getExpectedError, true)
+
+    await createDirectory(TEST_ROOT)
+  })
+
   it('copyPath()', async () => {
+    await createDirectory(directoryPath2)
+
     await copyPath(SOURCE_FILE, filePath0)
     strictEqual(getPathTypeFromStat(await getPathStat(filePath0)), FILE_TYPE.File)
 

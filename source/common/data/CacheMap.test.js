@@ -15,8 +15,11 @@ const doSanityTest = (cacheMap, length) => {
 
 describe('Common.Data.CacheMap', () => {
   describe('CacheMap', () => {
-    const cacheMap = createCacheMap({ valueSizeSumMax: 512 })
-    doSanityTest(cacheMap, 0)
+    doSanityTest(createCacheMap({ valueSizeSumMax: 1 }), 0)
+    doSanityTest(createCacheMap({ valueSizeSumMax: 512 }), 0)
+    doSanityTest(createCacheMap({ valueSizeSumMax: 512 * 512 }), 0)
+    doSanityTest(createCacheMap({ valueSizeSumMax: 512, valueSizeSingleMax: 1 }), 0)
+    doSanityTest(createCacheMap({ valueSizeSumMax: 512, valueSizeSingleMax: 1, eventHub: null }), 0)
   })
 
   describe('CacheMap.set', () => {
