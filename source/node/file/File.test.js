@@ -72,11 +72,11 @@ describe('Node.File.File', () => {
   it('trimDirectory()', async () => {
     await createDirectory(directoryPath2)
 
-    await trimDirectory(directoryPath0) // non-empty, should give up
-    await trimDirectory(directoryPath1) // non-empty, should give up
-    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath2)), FILE_TYPE.Directory)
+    await trimDirectory(directoryPath0, 3) // non-empty, should give up
+    await trimDirectory(directoryPath1, 3) // non-empty, should give up
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath2, 3)), FILE_TYPE.Directory)
 
-    await trimDirectory(directoryPath2)
+    await trimDirectory(directoryPath2, 3)
 
     strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), FILE_TYPE.Error)
     strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), FILE_TYPE.Error)

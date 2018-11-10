@@ -215,6 +215,8 @@
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
++ 📄 [source/node/system/ProcessList.js](source/node/system/ProcessList.js)
+  - `getProcessList`, `sortProcessList`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
@@ -420,6 +422,8 @@
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
+    - **ProcessList**
+      - `getProcessList`, `sortProcessList`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
@@ -459,6 +463,7 @@
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
+>   --process-list --ps [OPTIONAL] [ARGUMENT=0-1]
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-websocket-group --swg [OPTIONAL]
@@ -493,6 +498,7 @@
 >     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
+>     export DR_JS_PROCESS_LIST="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
@@ -527,6 +533,7 @@
 >     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
+>     "drJsProcessList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],

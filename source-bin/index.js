@@ -4,7 +4,7 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary } from 'dr-js/module/common/format'
+import { time, binary, padTable } from 'dr-js/module/common/format'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -12,6 +12,7 @@ import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Dir
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
+import { getProcessList, sortProcessList } from 'dr-js/module/node/system/ProcessList'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
@@ -120,6 +121,17 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
       await outputStream(response.stream())
       return log(`[fetch] done`)
+    }
+    case 'process-list': {
+      const [ sortOrder = 'pid--' ] = argumentList
+      const processList = sortProcessList(await getProcessList(), sortOrder)
+      return isHumanReadableOutput
+        ? console.log(padTable({
+          table: [ [ 'pid', 'ppid', 'command' ],
+            ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ])
+          ]
+        }))
+        : logJSON(processList)
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {

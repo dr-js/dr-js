@@ -1,0 +1,118 @@
+import { runQuiet } from './Run'
+
+// a col means \w+\s+, or \s+\w+ (for this output)
+// so every 2 \w\s flip means a col
+const parseTitleCol = (titleString) => {
+  let flipCharType = titleString.charAt(0) === ' '
+  let flipCount = 2
+
+  const colStartIndexList = [ 0 ] // colStartIndex
+
+  for (let index = 0, indexMax = titleString.length; index < indexMax; index++) {
+    const charType = titleString.charAt(index) === ' '
+    if (flipCharType === charType) continue
+    flipCharType = !flipCharType
+    flipCount--
+    if (flipCount === 0) {
+      colStartIndexList.push(index)
+      flipCount = 2
+    }
+  }
+  return colStartIndexList
+}
+
+const parseRow = (rowString, colStartIndexList, keyList, valueProcessList) => {
+  const itemMap = {}
+  for (let index = 0, indexMax = colStartIndexList.length; index < indexMax; index++) {
+    itemMap[ keyList[ index ] ] = valueProcessList[ index ](rowString.slice(
+      colStartIndexList[ index ],
+      colStartIndexList[ index + 1 ]
+    ))
+  }
+  return itemMap
+}
+
+const parseTableOutput = (outputString, lineSeparator, keyList = [], valueProcessList = []) => {
+  const [ titleLine, ...rowList ] = outputString.split(lineSeparator)
+  const colStartIndexList = parseTitleCol(titleLine)
+  if (colStartIndexList.length !== keyList.length) throw new Error(`title col mismatch: ${colStartIndexList.length}, expect: ${keyList.length}`)
+  return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
+}
+
+const doGetProcessList = async (command, lineSeparator, keyList, valueProcessList) => {
+  const { promise, stdoutBufferPromise } = runQuiet({ command })
+  await promise
+  return parseTableOutput((await stdoutBufferPromise).toString(), lineSeparator, keyList, valueProcessList)
+}
+
+const valueProcessString = (string) => string.trim()
+const valueProcessInteger = (string) => parseInt(string)
+
+const getProcessListLinux = () => doGetProcessList(
+  'ps ax -ww -o pid,ppid,args',
+  '\n',
+  [ 'pid', 'ppid', 'command' ],
+  [ valueProcessInteger, valueProcessInteger, valueProcessString ]
+)
+const getProcessListWin32 = () => doGetProcessList(
+  'WMIC PROCESS get Commandline,ParentProcessId,Processid',
+  '\r\r\n', // for WMIC `\r\r\n` output // check: https://stackoverflow.com/questions/24961755/batch-how-to-correct-variable-overwriting-misbehavior-when-parsing-output
+  [ 'command', 'ppid', 'pid' ],
+  [ valueProcessString, valueProcessInteger, valueProcessInteger ]
+)
+
+const GET_PROCESS_LIST_MAP = {
+  linux: getProcessListLinux,
+  win32: getProcessListWin32,
+  darwin: getProcessListLinux
+}
+
+// NOTE: not a fast command (linux: ~100ms, win32: ~500ms)
+const getProcessList = () => {
+  const getProcessList = GET_PROCESS_LIST_MAP[ process.platform ]
+  if (!getProcessList) throw new Error(`[getProcessList] unsupported platform: ${process.platform}`)
+  return getProcessList()
+}
+
+const PROCESS_LIST_SORT_MAP = {
+  'pid++': (a, b) => a.pid - b.pid,
+  'pid--': (a, b) => b.pid - a.pid,
+  'ppid++': (a, b) => a.ppid - b.ppid || a.pid - b.pid,
+  'ppid--': (a, b) => b.ppid - a.ppid || a.pid - b.pid
+}
+const sortProcessList = (processList, sortOrder = 'pid--') => processList.sort(PROCESS_LIST_SORT_MAP[ sortOrder ])
+
+export { getProcessList, sortProcessList }
+
+// For linux: ps
+// $ ps ax -ww -o pid,ppid,args
+//   PID  PPID COMMAND
+//     1     0 /lib/systemd/systemd --system --deserialize 40
+//     2     0 [kthreadd]
+//     4     2 [kworker/0:0H]
+//    11     2 [watchdog/0]
+//   159     2 [kworker/0:1H]
+//   826     1 /usr/sbin/cron -f
+//   831     1 /lib/systemd/systemd-logind
+//   941     1 /usr/sbin/atd -f
+//  1078     1 /usr/lib/policykit-1/polkitd --no-debug
+// 16542     2 [kworker/0:2]
+// 17252 31221 sshd: root@pts/0
+// 17254     1 /lib/systemd/systemd --user
+// 17265 17252 -bash
+// 17278 17265 ps ax -ww -o pid,ppid,args
+
+// For win32: WMIC
+// > WMIC PROCESS get Commandline,ParentProcessId,Processid
+// CommandLine                                                                                                ParentProcessId  ProcessId
+//                                                                                                            0                0
+//                                                                                                            0                4
+// c:\windows\system32\svchost.exe -k unistacksvcgroup -s CDPUserSvc                                          824              5220
+// c:\windows\system32\svchost.exe -k unistacksvcgroup                                                        824              13304
+// "C:\Windows\ImmersiveControlPanel\SystemSettings.exe" -ServerName:microsoft.windows.immersivecontrolpanel  996              1876
+// C:\WINDOWS\system32\ApplicationFrameHost.exe -Embedding                                                    996              8440
+// C:\Windows\System32\RuntimeBroker.exe -Embedding                                                           996              13132
+// "C:\Program Files\Realtek\Audio\HDA\RAVBg64.exe" /IM                                                       1656             3372
+// sihost.exe                                                                                                 1944             11928
+// C:\WINDOWS\Explorer.EXE                                                                                    8596             13112
+// "C:\Program Files\Synaptics\SynTP\SynTPEnh.exe"                                                            12380            11124
