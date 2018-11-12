@@ -170,7 +170,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -373,7 +373,7 @@
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`

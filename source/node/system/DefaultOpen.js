@@ -1,7 +1,8 @@
 const DEFAULT_OPEN_MAP = {
   linux: 'xdg-open',
   win32: 'start',
-  darwin: 'open'
+  darwin: 'open',
+  android: 'termux-open' // TODO: may have other options?
 }
 
 // open Path or File with System Default

@@ -31,7 +31,11 @@ describe('Node.System.ProcessList', () => {
     subProcess.kill()
     await promise.catch(() => {})
 
-    const subProcessItem = result.find(({ pid, command }) => pid === subProcess.pid && command.includes('npx dr-js --sss'))
+    const subProcessItem = result.find(({ pid, ppid, command }) => (
+      pid === subProcess.pid &&
+      ppid === process.pid &&
+      command.includes('npx dr-js --sss')
+    ))
     __DEV__ && console.log({ subProcessItem })
 
     ok(subProcessItem, 'should have sub-process in list')

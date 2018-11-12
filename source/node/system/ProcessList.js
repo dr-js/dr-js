@@ -39,7 +39,7 @@ const parseTableOutput = (outputString, lineSeparator, keyList = [], valueProces
   return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
 }
 
-const doGetProcessList = async (command, lineSeparator, keyList, valueProcessList) => {
+const createGetProcessList = (command, lineSeparator, keyList, valueProcessList) => async () => {
   const { promise, stdoutBufferPromise } = runQuiet({ command })
   await promise
   return parseTableOutput((await stdoutBufferPromise).toString(), lineSeparator, keyList, valueProcessList)
@@ -48,23 +48,29 @@ const doGetProcessList = async (command, lineSeparator, keyList, valueProcessLis
 const valueProcessString = (string) => string.trim()
 const valueProcessInteger = (string) => parseInt(string)
 
-const getProcessListLinux = () => doGetProcessList(
+const ProcessListLinux = [
   'ps ax -ww -o pid,ppid,args',
   '\n',
   [ 'pid', 'ppid', 'command' ],
   [ valueProcessInteger, valueProcessInteger, valueProcessString ]
-)
-const getProcessListWin32 = () => doGetProcessList(
+]
+const ProcessListAndroid = [ 'ps ax -o pid,ppid,args', ...ProcessListLinux.slice(1) ]
+const ProcessListWin32 = [
   'WMIC PROCESS get Commandline,ParentProcessId,Processid',
   '\r\r\n', // for WMIC `\r\r\n` output // check: https://stackoverflow.com/questions/24961755/batch-how-to-correct-variable-overwriting-misbehavior-when-parsing-output
   [ 'command', 'ppid', 'pid' ],
   [ valueProcessString, valueProcessInteger, valueProcessInteger ]
-)
+]
+
+const getProcessListLinux = createGetProcessList(...ProcessListLinux)
+const getProcessListAndroid = createGetProcessList(...ProcessListAndroid)
+const getProcessListWin32 = createGetProcessList(...ProcessListWin32)
 
 const GET_PROCESS_LIST_MAP = {
   linux: getProcessListLinux,
   win32: getProcessListWin32,
-  darwin: getProcessListLinux
+  darwin: getProcessListLinux,
+  android: getProcessListAndroid
 }
 
 // NOTE: not a fast command (linux: ~100ms, win32: ~500ms)

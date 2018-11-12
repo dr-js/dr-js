@@ -1,6 +1,6 @@
 import { resolve as resolvePath, normalize, dirname, sep } from 'path'
 import {
-  stat, access, rename, unlink,
+  stat, open, rename, unlink, access,
   readFile, writeFile, appendFile, copyFile,
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
@@ -9,23 +9,27 @@ import {
 import { promisify } from 'util'
 import { createInterface } from 'readline'
 
-const statAsync = promisify(stat)
-const renameAsync = promisify(rename)
-const unlinkAsync = promisify(unlink)
-const accessAsync = promisify(access) // TODO: NOTE: will throw if not accessible
-const visibleAsync = (path) => new Promise((resolve) => access(path, fsConstants.F_OK, (error) => resolve(!error)))
-const readableAsync = (path) => new Promise((resolve) => access(path, fsConstants.R_OK, (error) => resolve(!error)))
-const writableAsync = (path) => new Promise((resolve) => access(path, fsConstants.W_OK, (error) => resolve(!error)))
-const executableAsync = (path) => new Promise((resolve) => access(path, fsConstants.X_OK, (error) => resolve(!error)))
+const [
+  statAsync, openAsync, renameAsync, unlinkAsync, accessAsync,
+  readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
+  mkdirAsync, rmdirAsync, readdirAsync
+] = [
+  stat, open, rename, unlink, access,
+  readFile, writeFile, appendFile, copyFile,
+  mkdir, rmdir, readdir
+].map((fsFunc) => promisify(fsFunc))
 
-const mkdirAsync = promisify(mkdir)
-const rmdirAsync = promisify(rmdir)
-const readdirAsync = promisify(readdir)
-
-const readFileAsync = promisify(readFile)
-const writeFileAsync = promisify(writeFile)
-const appendFileAsync = promisify(appendFile)
-const copyFileAsync = promisify(copyFile) // since 8.5.0
+const [
+  visibleAsync,
+  readableAsync,
+  writableAsync,
+  executableAsync
+] = [
+  fsConstants.F_OK,
+  fsConstants.R_OK,
+  fsConstants.W_OK,
+  fsConstants.X_OK
+].map((mode) => (path) => new Promise((resolve) => access(path, mode, (error) => resolve(!error))))
 
 const nearestExistAsync = async (path) => {
   while (path && !await visibleAsync(path)) path = dirname(path)
@@ -34,7 +38,7 @@ const nearestExistAsync = async (path) => {
 
 const createPathPrefixLock = (rootPath) => {
   rootPath = resolvePath(rootPath)
-  return (relativePath) => {
+  return (relativePath) => { // TODO: may silently drop path, should add fool-proof error/check
     const absolutePath = resolvePath(rootPath, relativePath)
     if (!absolutePath.startsWith(rootPath)) throw new Error(`[PathPrefixLock] invalid relativePath: ${relativePath}`)
     return absolutePath
@@ -68,25 +72,16 @@ const toPosixPath = sep === '\\'
   : (path) => path
 
 export {
-  statAsync,
-  renameAsync,
-  unlinkAsync,
-  accessAsync,
-  visibleAsync,
-  readableAsync,
-  writableAsync,
-  executableAsync,
-  mkdirAsync,
-  rmdirAsync,
-  readdirAsync,
-  readFileAsync,
-  writeFileAsync,
-  appendFileAsync,
-  copyFileAsync,
+  createReadStream, createWriteStream,
+
+  statAsync, openAsync, renameAsync, unlinkAsync, accessAsync, // TODO: NOTE: will throw if not accessible, like verify, use below func for check
+  readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync, // since 8.5.0
+  mkdirAsync, rmdirAsync, readdirAsync,
+
+  visibleAsync, readableAsync, writableAsync, executableAsync,
+
   nearestExistAsync,
 
-  createReadStream,
-  createWriteStream,
   createPathPrefixLock,
 
   createReadlineFromStreamAsync,
