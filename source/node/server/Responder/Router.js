@@ -1,4 +1,5 @@
-import { objectDepthFirstSearch } from 'source/common/immutable/Object'
+import { isBasicObject } from 'source/common/check'
+import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 import {
   parseRouteToMap,
   findRouteFromMap,
@@ -58,9 +59,15 @@ const getRouteParam = (store, paramName) => getRouteMapParam(store.getState(), p
 const describeRouteMap = (routeMap) => {
   const routeInfoList = [ /* { method, route } */ ]
   const methodValueSet = new Set(Object.values(METHOD_MAP))
-  objectDepthFirstSearch(routeMap, (value, key) => { methodValueSet.has(key) && routeInfoList.push({ method: key, route: value.route }) })
+  routeMapDepthFirstSearch(
+    [ 'ROOT', routeMap ],
+    ([ key, { route } ]) => { methodValueSet.has(key) && routeInfoList.push({ method: key, route }) }
+  )
   return routeInfoList
 }
+const routeMapDepthFirstSearch = createTreeDepthFirstSearch(
+  ([ key, routeNode ]) => isBasicObject(routeNode) && Object.entries(routeNode)
+)
 
 // const SAMPLE_ROUTE_RESPONDER = (store, { url, route, method, paramMap }) => {}
 // const SAMPLE_RESULT_ROUTE_MAP = {

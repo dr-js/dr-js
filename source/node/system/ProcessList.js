@@ -1,3 +1,5 @@
+import { setTimeoutAsync } from 'source/common/time'
+import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync } from 'source/common/data/Tree'
 import { runQuiet } from './Run'
 
 // a col means \w+\s+, or \s+\w+ (for this output)
@@ -88,7 +90,105 @@ const PROCESS_LIST_SORT_MAP = {
 }
 const sortProcessList = (processList, sortOrder = 'pid--') => processList.sort(PROCESS_LIST_SORT_MAP[ sortOrder ])
 
-export { getProcessList, sortProcessList }
+const getProcessPidMap = async (processList) => {
+  if (processList === undefined) processList = await getProcessList() // TODO: may be slow (300ms~1000ms)
+  return (processList).reduce((o, info) => {
+    o[ info.pid ] = info
+    return o
+  }, {})
+}
+
+// const SAMPLE_PROCESS_TREE = {
+//   pid: 0, ppid: -1, command: 'ROOT',
+//   subTree: {
+//     1: { ... }
+//     2: { ... }
+//   }
+// }
+const getProcessTree = async (processList) => { // NOTE: will mutate process (add subTree)
+  if (processList === undefined) processList = await getProcessList()
+
+  const rootInfo = { pid: 0, ppid: -1, command: 'ROOT' }
+  const processMap = { 0: rootInfo }
+  const subTreeMap = { 0: {} }
+  for (const info of processList) {
+    const { pid, ppid } = info
+    if (pid === 0) continue // NOTE: win32 root process has { pid: 0, ppid: 0 }, linux do not (no pid: 0)
+    processMap[ pid ] = info
+    if (subTreeMap[ ppid ] === undefined) subTreeMap[ ppid ] = {}
+    subTreeMap[ ppid ][ pid ] = info
+  }
+
+  processMap[ rootInfo.pid ] = rootInfo
+
+  Object.entries(subTreeMap).forEach(([ ppid, subTree ]) => {
+    let info = processMap[ ppid ]
+    if (!info) { // root-less process, normally found in win32, will create a patch process to root
+      info = { pid: ppid, ppid: rootInfo.pid, command: '' }
+      subTreeMap[ info.ppid ][ info.pid ] = info
+    }
+    info.subTree = subTree
+  })
+
+  return rootInfo
+}
+
+const findProcessTreeNode = async (info, processTree) => {
+  if (processTree === undefined) processTree = await getProcessTree()
+  return processTreeDepthFirstSearch(processTree, ({ pid, ppid, command }) => (
+    info.pid === pid &&
+    (ppid !== undefined && info.ppid === ppid) && // allow no ppid
+    (command !== undefined && info.command === command) // allow no ppid
+  ))
+}
+
+const checkProcessExist = async ({ pid, ppid, command }, processPidMap) => {
+  if (processPidMap === undefined) processPidMap = await getProcessPidMap()
+  const info = processPidMap[ pid ]
+  return (
+    info &&
+    info.pid === pid &&
+    (ppid !== undefined && info.ppid === ppid) && // allow no ppid
+    (command !== undefined && info.command === command) // allow no ppid
+  )
+}
+
+const tryKillProcess = async (info) => { // TODO: may be too expensive?
+  if (!await checkProcessExist(info)) return
+  process.kill(info.pid)
+  await setTimeoutAsync(500)
+  if (!await checkProcessExist(info)) return
+  process.kill(info.pid) // 2nd try
+  await setTimeoutAsync(2000)
+  if (!await checkProcessExist(info)) return
+  process.kill(info.pid, 'SIGKILL') // last try
+  await setTimeoutAsync(4000)
+  if (await checkProcessExist(info)) throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
+}
+
+const tryKillProcessTreeNode = async (processTreeNode) => {
+  processTreeNode && await processTreeBottomUpSearchAsync(processTreeNode, tryKillProcess)
+  processTreeNode && await tryKillProcess(processTreeNode)
+}
+
+const getSubNodeListFunc = (info) => info.subTree && Object.values(info.subTree)
+const processTreeDepthFirstSearch = createTreeDepthFirstSearch(getSubNodeListFunc)
+const processTreeBottomUpSearchAsync = createTreeBottomUpSearchAsync(getSubNodeListFunc)
+
+export {
+  getProcessList,
+  sortProcessList,
+
+  getProcessPidMap,
+
+  getProcessTree,
+  findProcessTreeNode,
+
+  checkProcessExist,
+
+  tryKillProcess,
+  tryKillProcessTreeNode
+}
 
 // For linux: ps
 // $ ps ax -ww -o pid,ppid,args

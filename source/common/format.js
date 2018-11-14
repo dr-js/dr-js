@@ -116,7 +116,7 @@ const stringIndentList = (
   ...itemList.map((item) => stringIndentLine(item, indentString, indentStringStart))
 ].join('\n')
 
-const stringAutoEllipsis = (string = '', limit = 32, head = 16, tail = 8) => string.length > limit
+const stringAutoEllipsis = (string = '', limit = 64, head = 32, tail = 16) => string.length > limit
   ? `${string.slice(0, head)}...${tail > 0 ? string.slice(-tail) : ''} (+${string.length - head - tail})`
   : string
 const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(

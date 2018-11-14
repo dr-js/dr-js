@@ -1,7 +1,8 @@
 import { ok } from 'assert'
-import { getProcessList } from './ProcessList'
 import { run } from './Run'
 import { padTable } from 'source/common/format'
+
+import { getProcessList, getProcessTree } from './ProcessList'
 
 const { describe, it } = global
 
@@ -39,5 +40,17 @@ describe('Node.System.ProcessList', () => {
     __DEV__ && console.log({ subProcessItem })
 
     ok(subProcessItem, 'should have sub-process in list')
+  })
+
+  it('getProcessTree()', async () => {
+    const processList = await getProcessList()
+    const rootProcess = await getProcessTree(processList)
+    const processItem = processList.find(({ pid, command }) => pid === process.pid && command.includes('node'))
+    const subProcessItem = processList.find(({ ppid }) => ppid === process.pid)
+    __DEV__ && console.log({ processItem, subProcessItem })
+
+    ok(rootProcess, 'should have rootProcess')
+    ok(processItem.subTree, 'should have subTree in this node process')
+    ok(processItem.subTree[ subProcessItem.pid ] === subProcessItem, 'should have in subTree the sub process for list-process')
   })
 })

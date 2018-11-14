@@ -1,5 +1,5 @@
-const createIdPool = (idData = []) => {
-  const pool = new Set(idData)
+const createIdPool = (initialIdList = []) => { // TODO: DEPRECATE: not using? or sort method name
+  const pool = new Set(initialIdList)
   return {
     requestID: (id = 0) => { // might not be the id you expect, but will be near
       while (pool.has(id)) id++

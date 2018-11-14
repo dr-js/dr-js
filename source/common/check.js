@@ -2,6 +2,7 @@
 
 const isString = (value) => typeof (value) === 'string'
 const isNumber = (value) => typeof (value) === 'number'
+const isBoolean = (value) => typeof (value) === 'boolean'
 const isInteger = Number.isInteger
 
 const isBasicObject = (value) => typeof (value) === 'object' && value !== null && !Array.isArray(value)
@@ -20,6 +21,7 @@ const isOneOf = (value, validList) => validList.includes(value)
 export {
   isString,
   isNumber,
+  isBoolean,
   isInteger,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,

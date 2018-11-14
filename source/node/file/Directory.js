@@ -29,7 +29,7 @@ const getDirectoryInfoTree = async (path, pathStat) => {
   return { root: path, subInfoListMap }
 }
 
-const walkDirectoryInfoTree = async ({ root, subInfoListMap }, callback) => {
+const walkDirectoryInfoTree = async ({ root, subInfoListMap }, callback) => { // TODO: use createTreeBreadthFirstSearchAsync?
   const queue = [ { path: root } ]
   while (queue.length) {
     const { path } = queue.shift()
@@ -40,7 +40,7 @@ const walkDirectoryInfoTree = async ({ root, subInfoListMap }, callback) => {
   }
 }
 
-const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback) => {
+const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback) => { // TODO: use createTreeBottomUpSearchAsync?
   const rootInfo = { path: root }
   const stack = [ [ rootInfo, [ rootInfo ] ] ]
   while (stack.length) {

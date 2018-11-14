@@ -1,22 +1,25 @@
 import { resolve as resolvePath, normalize, dirname, sep } from 'path'
 import {
-  stat, open, rename, unlink, access,
-  readFile, writeFile, appendFile, copyFile,
+  stat, open, rename, unlink, truncate,
+  readFile, writeFile, appendFile, copyFile, // since 8.5.0
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
+  access,
   constants as fsConstants
 } from 'fs'
 import { promisify } from 'util'
 import { createInterface } from 'readline'
 
 const [
-  statAsync, openAsync, renameAsync, unlinkAsync, accessAsync,
+  statAsync, openAsync, renameAsync, unlinkAsync, truncateAsync,
   readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
-  mkdirAsync, rmdirAsync, readdirAsync
+  mkdirAsync, rmdirAsync, readdirAsync,
+  accessAsync // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
 ] = [
-  stat, open, rename, unlink, access,
+  stat, open, rename, unlink, truncate,
   readFile, writeFile, appendFile, copyFile,
-  mkdir, rmdir, readdir
+  mkdir, rmdir, readdir,
+  access // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
 ].map((fsFunc) => promisify(fsFunc))
 
 const [
@@ -74,8 +77,8 @@ const toPosixPath = sep === '\\'
 export {
   createReadStream, createWriteStream,
 
-  statAsync, openAsync, renameAsync, unlinkAsync, accessAsync, // TODO: NOTE: will throw if not accessible, like verify, use below func for check
-  readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync, // since 8.5.0
+  statAsync, openAsync, renameAsync, unlinkAsync, truncateAsync,
+  readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
   mkdirAsync, rmdirAsync, readdirAsync,
 
   visibleAsync, readableAsync, writableAsync, executableAsync,
@@ -88,5 +91,7 @@ export {
   createReadlineFromFileAsync,
 
   trimPathDepth,
-  toPosixPath
+  toPosixPath,
+
+  accessAsync // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
 }

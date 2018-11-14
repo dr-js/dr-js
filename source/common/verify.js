@@ -1,6 +1,7 @@
 import {
   isString,
   isNumber,
+  isBoolean,
   isInteger,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
@@ -15,6 +16,7 @@ const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) 
 
 const string = createVerify('String', isString)
 const number = createVerify('Number', isNumber)
+const boolean = createVerify('Boolean', isBoolean)
 const integer = createVerify('Integer', isInteger)
 
 const basicObject = createVerify('BasicObject', isBasicObject)
@@ -31,6 +33,7 @@ const oneOf = (value, validList, message) => isOneOf(value, validList) || throwE
 export {
   string,
   number,
+  boolean,
   integer,
   basicObject, objectKey, objectContain,
   basicArray, arrayLength,

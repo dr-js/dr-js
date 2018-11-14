@@ -4,7 +4,8 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary, padTable } from 'dr-js/module/common/format'
+import { time, binary, padTable, stringAutoEllipsis } from 'dr-js/module/common/format'
+import { createTreeDepthFirstSearch } from 'dr-js/module/common/data/Tree'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -12,7 +13,7 @@ import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Dir
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
-import { getProcessList, sortProcessList } from 'dr-js/module/node/system/ProcessList'
+import { getProcessList, sortProcessList, getProcessTree } from 'dr-js/module/node/system/ProcessList'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
@@ -124,6 +125,20 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     }
     case 'process-list': {
       const [ sortOrder = 'pid--' ] = argumentList
+      if (sortOrder === 'tree') {
+        const root = await getProcessTree()
+        if (!isHumanReadableOutput) return logJSON(root)
+        const studList = []
+        const logLine = (pid, command) => console.log(`${`${pid}`.padStart(8, ' ')} | ${command}`)
+        logLine('pid', 'command')
+        const processTreeDepthFirstSearch = createTreeDepthFirstSearch(([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]))
+        return processTreeDepthFirstSearch([ root, -1, false ], ([ info, level, hasMore ]) => { // TODO: EXTRACT: format: common tree code?
+          studList.length = level
+          if (level !== 0) studList[ level - 1 ] = hasMore ? '├─ ' : '└─ '
+          logLine(info.pid, `${studList.join('')}${stringAutoEllipsis(info.command || '...')}`)
+          if (level !== 0) studList[ level - 1 ] = hasMore ? '│  ' : '   '
+        })
+      }
       const processList = sortProcessList(await getProcessList(), sortOrder)
       return isHumanReadableOutput
         ? console.log(padTable({

@@ -44,7 +44,7 @@
 + 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
   - `createSyncStateStorage`
 + 📄 [source/common/check.js](source/common/check.js)
-  - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
+  - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
 + 📄 [source/common/error.js](source/common/error.js)
@@ -56,7 +56,7 @@
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
-  - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
+  - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
@@ -77,6 +77,8 @@
   - `createSetMap`, `getInvertSetMap`
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
++ 📄 [source/common/data/Tree.js](source/common/data/Tree.js)
+  - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
   - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
@@ -170,7 +172,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -216,7 +218,7 @@
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
 + 📄 [source/node/system/ProcessList.js](source/node/system/ProcessList.js)
-  - `getProcessList`, `sortProcessList`
+  - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
@@ -280,6 +282,8 @@
       - `createSetMap`, `getInvertSetMap`
     - **Toggle**
       - `createToggle`
+    - **Tree**
+      - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`
     - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
@@ -336,7 +340,7 @@
     - **Object**
       - `objectMergeDeep`, `objectSortKey`
   - **Check**
-    - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
+    - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
   - **Compare**
     - `compareString`, `compareStringLocale`
   - **Error**
@@ -348,7 +352,7 @@
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
-    - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
+    - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
 - **Env**
   - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`
 - **Node**
@@ -373,7 +377,7 @@
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -423,7 +427,7 @@
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
     - **ProcessList**
-      - `getProcessList`, `sortProcessList`
+      - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**

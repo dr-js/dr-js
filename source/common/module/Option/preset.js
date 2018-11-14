@@ -1,4 +1,4 @@
-import { string, number, integer, basicFunction, arrayLength, oneOf } from 'source/common/verify'
+import { string, number, boolean, integer, basicFunction, arrayLength, oneOf } from 'source/common/verify'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 
 const verifySingleArray = (argumentList) => arrayLength(argumentList, 1, 'single argument expected')
@@ -13,15 +13,6 @@ const getVerifySingle = (typeVerify, typeName) => (argumentList) => {
 }
 const getVerifyAll = (typeVerify, typeName) => (argumentList) => { argumentList.forEach((v, i) => typeVerify(v, `${typeName} expected at #${i}`)) }
 
-const verifyAllString = getVerifyAll(string, 'String')
-const verifyAllNumber = getVerifyAll(number, 'Number')
-const verifyAllInteger = getVerifyAll(integer, 'Integer')
-const verifyAllFunction = getVerifyAll(basicFunction, 'Function')
-
-const normalizeToString = (argumentList) => argumentList.map(String)
-const normalizeToNumber = (argumentList) => argumentList.map(Number)
-const normalizeToInteger = (argumentList) => argumentList.map(parseInt)
-
 const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNormalize = (v) => v, description = '', optional = false) => ({
   argumentCount,
   argumentListNormalize,
@@ -34,24 +25,24 @@ const getOneOfPreset = (argumentListVerify, argumentListNormalize) => (selectLis
   return getPreset(1, verifyOneOf(selectList), argumentListNormalize, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
 }
 
-const ConfigPreset = {
-  SingleString: getPreset(1, getVerifySingle(string, 'String'), normalizeToString),
-  SingleNumber: getPreset(1, getVerifySingle(number, 'Number'), normalizeToNumber),
-  SingleInteger: getPreset(1, getVerifySingle(integer, 'Integer'), normalizeToInteger),
-  SingleFunction: getPreset(1, getVerifySingle(basicFunction, 'Function'), undefined),
-
-  AllString: getPreset('1-', verifyAllString, normalizeToString),
-  AllNumber: getPreset('1-', verifyAllNumber, normalizeToNumber),
-  AllInteger: getPreset('1-', verifyAllInteger, normalizeToInteger),
-  AllFunction: getPreset('1-', verifyAllFunction, undefined),
-
-  OneOfString: getOneOfPreset(normalizeToString, verifyAllString),
-  OneOfNumber: getOneOfPreset(normalizeToNumber, verifyAllNumber),
-  OneOfInteger: getOneOfPreset(normalizeToInteger, verifyAllInteger),
-
+const ConfigPreset = Object.assign({
   BooleanFlag: getPreset('0-', undefined, () => ([ true ]), 'set to enable', true),
   Any: getPreset('0-', undefined, undefined, 'optional', true)
-}
+}, ...[
+  // typeName, checkTypeFunc, normalizeToTypeFunc
+  [ 'String', string, (argumentList) => argumentList.map(String) ],
+  [ 'Number', number, (argumentList) => argumentList.map(Number) ],
+  [ 'Boolean', boolean, (argumentList) => argumentList.map(Boolean) ],
+  [ 'Integer', integer, (argumentList) => argumentList.map(parseInt) ],
+  [ 'Function', basicFunction, undefined ]
+].map(([ typeName, checkTypeFunc, normalizeToTypeFunc ]) => {
+  const verifyAllType = getVerifyAll(checkTypeFunc, typeName)
+  return {
+    [ `Single${typeName}` ]: getPreset(1, getVerifySingle(checkTypeFunc, typeName), normalizeToTypeFunc),
+    [ `All${typeName}` ]: getPreset('1-', verifyAllType, normalizeToTypeFunc),
+    [ `OneOf${typeName}` ]: normalizeToTypeFunc && getOneOfPreset(normalizeToTypeFunc, verifyAllType)
+  }
+}))
 
 const getOptionalFormatFlag = (...formatNameList) => (optionMap) => !formatNameList.some((formatName) => Boolean(optionMap[ formatName ])) // not option if the format has been set
 const getOptionalFormatValue = (formatName, ...valueList) => (optionMap) => {
