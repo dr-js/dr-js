@@ -4,15 +4,19 @@ import { cpus } from 'os'
 import { getEndianness } from 'dr-js/module/env/function'
 
 import { clock } from 'dr-js/module/common/time'
-import { time, decimal, stringIndentList } from 'dr-js/module/common/format'
+import { time, decimal, stringIndentList, stringAutoEllipsis, padTable } from 'dr-js/module/common/format'
+import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
 import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
+
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
+
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
+import { getProcessList, sortProcessList, getProcessTree } from 'dr-js/module/node/system/ProcessStatus'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
@@ -69,7 +73,7 @@ const fetchWithJump = async (
   while (true) {
     onFetchStart && await onFetchStart(url, jumpCount, cookieList)
     const response = await fetchLikeRequest(url, { ...option, headers: { ...option.headers, 'cookie': cookieList.join(';') } })
-    const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, '  ')
+    const getInfo = () => JSON.stringify({ url, status: response.status, headers: response.headers }, null, 2)
     if (response.ok) return response
     else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
       jumpCount++
@@ -78,6 +82,33 @@ const fetchWithJump = async (
       cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
     } else throw new Error(`[fetch] bad status: ${getInfo()}`)
   }
+}
+
+const prettyStringifyProcessTree = (processRootInfo) => {
+  const resultList = []
+  const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
+  addLine('', { pid: 'pid', command: 'command' })
+  prettyStringifyTree(
+    [ processRootInfo, -1, false ],
+    ([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]),
+    addLine
+  )
+  return resultList.join('\n')
+}
+
+const collectAllProcessStatus = async (outputMode, isHumanReadableOutput) => {
+  if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
+    const processRootInfo = await getProcessTree()
+    if (!isHumanReadableOutput) return processRootInfo
+    const text = prettyStringifyProcessTree(processRootInfo)
+    return (outputMode !== 'tree-wide' && outputMode !== 'tw')
+      ? text.split('\n').map((line) => stringAutoEllipsis(line, 128, 96, 16)).join('\n')
+      : text
+  }
+  const processList = sortProcessList(await getProcessList(), outputMode)
+  return isHumanReadableOutput
+    ? padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
+    : processList
 }
 
 const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList = []) => stringIndentList(`[${title}]`, [
@@ -122,6 +153,8 @@ export {
   evalReadlineExtend,
 
   fetchWithJump,
+
+  collectAllProcessStatus,
 
   describeServer,
   commonStartServer,

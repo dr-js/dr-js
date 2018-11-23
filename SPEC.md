@@ -78,7 +78,7 @@
 + 📄 [source/common/data/Toggle.js](source/common/data/Toggle.js)
   - `createToggle`
 + 📄 [source/common/data/Tree.js](source/common/data/Tree.js)
-  - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`
+  - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTree`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
   - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
@@ -217,7 +217,7 @@
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
-+ 📄 [source/node/system/ProcessList.js](source/node/system/ProcessList.js)
++ 📄 [source/node/system/ProcessStatus.js](source/node/system/ProcessStatus.js)
   - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
@@ -283,7 +283,7 @@
     - **Toggle**
       - `createToggle`
     - **Tree**
-      - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`
+      - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTree`
     - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
@@ -426,7 +426,7 @@
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
-    - **ProcessList**
+    - **ProcessStatus**
       - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
@@ -467,7 +467,7 @@
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
->   --process-list --ps [OPTIONAL] [ARGUMENT=0-1]
+>   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-websocket-group --swg [OPTIONAL]
@@ -502,7 +502,7 @@
 >     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
->     export DR_JS_PROCESS_LIST="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
@@ -537,7 +537,7 @@
 >     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
->     "drJsProcessList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsProcessStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],

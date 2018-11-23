@@ -4,8 +4,8 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary, padTable, stringAutoEllipsis } from 'dr-js/module/common/format'
-import { createTreeDepthFirstSearch } from 'dr-js/module/common/data/Tree'
+import { time, binary } from 'dr-js/module/common/format'
+import { isBasicObject } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -13,7 +13,6 @@ import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Dir
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
-import { getProcessList, sortProcessList, getProcessTree } from 'dr-js/module/node/system/ProcessList'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
@@ -22,10 +21,13 @@ import { createServerTestConnection } from './server/testConnection'
 import { createServerWebSocketGroup } from './server/websocketGroup'
 import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
 
-import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump } from './function'
+import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectAllProcessStatus } from './function'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
-const logJSON = (object) => console.log(JSON.stringify(object, null, '  '))
+const logAuto = (value) => console.log(isBasicObject(value)
+  ? JSON.stringify(value, null, 2)
+  : value
+)
 
 const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
   const log = getOptionOptional('quiet')
@@ -70,7 +72,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     case 'repl':
       return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })
     case 'echo':
-      return logJSON(argumentList)
+      return logAuto(argumentList)
     case 'cat': {
       if (argumentList.length) for (const path of argumentList) await pipeStreamAsync(process.stdout, createReadStream(path))
       else if (!process.stdin.isTTY) await pipeStreamAsync(process.stdout, process.stdin)
@@ -86,13 +88,17 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
     }
     case 'status':
-      return isHumanReadableOutput
-        ? console.log(describeSystemStatus())
-        : logJSON({ system: getSystemStatus(), process: getProcessStatus() })
+      return logAuto(isHumanReadableOutput
+        ? describeSystemStatus()
+        : { system: getSystemStatus(), process: getProcessStatus() }
+      )
     case 'file-list':
-      return logJSON((await getDirectorySubInfoList(argumentList[ 0 ] || process.cwd())).map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name))
+      return logAuto(
+        (await getDirectorySubInfoList(argumentList[ 0 ] || process.cwd()))
+          .map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name)
+      )
     case 'file-list-all':
-      return logJSON(await getFileList(argumentList[ 0 ] || process.cwd()))
+      return logAuto(await getFileList(argumentList[ 0 ] || process.cwd()))
     case 'file-create-directory':
       for (const path of argumentList) await logTaskResult(createDirectory, path)
       return
@@ -111,7 +117,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     case 'fetch': {
       let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
-      timeout = Number(timeout) || 0 // msec, 0 for unlimited
+      timeout = Number(timeout) || 0 // in msec, 0 for unlimited
       const response = await fetchWithJump(
         initialUrl,
         { headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout },
@@ -123,30 +129,9 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       await outputStream(response.stream())
       return log(`[fetch] done`)
     }
-    case 'process-list': {
-      const [ sortOrder = 'pid--' ] = argumentList
-      if (sortOrder === 'tree') {
-        const root = await getProcessTree()
-        if (!isHumanReadableOutput) return logJSON(root)
-        const studList = []
-        const logLine = (pid, command) => console.log(`${`${pid}`.padStart(8, ' ')} | ${command}`)
-        logLine('pid', 'command')
-        const processTreeDepthFirstSearch = createTreeDepthFirstSearch(([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]))
-        return processTreeDepthFirstSearch([ root, -1, false ], ([ info, level, hasMore ]) => { // TODO: EXTRACT: format: common tree code?
-          studList.length = level
-          if (level !== 0) studList[ level - 1 ] = hasMore ? '├─ ' : '└─ '
-          logLine(info.pid, `${studList.join('')}${stringAutoEllipsis(info.command || '...')}`)
-          if (level !== 0) studList[ level - 1 ] = hasMore ? '│  ' : '   '
-        })
-      }
-      const processList = sortProcessList(await getProcessList(), sortOrder)
-      return isHumanReadableOutput
-        ? console.log(padTable({
-          table: [ [ 'pid', 'ppid', 'command' ],
-            ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ])
-          ]
-        }))
-        : logJSON(processList)
+    case 'process-status': {
+      const [ outputMode = 'pid--' ] = argumentList
+      return logAuto(collectAllProcessStatus(outputMode, isHumanReadableOutput))
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
@@ -172,9 +157,10 @@ const main = async () => {
   const { name: modeName } = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name)) || {}
 
   if (!modeName) {
-    return optionData.getOptionOptional('version')
-      ? logJSON(getVersion())
-      : console.log(formatUsage(null, optionData.getOptionOptional('help') ? null : 'simple'))
+    return logAuto(optionData.getOptionOptional('version')
+      ? getVersion()
+      : formatUsage(null, optionData.getOptionOptional('help') ? null : 'simple')
+    )
   }
 
   await runMode(modeName, optionData).catch((error) => {

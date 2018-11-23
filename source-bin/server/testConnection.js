@@ -22,7 +22,7 @@ const createServerTestConnection = async ({ protocol = 'http:', hostname, port, 
       const describeString = JSON.stringify({
         from: `${remoteAddress}:${remotePort}`,
         request: { url, method, httpVersion, headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')) }
-      }, null, '  ')
+      }, null, 2)
       log(`[test-describe]\n${describeString}`)
       return responderSendBufferCompress(store, { buffer: Buffer.from(describeString), type: BASIC_EXTENSION_MAP.json })
     } ],

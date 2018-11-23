@@ -135,23 +135,20 @@ const getProcessTree = async (processList) => { // NOTE: will mutate process (ad
 
 const findProcessTreeNode = async (info, processTree) => {
   if (processTree === undefined) processTree = await getProcessTree()
-  return processTreeDepthFirstSearch(processTree, ({ pid, ppid, command }) => (
-    info.pid === pid &&
-    (ppid !== undefined && info.ppid === ppid) && // allow no ppid
-    (command !== undefined && info.command === command) // allow no ppid
-  ))
+  return processTreeDepthFirstSearch(processTree, (searchInfo) => isSameInfo(info, searchInfo))
 }
 
-const checkProcessExist = async ({ pid, ppid, command }, processPidMap) => {
+const checkProcessExist = async (info, processPidMap) => {
   if (processPidMap === undefined) processPidMap = await getProcessPidMap()
-  const info = processPidMap[ pid ]
-  return (
-    info &&
-    info.pid === pid &&
-    (ppid !== undefined && info.ppid === ppid) && // allow no ppid
-    (command !== undefined && info.command === command) // allow no ppid
-  )
+  return isSameInfo(info, processPidMap[ info.pid ])
 }
+
+const isSameInfo = ({ pid, ppid, command }, info) => (
+  info &&
+  info.pid === pid &&
+  (ppid === undefined || info.ppid === ppid) && // allow skip ppid check
+  (command === undefined || info.command === command) // allow skip command check
+)
 
 const tryKillProcess = async (info) => { // TODO: may be too expensive?
   if (!await checkProcessExist(info)) return
@@ -166,9 +163,10 @@ const tryKillProcess = async (info) => { // TODO: may be too expensive?
   if (await checkProcessExist(info)) throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
 }
 
-const tryKillProcessTreeNode = async (processTreeNode) => {
-  processTreeNode && await processTreeBottomUpSearchAsync(processTreeNode, tryKillProcess)
-  processTreeNode && await tryKillProcess(processTreeNode)
+const tryKillProcessTreeNode = async (processTreeNode, checkPpid = false) => {
+  const tryKillProcessInfo = checkPpid ? tryKillProcess : ({ pid, command }) => tryKillProcess({ pid, command })
+  processTreeNode && await processTreeBottomUpSearchAsync(processTreeNode, tryKillProcessInfo)
+  processTreeNode && await tryKillProcessInfo(processTreeNode)
 }
 
 const getSubNodeListFunc = (info) => info.subTree && Object.values(info.subTree)

@@ -127,6 +127,24 @@ const createTreeBottomUpSearchAsync = (getSubNodeListFunc) => { // async ([ node
   }
 }
 
+const prettyStringifyTree = (
+  initialNode, // [ initialNode, -1, false ]
+  getSubNodeLevelHasMoreListFunc, // ([ node, level, hasMore ]) => [ [ subNode, level + 1, subIndex !== length - 1 ] ]
+  func // (prefix, node) => resultList.push(`${prefix}${node}`)
+) => {
+  const studList = []
+  const processTreeDepthFirstSearch = createTreeDepthFirstSearch(getSubNodeLevelHasMoreListFunc)
+  processTreeDepthFirstSearch(
+    initialNode, // [ initialNode, -1, false ]
+    ([ node, level, hasMore ]) => { // NOTE: hasMore = has more sibling-node
+      studList.length = level
+      if (level !== 0) studList[ level - 1 ] = hasMore ? '├─ ' : '└─ '
+      func(studList.join(''), node)
+      if (level !== 0) studList[ level - 1 ] = hasMore ? '│  ' : '   '
+    }
+  )
+}
+
 export {
   createTreeDepthFirstSearch,
   createTreeDepthFirstSearchAsync,
@@ -135,5 +153,7 @@ export {
   createTreeBreadthFirstSearchAsync,
 
   createTreeBottomUpSearch,
-  createTreeBottomUpSearchAsync
+  createTreeBottomUpSearchAsync,
+
+  prettyStringifyTree
 }

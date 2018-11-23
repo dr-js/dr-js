@@ -32,7 +32,7 @@ const MODE_FORMAT_LIST = [
   'file-modify-delete|rm|0-|P',
   'file-merge|merge|2-|P',
   'fetch|f|1-3', // initialUrl, jumpMax = 4, timeout = 0
-  'process-list|ps|0-1', // sortOrder = 'pid--'
+  'process-status|ps|0-1', // outputMode = 'pid--'
   'server-serve-static|sss|0-1', // expireTime = 5 * 60 * 1000
   'server-serve-static-simple|ssss|0-1', // expireTime = 5 * 60 * 1000
   'server-websocket-group|swg',

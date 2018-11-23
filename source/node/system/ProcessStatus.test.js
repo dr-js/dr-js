@@ -2,11 +2,11 @@ import { ok } from 'assert'
 import { run } from './Run'
 import { padTable } from 'source/common/format'
 
-import { getProcessList, getProcessTree } from './ProcessList'
+import { getProcessList, getProcessTree } from './ProcessStatus'
 
 const { describe, it } = global
 
-describe('Node.System.ProcessList', () => {
+describe('Node.System.ProcessStatus', () => {
   it('getProcessList()', async () => {
     const result = await getProcessList()
     __DEV__ && console.log(padTable({

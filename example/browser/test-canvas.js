@@ -128,7 +128,7 @@ window.addContent(``, `
         DRAW_CANVAS_ELEMENT: toggle.get('DRAW_CANVAS_ELEMENT'),
         DRAW_CANVAS_IMAGE_DATA: toggle.get('DRAW_CANVAS_IMAGE_DATA'),
         DRAW_COUNT: toggle.get('DRAW_COUNT')
-      }, null, '  ')
+      }, null, 2)
     }
     window.Toggle()
 
