@@ -9,6 +9,7 @@ import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
 import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
+import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
 
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
 import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
@@ -84,6 +85,23 @@ const fetchWithJump = async (
   }
 }
 
+const prettyStringifyFileTree = async (rootPath) => {
+  const { subInfoListMap } = await getDirectoryInfoTree(rootPath)
+  const resultList = []
+  const addLine = (prefix, [ , name ]) => resultList.push(`${prefix}${name}`)
+  prettyStringifyTree(
+    [ [ rootPath, 'NAME' ], -1, false ],
+    ([ [ path ], level, hasMore ]) => subInfoListMap[ path ] && subInfoListMap[ path ].map(({ path: subPath, name }, subIndex, { length }) => [ [ subPath, name ], level + 1, subIndex !== length - 1 ]),
+    addLine
+  )
+  return resultList.join('\n')
+}
+
+const collectFile = (modeName, rootPath) => modeName === 'file-list' ? getDirectorySubInfoList(rootPath).map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name)
+  : modeName === 'file-list-all' ? getFileList(rootPath)
+    : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
+      : ''
+
 const prettyStringifyProcessTree = (processRootInfo) => {
   const resultList = []
   const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
@@ -154,6 +172,7 @@ export {
 
   fetchWithJump,
 
+  collectFile,
   collectAllProcessStatus,
 
   describeServer,

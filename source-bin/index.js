@@ -9,7 +9,6 @@ import { isBasicObject } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
-import { getFileList, getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
@@ -21,7 +20,7 @@ import { createServerTestConnection } from './server/testConnection'
 import { createServerWebSocketGroup } from './server/websocketGroup'
 import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
 
-import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectAllProcessStatus } from './function'
+import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile, collectAllProcessStatus } from './function'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
 
 const logAuto = (value) => console.log(isBasicObject(value)
@@ -93,12 +92,9 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
         : { system: getSystemStatus(), process: getProcessStatus() }
       )
     case 'file-list':
-      return logAuto(
-        (await getDirectorySubInfoList(argumentList[ 0 ] || process.cwd()))
-          .map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name)
-      )
     case 'file-list-all':
-      return logAuto(await getFileList(argumentList[ 0 ] || process.cwd()))
+    case 'file-tree':
+      return logAuto(await collectFile(modeName, argumentList[ 0 ] || process.cwd()))
     case 'file-create-directory':
       for (const path of argumentList) await logTaskResult(createDirectory, path)
       return

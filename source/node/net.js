@@ -48,7 +48,7 @@ const fetchLikeRequest = async (url, {
   const option = {
     ...urlToOption(new URL(url)),
     method,
-    headers: { 'accept-encoding': 'gzip', ...requestHeaders },
+    headers: { 'accept-encoding': 'gzip', ...requestHeaders }, // TODO: NOTE: in node, `GET|DELETE` method will implicitly skip body, add `content-length` to force send body
     timeout
   }
   __DEV__ && console.log('[fetch]', option)

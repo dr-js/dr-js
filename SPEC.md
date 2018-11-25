@@ -461,6 +461,7 @@
 >   --status --s -s [OPTIONAL]
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
 >   --file-list-all --ls-R [OPTIONAL] [ARGUMENT=0-1]
+>   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
 >   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
 >   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
 >   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
@@ -496,6 +497,7 @@
 >     export DR_JS_STATUS="[OPTIONAL]"
 >     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_FILE_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
 >     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
@@ -531,6 +533,7 @@
 >     "drJsStatus": [ "[OPTIONAL]" ],
 >     "drJsFileList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsFileListAll": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsFileTree": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsFileCreateDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileModifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
 >     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],

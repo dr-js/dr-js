@@ -26,6 +26,7 @@ const MODE_FORMAT_LIST = [
   'status|s',
   'file-list|ls|0-1|P',
   'file-list-all|ls-R|0-1|P',
+  'file-tree|tree|0-1|P',
   'file-create-directory|mkdir|0-|P',
   'file-modify-copy|cp|2|P',
   'file-modify-move|mv|2|P',

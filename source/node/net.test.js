@@ -123,10 +123,11 @@ describe('Node.Net', () => {
   it('fetchLikeRequest() should not allow receive response data multiple times', withTestServer(async (serverUrl) => {
     const response = await fetchLikeRequest(`${serverUrl}/test-buffer`, { timeout: 50 })
     const bufferPromise0 = response.buffer()
-    const bufferPromise1 = response.buffer()
+    const bufferPromise1 = response.buffer().catch(() => 'error')
+    const bufferPromise2 = response.text().catch(() => 'error')
     strictEqual(Buffer.compare(await bufferPromise0, Buffer.from('TEST BUFFER')), 0)
-    strictEqual(await bufferPromise1.catch(() => 'error'), 'error') // again
-    strictEqual(await response.text().catch(() => 'error'), 'error') // and again
+    strictEqual(await bufferPromise1, 'error') // again
+    strictEqual(await bufferPromise2, 'error') // and again
   }))
 
   it('fetchLikeRequest() unreceived response should clear up on next tick and throw when try to access', withTestServer(async (serverUrl) => {
