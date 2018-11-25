@@ -131,7 +131,7 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
     }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList
-      return logAuto(collectAllProcessStatus(outputMode, isHumanReadableOutput))
+      return logAuto(await collectAllProcessStatus(outputMode, isHumanReadableOutput))
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
