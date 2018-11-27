@@ -40,7 +40,7 @@ const ConfigPreset = Object.assign({
   return {
     [ `Single${typeName}` ]: getPreset(1, getVerifySingle(checkTypeFunc, typeName), normalizeToTypeFunc),
     [ `All${typeName}` ]: getPreset('1-', verifyAllType, normalizeToTypeFunc),
-    [ `OneOf${typeName}` ]: normalizeToTypeFunc && getOneOfPreset(normalizeToTypeFunc, verifyAllType)
+    [ `OneOf${typeName}` ]: normalizeToTypeFunc && getOneOfPreset(verifyAllType, normalizeToTypeFunc)
   }
 }))
 

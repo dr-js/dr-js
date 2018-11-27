@@ -24,7 +24,7 @@ const objectKey = (value, key, message) => isObjectKey(value, key) || throwError
 const objectContain = (value, target, message) => isObjectContain(value, target) || throwError('ObjectContain', message, `expect to contain: ${describe(target)}`)
 
 const basicArray = createVerify('Array', isBasicArray)
-const arrayLength = (value, length, message) => isArrayLength(value, length) || throwError('ArrayLength', message, `expect length: ${length}, get: ${value.length}`)
+const arrayLength = (value, length, message) => isArrayLength(value, length) || throwError('ArrayLength', message, `expect length: ${length}, get: ${isBasicArray(value) ? value.length : describe(value)}`)
 
 const basicFunction = createVerify('Function', isBasicFunction)
 
