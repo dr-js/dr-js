@@ -1,11 +1,14 @@
-import { notStrictEqual } from 'assert'
+import { notStrictEqual } from 'source/common/verify'
 import { clock, requestFrameUpdate } from './time'
 
 const { describe, it } = global
 
 describe('Common.Time', () => {
   it('clock() should get msec precision', () => {
-    notStrictEqual(clock() - clock(), 0)
+    const timeStart = clock()
+    ' '.repeat(8).split('').forEach(() => clock()) // TODO: NOTE: too fast in browser?
+    const timeDiff = clock() - timeStart
+    notStrictEqual(timeDiff, 0)
   })
 
   it('requestFrameUpdate() should invoke under 500 msec', () => new Promise((resolve, reject) => {

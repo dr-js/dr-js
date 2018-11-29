@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { getUnusedPort, autoTestServerPort } from './function'
 import { createServer } from './Server'
 

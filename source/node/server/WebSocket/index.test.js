@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 
 import { getUnusedPort } from 'source/node/server/function'
 import { createServer } from 'source/node/server/Server'
@@ -25,7 +25,7 @@ describe('Node.Server.WebSocket', () => {
         // console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
         // webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => { console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`) })
         // webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => { console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`) })
-        deepStrictEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
+        stringifyEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
         webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async ({ dataType, dataBuffer }) => {
           // console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
           if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')

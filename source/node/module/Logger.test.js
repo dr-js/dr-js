@@ -1,6 +1,6 @@
 import { resolve } from 'path'
-import { strictEqual, ok } from 'assert'
 import { readFileSync, statSync } from 'fs'
+import { strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
 import { createDirectory } from 'source/node/file/File'
 import { modify } from 'source/node/file/Modify'
@@ -32,7 +32,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(pathOutputFile).size
     // console.log('5', size)
-    ok(size > 0)
+    strictEqual(size > 0, true)
     prevSize = size
 
     add('6')
@@ -40,7 +40,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(pathOutputFile).size
     // console.log('6', size)
-    ok(size > prevSize)
+    strictEqual(size > prevSize, true)
     prevSize = size
 
     add('7')
@@ -48,7 +48,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(pathOutputFile).size
     // console.log('7', size)
-    ok(size > prevSize)
+    strictEqual(size > prevSize, true)
 
     strictEqual(readFileSync(pathOutputFile, { encoding: 'utf8' }), '1\n2\n3\n4\n5\n6\n7\n')
   })
@@ -81,7 +81,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('5', statSync(getCurrentLogPath()))
-    ok(size > 0, 'check 1')
+    strictEqual(size > 0, true, 'check 1')
     prevSize = size
 
     add('6')
@@ -89,13 +89,13 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('6', size)
-    ok(size > prevSize, 'check 2')
+    strictEqual(size > prevSize, true, 'check 2')
     prevSize = size
 
     add('7 should manual split')
     split() // new file, reset split timer
     await setTimeoutAsync(10)
-    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 3')
+    strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 3')
     size = statSync(getCurrentLogPath()).size
     // console.log('7', size)
     strictEqual(size, 0, 'check 4')
@@ -104,7 +104,7 @@ describe('Node.Module.Logger', () => {
     add('8', [ 'A' ])
     add('9', { k: 'v' }, 'should auto split')
     await setTimeoutAsync(60) // 60ms since last split, so auto split should run
-    ok(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, 'check 5')
+    strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 5')
     size = statSync(getCurrentLogPath()).size
     // console.log('9', size)
     strictEqual(size, 0, 'check 6')
@@ -116,7 +116,7 @@ describe('Node.Module.Logger', () => {
     await setTimeoutAsync(10)
     size = statSync(getCurrentLogPath()).size
     // console.log('11', size)
-    ok(size > prevSize, 'check 7')
+    strictEqual(size > prevSize, true, 'check 7')
 
     strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`), { encoding: 'utf8' }), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')
     strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`), { encoding: 'utf8' }), `8 A\n9 ${{}} should auto split\n`)

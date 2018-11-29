@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual } from 'assert'
+import { strictEqual, notStrictEqual } from 'source/common/verify'
 import { statSync } from 'fs'
 import {
   getEntityTagByContentHash,

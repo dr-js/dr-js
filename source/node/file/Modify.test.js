@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { resolve } from 'path'
 import { ERROR_STAT, FILE_TYPE, getPathStat, getPathTypeFromStat, createDirectory } from './File'
 import {

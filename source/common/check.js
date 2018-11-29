@@ -1,15 +1,18 @@
 // function that returns boolean
 
 const isString = (value) => typeof (value) === 'string'
-const isNumber = (value) => typeof (value) === 'number'
 const isBoolean = (value) => typeof (value) === 'boolean'
+const isNumber = (value) => typeof (value) === 'number'
 const isInteger = Number.isInteger
+
+const isObjectAlike = (value) => { // can have key/value: object/array/function
+  const type = typeof (value)
+  return (type === 'object' && value !== null) || (type === 'function')
+}
 
 const isBasicObject = (value) => typeof (value) === 'object' && value !== null && !Array.isArray(value)
 const isObjectKey = (value, key) => isBasicObject(value) && value.hasOwnProperty(key)
 const isObjectContain = (value, target) => isBasicObject(value) && Object.entries(target).every(([ key, targetValue ]) => value[ key ] === targetValue)
-
-// TODO: isObjectContainDeep
 
 const isBasicArray = Array.isArray
 const isArrayLength = (value, length) => isBasicArray(value) && value.length === length
@@ -18,13 +21,35 @@ const isBasicFunction = (value) => typeof (value) === 'function'
 
 const isOneOf = (value, validList) => validList.includes(value)
 
+const isFuncThrow = (func) => {
+  try {
+    return func() && false
+  } catch (error) { return true }
+}
+const isFuncThrowAsync = async (func) => {
+  try {
+    return (await func()) && false
+  } catch (error) { return true }
+}
+const isStrictEqual = (value, target) => Object.is(value, target)
+const isStringifyEqual = (value, target) => {
+  if (Object.is(value, target)) return true
+  if (isObjectAlike(value) && isObjectAlike(target)) return JSON.stringify(value) === JSON.stringify(target)
+  else return false
+}
+
 export {
   isString,
-  isNumber,
   isBoolean,
+  isNumber,
   isInteger,
+  isObjectAlike,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
   isBasicFunction,
-  isOneOf
+  isOneOf,
+  isFuncThrow,
+  isFuncThrowAsync,
+  isStrictEqual,
+  isStringifyEqual
 }

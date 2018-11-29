@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { deepStrictEqual } from 'assert'
+import { stringifyEqual } from 'source/common/verify'
 import { writeFileAsync, renameAsync, mkdirAsync } from './function'
 
 import { createFileWatcher } from './Watch'
@@ -46,7 +46,7 @@ describe('Node.File.Watch', () => {
 
       await writeFileAsync(targetPath, `file|changed`)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
     }))
 
     it('directory content change', createWatcherTest('directory-content', async ({ fromTest, watcher }) => {
@@ -61,13 +61,13 @@ describe('Node.File.Watch', () => {
 
       await writeFileAsync(fromTest('folder/add-file'), `file|added`)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
 
       resultChangeState = null
       await writeFileAsync(fromTest('folder/add-file'), `file|added`)
       await renameAsync(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
     }))
 
     it('file name change', createWatcherTest('file-name', async ({ fromTest, watcher }) => {
@@ -82,7 +82,7 @@ describe('Node.File.Watch', () => {
 
       await renameAsync(fromTest('file'), fromTest('rename-file'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('directory name change', createWatcherTest('directory-name', async ({ fromTest, watcher }) => {
@@ -97,7 +97,7 @@ describe('Node.File.Watch', () => {
 
       await renameAsync(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('file delete change', createWatcherTest('file-delete', async ({ fromTest, watcher }) => {
@@ -112,7 +112,7 @@ describe('Node.File.Watch', () => {
 
       await modify.delete(fromTest('file'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('directory delete change', createWatcherTest('directory-delete', async ({ fromTest, watcher }) => {
@@ -127,12 +127,12 @@ describe('Node.File.Watch', () => {
 
       await modify.delete(fromTest('folder/folder-file'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
 
       resultChangeState = null
       await modify.delete(fromTest('folder'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('file move change (not upper node)', createWatcherTest('file-move', async ({ fromTest, watcher }) => {
@@ -147,7 +147,7 @@ describe('Node.File.Watch', () => {
 
       await renameAsync(fromTest('file'), fromTest('file-folder'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('directory move change (not upper node)', createWatcherTest('directory-move', async ({ fromTest, watcher }) => {
@@ -162,7 +162,7 @@ describe('Node.File.Watch', () => {
 
       await renameAsync(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
     it('file watch pre path create', createWatcherTest('file-watch-pre-create', async ({ fromTest, watcher }) => {
@@ -179,7 +179,7 @@ describe('Node.File.Watch', () => {
 
       await writeFileAsync(targetPath, `file|created`)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
 
     it('directory watch pre path create', createWatcherTest('directory-watch-pre-create', async ({ fromTest, watcher }) => {
@@ -196,7 +196,7 @@ describe('Node.File.Watch', () => {
 
       await mkdirAsync(targetPath)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
 
     it('file watch delete and recreate', createWatcherTest('file-watch-delete-create', async ({ fromTest, watcher }) => {
@@ -211,12 +211,12 @@ describe('Node.File.Watch', () => {
 
       await modify.delete(targetPath)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 
       resultChangeState = null
       await writeFileAsync(targetPath, `file|recreated`)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
 
     it('directory watch delete and recreate', createWatcherTest('directory-watch-delete-create', async ({ fromTest, watcher }) => {
@@ -231,12 +231,12 @@ describe('Node.File.Watch', () => {
 
       await modify.delete(targetPath)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 
       resultChangeState = null
       await mkdirAsync(targetPath)
       await setTimeoutAsync(40)
-      deepStrictEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
   })
 })

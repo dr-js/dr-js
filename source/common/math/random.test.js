@@ -1,4 +1,4 @@
-import { ok, strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import {
   getRandomInt,
   getRandomIntList,
@@ -12,10 +12,10 @@ describe('Common.Math.Random', () => {
   it('getRandomInt()', () => {
     strictEqual(getRandomInt(0), 0)
     strictEqual(getRandomInt(10, 10), 10)
-    ok(getRandomInt(8, 10) <= 10, true)
-    ok(getRandomInt(8, 10) <= 10, true)
-    ok(getRandomInt(8, 10) >= 8, true)
-    ok(getRandomInt(8, 10) >= 8, true)
+    strictEqual(getRandomInt(8, 10) <= 10, true)
+    strictEqual(getRandomInt(8, 10) <= 10, true)
+    strictEqual(getRandomInt(8, 10) >= 8, true)
+    strictEqual(getRandomInt(8, 10) >= 8, true)
   })
 
   it('getRandomIntList()', () => {
@@ -25,8 +25,8 @@ describe('Common.Math.Random', () => {
   })
 
   it('getRandomId()', () => {
-    ok(getRandomId('[abc]').startsWith('[abc]'))
-    ok(getRandomId().includes('-'))
+    strictEqual(getRandomId('[abc]').startsWith('[abc]'), true)
+    strictEqual(getRandomId().includes('-'), true)
   })
 
   it('getRandomArrayBuffer()', () => {

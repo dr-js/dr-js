@@ -73,6 +73,9 @@ runMain(async (logger) => {
   await processOutput({ packageJSON, logger })
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
+    logger.padLog(`test browser`)
+    execSync(`npm run build-test-webpack`, execOptionRoot)
+
     logger.padLog(`test output`)
     execSync(`npm run test-mocha-output-library`, execOptionRoot)
     execSync(`npm run test-mocha-output-module`, execOptionRoot)

@@ -1,5 +1,5 @@
-import { strictEqual, throws, doesNotThrow } from 'assert'
 import { URL } from 'url'
+import { strictEqual, doThrow, doNotThrow } from 'source/common/verify'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import {
   createRouteMap,
@@ -13,53 +13,53 @@ const { describe, it } = global
 
 describe('Node.Server.Responder.Router', () => {
   it('appendRouteMap()', () => {
-    doesNotThrow(() => {
+    doNotThrow(() => {
       const routeMap = appendRouteMap({}, '', 'GET', () => {})
       strictEqual(routeMap[ '' ][ '/GET' ].route, '')
     })
-    doesNotThrow(() => {
+    doNotThrow(() => {
       const routeMap = appendRouteMap({}, '/', 'GET', () => {})
       strictEqual(routeMap[ '' ][ '' ][ '/GET' ].route, '/')
     })
-    doesNotThrow(() => {
+    doNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c', 'GET', () => {})
       strictEqual(routeMap[ '' ].a.b.c[ '/GET' ].route, '/a/b/c')
     })
-    doesNotThrow(() => {
+    doNotThrow(() => {
       const routeMap = appendRouteMap({}, '/a/b/c/', 'GET', () => {})
       strictEqual(routeMap[ '' ].a.b.c[ '' ][ '/GET' ].route, '/a/b/c/')
     })
   })
 
   it('createRouteMap()', () => {
-    doesNotThrow(() => createRouteMap([
+    doNotThrow(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ [ '/test/', '/test/test' ], 'GET', () => {} ]
     ]))
-    doesNotThrow(() => createRouteMap([
+    doNotThrow(() => createRouteMap([
       [ '/test/*', 'GET', () => {} ],
       [ '/test/:param', [ 'GET', 'POST' ], () => {} ],
       [ '/test/:param/test', [ 'GET', 'POST' ], () => {} ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test', 'GET' ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ '/test', [ 'GET', 'POST' ], () => {} ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test/*', 'GET', () => {} ],
       [ '/test/*', [ 'GET', 'POST' ], () => {} ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test/:param-a', 'GET', () => {} ],
       [ '/test/:param-b', [ 'GET', 'POST' ], () => {} ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test', 'STRANGE_METHOD', () => {} ]
     ]))
-    throws(() => createRouteMap([
+    doThrow(() => createRouteMap([
       [ '/test', 'GET', () => {} ],
       [ '/test', [ 'GET', 'STRANGE_METHOD' ], () => {} ]
     ]))
@@ -75,15 +75,15 @@ describe('Node.Server.Responder.Router', () => {
   ]))
 
   it('createResponderRouter()', () => {
-    throws(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') }))) // no method 'POST' for route
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') }))) // wrong route
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') }))) // too much param
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') }))) // too much param
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') }))) // too few param
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') }))) // too few param
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') }))) // wrong frag
-    throws(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') }))) // wrong method route pair
-    throws(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') }))) // wrong method route pair
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') }))) // no method 'POST' for route
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') }))) // wrong route
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') }))) // too much param
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') }))) // too much param
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') }))) // too few param
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') }))) // too few param
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') }))) // wrong frag
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') }))) // wrong method route pair
+    doThrow(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') }))) // wrong method route pair
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-basic') })
       const { tag, route, paramMap } = responderRouter(store)

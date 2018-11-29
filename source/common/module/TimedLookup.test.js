@@ -1,4 +1,4 @@
-import { ok, strictEqual, notStrictEqual, throws } from 'assert'
+import { strictEqual, notStrictEqual, doThrow } from 'source/common/verify'
 import { getTimestamp } from 'source/common/time'
 import { isObjectContain } from 'source/common/check'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
@@ -21,38 +21,38 @@ describe('Common.Module.TimedLookup', () => {
     const defaultCheckOption = { ...defaultOption }
     delete defaultCheckOption.tag
 
-    throws(() => verifyOption(), 'should throw when no option')
-    throws(() => verifyOption({ tag: 'a-a' }), 'should throw on invalid tag')
-    throws(() => verifyOption({ size: 0 }), 'should throw on invalid size')
-    throws(() => verifyOption({ size: 1024 + 1 }), 'should throw on invalid size')
-    throws(() => verifyOption({ tokenSize: 0 }), 'should throw on invalid tokenSize')
-    throws(() => verifyOption({ tokenSize: 1 }), 'should throw on invalid tokenSize')
-    throws(() => verifyOption({ tokenSize: 14 }), 'should throw on invalid tokenSize')
-    throws(() => verifyOption({ tokenSize: 3.5 }), 'should throw on invalid tokenSize')
-    throws(() => verifyOption({ timeGap: 0 }), 'should throw on invalid timeGap')
-    throws(() => verifyOption({ timeGap: 2.5 }), 'should throw on invalid timeGap')
+    doThrow(() => verifyOption(), 'should throw when no option')
+    doThrow(() => verifyOption({ tag: 'a-a' }), 'should throw on invalid tag')
+    doThrow(() => verifyOption({ size: 0 }), 'should throw on invalid size')
+    doThrow(() => verifyOption({ size: 1024 + 1 }), 'should throw on invalid size')
+    doThrow(() => verifyOption({ tokenSize: 0 }), 'should throw on invalid tokenSize')
+    doThrow(() => verifyOption({ tokenSize: 1 }), 'should throw on invalid tokenSize')
+    doThrow(() => verifyOption({ tokenSize: 14 }), 'should throw on invalid tokenSize')
+    doThrow(() => verifyOption({ tokenSize: 3.5 }), 'should throw on invalid tokenSize')
+    doThrow(() => verifyOption({ timeGap: 0 }), 'should throw on invalid timeGap')
+    doThrow(() => verifyOption({ timeGap: 2.5 }), 'should throw on invalid timeGap')
 
-    ok(isObjectContain(verifyOption({}), defaultCheckOption))
-    ok(isObjectContain(verifyOption(defaultCheckOption), defaultCheckOption))
+    strictEqual(isObjectContain(verifyOption({}), defaultCheckOption), true)
+    strictEqual(isObjectContain(verifyOption(defaultCheckOption), defaultCheckOption), true)
 
-    ok(isObjectContain(verifyOption({ tag: '' }), { ...defaultCheckOption, tag: '' }))
-    ok(isObjectContain(verifyOption({ tag: 'aA1_zZ0' }), { ...defaultCheckOption, tag: 'aA1_zZ0' }))
+    strictEqual(isObjectContain(verifyOption({ tag: '' }), { ...defaultCheckOption, tag: '' }), true)
+    strictEqual(isObjectContain(verifyOption({ tag: 'aA1_zZ0' }), { ...defaultCheckOption, tag: 'aA1_zZ0' }), true)
 
-    ok(isObjectContain(verifyOption({ size: 1024 + 32 }), { ...defaultCheckOption, size: 1024 + 32 }))
-    ok(isObjectContain(verifyOption({ size: 1024 * 1024 }), { ...defaultCheckOption, size: 1024 * 1024 }))
+    strictEqual(isObjectContain(verifyOption({ size: 1024 + 32 }), { ...defaultCheckOption, size: 1024 + 32 }), true)
+    strictEqual(isObjectContain(verifyOption({ size: 1024 * 1024 }), { ...defaultCheckOption, size: 1024 * 1024 }), true)
 
-    ok(isObjectContain(verifyOption({ tokenSize: 2 }), { ...defaultCheckOption, tokenSize: 2 }))
-    ok(isObjectContain(verifyOption({ tokenSize: 9 }), { ...defaultCheckOption, tokenSize: 9 }))
-    ok(isObjectContain(verifyOption({ tokenSize: 13 }), { ...defaultCheckOption, tokenSize: 13 }))
+    strictEqual(isObjectContain(verifyOption({ tokenSize: 2 }), { ...defaultCheckOption, tokenSize: 2 }), true)
+    strictEqual(isObjectContain(verifyOption({ tokenSize: 9 }), { ...defaultCheckOption, tokenSize: 9 }), true)
+    strictEqual(isObjectContain(verifyOption({ tokenSize: 13 }), { ...defaultCheckOption, tokenSize: 13 }), true)
 
-    ok(isObjectContain(verifyOption({ timeGap: 1 }), { ...defaultCheckOption, timeGap: 1 }))
-    ok(isObjectContain(verifyOption({ timeGap: 10 }), { ...defaultCheckOption, timeGap: 10 }))
-    ok(isObjectContain(verifyOption({ timeGap: 3600 }), { ...defaultCheckOption, timeGap: 3600 }))
+    strictEqual(isObjectContain(verifyOption({ timeGap: 1 }), { ...defaultCheckOption, timeGap: 1 }), true)
+    strictEqual(isObjectContain(verifyOption({ timeGap: 10 }), { ...defaultCheckOption, timeGap: 10 }), true)
+    strictEqual(isObjectContain(verifyOption({ timeGap: 3600 }), { ...defaultCheckOption, timeGap: 3600 }), true)
   })
 
   it('generateLookupData()', () => {
-    ok(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer))
-    ok(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer))
+    strictEqual(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer), true)
+    strictEqual(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer), true)
   })
 
   it('generateCheckCode()', () => {
@@ -76,30 +76,30 @@ describe('Common.Module.TimedLookup', () => {
     verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp + defaultLookupData.timeGap)
     verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp - defaultLookupData.timeGap)
 
-    throws(() => verifyCheckCode(defaultLookupData, checkCode0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, checkCode0, 0 + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, checkCode0, 0 - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCode0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCode0, 0 + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCode0, 0 - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
 
-    throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, 0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp + 1 + defaultLookupData.timeGap), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, checkCodeTimestamp, timestamp - 1 - defaultLookupData.timeGap), 'should throw on invalid checkCode')
 
-    throws(() => verifyCheckCode(defaultLookupData, 0, 0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, '', 0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, '---', 0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, 'aaa-bbb-ccc', 0), 'should throw on invalid checkCode')
-    throws(() => verifyCheckCode(defaultLookupData, 'aaa-bbb-ccc-ddd', 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, 0, 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, '', 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, '---', 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, 'aaa-bbb-ccc', 0), 'should throw on invalid checkCode')
+    doThrow(() => verifyCheckCode(defaultLookupData, 'aaa-bbb-ccc-ddd', 0), 'should throw on invalid checkCode')
   })
 
   it('packDataArrayBuffer/parseDataArrayBuffer', () => {
     const arrayBufferPacket = packDataArrayBuffer(defaultLookupData)
     const { dataView: parsedDataView, ...parsedOption } = parseDataArrayBuffer(arrayBufferPacket)
 
-    ok(isObjectContain(defaultLookupData, parsedOption))
-    ok(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer))
+    strictEqual(isObjectContain(defaultLookupData, parsedOption), true)
+    strictEqual(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer), true)
 
     const repackedArrayBufferPacket = packDataArrayBuffer({ dataView: parsedDataView, ...parsedOption })
 
-    ok(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket))
+    strictEqual(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket), true)
   })
 })

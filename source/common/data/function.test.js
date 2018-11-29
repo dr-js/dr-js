@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify'
 import {
   hashStringToNumber,
   tryParseJSONObject,
@@ -21,12 +21,12 @@ describe('Common.Data.function', () => {
   })
 
   it('tryParseJSONObject()', () => {
-    deepStrictEqual(tryParseJSONObject(JSON.stringify(OBJECT_DATA)), OBJECT_DATA)
-    deepStrictEqual(tryParseJSONObject(''), {})
-    deepStrictEqual(tryParseJSONObject('a'), {})
-    deepStrictEqual(tryParseJSONObject('"a"'), {})
-    deepStrictEqual(tryParseJSONObject('1'), {})
-    deepStrictEqual(tryParseJSONObject('[]'), [])
+    stringifyEqual(tryParseJSONObject(JSON.stringify(OBJECT_DATA)), OBJECT_DATA)
+    stringifyEqual(tryParseJSONObject(''), {})
+    stringifyEqual(tryParseJSONObject('a'), {})
+    stringifyEqual(tryParseJSONObject('"a"'), {})
+    stringifyEqual(tryParseJSONObject('1'), {})
+    stringifyEqual(tryParseJSONObject('[]'), [])
     strictEqual(tryParseJSONObject('', OBJECT_DATA), OBJECT_DATA)
   })
 

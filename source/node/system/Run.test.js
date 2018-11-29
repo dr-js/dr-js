@@ -1,4 +1,4 @@
-import { ok, strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { run, runSync, runQuiet } from './Run'
 
 const { describe, it } = global
@@ -20,7 +20,7 @@ describe('Node.System.Run', () => {
     const { promise, stdoutBufferPromise } = runQuiet({ command: TEST_COMMAND, option: { cwd: __dirname } })
     await promise
     const stdoutString = (await stdoutBufferPromise).toString()
-    ok(stdoutString.includes('Run.test.js'))
-    ok(stdoutString.includes('Run.js'))
+    strictEqual(stdoutString.includes('Run.test.js'), true)
+    strictEqual(stdoutString.includes('Run.js'), true)
   })
 })

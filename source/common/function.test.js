@@ -1,4 +1,4 @@
-import { throws, deepStrictEqual, strictEqual } from 'assert'
+import { doThrow, stringifyEqual, strictEqual } from 'source/common/verify'
 import {
   debounce,
   throttle,
@@ -193,7 +193,7 @@ describe('Common.Function', () => {
       delayedFunc('Good')
       await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
-      deepStrictEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
+      stringifyEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
     }
 
     await test() // 1st try
@@ -225,7 +225,7 @@ describe('Common.Function', () => {
       delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
       await setTimeoutAsync(20)
       !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
-      deepStrictEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
+      stringifyEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
     }
 
     await test() // 1st try
@@ -289,7 +289,7 @@ describe('Common.Function', () => {
 
     {
       const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 3 })
-      throws(() => withRetry(checkFunc, 3), `error expected when maxRetry is reached`)
+      doThrow(() => withRetry(checkFunc, 3), `error expected when maxRetry is reached`)
     }
   })
 

@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { isEqualArrayBuffer, fromString } from './ArrayBuffer'
 import {
   HEADER_BYTE_SIZE,

@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { join as joinPath, dirname, resolve } from 'path'
 import { getSample } from 'source/common/math/sample'
 import { FILE_TYPE, createDirectory, deletePath } from './File'
@@ -73,7 +73,7 @@ describe('Node.File.Directory', () => {
     strictEqual(infoTree.root, TEST_ROOT)
     strictEqual(infoTree.subInfoListMap[ infoTree.root ].length, 2)
     strictEqual(Object.keys(infoTree.subInfoListMap).length, 11)
-    deepStrictEqual(
+    stringifyEqual(
       infoTree.subInfoListMap[ infoTree.root ].map(({ type }) => type),
       getSample(() => FILE_TYPE.Directory, infoTree.subInfoListMap[ infoTree.root ].length)
     )

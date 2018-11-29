@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { readFileSync } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
 import { createDirectory } from 'source/node/file/File'

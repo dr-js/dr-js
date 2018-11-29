@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { ok, strictEqual, throws } from 'assert'
+import { strictEqual, doThrow } from 'source/common/verify'
 import { // TODO: add more test
   statAsync,
   createPathPrefixLock
@@ -10,17 +10,17 @@ const { describe, it } = global
 describe('Node.File.function', () => {
   it('statAsync()', async () => {
     const statFile = await statAsync(`${__dirname}/function.js`)
-    ok(statFile)
-    ok(statFile.mode, 'file stat should have mode')
-    ok(statFile.size, 'file stat should have size')
-    ok(statFile.isFile(), 'file stat should isFile')
-    ok(!statFile.isDirectory(), 'file stat should !isDirectory')
+    strictEqual(Boolean(statFile), true)
+    strictEqual(Boolean(statFile.mode), true, 'file stat should have mode')
+    strictEqual(Boolean(statFile.size), true, 'file stat should have size')
+    strictEqual(Boolean(statFile.isFile()), true, 'file stat should isFile')
+    strictEqual(Boolean(!statFile.isDirectory()), true, 'file stat should !isDirectory')
 
     const statDirectory = await statAsync(`${__dirname}/..`)
-    ok(statDirectory)
-    ok(statDirectory.mode, 'directory stat should have mode')
-    ok(!statDirectory.isFile(), 'directory stat should !isFile')
-    ok(statDirectory.isDirectory(), 'directory stat should isDirectory')
+    strictEqual(Boolean(statDirectory), true)
+    strictEqual(Boolean(statDirectory.mode), true, 'directory stat should have mode')
+    strictEqual(Boolean(!statDirectory.isFile()), true, 'directory stat should !isFile')
+    strictEqual(Boolean(statDirectory.isDirectory()), true, 'directory stat should isDirectory')
 
     await statAsync(`${__dirname}/path-not-exist`).then(
       () => { throw new Error('should throw for path-not-exist') },
@@ -34,8 +34,8 @@ describe('Node.File.function', () => {
       strictEqual(getPathFromRoot('a/b/c'), expectedPath)
       strictEqual(getPathFromRoot('./a/b/c'), expectedPath)
       strictEqual(getPathFromRoot('a/d/../b/c'), expectedPath)
-      throws(() => getPathFromRoot('..'), `should throw Error for to much '../'`)
-      throws(() => getPathFromRoot('a/../../b'), `should throw Error for to much '../'`)
+      doThrow(() => getPathFromRoot('..'), `should throw Error for to much '../'`)
+      doThrow(() => getPathFromRoot('a/../../b'), `should throw Error for to much '../'`)
     }
 
     const getPathFromRoot0 = createPathPrefixLock('/root/path/0/')

@@ -15,8 +15,8 @@ const parseFormat = (modeFormat) => {
 }
 
 const MODE_FORMAT_LIST = [
-  'eval|e|0-', // ...argumentList // -O=outputFile // -I/$1=scriptFile/scriptString // $@: evalArgv
-  'eval-readline|erl|0-', // ...argumentList // -R=largeReadFile
+  'eval|e|0-', // -O=outputFile // -I/$1=scriptFile/scriptString // $@: evalArgv
+  'eval-readline|erl|0-', // ...eval // -R=readlineFile
   'repl|i',
   'echo||0-',
   'cat||0-|P',

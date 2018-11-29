@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { createDoublyLinkedList, createNode } from './LinkedList'
 
 const { describe, it } = global

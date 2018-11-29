@@ -1,4 +1,4 @@
-import { ok } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { createOptionParser } from './parser'
 import { ConfigPreset } from './preset'
 
@@ -20,33 +20,33 @@ const optionNameList = optionData.formatList.map(({ name }) => name)
 const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(optionData)
 
 const checkArgumentList = (optionMap) => {
-  ok(optionMap[ 'option-name-a' ].argumentList.length === 0)
+  strictEqual(optionMap[ 'option-name-a' ].argumentList.length, 0)
 
-  ok(optionMap[ 'option-name-b' ].argumentList.length === 1)
-  ok(optionMap[ 'option-name-b' ].argumentList[ 0 ] === 1)
+  strictEqual(optionMap[ 'option-name-b' ].argumentList.length, 1)
+  strictEqual(optionMap[ 'option-name-b' ].argumentList[ 0 ], 1)
 
-  ok(optionMap[ 'option-name-c' ].argumentList.length === 2)
-  ok(optionMap[ 'option-name-c' ].argumentList[ 0 ] === 1)
-  ok(optionMap[ 'option-name-c' ].argumentList[ 1 ] === 2.2)
+  strictEqual(optionMap[ 'option-name-c' ].argumentList.length, 2)
+  strictEqual(optionMap[ 'option-name-c' ].argumentList[ 0 ], 1)
+  strictEqual(optionMap[ 'option-name-c' ].argumentList[ 1 ], 2.2)
 
-  ok(optionMap[ 'option-name-aa' ].argumentList.length === 0)
+  strictEqual(optionMap[ 'option-name-aa' ].argumentList.length, 0)
 
-  ok(optionMap[ 'option-name-bb' ].argumentList.length === 1)
-  ok(optionMap[ 'option-name-bb' ].argumentList[ 0 ] === '1')
+  strictEqual(optionMap[ 'option-name-bb' ].argumentList.length, 1)
+  strictEqual(optionMap[ 'option-name-bb' ].argumentList[ 0 ], '1')
 
-  ok(optionMap[ 'option-name-cc' ].argumentList.length === 4)
-  ok(optionMap[ 'option-name-cc' ].argumentList[ 0 ] === 1)
-  ok(optionMap[ 'option-name-cc' ].argumentList[ 1 ] === 2.2)
-  ok(optionMap[ 'option-name-cc' ].argumentList[ 2 ] === 3.3)
-  ok(optionMap[ 'option-name-cc' ].argumentList[ 3 ] === 4.4)
+  strictEqual(optionMap[ 'option-name-cc' ].argumentList.length, 4)
+  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 0 ], 1)
+  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 1 ], 2.2)
+  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 2 ], 3.3)
+  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 3 ], 4.4)
 }
 
 describe('Common.Module.Option', () => {
   describe('Option.formatUsage', () => {
     const message = 'TEST_MESSAGE'
-    it('should pass formatUsage()', () => ok(formatUsage().length > 0))
-    it('should pass formatUsage(message)', () => ok(formatUsage(message).includes(message)))
-    it('should pass formatUsage(error)', () => ok(formatUsage(new Error(message)).includes(message)))
+    it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
+    it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
+    it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
   })
 
   describe('Option.parseCLI', () => {
@@ -60,7 +60,7 @@ describe('Common.Module.Option', () => {
       '--option-name-bb', '1',
       '--option-name-aa'
     ])
-    it('should pass use name', () => ok(optionNameList.every((name) => (name in optionMap0))))
+    it('should pass use name', () => strictEqual(optionNameList.every((name) => (name in optionMap0)), true))
     it('should pass processOptionMap use name', () => processOptionMap(optionMap0))
     it('should pass checkArgumentList use name', () => checkArgumentList(optionMap0))
 
@@ -74,7 +74,7 @@ describe('Common.Module.Option', () => {
       '-B', '1',
       '-C=1', '2.2', '3.3', '4.4'
     ])
-    it('should pass use shortName', () => ok(optionNameList.every((name) => (name in optionMap1))))
+    it('should pass use shortName', () => strictEqual(optionNameList.every((name) => (name in optionMap1)), true))
     it('should pass processOptionMap use shortName', () => processOptionMap(optionMap1))
     it('should pass checkArgumentList use shortName', () => checkArgumentList(optionMap1))
 
@@ -87,7 +87,7 @@ describe('Common.Module.Option', () => {
       '--onc1=2.2',
       '-C=1', '2.2', '3.3', '4.4'
     ])
-    it('should pass use combined shortName', () => ok(optionNameList.every((name) => (name in optionMap2))))
+    it('should pass use combined shortName', () => strictEqual(optionNameList.every((name) => (name in optionMap2)), true))
     it('should pass processOptionMap use combined shortName', () => processOptionMap(optionMap2))
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
   })
@@ -101,7 +101,7 @@ describe('Common.Module.Option', () => {
       PREFIX_ENV_OPTION_NAME_BB: '"1"',
       PREFIX_ENV_OPTION_NAME_CC: '[ 1, "2.2", 3.3, "4.4" ]'
     })
-    it('should pass use nameENV', () => ok(optionNameList.every((name) => (name in optionMap))))
+    it('should pass use nameENV', () => strictEqual(optionNameList.every((name) => (name in optionMap)), true))
     it('should pass processOptionMap use nameENV', () => processOptionMap(optionMap))
     it('should pass checkArgumentList use nameENV', () => checkArgumentList(optionMap))
   })
@@ -115,7 +115,7 @@ describe('Common.Module.Option', () => {
       prefixJSONOptionNameBb: [ 1 ],
       prefixJSONOptionNameCc: [ 1, '2.2', 3.3, '4.4' ]
     })
-    it('should pass use nameJSON', () => ok(optionNameList.every((name) => (name in optionMap))))
+    it('should pass use nameJSON', () => strictEqual(optionNameList.every((name) => (name in optionMap)), true))
     it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
     it('should pass checkArgumentList use nameJSON', () => checkArgumentList(optionMap))
   })
@@ -149,9 +149,9 @@ describe('Common.Module.Option', () => {
     })
 
     const message = 'TEST_MESSAGE'
-    it('should pass formatUsage()', () => ok(formatUsage().length > 0))
-    it('should pass formatUsage(message)', () => ok(formatUsage(message).includes(message)))
-    it('should pass formatUsage(error)', () => ok(formatUsage(new Error(message)).includes(message)))
+    it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
+    it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
+    it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
 
     it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
   })

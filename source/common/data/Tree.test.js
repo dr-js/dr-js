@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { isBasicObject } from 'source/common/check'
 import {
   createTreeDepthFirstSearch,
@@ -44,7 +44,7 @@ const testTreeCommonSearch = async (objectSearch) => {
     undefined
   )
 
-  deepStrictEqual(
+  stringifyEqual(
     await objectSearch(
       TEST_NODE,
       ([ key, value, index, level ]) => index === 2 && level === 1
@@ -52,7 +52,7 @@ const testTreeCommonSearch = async (objectSearch) => {
     [ 'bDIVIDE', TEST_OBJECT.aDIVIDE.bDIVIDE, 2, 1 ]
   )
 
-  deepStrictEqual(
+  stringifyEqual(
     await objectSearch(
       TEST_NODE,
       ([ key, value, index, level ]) => index === 1 && level === 2
@@ -70,7 +70,7 @@ const testTreeDepthFirstSearch = async (objectDepthFirstSearch) => {
     ),
     undefined
   )
-  deepStrictEqual(checkList, [
+  stringifyEqual(checkList, [
     [ 'a0', 'a0', 0, 0 ],
     [ 'aDIVIDE', TEST_OBJECT.aDIVIDE, 1, 0 ], // [ 'a1', 'a1', 1, 0 ],
     ...[
@@ -101,7 +101,7 @@ const testTreeBreadthFirstSearch = async (objectBreadthFirstSearch) => {
     ),
     undefined
   )
-  deepStrictEqual(checkList, [
+  stringifyEqual(checkList, [
     [ 'a0', 'a0', 0, 0 ],
     [ 'aDIVIDE', TEST_OBJECT.aDIVIDE, 1, 0 ], // [ 'a1', 'a1', 1, 0 ],
     [ 'a2', 'a2', 2, 0 ],
@@ -132,7 +132,7 @@ const testTreeBottomUpSearch = async (objectBottomUpSearch) => {
     ),
     undefined
   )
-  deepStrictEqual(checkList, [
+  stringifyEqual(checkList, [
     [ 'a0', 'a0', 0, 0 ],
     ...[
       [ 'b0', 'b0', 0, 1 ],

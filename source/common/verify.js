@@ -1,12 +1,17 @@
 import {
   isString,
-  isNumber,
   isBoolean,
+  isNumber,
   isInteger,
+  isObjectAlike,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
   isBasicFunction,
-  isOneOf
+  isOneOf,
+  isFuncThrow,
+  isFuncThrowAsync,
+  isStrictEqual,
+  isStringifyEqual
 } from './check'
 
 import { describe } from './format'
@@ -15,9 +20,11 @@ const throwError = (title, message, detail) => { throw new Error(`[verify|${titl
 const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) || throwError(title, message, `get: ${describe(value)}`)
 
 const string = createVerify('String', isString)
-const number = createVerify('Number', isNumber)
 const boolean = createVerify('Boolean', isBoolean)
+const number = createVerify('Number', isNumber)
 const integer = createVerify('Integer', isInteger)
+
+const objectAlike = createVerify('ObjectAlike', isObjectAlike)
 
 const basicObject = createVerify('BasicObject', isBasicObject)
 const objectKey = (value, key, message) => isObjectKey(value, key) || throwError('ObjectKey', message, `expect to have key: ${key}`)
@@ -30,13 +37,31 @@ const basicFunction = createVerify('Function', isBasicFunction)
 
 const oneOf = (value, validList, message) => isOneOf(value, validList) || throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
 
+const doThrow = (func, message) => isFuncThrow(func) || throwError('DoThrow', message)
+const doNotThrow = (func, message) => isFuncThrow(func) && throwError('DoNotThrow', message)
+const doThrowAsync = async (func, message) => (await isFuncThrowAsync(func)) || throwError('DoThrowAsync', message)
+const doNotThrowAsync = async (func, message) => (await isFuncThrowAsync(func)) && throwError('DoThrowAsync', message)
+
+const describeEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
+
+const strictEqual = (actual, expect, message) => isStrictEqual(actual, expect) || throwError('StrictEqual', message, describeEqual(actual, expect))
+const notStrictEqual = (actual, expect, message) => isStrictEqual(actual, expect) && throwError('NotStrictEqual', message, describeEqual(actual, expect))
+
+const stringifyEqual = (actual, expect, message = 'should stringify equal') => isStringifyEqual(actual, expect) || throwError('StringifyEqual', message, describeEqual(actual, expect))
+const notStringifyEqual = (actual, expect, message = 'should not stringify equal') => isStringifyEqual(actual, expect) && throwError('NotStringifyEqual', message, describeEqual(actual, expect))
+
 export {
   string,
-  number,
   boolean,
+  number,
   integer,
+  objectAlike,
   basicObject, objectKey, objectContain,
   basicArray, arrayLength,
   basicFunction,
-  oneOf
+  oneOf,
+  doThrow, doNotThrow,
+  doThrowAsync, doNotThrowAsync,
+  strictEqual, notStrictEqual,
+  stringifyEqual, notStringifyEqual
 }

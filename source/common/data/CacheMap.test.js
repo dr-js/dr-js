@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { createCacheMap } from './CacheMap'
 
 const { describe, it } = global
@@ -70,7 +70,7 @@ describe('Common.Data.CacheMap', () => {
     // console.log('packDataList', packDataList)
 
     const reloadPackDataList = JSON.parse(JSON.stringify(packDataList))
-    deepStrictEqual(reloadPackDataList, packDataList)
+    stringifyEqual(reloadPackDataList, packDataList)
 
     cacheMap.parseList(packDataList)
     doSanityTest(cacheMap, 3)
@@ -82,6 +82,6 @@ describe('Common.Data.CacheMap', () => {
     const repackDataList = loadCacheMap.packList()
     // console.log('repackDataList', repackDataList)
 
-    deepStrictEqual(repackDataList, packDataList)
+    stringifyEqual(repackDataList, packDataList)
   })
 })

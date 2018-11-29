@@ -1,4 +1,4 @@
-import { strictEqual, deepStrictEqual } from 'assert'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { resolve } from 'path'
 import { createFactDatabase, tryDeleteExtraCache } from './FactDatabase'
 import { getFileList } from 'source/node/file/Directory'
@@ -13,12 +13,12 @@ const TEST_TEXT = (new Date()).toString()
 const basicTest = async (pathFactDirectory) => {
   const factDB = await createFactDatabase({ pathFactDirectory, onError: console.error })
 
-  deepStrictEqual(factDB.getState(), { id: 0 })
+  stringifyEqual(factDB.getState(), { id: 0 })
 
   factDB.add({ key1: 1 })
   factDB.add({ key2: 2 })
   factDB.add({ key3: 3 })
-  deepStrictEqual(factDB.getState(), { id: 3, key1: 1, key2: 2, key3: 3 })
+  stringifyEqual(factDB.getState(), { id: 3, key1: 1, key2: 2, key3: 3 })
 
   factDB.split() // to factLog.4.log
   await factDB.getSaveFactCachePromise() // wait for file to write
@@ -26,28 +26,28 @@ const basicTest = async (pathFactDirectory) => {
   factDB.add({ key1: 2 })
   factDB.add({ key2: 4 })
   factDB.add({ key3: 6 })
-  deepStrictEqual(factDB.getState(), { id: 6, key1: 2, key2: 4, key3: 6 })
+  stringifyEqual(factDB.getState(), { id: 6, key1: 2, key2: 4, key3: 6 })
 
   factDB.split() // to factLog.7.log
   factDB.split() // should only split once
   await factDB.getSaveFactCachePromise() // wait for file to write
 
   factDB.add({ textKey: TEST_TEXT })
-  deepStrictEqual(factDB.getState(), { id: 7, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT })
+  stringifyEqual(factDB.getState(), { id: 7, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT })
 
   factDB.add({ [ TEST_TEXT ]: 'testValue' })
-  deepStrictEqual(factDB.getState(), { id: 8, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
+  stringifyEqual(factDB.getState(), { id: 8, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
 
   factDB.save()
 
   factDB.add({}) // empty fact
-  deepStrictEqual(factDB.getState(), { id: 9, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
+  stringifyEqual(factDB.getState(), { id: 9, key1: 2, key2: 4, key3: 6, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
 
   factDB.save()
   factDB.save()
 
   factDB.add({ key1: 1, key2: 2, key3: 3 })
-  deepStrictEqual(factDB.getState(), { id: 10, key1: 1, key2: 2, key3: 3, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
+  stringifyEqual(factDB.getState(), { id: 10, key1: 1, key2: 2, key3: 3, textKey: TEST_TEXT, [ TEST_TEXT ]: 'testValue' })
 
   factDB.end()
   await factDB.getSaveFactCachePromise() // wait for file to write
@@ -68,7 +68,7 @@ describe('Node.Module.FactDatabase', () => {
     const resultState = await basicTest(pathFactDirectory)
 
     const factDBVerify = await createFactDatabase({ pathFactDirectory, onError: console.error })
-    deepStrictEqual(factDBVerify.getState(), resultState)
+    stringifyEqual(factDBVerify.getState(), resultState)
     factDBVerify.end()
   })
 

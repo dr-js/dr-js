@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual, throws, doesNotThrow } from 'assert'
+import { strictEqual, notStrictEqual, doThrow, doNotThrow } from 'source/common/verify'
 import { getGlobal, getEnvironment } from './global'
 import { getEndianness, assert } from './function'
 
@@ -17,7 +17,7 @@ describe('Env', () => {
   })
 
   it('getEnvironment().environmentName should be node', () => {
-    strictEqual(getEnvironment().environmentName, 'node')
+    notStrictEqual(getEnvironment().environmentName, 'unknown')
   })
 
   it('getEndianness() should not be unknown', () => {
@@ -25,10 +25,10 @@ describe('Env', () => {
   })
 
   it('assert(true) should not throw', wrapMuteConsoleError(() => {
-    doesNotThrow(() => assert(true, 'assert(true)'))
+    doNotThrow(() => assert(true, 'assert(true)'))
   }))
 
   it('assert(false) should throw', wrapMuteConsoleError(() => {
-    throws(() => assert(false, 'assert(false)'))
+    doThrow(() => assert(false, 'assert(false)'))
   }))
 })

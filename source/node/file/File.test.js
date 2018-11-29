@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import {
   ERROR_STAT,
   FILE_TYPE,

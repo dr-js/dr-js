@@ -59,7 +59,7 @@ const evalReadlineExtend = async (result, readlineFile, log) => {
     onLineSync(lineString, lineCounter)
     lineCounter++
   })
-  result = getResult()
+  return getResult()
 }
 
 const fetchWithJump = async (
@@ -91,7 +91,9 @@ const prettyStringifyFileTree = async (rootPath) => {
   const addLine = (prefix, [ , name ]) => resultList.push(`${prefix}${name}`)
   prettyStringifyTree(
     [ [ rootPath, 'NAME' ], -1, false ],
-    ([ [ path ], level, hasMore ]) => subInfoListMap[ path ] && subInfoListMap[ path ].map(({ path: subPath, name }, subIndex, { length }) => [ [ subPath, name ], level + 1, subIndex !== length - 1 ]),
+    ([ [ path ], level, hasMore ]) => subInfoListMap[ path ] && subInfoListMap[ path ].map(
+      ({ path: subPath, name }, subIndex, { length }) => [ [ subPath, name ], level + 1, subIndex !== length - 1 ]
+    ),
     addLine
   )
   return resultList.join('\n')

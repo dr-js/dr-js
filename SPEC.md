@@ -44,7 +44,7 @@
 + 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
   - `createSyncStateStorage`
 + 📄 [source/common/check.js](source/common/check.js)
-  - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
+  - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFuncThrow`, `isFuncThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isStrictEqual`, `isString`, `isStringifyEqual`
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`
 + 📄 [source/common/error.js](source/common/error.js)
@@ -56,7 +56,7 @@
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
 + 📄 [source/common/verify.js](source/common/verify.js)
-  - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
+  - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `strictEqual`, `string`, `stringifyEqual`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
@@ -340,7 +340,7 @@
     - **Object**
       - `objectMergeDeep`, `objectSortKey`
   - **Check**
-    - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isInteger`, `isNumber`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isString`
+    - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFuncThrow`, `isFuncThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isStrictEqual`, `isString`, `isStringifyEqual`
   - **Compare**
     - `compareString`, `compareStringLocale`
   - **Error**
@@ -352,7 +352,7 @@
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
   - **Verify**
-    - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `integer`, `number`, `objectContain`, `objectKey`, `oneOf`, `string`
+    - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
   - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`
 - **Node**

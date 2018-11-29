@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'source/common/verify'
 import { getSampleRange } from 'source/common/math/sample'
 import {
   isEqualArrayBuffer,

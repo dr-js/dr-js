@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.18.2-dev.0",
+  "version": "0.18.2-dev.1",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -29,9 +29,11 @@
     "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "build-library-webpack": "babel-node ./script/webpack production profile",
+    "build-test-webpack": "babel-node ./script/webpack.test production",
+    "build-test-webpack-dev": "babel-node ./script/webpack.test development",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/node/system/ProcessStatus.test.js\"",
+    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/common/data/*.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -49,7 +51,8 @@
   },
   "devDependencies": {
     "dev-dep-tool": "0.5.1-dev.0",
-    "dev-dep-web": "0.5.1-dev.0"
+    "dev-dep-web": "0.5.1-dev.0",
+    "puppeteer": "1.11.0"
   },
   "sideEffects": false
 }
