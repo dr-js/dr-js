@@ -25,17 +25,20 @@ describe('Node.System.ProcessStatus', () => {
   })
 
   it('getProcessList() sub-process', async () => {
-    const { subProcess, promise } = run({ command: 'npx dr-js --sss', option: { stdio: 'ignore' } })
-
+    const { subProcess, promise } = run({
+      command: 'node',
+      argList: [ '-e', 'setTimeout(console.log, 200)' ],
+      option: { stdio: 'ignore', shell: false } // NOTE: `shell: true` on win32 will leak process
+    })
     const result = await getProcessList()
 
     subProcess.kill()
-    await promise.catch(() => {})
+    await promise.catch((error) => { __DEV__ && console.log(error) })
 
     const subProcessItem = result.find(({ pid, ppid, command }) => (
       pid === subProcess.pid &&
       ppid === process.pid &&
-      command.includes('npx dr-js --sss')
+      command.includes('setTimeout(console.log, 200)')
     ))
     __DEV__ && console.log({ subProcessItem })
 

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.18.2-dev.1",
+  "version": "0.18.2-dev.2",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -29,17 +29,18 @@
     "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "build-library-webpack": "babel-node ./script/webpack production profile",
-    "build-test-webpack": "babel-node ./script/webpack.test production",
-    "build-test-webpack-dev": "babel-node ./script/webpack.test development",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/common/data/*.test.js\"",
+    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/node/system/ProcessStatus.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
     "test-mocha-source": "mocha --require @babel/register \"source/**/*.test.js\"",
     "test-mocha-output-library": "mocha \"output-gitignore/library/**/*.test.js\"",
     "test-mocha-output-module": "mocha --require @babel/register \"output-gitignore/module/**/*.test.js\"",
+    "// browser-test ================": "",
+    "test-puppeteer-mocha": "babel-node ./script/browserTest production",
+    "test-puppeteer-mocha-dev": "babel-node ./script/browserTest development",
     "// =============================": "",
     "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json",
     "test": "npm run script-pack-test",
@@ -50,9 +51,9 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dev-dep-tool": "0.5.1-dev.0",
-    "dev-dep-web": "0.5.1-dev.0",
-    "puppeteer": "1.11.0"
+    "dev-dep-tool": "0.5.1-dev.1",
+    "dev-dep-web": "0.5.1-dev.1",
+    "dev-dep-puppeteer": "0.5.1-dev.1"
   },
   "sideEffects": false
 }

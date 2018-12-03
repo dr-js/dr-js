@@ -2,6 +2,9 @@ import { URL } from 'url'
 import { clock } from 'source/common/time'
 import { time as formatTime } from 'source/common/format'
 
+// TODO: all `createResponder...` should use option object?
+// TODO: add responderEndRandomErrorStatus?
+
 const responderEnd = (store) => {
   if (store.response.finished) return // NOTE: normally this should be it, the request is handled and response ended
   const { error } = store.getState()
@@ -10,8 +13,6 @@ const responderEnd = (store) => {
   __DEV__ && error && console.error(`[ERROR] ${describeRequest(store.request)}\n`, error)
   store.response.end() // force end the response to prevent pending
 }
-
-// TODO: add responderEndRandomErrorStatus?
 
 const responderEndWithStatusCode = (store, { statusCode = 500, headerMap }) => {
   if (store.response.finished) return
@@ -29,9 +30,10 @@ const responderSetHeaderCacheControlImmutable = (store) => { store.response.setH
 
 // NOTE: normally just pass the server option here
 const createResponderParseURL = ({ baseUrl = '', baseUrlObject = new URL(baseUrl) }) => (store) => {
-  const { url: urlString, method } = store.request
-  store.setState({ url: new URL(urlString, baseUrlObject), method })
+  const { method, url: urlString } = store.request
+  store.setState({ method, url: new URL(urlString.replace(REGEXP_URL_REPLACE, '/'), baseUrlObject) })
 }
+const REGEXP_URL_REPLACE = /\/\//g // NOTE: check for `new URL('//a/list/', new URL('http://0.0.0.0/'))`
 
 // TODO: this just solves HTTP host map problem or HTTPS port map
 //   for HTTPS host, use `addContext` to add more host cert config: https://nodejs.org/api/tls.html#tls_server_addcontext_hostname_context

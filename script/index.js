@@ -74,7 +74,7 @@ runMain(async (logger) => {
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
     logger.padLog(`test browser`)
-    execSync(`npm run build-test-webpack`, execOptionRoot)
+    execSync(`npm run test-puppeteer-mocha`, execOptionRoot)
 
     logger.padLog(`test output`)
     execSync(`npm run test-mocha-output-library`, execOptionRoot)

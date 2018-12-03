@@ -93,7 +93,7 @@ const testWithPuppeteer = async ({ testScriptString, logger }) => runWithPuppete
     await puppeteerPage.setViewport({ width: 0, height: 0 }) // TODO: CHECK: if this will save render time
     logger.log('[test] start')
 
-    const timeoutToken = setTimeout(() => reject(new Error(`test timeout`)), 60 * 1000) // should done test in 1min
+    const timeoutToken = setTimeout(() => reject(new Error(`${testTag} test timeout`)), 60 * 1000) // should done test in 1min
     await promise
     clearTimeout(timeoutToken)
     logger.log('[test] done')

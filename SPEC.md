@@ -132,7 +132,7 @@
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
+  - `calcCode`, `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -333,7 +333,7 @@
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
-      - `calcCode`, `generateCheckCode`, `generateLookupData`, `packDataArrayBuffer`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`
+      - `calcCode`, `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**

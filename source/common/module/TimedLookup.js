@@ -37,9 +37,34 @@ const verifyOption = ({
   return { tag, size, tokenSize, timeGap }
 }
 
+const verifyCheckCode = (
+  timedLookupData,
+  checkCode,
+  timestamp = getTimestamp()
+) => {
+  __DEV__ && console.log('verifyCheckCode', timedLookupData.tokenSize, timedLookupData.timeGap, checkCode, timestamp)
+  if (typeof (checkCode) !== 'string' || checkCode.length < timedLookupData.tokenSize) throw new Error(`invalid checkCode: ${checkCode}`)
+  return verifyParsedCheckCode(timedLookupData, parseCheckCode(checkCode), timestamp)
+}
+
+const verifyParsedCheckCode = (
+  { tag, size, tokenSize, timeGap, dataView },
+  [ verifyTag, verifyTimestamp, verifyCode ],
+  timestamp = getTimestamp()
+) => {
+  __DEV__ && console.log('verifyParsedCheckCode', tokenSize, timeGap, [ verifyTag, verifyTimestamp, verifyCode ], timestamp)
+  if (verifyTag !== tag) throw new Error(`tag mismatch: ${verifyTag}, expected: ${tag}`)
+  if (Math.abs(timestamp - verifyTimestamp) > timeGap) throw new Error(`timestamp mismatch: ${verifyTimestamp}, expected: ${timestamp}±${timeGap}`)
+  const code = calcCode(size, tokenSize, dataView, verifyTimestamp / timeGap)
+  if (code !== verifyCode) throw new Error(`code mismatch: ${verifyCode}, expected: ${code}`)
+}
+
 const generateLookupData = (option) => {
   option = verifyOption(option)
-  return { ...option, dataView: new DataView(getRandomArrayBuffer(option.size)) } // TODO: add timestamp & checksum of dataView?
+  return {
+    ...option,
+    dataView: new DataView(getRandomArrayBuffer(option.size)) // TODO: add timestamp & checksum of dataView?
+  }
 }
 
 const generateCheckCode = (
@@ -48,22 +73,19 @@ const generateCheckCode = (
 ) => {
   const code = calcCode(size, tokenSize, dataView, timestamp / timeGap)
   __DEV__ && console.log('generateCheckCode', tokenSize, timeGap, timestamp, code)
-  return swapObfuscateString([ tag, timestamp.toString(36), code ].join(CHECK_CODE_SEP))
+  return packCheckCode(tag, timestamp, code)
 }
 
-const verifyCheckCode = (
-  { tag, size, tokenSize, timeGap, dataView },
-  checkCode,
-  timestamp = getTimestamp()
-) => {
-  if (typeof (checkCode) !== 'string' || checkCode.length < tokenSize) throw new Error(`invalid checkCode: ${checkCode}`)
-  __DEV__ && console.log('verifyCheckCode', tokenSize, timeGap, checkCode, timestamp)
-  const [ tagString, timestampString, codeString ] = swapObfuscateString(checkCode).split(CHECK_CODE_SEP)
-  if (tagString !== tag) throw new Error(`tag not match: ${tagString}, expected: ${tag}`)
-  const checkTimestamp = Number.parseInt(timestampString, 36)
-  if (Math.abs(timestamp - checkTimestamp) > timeGap) throw new Error(`timestamp not match: ${checkTimestamp}, expected: ${timestamp}±${timeGap}`)
-  const code = calcCode(size, tokenSize, dataView, checkTimestamp / timeGap)
-  if (code !== codeString) throw new Error(`code not match: ${codeString}, expected: ${code}`)
+const packCheckCode = (tagString, timestamp, codeString) => swapObfuscateString([
+  tagString,
+  timestamp.toString(36),
+  codeString
+].join(CHECK_CODE_SEP))
+
+const parseCheckCode = (checkCodeString) => {
+  const resultList = swapObfuscateString(checkCodeString).split(CHECK_CODE_SEP)
+  resultList[ 1 ] = Number.parseInt(resultList[ 1 ], 36) // string to number
+  return resultList // [ tagString, timestamp, codeString ]
 }
 
 const packDataArrayBuffer = ({ tag, size, tokenSize, timeGap, dataView }) => packArrayBufferPacket(
@@ -78,11 +100,18 @@ const parseDataArrayBuffer = (dataArrayBuffer) => {
 }
 
 export {
-  calcCode,
+  calcCode, // TODO: DEPRECATED: should not direct use
+
   verifyOption,
+  verifyCheckCode,
+  verifyParsedCheckCode,
+
   generateLookupData,
   generateCheckCode,
-  verifyCheckCode,
+
+  packCheckCode,
+  parseCheckCode,
+
   packDataArrayBuffer,
   parseDataArrayBuffer
 }

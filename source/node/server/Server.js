@@ -73,13 +73,13 @@ const createServer = ({ protocol, ...option }) => {
   }
 }
 
-const DEFAULT_RESPONDER_END = responderEnd
 const DEFAULT_RESPONDER_ERROR = (store, error) => store.setState({ error })
+const DEFAULT_RESPONDER_END = responderEnd
 
 const createRequestListener = ({
   responderList = [],
-  responderEnd = DEFAULT_RESPONDER_END,
-  responderError = DEFAULT_RESPONDER_ERROR
+  responderError = DEFAULT_RESPONDER_ERROR,
+  responderEnd = DEFAULT_RESPONDER_END
 }) => async (request, response) => {
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
   const stateStore = createStateStoreLite({

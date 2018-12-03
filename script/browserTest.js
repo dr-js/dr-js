@@ -5,12 +5,11 @@ import { argvFlag, runMain } from 'dev-dep-tool/module/main'
 import { getLogger } from 'dev-dep-tool/module/logger'
 import { getScriptFileListFromPathList } from 'dev-dep-tool/module/fileList'
 import { compileWithWebpack, commonFlag } from 'dev-dep-tool/module/webpack'
+import { testWithPuppeteerMocha } from 'dev-dep-tool/module/puppeteer'
 
-import { readFileAsync } from 'source/node/file/function'
-import { createDirectory } from 'source/node/file/File'
-import { modify } from 'source/node/file/Modify'
-
-import { testWithPuppeteer } from './puppeteer'
+import { readFileAsync } from 'dr-js/module/node/file/function'
+import { createDirectory } from 'dr-js/module/node/file/File'
+import { modify } from 'dr-js/module/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_TEMP = resolve(__dirname, '../.temp-gitignore')
@@ -28,18 +27,14 @@ runMain(async (logger) => {
   const babelOption = {
     configFile: false,
     babelrc: false,
-    cacheDirectory: isProduction,
-    presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ],
-    plugins: [
-      isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ] // NOTE: for Edge(17.17134) support check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals
-    ].filter(Boolean)
+    presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ]
   }
 
   const entryList = await getScriptFileListFromPathList([ 'source/env', 'source/common', 'source/browser' ], fromRoot, (path) => path.endsWith('.test.js'))
 
   const config = {
     mode,
-    bail: isProduction,
+    bail: true,
     output: { path: PATH_TEMP, filename: '[name].js', library: 'DrTest', libraryTarget: 'umd' },
     entry: { [ NAME_BROWSER_TEST ]: entryList },
     resolve: { alias: { source: fromRoot('source') } },
@@ -55,5 +50,5 @@ runMain(async (logger) => {
   const testScriptString = await readFileAsync(PATH_BROWSER_TEST_JS)
   await modify.delete(PATH_BROWSER_TEST_JS)
 
-  await testWithPuppeteer({ testScriptString, logger })
-}, getLogger(`webpack`, argvFlag('quiet')))
+  await testWithPuppeteerMocha({ testScriptString, logger })
+}, getLogger(`browser-test`, argvFlag('quiet')))
