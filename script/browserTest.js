@@ -1,15 +1,15 @@
 import { resolve } from 'path'
 import { DefinePlugin } from 'webpack'
 
-import { argvFlag, runMain } from 'dev-dep-tool/module/main'
-import { getLogger } from 'dev-dep-tool/module/logger'
-import { getScriptFileListFromPathList } from 'dev-dep-tool/module/fileList'
-import { compileWithWebpack, commonFlag } from 'dev-dep-tool/module/webpack'
-import { testWithPuppeteerMocha } from 'dev-dep-tool/module/puppeteer'
+import { argvFlag, runMain } from 'dr-dev/module/main'
+import { getLogger } from 'dr-dev/module/logger'
+import { getScriptFileListFromPathList } from 'dr-dev/module/fileList'
+import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
+import { testWithPuppeteerMocha } from 'dr-dev/module/puppeteer'
 
-import { readFileAsync } from 'dr-js/module/node/file/function'
-import { createDirectory } from 'dr-js/module/node/file/File'
-import { modify } from 'dr-js/module/node/file/Modify'
+import { readFileAsync } from 'source/node/file/function'
+import { createDirectory } from 'source/node/file/File'
+import { modify } from 'source/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_TEMP = resolve(__dirname, '../.temp-gitignore')

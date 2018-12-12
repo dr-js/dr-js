@@ -39,7 +39,7 @@ const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolv
 // Promise.resolve('DATA')
 //   .then(setTimeoutPromise(500)) // will pass data through
 //   .then((result) => {}) // result === 'DATA'
-const setTimeoutPromise = (wait = 0) => (data) => new Promise((resolve) => setTimeout(() => resolve(data), wait))
+const setTimeoutPromise = (wait = 0) => (data) => new Promise((resolve) => setTimeout(() => resolve(data), wait)) // TODO: DEPRECATE:
 
 const [ requestFrameUpdate, cancelFrameUpdate ] = global.requestAnimationFrame
   ? [ global.requestAnimationFrame, global.cancelAnimationFrame ]
@@ -68,7 +68,7 @@ export {
   clock,
   getTimestamp,
   setTimeoutAsync,
-  setTimeoutPromise,
+  setTimeoutPromise, // TODO: DEPRECATE:
   requestFrameUpdate,
   cancelFrameUpdate,
   createTimer

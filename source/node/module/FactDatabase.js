@@ -146,7 +146,7 @@ const tryLoadFactInfoFromCache = async (factInfo, { factCacheFileList }) => { //
   factCacheFileList.sort((a, b) => b.fileId - a.fileId) // bigger id first
   for (const { path, name } of factCacheFileList) {
     __DEV__ && console.log('try cached fact state file:', name)
-    const { factId, factState } = tryParseJSONObject(await readFileAsync(path, { encoding: 'utf8' }))
+    const { factId, factState } = tryParseJSONObject(await readFileAsync(path))
     __DEV__ && console.log('load cached fact state with factId:', factId, name)
     if (factId) return { ...factInfo, factId, factState, factCacheFile: path }
   }

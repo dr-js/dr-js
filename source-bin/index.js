@@ -28,7 +28,8 @@ const logAuto = (value) => console.log(isBasicObject(value)
   : value
 )
 
-const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getSingleOption, getSingleOptionOptional }) => {
+const runMode = async (modeName, optionData) => {
+  const { getOption, getOptionOptional, getSingleOption, getSingleOptionOptional } = optionData
   const log = getOptionOptional('quiet')
     ? () => {}
     : console.log
@@ -61,7 +62,8 @@ const runMode = async (modeName, { optionMap, getOption, getOptionOptional, getS
       let result = await evalScript(
         inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ],
         inputFile ? argumentList : argumentList.slice(1),
-        inputFile ? dirname(inputFile) : process.cwd()
+        inputFile ? dirname(inputFile) : process.cwd(),
+        optionData
       )
       if (modeName === 'eval-readline') result = await evalReadlineExtend(result, getSingleOption('root'), log)
       return result !== undefined && outputBuffer((result instanceof Buffer)

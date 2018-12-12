@@ -55,6 +55,7 @@ some helpful quick composed shell scripts:
   >   const { toArrayBuffer } = require('dr-js/library/node/data/Buffer')
   >   const { readFileSync } = require('fs')
   >   const [ mode, ...extraArgv ] = evalArgv
+  >   const loadTimedLookup = () => parseDataArrayBuffer(toArrayBuffer(readFileSync(evalOption.getSingleOption('root'))))
   >   switch (mode) {
   >     case 'file-generate': case 'fg': {
   >       const [ tag, size, tokenSize, timeGap ] = extraArgv
@@ -63,18 +64,19 @@ some helpful quick composed shell scripts:
   >     case 'check-code-generate': case 'ccg': {
   >       const [ timestamp ] = extraArgv
   >       return generateCheckCode(
-  >         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('root')))),
+  >         loadTimedLookup(),
   >         Number(timestamp) || undefined
   >       )
   >     }
   >     case 'check-code-verify': case 'ccv': {
   >       const [ checkCode, timestamp ] = extraArgv
   >       return verifyCheckCode(
-  >         parseDataArrayBuffer(toArrayBuffer(readFileSync(getSingleOption('root')))),
+  >         loadTimedLookup(),
   >         checkCode,
   >         Number(timestamp) || undefined
   >       )
   >     }
+  >     case 'show': case 's': return JSON.stringify(loadTimedLookup())
   >   }
   >   throw new Error(`unknown mode: ${mode}`)
   > EOM

@@ -16,7 +16,7 @@ const loadScript = (uri) => uri.includes('://')
   : loadLocalScript(uri)
 
 const loadRemoteJSON = async (uri) => (await fetchLikeRequest(uri)).json()
-const loadLocalJSON = async (filePath) => JSON.parse(await readFileAsync(filePath, 'utf8'))
+const loadLocalJSON = async (filePath) => JSON.parse(await readFileAsync(filePath))
 const loadJSON = (uri) => uri.includes('://')
   ? loadRemoteJSON(uri)
   : loadLocalJSON(uri)

@@ -34,10 +34,11 @@ const getVersion = () => ({
 const evalScript = async (
   evalScriptString, // inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]
   evalArgv, // inputFile ? argumentList : argumentList.slice(1)
-  evalCwd // inputFile ? dirname(inputFile) : process.cwd()
+  evalCwd, // inputFile ? dirname(inputFile) : process.cwd()
+  evalOption // optionData
 ) => { // NOTE: use eval not Function to allow require() to be called
-  const scriptFunc = await eval(`(evalArgv, evalCwd) => { ${evalScriptString} }`) // eslint-disable-line no-eval
-  return scriptFunc(evalArgv, evalCwd) // NOTE: both evalArgv / argumentList is accessible from eval
+  const scriptFunc = await eval(`(evalArgv, evalCwd, evalOption) => { ${evalScriptString} }`) // eslint-disable-line no-eval
+  return scriptFunc(evalArgv, evalCwd, evalOption) // NOTE: both evalArgv / argumentList is accessible from eval
 }
 
 const evalReadlineExtend = async (result, readlineFile, log) => {
@@ -161,7 +162,7 @@ const commonStartServer = async ({ protocol, hostname, port, routeConfigList, is
   return { server, option, start, stop }
 }
 
-const getDrBrowserScriptHTML = () => `<script>${readFileSync(`${__dirname}/../library/Dr.browser.js`, 'utf8')}</script>`
+const getDrBrowserScriptHTML = () => `<script>${readFileSync(`${__dirname}/../library/Dr.browser.js`)}</script>`
 
 export {
   packageName,
