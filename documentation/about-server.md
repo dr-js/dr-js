@@ -43,7 +43,7 @@ has `getState()` & `setState()` (check `createStateStoreLite()`)
 - `store.request` is from node, check: https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_incomingmessage
 - `store.response` is from node, check: https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse
 - `storeState` is like Redux state, initially will set `time` & `error`,
-  in common setup, `url` & `method` will later be set by responder from `createResponderParseURL()`
+  in common setup, `url` & `method` will later be set by responder from `createResponderRouter()`
 
 the function `createRequestListener()` is used to bind responder (later), 
 and create store for each incoming request:
@@ -84,7 +84,7 @@ const responder = async (store) => {}
 
 this allows responder to `await` more responder inside
 
-most of the time, `createResponderParseURL()` and `createResponderRouter()` should be used,
+most of the time, `createResponderRouter()` should be used,
 for example, check: 📄 [source/node/server/Server.test.js](../source/node/server/Server.test.js)
 
 
@@ -165,8 +165,8 @@ and a `server` can be configured with code like:
 ```js
 const configureServer = async ({
   serverConfig = {},
-  configureFeatruePackA, featureConfigA = {},
-  configureFeatruePackB, featureConfigB = {}
+  configureFeaturePackA, featureConfigA = {},
+  configureFeaturePackB, featureConfigB = {}
 }) => {
   // server
   const { server, start, stop, option } = configureServerBase(serverConfig)
@@ -183,8 +183,7 @@ const configureServer = async ({
   // mount routeResponder to server
   server.on('request', createRequestListener({
     responderList: [
-      createResponderParseURL(option),
-      createResponderRouter(routerMap)
+      createResponderRouter({ routerMap, baseUrl: option.baseUrl })
     ]
   }))
 

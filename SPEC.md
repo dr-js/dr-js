@@ -54,7 +54,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `strictEqual`, `string`, `stringifyEqual`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
@@ -63,10 +63,6 @@
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `createCache`, `createCacheMap`
-+ 📄 [source/common/data/IdPool.js](source/common/data/IdPool.js)
-  - `createIdPool`
-+ 📄 [source/common/data/IndexBox.js](source/common/data/IndexBox.js)
-  - `createIndexBox`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
   - `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
@@ -96,7 +92,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectDeleteUndefined`, `objectDepthFirstSearch`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+  - `objectDelete`, `objectDeleteUndefined`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -132,7 +128,7 @@
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `calcCode`, `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+  - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
@@ -172,7 +168,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -190,7 +186,7 @@
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
-  - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+  - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
@@ -268,10 +264,6 @@
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **CacheMap**
       - `createCache`, `createCacheMap`
-    - **IdPool**
-      - `createIdPool`
-    - **IndexBox**
-      - `createIndexBox`
     - **LinkedList**
       - `createDoublyLinkedList`, `createNode`
     - **ListMap**
@@ -303,7 +295,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindPush`, `arrayFindSet`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectDeleteUndefined`, `objectDepthFirstSearch`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+      - `objectDelete`, `objectDeleteUndefined`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
@@ -333,7 +325,7 @@
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
-      - `calcCode`, `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+      - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
@@ -350,7 +342,7 @@
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`, `setTimeoutPromise`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
   - **Verify**
     - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
@@ -377,7 +369,7 @@
       - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
     - **Watch**
       - `createFileWatcher`
-    - `accessAsync`, `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
@@ -392,7 +384,7 @@
   - **Server**
     - **Responder**
       - **Common**
-        - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderParseURL`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+        - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**

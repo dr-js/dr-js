@@ -2,7 +2,7 @@ import { catchAsync } from 'dr-js/module/common/error'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
-import { responderEndWithRedirect, createResponderParseURL } from 'dr-js/module/node/server/Responder/Common'
+import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBufferCompress, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
 import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
@@ -102,11 +102,12 @@ const upgradeRequestProtocol = (store) => {
 
 const FRAME_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
-const responderWebSocketGroupUpgrade = async (store) => { // TODO: NOTE: expect createResponderParseURL
+const responderWebSocketGroupUpgrade = async (store) => { // TODO: NOTE: expect createResponderRouter
   const { origin, protocolList, isSecure } = store.webSocket
   __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
   const groupPath = decodeURIComponent(getRouteParamAny(store) || '')
-  const id = store.getState().url.searchParams.get('id')
+  const { url: { searchParams } } = store.getState()
+  const id = searchParams.get('id')
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
   if (!groupPath || !id || !protocol) return
   __DEV__ && console.log('[responderWebSocketGroupUpgrade] pass', { groupPath, id, protocol })
@@ -143,7 +144,7 @@ const createServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, 
     [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ]
   ]
 
-  const { server, option } = await commonStartServer({
+  const { server, option: { baseUrl } } = await commonStartServer({
     protocol,
     hostname,
     port,
@@ -156,8 +157,12 @@ const createServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, 
     server,
     onUpgradeRequest: createUpdateRequestListener({
       responderList: [
-        createResponderParseURL(option),
-        createResponderRouter(createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ]))
+        createResponderRouter({
+          routeMap: createRouteMap([
+            [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ]
+          ]),
+          baseUrl
+        })
       ]
     }),
     frameLengthLimit: FRAME_LENGTH_LIMIT

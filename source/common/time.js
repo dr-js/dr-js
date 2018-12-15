@@ -35,12 +35,6 @@ const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, inte
 // }
 const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
 
-// Usage:
-// Promise.resolve('DATA')
-//   .then(setTimeoutPromise(500)) // will pass data through
-//   .then((result) => {}) // result === 'DATA'
-const setTimeoutPromise = (wait = 0) => (data) => new Promise((resolve) => setTimeout(() => resolve(data), wait)) // TODO: DEPRECATE:
-
 const [ requestFrameUpdate, cancelFrameUpdate ] = global.requestAnimationFrame
   ? [ global.requestAnimationFrame, global.cancelAnimationFrame ]
   : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
@@ -68,7 +62,6 @@ export {
   clock,
   getTimestamp,
   setTimeoutAsync,
-  setTimeoutPromise, // TODO: DEPRECATE:
   requestFrameUpdate,
   cancelFrameUpdate,
   createTimer

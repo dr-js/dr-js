@@ -16,7 +16,7 @@ import {
 
 import { describe } from './format'
 
-const throwError = (title, message, detail) => { throw new Error(`[verify|${title}]${message ? ` ${message};` : ''} ${detail}`) }
+const throwError = (title, message, detail) => { throw new Error(`[verify|${title}]${message ? ` ${message};` : ''} ${detail || ''}`) }
 const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) || throwError(title, message, `get: ${describe(value)}`)
 
 const string = createVerify('String', isString)

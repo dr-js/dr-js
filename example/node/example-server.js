@@ -2,7 +2,7 @@ const { resolve } = require('path')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/function')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
-const { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
+const { responderEnd, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
@@ -18,19 +18,21 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const ServerHost = 'localhost'
 const ServerPort = 3000
 
-const responderLogEnd = createResponderLogEnd(console.log)
+const responderLogEnd = createResponderLogEnd({ log: console.log })
 const responderServeStatic = createResponderServeStatic({})
 
 const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
-    createResponderLog(console.log),
-    createResponderParseURL(option),
-    createResponderRouter(createRouteMap([
-      [ '/', 'GET', createExampleServerHTMLResponder() ],
-      [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
-      [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
-    ]))
+    createResponderLog({ log: console.log }),
+    createResponderRouter({
+      routeMap: createRouteMap([
+        [ '/', 'GET', createExampleServerHTMLResponder() ],
+        [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+        [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
+      ]),
+      baseUrl: option.baseUrl
+    })
   ],
   responderEnd: async (store) => {
     await responderEnd(store)

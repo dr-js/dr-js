@@ -13,13 +13,11 @@ import { createInterface } from 'readline'
 const [
   statAsync, openAsync, renameAsync, unlinkAsync, truncateAsync,
   readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
-  mkdirAsync, rmdirAsync, readdirAsync,
-  accessAsync // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
+  mkdirAsync, rmdirAsync, readdirAsync
 ] = [
   stat, open, rename, unlink, truncate,
   readFile, writeFile, appendFile, copyFile,
-  mkdir, rmdir, readdir,
-  access // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
+  mkdir, rmdir, readdir
 ].map((fsFunc) => promisify(fsFunc))
 
 const [
@@ -91,7 +89,5 @@ export {
   createReadlineFromFileAsync,
 
   trimPathDepth,
-  toPosixPath,
-
-  accessAsync // TODO: DEPRECATE: will throw if not accessible, like verify, use below func for check
+  toPosixPath
 }

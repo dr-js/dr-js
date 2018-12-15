@@ -7,6 +7,8 @@ const WEB_SOCKET_CLOSE_TIMEOUT = __DEV__ ? 0.5 * 1000 : 5 * 1000 // in msec, 5se
 
 const NULL_ERROR_LISTENER = (error) => { __DEV__ && error && console.log('[NULL_ERROR_LISTENER] get error', error) }
 
+const DEFAULT_BUFFER = Buffer.from('Dr')
+
 const CONNECTING = 0 // The connection is not yet open.
 const OPEN = 1 // The connection is open and ready to communicate.
 const CLOSING = 2 // The connection is in the process of closing.
@@ -164,22 +166,22 @@ const createWebSocket = ({
     __DEV__ && console.log('setNextPong')
   }
 
-  const sendPing = (data = 'PING') => {
+  const sendPing = (dataBuffer = DEFAULT_BUFFER) => {
     if (readyState !== OPEN) return
-    __DEV__ && console.log('sendPing', data.toString())
+    __DEV__ && console.log('sendPing', dataBuffer.toString())
     setNextPong()
-    frameSender.encodePingFrame(data, sendFrameMaskType)
+    frameSender.encodePingFrame(dataBuffer, sendFrameMaskType)
     return frameSender.sendEncodedFrame(socket)
   }
 
-  const sendPong = (data = 'PONG') => {
+  const sendPong = (dataBuffer = DEFAULT_BUFFER) => {
     if (readyState !== OPEN) return
-    __DEV__ && console.log('sendPong', data.toString())
-    frameSender.encodePongFrame(data, sendFrameMaskType)
+    __DEV__ && console.log('sendPong', dataBuffer.toString())
+    frameSender.encodePongFrame(dataBuffer, sendFrameMaskType)
     return frameSender.sendEncodedFrame(socket)
   }
 
-  const receivePong = () => {
+  const receivePong = () => { // TODO: should check pong dataBuffer equal to ping
     pongTimeoutToken && clearTimeout(pongTimeoutToken)
     pongTimeoutToken = null
     if (shouldActivePing) setNextPing()

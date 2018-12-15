@@ -5,7 +5,6 @@ const { createPathPrefixLock } = require('../../output-gitignore/library/node/fi
 const { requestAsync } = require('../../output-gitignore/library/node/net')
 const { receiveBufferAsync } = require('../../output-gitignore/library/node/data/Buffer')
 const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
-const { createResponderParseURL } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
@@ -35,14 +34,16 @@ const { server, start, option } = createServer({ protocol: 'http:', hostname: Se
 server.on('request', createRequestListener({
   responderList: [
     (store) => { console.log(`[server] get: ${store.request.url}`) },
-    createResponderParseURL(option),
-    createResponderRouter(createRouteMap([
-      [ '/', 'GET', createExampleServerHTMLResponder() ],
-      [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
-      [ '/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE') ],
-      [ '/get-get-proxy', 'GET', responderProxy ],
-      [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
-    ]))
+    createResponderRouter({
+      routeMap: createRouteMap([
+        [ '/', 'GET', createExampleServerHTMLResponder() ],
+        [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+        [ '/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE') ],
+        [ '/get-get-proxy', 'GET', responderProxy ],
+        [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
+      ]),
+      baseUrl: option.baseUrl
+    })
   ]
 }))
 

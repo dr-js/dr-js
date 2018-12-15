@@ -44,10 +44,13 @@ const ConfigPreset = Object.assign({
   }
 }))
 
-const getOptionalFormatFlag = (...formatNameList) => (optionMap) => !formatNameList.some((formatName) => Boolean(optionMap[ formatName ])) // not option if the format has been set
+// not optional if the format has been set
+const getOptionalFormatFlag = (...formatNameList) => (optionMap) => !formatNameList.some((formatName) => Boolean(optionMap[ formatName ]))
+
+// not optional if the format has been set && value match
 const getOptionalFormatValue = (formatName, ...valueList) => (optionMap) => {
   const format = optionMap[ formatName ]
-  return format && !valueList.includes(format.argumentList[ 0 ]) // not option if the format has been set && value match
+  return format && !valueList.includes(format.argumentList[ 0 ])
 }
 
 export {

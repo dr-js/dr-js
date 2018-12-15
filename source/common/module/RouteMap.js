@@ -33,7 +33,7 @@ const findRouteFromMap = (routeNode, route) => {
       paramValueList.push(routeFragList.slice(index).join('/')) // set all follow-up fragList
       routeNode = routeNode[ ROUTE_ANY ]
       break
-    } else throw new Error(`[findRouteFromMap] stuck at [${frag}] for route: ${route}`)
+    } else return
   }
   return { routeNode, paramValueList }
 }
@@ -49,7 +49,10 @@ const appendRouteMap = (routeMap = {}, route = '/', data) => {
 const createRouteMap = (configList) => configList.reduce((o, [ route, data ]) => appendRouteMap(o, route, data), {})
 
 const parseRouteUrl = (routeMap, url) => {
-  const { routeNode, paramValueList } = findRouteFromMap(routeMap, url)
+  const routeData = findRouteFromMap(routeMap, url)
+  if (routeData === undefined) return
+  const { routeNode, paramValueList } = routeData
+  if (routeNode[ ROUTE_DATA ] === undefined) return
   const { route, paramNameList, data } = routeNode[ ROUTE_DATA ]
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]

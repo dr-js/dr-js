@@ -100,8 +100,6 @@ const parseDataArrayBuffer = (dataArrayBuffer) => {
 }
 
 export {
-  calcCode, // TODO: DEPRECATED: should not direct use
-
   verifyOption,
   verifyCheckCode,
   verifyParsedCheckCode,

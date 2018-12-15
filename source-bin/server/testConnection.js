@@ -57,7 +57,10 @@ const createServerTestConnection = async ({ protocol = 'http:', hostname, port, 
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', createResponderRouteList(() => createRouteMap(routeConfigList), [ getDrBrowserScriptHTML() ]) ]
+    [ '/', 'GET', createResponderRouteList({
+      getRouterMap: () => createRouteMap(routeConfigList),
+      extraBodyList: [ getDrBrowserScriptHTML() ]
+    }) ]
   ]
 
   await commonStartServer({

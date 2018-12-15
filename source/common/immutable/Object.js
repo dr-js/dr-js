@@ -49,20 +49,6 @@ const objectDeleteUndefined = (object) => {
   return result || object
 }
 
-const objectDepthFirstSearch = (object, checkFunc) => { // TODO: DEPRECATE: use `common/data/Tree`
-  const stack = []
-  unshiftStack(stack, object, 0)
-  while (stack.length) {
-    const [ key, value, index, level ] = stack.shift()
-    if (checkFunc(value, key, index, level)) return { value, key, index, level }
-    unshiftStack(stack, value, level + 1)
-  }
-}
-const unshiftStack = (stack, object, level) => isBasicObject(object) && stack.unshift( // TODO: DEPRECATE: use `common/data/Tree`
-  ...Object.entries(object)
-    .map(([ key, value ], index) => [ key, value, index, level ])
-)
-
 export {
   objectSet,
   objectDelete,
@@ -70,6 +56,5 @@ export {
   objectMap,
   objectPickKey,
   objectFindKey,
-  objectDeleteUndefined,
-  objectDepthFirstSearch // TODO: DEPRECATE: use `common/data/Tree`
+  objectDeleteUndefined
 }

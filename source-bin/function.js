@@ -12,7 +12,7 @@ import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
 
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderEnd, createResponderParseURL, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
+import { responderEnd, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
 import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
@@ -144,13 +144,12 @@ const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList 
 
 const commonStartServer = async ({ protocol, hostname, port, routeConfigList, isAddFavicon, title, extraInfoList, log }) => {
   const { server, option, start, stop } = createServer({ protocol, hostname, port })
-  const responderLogEnd = createResponderLogEnd(log)
+  const responderLogEnd = createResponderLogEnd({ log })
   if (isAddFavicon) routeConfigList = [ ...routeConfigList, [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ] ]
   server.on('request', createRequestListener({
     responderList: [
-      createResponderLog(log),
-      createResponderParseURL(option),
-      createResponderRouter(createRouteMap(routeConfigList))
+      createResponderLog({ log }),
+      createResponderRouter({ routeMap: createRouteMap(routeConfigList), baseUrl: option.baseUrl })
     ],
     responderEnd: (store) => {
       responderEnd(store)

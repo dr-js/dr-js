@@ -94,13 +94,14 @@ describe('Common.Module.RouteMap', () => {
   ])
 
   it('parseRouteUrl()', () => {
-    doThrow(() => parseRouteUrl(routeMap, '/a/test-param-any/a/b/c/d/e?f#g')) // wrong route
-    doThrow(() => parseRouteUrl(routeMap, '/test')) // wrong route
-    doThrow(() => parseRouteUrl(routeMap, '/test-param-a/aaa/bbb')) // too much param
-    doThrow(() => parseRouteUrl(routeMap, '/test-param-b/b/c/d/eee/f')) // too much param
-    doThrow(() => parseRouteUrl(routeMap, '/test-param-b/aaa')) // too few param
-    doThrow(() => parseRouteUrl(routeMap, '/test-param-b/b/c/d/')) // too few param
-    doThrow(() => parseRouteUrl(routeMap, '/test-param-b/b/c/d/ee')) // wrong frag
+    strictEqual(parseRouteUrl(routeMap, '/a/test-param-any/a/b/c/d/e?f#g'), undefined, `should skip: wrong route 0`)
+    strictEqual(parseRouteUrl(routeMap, '/test'), undefined, `should skip: wrong route 1`)
+    strictEqual(parseRouteUrl(routeMap, '/test-param-a/aaa/bbb'), undefined, `should skip: too much param 0`)
+    strictEqual(parseRouteUrl(routeMap, '/test-param-b/b/c/d/eee/f'), undefined, `should skip: too much param 1`)
+    strictEqual(parseRouteUrl(routeMap, '/test-param-b/aaa'), undefined, `should skip: too few param 0`)
+    strictEqual(parseRouteUrl(routeMap, '/test-param-b/b/c/d/'), undefined, `should skip: too few param 1`)
+    strictEqual(parseRouteUrl(routeMap, '/test-param-b/b/c/d/ee'), undefined, `should skip: wrong frag`)
+
     {
       const { route, paramMap } = parseRouteUrl(routeMap, '/test-basic')
       strictEqual(route, '/test-basic')

@@ -65,25 +65,29 @@ describe('Node.Server.Responder.Router', () => {
     ]))
   })
 
-  const responderRouter = createResponderRouter(createRouteMap([
-    [ '/test-basic', 'GET', (store, state) => ({ ...state, tag: 'A' }) ],
-    [ '/test-param-any/*', 'GET', (store, state) => ({ ...state, tag: 'B' }) ],
-    [ '/test-param-a/:param-a', 'GET', (store, state) => ({ ...state, tag: 'C' }) ],
-    [ '/test-param-b/:param-b/:param-c/:param-d/eee', [ 'GET', 'HEAD' ], (store, state) => ({ ...state, tag: 'D' }) ],
-    [ [ '/', '/test/' ], [ 'GET', 'HEAD' ], (store, state) => ({ ...state, tag: 'E' }) ],
-    [ '/test', [ 'POST', 'HEAD' ], (store, state) => ({ ...state, tag: 'F' }) ]
-  ]))
+  const responderRouter = createResponderRouter({
+    routeMap: createRouteMap([
+      [ '/test-basic', 'GET', (store, state) => ({ ...state, tag: 'A' }) ],
+      [ '/test-param-any/*', 'GET', (store, state) => ({ ...state, tag: 'B' }) ],
+      [ '/test-param-a/:param-a', 'GET', (store, state) => ({ ...state, tag: 'C' }) ],
+      [ '/test-param-b/:param-b/:param-c/:param-d/eee', [ 'GET', 'HEAD' ], (store, state) => ({ ...state, tag: 'D' }) ],
+      [ [ '/', '/test/' ], [ 'GET', 'HEAD' ], (store, state) => ({ ...state, tag: 'E' }) ],
+      [ '/test', [ 'POST', 'HEAD' ], (store, state) => ({ ...state, tag: 'F' }) ]
+    ]),
+    getMethodUrl: (store) => store.getState()
+  })
 
   it('createResponderRouter()', () => {
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') }))) // no method 'POST' for route
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') }))) // wrong route
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') }))) // too much param
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') }))) // too much param
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') }))) // too few param
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') }))) // too few param
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') }))) // wrong frag
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') }))) // wrong method route pair
-    doThrow(() => responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') }))) // wrong method route pair
+    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') })), undefined, `should skip: no method 'POST' for route`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') })), undefined, `should skip: wrong route`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') })), undefined, `should skip: too much param 0`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') })), undefined, `should skip: too much param 1`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') })), undefined, `should skip: too few param 0`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') })), undefined, `should skip: too few param 1`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') })), undefined, `should skip: wrong frag`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') })), undefined, `should skip: wrong method route pair 0`)
+    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') })), undefined, `should skip: wrong method route pair 1`)
+
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-basic') })
       const { tag, route, paramMap } = responderRouter(store)

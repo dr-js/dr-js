@@ -68,8 +68,8 @@ const createFrameSender = (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) => {
     // __DEV__ && console.log('encodeCloseFrame', { code, reason, stringLength })
     encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_CLOSE, dataBuffer, maskType)
   }
-  const encodePingFrame = (data = '', maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PING, Buffer.from(data), maskType)
-  const encodePongFrame = (data = '', maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PONG, Buffer.from(data), maskType)
+  const encodePingFrame = (dataBuffer, maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PING, dataBuffer, maskType)
+  const encodePongFrame = (dataBuffer, maskType) => encodeFrame(FRAME_TYPE_CONFIG_MAP.FRAME_COMPLETE, DATA_TYPE_MAP.OPCODE_PONG, dataBuffer, maskType)
 
   const sendEncodedFrame = (socket) => { // will send the frame just encoded
     __DEV__ && console.log('[Frame] sendEncodedFrame', encodedFrameHeaderBuffer, '|', encodedFrameDataBuffer)

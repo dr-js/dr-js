@@ -1,3 +1,4 @@
+import { URL } from 'url'
 import { isBasicObject } from 'source/common/check'
 import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 import {
@@ -27,31 +28,41 @@ const appendRouteMap = (routeMap, route = '/', method = 'GET', routeResponder) =
   if (Array.isArray(route)) return route.reduce((o, v) => appendRouteMap(routeMap, v, method, routeResponder), routeMap)
   if (Array.isArray(method)) return method.reduce((o, v) => appendRouteMap(routeMap, route, v, routeResponder), routeMap)
   const { routeNode, paramNameList } = parseRouteToMap(routeMap, route)
-  if (!METHOD_MAP[ method ]) throw new Error(`invalid method [${method}] for: ${route}`)
-  if (routeNode[ METHOD_MAP[ method ] ]) throw new Error(`duplicate method [${method}] for: ${route}`)
+  const methodTag = METHOD_MAP[ method ]
+  if (!methodTag) throw new Error(`invalid method [${method}] for: ${route}`)
+  if (routeNode[ methodTag ]) throw new Error(`duplicate method [${method}] for: ${route}`)
   if (typeof (routeResponder) !== 'function') throw new Error(`invalid responder for: ${route}`)
-  routeNode[ METHOD_MAP[ method ] ] = { route, paramNameList, routeResponder }
+  routeNode[ methodTag ] = { route, paramNameList, routeResponder }
   return routeMap
 }
 
 const createRouteMap = (configList) => configList.reduce((o, [ route, method, routeResponder ]) => appendRouteMap(o, route, method, routeResponder), {})
 
-const createResponderRouter = (routeMap) => (store) => { // TODO: NOTE: implicit dependency to `createResponderParseURL()`
-  const { method, url } = store.getState()
-  if (!method || !url) throw new Error(`[responderRouter] missing input: ${JSON.stringify({ url, method })}`)
-  if (!METHOD_MAP[ method ]) throw new Error(`invalid method [${method}] from: ${url.pathname}`)
+const createResponderRouter = ({
+  routeMap,
+  baseUrl = '', // NOTE: normally just rest spread the server option here
+  getMethodUrl = createGetMethodUrl(new URL(baseUrl))
+}) => (store) => {
+  const { method, url } = getMethodUrl(store)
+  const methodTag = METHOD_MAP[ method ]
+  if (methodTag === undefined) return // throw new Error(`invalid method [${method}] from: ${urlString}`)
 
-  const { routeNode, paramValueList } = findRouteFromMap(routeMap, url.pathname)
-  if (!routeNode[ METHOD_MAP[ method ] ]) throw new Error(`no method [${method}] for: ${url.pathname}`)
+  const routeDate = findRouteFromMap(routeMap, url.pathname)
+  if (routeDate === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
 
-  const { route, paramNameList, routeResponder } = routeNode[ METHOD_MAP[ method ] ]
+  const { routeNode, paramValueList } = routeDate
+  if (routeNode[ methodTag ] === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
+
+  const { route, paramNameList, routeResponder } = routeNode[ methodTag ]
   const paramMap = paramNameList.reduce((o, paramName, index) => {
     o[ paramName ] = paramValueList[ index ]
     return o
   }, {})
 
-  return routeResponder(store, store.setState({ route, paramMap }))
+  return routeResponder(store, store.setState({ method, url, route, paramMap }))
 }
+const createGetMethodUrl = (baseUrlObject) => ({ request: { method, url } }) => ({ method, url: new URL(url.replace(REGEXP_URL_REPLACE, '/'), baseUrlObject) })
+const REGEXP_URL_REPLACE = /\/\//g // NOTE: check for `new URL('//a/list/', new URL('http://0.0.0.0/'))`
 
 const getRouteParamAny = (store) => getRouteMapParamAny(store.getState())
 const getRouteParam = (store, paramName) => getRouteMapParam(store.getState(), paramName)
@@ -89,7 +100,10 @@ const routeMapDepthFirstSearch = createTreeDepthFirstSearch(
 //   }
 // }
 
-const createResponderRouteList = (getRouterMap, extraBodyList) => {
+const createResponderRouteList = ({
+  getRouterMap, // () => routeMap
+  extraBodyList
+}) => {
   let bufferData
   return async (store) => {
     if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouterMap(), extraBodyList)), BASIC_EXTENSION_MAP.html)

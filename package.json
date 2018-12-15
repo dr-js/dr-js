@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.18.2",
+  "version": "0.19.0-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/node/system/ProcessStatus.test.js\"",
+    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/common/module/RouteMap.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",
@@ -51,8 +51,8 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-dev": "0.0.0",
-    "dr-dev-web-puppeteer": "0.0.0"
+    "dr-dev": "0.0.1",
+    "dr-dev-web-puppeteer": "0.0.1"
   },
   "sideEffects": false
 }
