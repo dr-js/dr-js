@@ -1,5 +1,3 @@
-import { isBasicObject } from 'source/common/check'
-
 // NOTE: all method do not check if the value is a valid object
 
 const objectSet = (object, key, value) => (object[ key ] !== value)

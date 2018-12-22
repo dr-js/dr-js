@@ -59,7 +59,7 @@ some helpful quick composed shell scripts:
   >   switch (mode) {
   >     case 'file-generate': case 'fg': {
   >       const [ tag, size, tokenSize, timeGap ] = extraArgv
-  >       return Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size, tokenSize, timeGap })))
+  >       return Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size: Number(size), tokenSize: Number(tokenSize), timeGap: Number(timeGap) })))
   >     }
   >     case 'check-code-generate': case 'ccg': {
   >       const [ timestamp ] = extraArgv

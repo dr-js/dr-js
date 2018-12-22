@@ -36,7 +36,7 @@ const tryGetRandomArrayBuffer = () => {
 
 const getRandomInt = (a, b = 0) => RANDOM_INT(Math.min(a, b), Math.max(a, b))
 
-// the result will be from small to big
+// the result will be from small to big // TODO: maybe bad for index re-map usage like `getRandomIntList(0, 64, 64)` (will return sorted index [0, ..., 63])
 const getRandomIntList = (a, b, count) => {
   const from = Math.min(a, b)
   const to = Math.max(a, b)

@@ -100,7 +100,7 @@ const prettyStringifyFileTree = async (rootPath) => {
   return resultList.join('\n')
 }
 
-const collectFile = (modeName, rootPath) => modeName === 'file-list' ? getDirectorySubInfoList(rootPath).map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name)
+const collectFile = async (modeName, rootPath) => modeName === 'file-list' ? (await getDirectorySubInfoList(rootPath)).map(({ name, stat }) => stat.isDirectory() ? `${name}/` : name)
   : modeName === 'file-list-all' ? getFileList(rootPath)
     : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
       : ''

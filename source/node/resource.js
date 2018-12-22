@@ -8,7 +8,7 @@ const loadRemoteScript = async (uri) => {
   return runInThisContext(scriptString, { filename: uri, displayErrors: true })
 }
 const loadLocalScript = async (filePath) => {
-  const scriptString = await readFileAsync(filePath, 'utf8')
+  const scriptString = String(await readFileAsync(filePath))
   return runInThisContext(scriptString, { filename: filePath, displayErrors: true })
 }
 const loadScript = (uri) => uri.includes('://')

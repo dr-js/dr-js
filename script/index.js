@@ -7,6 +7,7 @@ import { getScriptFileListFromPathList } from 'dr-dev/module/fileList'
 import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dr-dev/module/commonOutput'
 import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dr-dev/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from 'dr-dev/module/minify'
+import { writeLicenseFile } from 'dr-dev/module/license'
 
 import { binary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
@@ -66,6 +67,7 @@ runMain(async (logger) => {
   await verifyNoGitignore({ path: fromRoot('source'), logger })
   await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
+  writeLicenseFile(fromRoot('LICENSE'), packageJSON.license, packageJSON.author)
 
   if (!argvFlag('pack')) return
 

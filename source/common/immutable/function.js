@@ -13,7 +13,7 @@ const transformCache = (transformFunc) => {
   }
 }
 
-// memorize expensive immutable transform, with info output, mostly for debug
+// memorize expensive immutable transform, with info output, mostly for debug // TODO: remove or reduce code size?
 const createTransformCacheWithInfo = (outputInfo = DEFAULT_OUTPUT_INFO, shouldOutputInfo = DEFAULT_SHOULD_OUTPUT_INFO) => {
   const infoArray = []
 

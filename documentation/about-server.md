@@ -134,7 +134,7 @@ or a `Feature Pack`
 
 for `Feature Pack`, the code should be like:
 ```js
-const configureFeatruePack = async ({
+const configureFeaturePack = async ({
   option, // server option
   routePrefix = '', // route prefix/namespace, so upper code can relocate this feature
   ...featureSpecificConfig
