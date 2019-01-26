@@ -52,7 +52,7 @@
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
+  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withPromiseTimeout`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -340,7 +340,7 @@
   - **Format**
     - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
   - **Function**
-    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
+    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withPromiseTimeout`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
   - **Verify**

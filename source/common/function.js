@@ -112,6 +112,15 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
   }
 }
 
+// to prevent async hanging (un-resolving promise)
+const withPromiseTimeout = (promise, timeout) => Promise.race([
+  promise,
+  new Promise((resolve, reject) => setTimeout(
+    () => reject(new Error(`[withPromiseTimeout] timeout after: ${timeout}`)),
+    timeout
+  ))
+])
+
 const createInsideOutPromise = () => {
   let promiseResolve, promiseReject
   return {
@@ -141,5 +150,6 @@ export {
   withRepeatAsync,
   withRetry,
   withRetryAsync,
+  withPromiseTimeout,
   createInsideOutPromise
 }
