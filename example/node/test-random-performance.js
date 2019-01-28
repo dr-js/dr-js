@@ -1,5 +1,5 @@
 const { randomBytes } = require('crypto')
-const { clock } = require('../../output-gitignore/library/common/time')
+const { createStepper } = require('../../output-gitignore/library/common/time')
 
 const logResult = (result) => {
   const size = result.length
@@ -11,8 +11,7 @@ const logResult = (result) => {
 const doTest = (loop) => {
   console.log('baseline', loop)
   {
-    const start = clock()
-    // console.log(' - start', start)
+    const stepper = createStepper()
     const result = []
     for (let i = 0; i < loop; i++) {
       const b = Buffer.allocUnsafe(4)
@@ -20,20 +19,19 @@ const doTest = (loop) => {
       b.writeUInt16BE((Math.random() * 0x10000) << 0, 0, true)
       result.push(b)
     }
-    const timeDelta = clock() - start
+    const timeDelta = stepper()
     console.log(' - done', timeDelta, timeDelta / loop)
     logResult(result)
   }
 
   console.log('test', loop)
   {
-    const start = clock()
-    // console.log(' - start', start)
+    const stepper = createStepper()
     const result = []
     for (let i = 0; i < loop; i++) {
       result.push(randomBytes(4))
     }
-    const timeDelta = clock() - start
+    const timeDelta = stepper()
     console.log(' - done', timeDelta, timeDelta / loop)
     logResult(result)
   }

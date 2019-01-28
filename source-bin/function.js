@@ -3,7 +3,7 @@ import { cpus } from 'os'
 
 import { getEndianness } from 'dr-js/module/env/function'
 
-import { clock } from 'dr-js/module/common/time'
+import { createStepper } from 'dr-js/module/common/time'
 import { time, decimal, stringIndentList, stringAutoEllipsis, padTable } from 'dr-js/module/common/format'
 import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
@@ -48,11 +48,11 @@ const evalReadlineExtend = async (result, readlineFile, log) => {
     getResult, // () => 'result'
     logLineInterval = 0 // set number to log line & time
   } = result
-  const timeStart = clock()
   let lineCounter = 0
   let lineString = ''
+  const stepper = logLineInterval && createStepper()
   const logLineCheck = logLineInterval
-    ? () => (lineCounter % logLineInterval === 0) && log(`line: ${decimal(lineCounter)} (+${time(clock() - timeStart)})`)
+    ? () => (lineCounter % logLineInterval === 0) && log(`line: ${decimal(lineCounter)} (+${time(stepper())})`)
     : () => {}
   await createReadlineFromFileAsync(readlineFile, (string) => {
     lineString = string

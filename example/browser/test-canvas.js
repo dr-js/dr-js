@@ -34,7 +34,7 @@ window.addContent(``, `
     Dr: {
       Common: {
         Function: { withRepeat },
-        Time: { CLOCK_TO_SECOND, clock },
+        Time: { CLOCK_TO_SECOND, createStepper },
         Data: { Toggle: { createToggle } }
       },
       Browser: {
@@ -80,11 +80,9 @@ window.addContent(``, `
   {
     const LOOP_COUNT = 100
 
-    let timer = clock()
+    const stepper = createStepper()
     const logTime = (...args) => {
-      const prevTimer = timer
-      timer = clock()
-      const deltaTime = (timer - prevTimer) * CLOCK_TO_SECOND
+      const deltaTime = stepper() * CLOCK_TO_SECOND
       log(`[${deltaTime.toFixed(4)}sec|${(1 / deltaTime).toFixed(2)}hz]`, ...args)
     }
 

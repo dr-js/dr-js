@@ -1,7 +1,6 @@
 import { clock } from 'source/common/time'
 import { time as formatTime } from 'source/common/format'
 
-// TODO: all `createResponder...` should use option object?
 // TODO: add responderEndRandomErrorStatus?
 
 const responderEnd = (store) => {
@@ -31,16 +30,21 @@ const DEFAULT_DESCRIBE_REQUEST = ({
 
 const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
   const userAgentString = store.request.headers[ 'user-agent' ] || 'no-user-agent'
-  log(describeRequest(store.request), '[UA]', userAgentString)
+  log(
+    describeRequest(store.request),
+    '[UA]', userAgentString
+  )
 }
 
 const createResponderLogEnd = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
   const { statusCode } = store.response
   const { time, error } = store.getState()
   const timeString = formatTime(clock() - time)
-  log(describeRequest(store.request), error
-    ? `[ERROR|${statusCode}|${timeString}] ${error.stack || error}`
-    : `[END|${statusCode}|${timeString}]`
+  log(
+    describeRequest(store.request),
+    error
+      ? `[ERROR|${statusCode}|${timeString}] ${error.stack || error}`
+      : `[END|${statusCode}|${timeString}]`
   )
 }
 

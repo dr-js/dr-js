@@ -8,7 +8,8 @@ import {
   withRepeatAsync,
   withRetry,
   withRetryAsync,
-  withPromiseTimeout,
+  withTimeoutAsync,
+  withTimeoutPromise,
   createInsideOutPromise
 } from './function'
 import { setTimeoutAsync } from './time'
@@ -335,13 +336,41 @@ describe('Common.Function', () => {
     }
   })
 
-  it('withPromiseTimeout()', async () => {
-    await withPromiseTimeout( // no timeout
+  it('withTimeoutAsync()', async () => {
+    await withTimeoutAsync( // no timeout, no promise/async
+      () => {},
+      20
+    )
+
+    await withTimeoutAsync( // no timeout
+      () => setTimeoutAsync(10),
+      20
+    )
+
+    await withTimeoutAsync( // with timeout // TODO: not able to catch normal function (will throw before await)
+      async () => { throw new Error('AAA') },
+      10
+    ).then(
+      () => new Error(`should reject with error`),
+      () => 'Good Error'
+    )
+
+    await withTimeoutAsync( // with timeout
+      () => setTimeoutAsync(20),
+      10
+    ).then(
+      () => new Error(`should reject with timeout`),
+      () => 'Good Error'
+    )
+  })
+
+  it('withTimeoutPromise()', async () => {
+    await withTimeoutPromise( // no timeout
       setTimeoutAsync(10),
       20
     )
 
-    await withPromiseTimeout( // with timeout
+    await withTimeoutPromise( // with timeout
       setTimeoutAsync(20),
       10
     ).then(

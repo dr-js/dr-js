@@ -7,6 +7,8 @@ import { getEntityTagByContentHashAsync, getEntityTagByContentHash } from 'sourc
 
 const gzipAsync = promisify(gzip)
 
+// TODO: check timeout for responderSend?
+
 const setResponseContent = (store, entityTag, type, length) => {
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)

@@ -56,6 +56,12 @@ const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTi
   return { start, stop, isActive }
 }
 
+const createStepper = (prevTime = clock()) => () => {
+  const nextTime = clock()
+  const result = nextTime - prevTime
+  prevTime = nextTime
+  return result
+}
 export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,
@@ -64,5 +70,6 @@ export {
   setTimeoutAsync,
   requestFrameUpdate,
   cancelFrameUpdate,
-  createTimer
+  createTimer,
+  createStepper
 }

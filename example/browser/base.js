@@ -81,20 +81,18 @@ canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-renderi
   <pre id="LOG" style="color: #bbb;">Log</pre>
 </div>
 `, () => {
-  const { Dr: { Common: { Time: { CLOCK_TO_SECOND, clock }, Module: { UpdateLoop: { createUpdateLoop } } } } } = window
+  const { Dr: { Common: { Time: { CLOCK_TO_SECOND, createStepper }, Module: { UpdateLoop: { createUpdateLoop } } } } } = window
 
-  const createLogList = (maxLength = 20, logList = [], prevTime = clock()) => (text, currentTime = clock()) => {
-    const deltaTime = (currentTime - prevTime) * CLOCK_TO_SECOND
-    logList.unshift(`[+${deltaTime.toFixed(4)}s] ${text}`) // add to head of the array
-    prevTime = currentTime
+  const createLogList = (maxLength = 20, logList = [], stepper = createStepper()) => (text) => {
+    const deltaTime = stepper() * CLOCK_TO_SECOND
+    logList.unshift(`[+${(deltaTime).toFixed(4)}s] ${text}`) // add to head of the array
     logList.length = maxLength
     return logList.join('<br />')
   }
 
-  const getFpsStep = (maxLength = 20, fpsList = [], prevTime = clock()) => (currentTime = clock()) => {
-    const deltaTime = (currentTime - prevTime) * CLOCK_TO_SECOND
+  const getFpsStep = (maxLength = 20, fpsList = [], stepper = createStepper()) => () => {
+    const deltaTime = stepper() * CLOCK_TO_SECOND
     fpsList.unshift(deltaTime === 0 ? 0 : 1 / deltaTime)
-    prevTime = currentTime
     fpsList.length = maxLength
     const [ sum, min, max ] = fpsList.reduce(([ sum, min, max ], v) => [ sum + v, Math.min(min, v), Math.max(max, v) ], [ 0, Infinity, -Infinity ])
     return `FPS: ${fpsList[ 0 ].toFixed(2)} | AVG: ${(sum / maxLength).toFixed(2)} [${min.toFixed(2)} - ${max.toFixed(2)}]`
