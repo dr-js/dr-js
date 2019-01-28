@@ -43,7 +43,7 @@ const MODE_FORMAT_LIST = [
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
-  prefixJSON: 'dr-js',
+  prefixCONFIG: 'dr-js',
   formatList: [
     Config,
     { ...BooleanFlag, name: 'help', shortName: 'h', description: `show full help, or human readable output` },

@@ -125,7 +125,7 @@ const runMode = async (modeName, optionData) => {
       const contentLength = Number(response.headers[ 'content-length' ])
       log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
       await outputStream(response.stream())
-      return log(`[fetch] done`)
+      return log(`\n[fetch] done`)
     }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList

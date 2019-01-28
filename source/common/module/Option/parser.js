@@ -4,7 +4,7 @@ import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',
-//   prefixJSON: 'prefix-JSON',
+//   prefixCONFIG: 'prefix-CONFIG',
 //   formatList: [ {
 //     name: 'option-name',                                                   // separate words with '-'
 //     shortName: 'n',                                                        // optional, default '', single char [A-Za-z] CLI name alias, leading with `-`
@@ -24,7 +24,7 @@ import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
 const FORMAT_DEFAULT = {
   name: '',
   nameENV: '', // auto append
-  nameJSON: '', // auto append
+  nameCONFIG: '', // auto append
   shortName: '', // CLI only
   aliasNameList: [], // CLI only
   optional: false,
@@ -37,11 +37,11 @@ const FORMAT_DEFAULT = {
   extendFormatList: []
 }
 
-const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => {
-  const CLINameMap = new Map()
-  const CLIShortNameMap = new Map()
-  const ENVNameMap = new Map()
-  const JSONNameMap = new Map()
+const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) => {
+  const nameMapCLI = new Map()
+  const nameMapCLIShort = new Map()
+  const nameMapENV = new Map()
+  const nameMapCONFIG = new Map()
   const nonOptionalFormatSet = new Set()
   const optionalFormatCheckSet = new Set()
 
@@ -49,24 +49,24 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
     const { name, shortName, aliasNameList, argumentCount } = format
     const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
     format.nameENV = (prefixENV ? `${prefixENV}-${name}` : name).split('-').join('_').toUpperCase()
-    format.nameJSON = stringListJoinCamelCase((prefixJSON ? `${prefixJSON}-${name}` : name).split('-'))
+    format.nameCONFIG = stringListJoinCamelCase((prefixCONFIG ? `${prefixCONFIG}-${name}` : name).split('-'))
     format.optional = parseOptional(format.optional, upperFormat)
     format.argumentLengthMin = parseInt(argumentLengthMinString)
     format.argumentLengthMax = argumentLengthSep
       ? (argumentLengthMaxString ? parseInt(argumentLengthMaxString) : Infinity)
       : format.argumentLengthMin
 
-    CLINameMap.has(name) && throwFormatError(`duplicate name '${name}'`, format, index, upperFormat)
-    CLINameMap.set(name, format)
-    shortName && CLIShortNameMap.has(shortName) && throwFormatError(`duplicate shortName '${shortName}'`, format, index, upperFormat)
-    shortName && CLIShortNameMap.set(shortName, format)
+    nameMapCLI.has(name) && throwFormatError(`duplicate name '${name}'`, format, index, upperFormat)
+    nameMapCLI.set(name, format)
+    shortName && nameMapCLIShort.has(shortName) && throwFormatError(`duplicate shortName '${shortName}'`, format, index, upperFormat)
+    shortName && nameMapCLIShort.set(shortName, format)
     {
-      const duplicateAliasName = aliasNameList.find((aliasName) => CLINameMap.has(aliasName))
+      const duplicateAliasName = aliasNameList.find((aliasName) => nameMapCLI.has(aliasName))
       duplicateAliasName && throwFormatError(`duplicate aliasName '${duplicateAliasName}'`, format, index, upperFormat)
-      aliasNameList.forEach((aliasName) => CLINameMap.set(aliasName, format))
+      aliasNameList.forEach((aliasName) => nameMapCLI.set(aliasName, format))
     }
-    ENVNameMap.set(format.nameENV, format)
-    JSONNameMap.set(format.nameJSON, format)
+    nameMapENV.set(format.nameENV, format)
+    nameMapCONFIG.set(format.nameCONFIG, format)
     if (!format.optional) nonOptionalFormatSet.add(format)
     else if (format.optional !== OPTIONAL_TRUE) optionalFormatCheckSet.add({ format, checkOptional: format.optional })
 
@@ -77,15 +77,15 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixJSON = '' }) => 
   formatList.forEach((format, index) => parseFormat(format, index, null))
 
   return {
-    parseCLI: getParseCLI(getParseArgvList(CLINameMap, CLIShortNameMap)),
-    parseENV: getParseENV(ENVNameMap),
-    parseJSON: getParseJSON(JSONNameMap),
+    parseCLI: getParseCLI(getParseArgvList(nameMapCLI, nameMapCLIShort)),
+    parseENV: getParseENV(nameMapENV),
+    parseCONFIG: getParseCONFIG(nameMapCONFIG),
     processOptionMap: getProcessOptionMap(nonOptionalFormatSet, optionalFormatCheckSet),
     formatUsage: (message, isSimple = false) => join(
       message && `Message:\n${indent(message.toString())}`,
       `CLI Usage:\n${indent(usageCLI(formatList))}`,
       !isSimple && `ENV Usage:\n${indent(usageENV(formatList))}`,
-      !isSimple && `JSON Usage:\n${indent(usageJSON(formatList))}`
+      !isSimple && `CONFIG Usage:\n${indent(usageCONFIG(formatList))}`
     )
   }
 }
@@ -117,21 +117,21 @@ const REGEXP_FORMAT_NAME = /^[A-Za-z][A-Za-z0-9-]*$/ // limit name to something 
 const REGEXP_FORMAT_SHORT_NAME = /^[A-Za-z]$/ // single character
 const throwFormatError = (message, format, index, upperFormat) => { throw new Error(`[Format] ${formatSimple(format)} #${index}${upperFormat ? ` of ${formatSimple(upperFormat)}` : ''} | ${message}`) }
 
-const getParseArgvList = (CLINameMap, CLIShortNameMap) => (argvList) => {
+const getParseArgvList = (nameMapCLI, nameMapCLIShort) => (argvList) => {
   const optionList = [ /* { format, argumentList: [] } */ ]
   const getLastOptionArgumentList = () => optionList[ optionList.length - 1 ].argumentList
   for (let index = 0, indexMax = argvList.length; index < indexMax; index++) {
     const value = argvList[ index ]
     if (REGEXP_FORMAT_CLI_NAME.test(value)) { // test name || alias
       const [ , name, , extraArgument ] = REGEXP_FORMAT_CLI_NAME.exec(value)
-      const format = CLINameMap.get(name)
+      const format = nameMapCLI.get(name)
       !format && throwParseArgvError(name)
       optionList.push({ format, argumentList: [] })
       extraArgument && getLastOptionArgumentList().push(extraArgument)
     } else if (REGEXP_FORMAT_CLI_SHORT_NAME.test(value)) { // test shortName
       const [ , shortNameString, , extraArgument ] = REGEXP_FORMAT_CLI_SHORT_NAME.exec(value)
       shortNameString.split('').forEach((shortName) => {
-        const format = CLIShortNameMap.get(shortName)
+        const format = nameMapCLIShort.get(shortName)
         !format && throwParseArgvError(shortName, `from '${shortNameString}'`)
         optionList.push({ format, argumentList: [] })
       })
@@ -154,8 +154,8 @@ const getParseCLI = (parseArgvList) => (argvList, optionMap = {}) => parseArgvLi
   return o
 }, optionMap)
 
-const getParseENV = (ENVNameMap) => (envObject, optionMap = {}) => {
-  ENVNameMap.forEach((format, nameENV) => {
+const getParseENV = (nameMapENV) => (envObject, optionMap = {}) => {
+  nameMapENV.forEach((format, nameENV) => {
     let value = envObject[ nameENV ]
     if (!value) return
     try { value = JSON.parse(value) } catch (error) { __DEV__ && console.log(`[parseENV] not JSON string ${value}`, error) }
@@ -164,10 +164,10 @@ const getParseENV = (ENVNameMap) => (envObject, optionMap = {}) => {
   return optionMap
 }
 
-const getParseJSON = (JSONNameMap) => (jsonObject, optionMap = {}) => {
-  JSONNameMap.forEach((format, nameJSON) => {
-    const value = jsonObject[ nameJSON ]
-    if (value) optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'JSON' }
+const getParseCONFIG = (nameMapCONFIG) => (object, optionMap = {}) => {
+  nameMapCONFIG.forEach((format, nameCONFIG) => {
+    const value = object[ nameCONFIG ]
+    if (value) optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'CONFIG' }
   })
   return optionMap
 }
@@ -203,10 +203,10 @@ const formatUsageENV = (format) => join(
   formatExtendList(format.extendFormatList, formatUsageENV, 0)
 )
 
-const usageJSON = (formatList) => join('{', indent(mapJoin(formatList, formatUsageJSON)), '}')
-const formatUsageJSON = (format) => join(
-  `"${format.nameJSON}": [ "${formatUsageBase(format)}" ],`,
-  formatExtendList(format.extendFormatList, formatUsageJSON, 0)
+const usageCONFIG = (formatList) => join('{', indent(mapJoin(formatList, formatUsageCONFIG)), '}')
+const formatUsageCONFIG = (format) => join(
+  `"${format.nameCONFIG}": [ "${formatUsageBase(format)}" ],`,
+  formatExtendList(format.extendFormatList, formatUsageCONFIG, 0)
 )
 
 const formatUsageBase = ({ optional, argumentLengthMin, argumentLengthMax }, ...args) => [

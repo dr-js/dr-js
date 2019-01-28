@@ -434,8 +434,8 @@
 > ```
 > CLI Usage:
 >   --config -c [OPTIONAL] [ARGUMENT=1]
->       # from JSON: set to 'path/to/config.json'
->       # from ENV: set to 'env'
+>       from ENV: set to 'env'
+>       from JS/JSON file: set to 'path/to/config.js|json'
 >   --help -h [OPTIONAL] [ARGUMENT=0+]
 >       show full help, or human readable output
 >   --quiet -q [OPTIONAL] [ARGUMENT=0+]
@@ -508,7 +508,7 @@
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >   "
-> JSON Usage:
+> CONFIG Usage:
 >   {
 >     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],

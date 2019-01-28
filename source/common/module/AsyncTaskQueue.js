@@ -21,12 +21,14 @@ const createAsyncTaskQueue = (onQueueError = MUTE_ERROR) => {
   let queueStatus = createQueueStatus()
   let queueTail = Promise.resolve('QUEUE_HEAD')
 
-  const reset = () => {
+  const reset = () => { // break previous queue, reset state (not that safe, may still leak promise/memory)
     queueStatus[ SET_INVALID ]()
     queueStatus = createQueueStatus()
     queueTail = Promise.resolve('QUEUE_HEAD')
   }
+
   const getLength = () => queueStatus[ GET_SIZE ]()
+
   const pushTask = (asyncTask) => { // task is async function
     const { promise, resolve } = createInsideOutPromise()
     const taskPromise = queueTail.then(asyncTask)

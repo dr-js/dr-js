@@ -6,7 +6,7 @@ const { describe, it } = global
 
 const optionData = {
   prefixENV: 'prefix-ENV',
-  prefixJSON: 'prefix-JSON',
+  prefixCONFIG: 'prefix-CONFIG',
   formatList: [
     { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
     { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
@@ -17,7 +17,7 @@ const optionData = {
   ]
 }
 const optionNameList = optionData.formatList.map(({ name }) => name)
-const { parseCLI, parseENV, parseJSON, processOptionMap, formatUsage } = createOptionParser(optionData)
+const { parseCLI, parseENV, parseCONFIG, processOptionMap, formatUsage } = createOptionParser(optionData)
 
 const checkArgumentList = (optionMap) => {
   strictEqual(optionMap[ 'option-name-a' ].argumentList.length, 0)
@@ -106,24 +106,24 @@ describe('Common.Module.Option', () => {
     it('should pass checkArgumentList use nameENV', () => checkArgumentList(optionMap))
   })
 
-  describe('Option.parseJSON', () => {
-    const optionMap = parseJSON({
-      prefixJSONOptionNameA: [],
-      prefixJSONOptionNameB: [ 1 ],
-      prefixJSONOptionNameC: [ 1, '2.2' ],
-      prefixJSONOptionNameAa: [],
-      prefixJSONOptionNameBb: [ 1 ],
-      prefixJSONOptionNameCc: [ 1, '2.2', 3.3, '4.4' ]
+  describe('Option.parseCONFIG', () => {
+    const optionMap = parseCONFIG({
+      prefixCONFIGOptionNameA: [],
+      prefixCONFIGOptionNameB: [ 1 ],
+      prefixCONFIGOptionNameC: [ 1, '2.2' ],
+      prefixCONFIGOptionNameAa: [],
+      prefixCONFIGOptionNameBb: [ 1 ],
+      prefixCONFIGOptionNameCc: [ 1, '2.2', 3.3, '4.4' ]
     })
-    it('should pass use nameJSON', () => strictEqual(optionNameList.every((name) => (name in optionMap)), true))
-    it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
-    it('should pass checkArgumentList use nameJSON', () => checkArgumentList(optionMap))
+    it('should pass use nameCONFIG', () => strictEqual(optionNameList.every((name) => (name in optionMap)), true))
+    it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
+    it('should pass checkArgumentList use nameCONFIG', () => checkArgumentList(optionMap))
   })
 
   describe('Option test optional && extendFormatList', () => {
     const optionData1 = {
       prefixENV: 'prefix-ENV',
-      prefixJSON: 'prefix-JSON',
+      prefixCONFIG: 'prefix-CONFIG',
       formatList: [
         { name: 'option-name-check-target', optional: true, ...ConfigPreset.SingleInteger },
         { name: 'option-with-check-optional', optional: (optionMap, optionFormatSet, format) => optionMap[ 'option-name-check-target' ].argumentList[ 0 ] !== 1 },
@@ -138,14 +138,14 @@ describe('Common.Module.Option', () => {
         }
       ]
     }
-    const { parseJSON, processOptionMap, formatUsage } = createOptionParser(optionData1)
-    const optionMap = parseJSON({
-      prefixJSONOptionNameCheckTarget: [ 1 ],
-      prefixJSONOptionWithCheckOptional: [],
-      prefixJSONOptionWithExtend: [],
-      prefixJSONExtendOptionNameA: [],
-      prefixJSONExtendOptionNameB: [ 1 ],
-      prefixJSONExtendOptionNameC: [ 1, '2.2' ]
+    const { parseCONFIG, processOptionMap, formatUsage } = createOptionParser(optionData1)
+    const optionMap = parseCONFIG({
+      prefixCONFIGOptionNameCheckTarget: [ 1 ],
+      prefixCONFIGOptionWithCheckOptional: [],
+      prefixCONFIGOptionWithExtend: [],
+      prefixCONFIGExtendOptionNameA: [],
+      prefixCONFIGExtendOptionNameB: [ 1 ],
+      prefixCONFIGExtendOptionNameC: [ 1, '2.2' ]
     })
 
     const message = 'TEST_MESSAGE'
@@ -153,6 +153,6 @@ describe('Common.Module.Option', () => {
     it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
     it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
 
-    it('should pass processOptionMap use nameJSON', () => processOptionMap(optionMap))
+    it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
   })
 })
