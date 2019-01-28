@@ -174,7 +174,7 @@ const configureServer = async ({
   // route & feature pack
   const { routeList: routeListA, URL_A } = await configureFeatruePackA({ option, ...featureConfigA })
   const { routeList: routeListB } = await configureFeatruePackB({ option, routeRoot: '/feat-b', URL_A, ...featureConfigB })
-  const routerMap = createRouteMap([
+  const routeMap = createRouteMap([
     ...routeListA,
     ...routeListB,
     [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
@@ -183,7 +183,7 @@ const configureServer = async ({
   // mount routeResponder to server
   server.on('request', createRequestListener({
     responderList: [
-      createResponderRouter({ routerMap, baseUrl: option.baseUrl })
+      createResponderRouter({ routeMap, baseUrl: option.baseUrl })
     ]
   }))
 

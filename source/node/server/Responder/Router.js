@@ -101,12 +101,12 @@ const routeMapDepthFirstSearch = createTreeDepthFirstSearch(
 // }
 
 const createResponderRouteList = ({
-  getRouterMap, // () => routeMap
+  getRouteMap, // () => routeMap
   extraBodyList
 }) => {
   let bufferData
   return async (store) => {
-    if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouterMap(), extraBodyList)), BASIC_EXTENSION_MAP.html)
+    if (bufferData === undefined) bufferData = await prepareBufferData(Buffer.from(getRouteListHTML(getRouteMap(), extraBodyList)), BASIC_EXTENSION_MAP.html)
     return responderSendBufferCompress(store, bufferData)
   }
 }

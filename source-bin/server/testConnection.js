@@ -58,7 +58,7 @@ const createServerTestConnection = async ({ protocol = 'http:', hostname, port, 
       }
     })() ],
     [ '/', 'GET', createResponderRouteList({
-      getRouterMap: () => createRouteMap(routeConfigList),
+      getRouteMap: () => createRouteMap(routeConfigList),
       extraBodyList: [ getDrBrowserScriptHTML() ]
     }) ]
   ]
