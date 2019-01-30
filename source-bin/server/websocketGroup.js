@@ -121,7 +121,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const createServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, log }) => {
+const startServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, log }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -153,6 +153,7 @@ const createServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, 
     title: 'WebSocketGroup',
     log
   })
+
   enableWebSocketServer({
     server,
     onUpgradeRequest: createUpdateRequestListener({
@@ -402,4 +403,4 @@ const mainScriptInit = () => {
   })
 }
 
-export { createServerWebSocketGroup }
+export { startServerWebSocketGroup }

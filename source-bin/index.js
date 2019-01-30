@@ -4,21 +4,21 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary } from 'dr-js/module/common/format'
+import { time, binary, stringIndentList } from 'dr-js/module/common/format'
 import { isBasicObject } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
+import { createTCPProxyServer } from 'dr-js/module/node/server/TCPProxyServer'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
-import { createServerServeStatic } from './server/serveStatic'
-import { createServerTestConnection } from './server/testConnection'
-import { createServerWebSocketGroup } from './server/websocketGroup'
-import { createServerCacheHttpProxy } from './server/cacheHttpProxy'
+import { startServerServeStatic } from './server/serveStatic'
+import { startServerWebSocketGroup } from './server/websocketGroup'
+import { startServerTestConnection } from './server/testConnection'
 
 import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile, collectAllProcessStatus } from './function'
 import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
@@ -51,9 +51,10 @@ const runMode = async (modeName, optionData) => {
   )
 
   const getServerConfig = async () => {
-    const hostname = getSingleOptionOptional('hostname') || '0.0.0.0'
-    const port = getSingleOptionOptional('port') || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) // for more stable port
-    return { hostname, port: Number(port) }
+    const hostPair = (getSingleOptionOptional('host') || '').split(':')
+    const hostname = hostPair[ 0 ] || '0.0.0.0'
+    const port = Number(hostPair[ 1 ] || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname)) // for more stable port
+    return { hostname, port }
   }
 
   switch (modeName) {
@@ -136,16 +137,29 @@ const runMode = async (modeName, optionData) => {
       const [ expireTime = 5 * 60 * 1000 ] = getOption(modeName) // expireTime: 5min, in msec
       const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = getSingleOptionOptional('root') || process.cwd()
-      return createServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
+      return startServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
     }
     case 'server-websocket-group':
-      return createServerWebSocketGroup({ log, ...(await getServerConfig()) })
+      return startServerWebSocketGroup({ log, ...(await getServerConfig()) })
     case 'server-test-connection':
-      return createServerTestConnection({ log, ...(await getServerConfig()) })
-    case 'server-cache-http-proxy': {
-      const [ remoteUrlPrefix, expireTimeSec = 7 * 24 * 60 * 60 ] = getOption(modeName) // expireTime: 7days, in seconds
-      const cachePath = getSingleOption('root')
-      return createServerCacheHttpProxy({ remoteUrlPrefix, cachePath, expireTimeSec: Number(expireTimeSec), log, ...(await getServerConfig()) })
+      return startServerTestConnection({ log, ...(await getServerConfig()) })
+    case 'server-tcp-proxy': {
+      const targetOptionList = getOption(modeName).map((host) => {
+        const [ hostname, port ] = host.split(':')
+        return { hostname: hostname || 'localhost', port: Number(port) }
+      })
+      let targetOptionIndex = 0
+      const getTargetOption = () => {
+        targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
+        return targetOptionList[ targetOptionIndex ]
+      }
+      const { option, start } = createTCPProxyServer({ getTargetOption, ...(await getServerConfig()) })
+      await start()
+      return log(stringIndentList('[TCPProxy]', [
+        `pid: ${process.pid}`,
+        `from: ${option.hostname}:${option.port}`,
+        ...targetOptionList.map((option) => `to: ${option.hostname}:${option.port}`)
+      ]))
     }
   }
 }

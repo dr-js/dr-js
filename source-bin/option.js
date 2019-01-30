@@ -38,7 +38,7 @@ const MODE_FORMAT_LIST = [
   'server-serve-static-simple|ssss|0-1', // expireTime = 5 * 60 * 1000
   'server-websocket-group|swg',
   'server-test-connection|stc',
-  'server-cache-http-proxy|schp|1-2' // remoteUrlPrefix, expireTimeSec = 7 * 24 * 60 * 60
+  'server-tcp-proxy|stp|1-' // toHostname:toPort ... // -H=hostname:port
 ].map(parseFormat)
 
 const OPTION_CONFIG = {
@@ -51,8 +51,7 @@ const OPTION_CONFIG = {
     { ...BooleanFlag, name: 'version', shortName: 'v' },
     ...MODE_FORMAT_LIST,
     ...[
-      'hostname|H|1',
-      'port|P|1',
+      'host|H|1', // hostname:port, can omit both
       'root|R|1|P',
       'input-file|I|1|P',
       'output-file|O|1|P'

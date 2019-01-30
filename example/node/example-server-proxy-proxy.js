@@ -13,9 +13,9 @@ const { enableWebSocketServer } = require('../../output-gitignore/library/node/s
 
 const { createExampleServerHTMLResponder } = require('./example-server-html')
 
-const ServerHost = 'localhost'
+const ServerHostname = 'localhost'
 const ServerPort = 3000
-const ProxyHost = 'localhost'
+const ProxyHostname = 'localhost'
 const ProxyPort = 4000
 
 const fromPath = (...args) => resolve(__dirname, ...args)
@@ -25,12 +25,12 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const responderServeStatic = createResponderServeStatic({})
 const responderProxy = async (store) => {
   const requestBuffer = await receiveBufferAsync(store.request)
-  const proxyResponse = await requestAsync({ hostname: ProxyHost, port: ProxyPort, path: '/get-proxy' }, requestBuffer)
+  const proxyResponse = await requestAsync({ hostname: ProxyHostname, port: ProxyPort, path: '/get-proxy' }, requestBuffer)
   const responseBuffer = await receiveBufferAsync(proxyResponse)
   store.response.end(responseBuffer)
 }
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
+const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     (store) => { console.log(`[server] get: ${store.request.url}`) },
@@ -79,14 +79,14 @@ const webSocketSet = enableWebSocketServer({
 })
 
 start().then(() => {
-  console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+  console.log(`Server running at: 'http://${ServerHostname}:${ServerPort}'`)
 })
 
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
   const requestBuffer = await receiveBufferAsync(originalRequest)
   const proxyResponse = await requestAsync({
-    hostname: ServerHost,
+    hostname: ServerHostname,
     port: ServerPort,
     path: originalRequest.url,
     method: originalRequest.method,
@@ -97,6 +97,6 @@ createHttpServer(async (originalRequest, originalResponse) => {
   originalResponse.statusCode = proxyResponse.statusCode
   originalResponse.statusMessage = proxyResponse.statusMessage
   originalResponse.end(responseBuffer)
-}).listen(ProxyPort, ProxyHost)
+}).listen(ProxyPort, ProxyHostname)
 
-console.log(`Proxy running at: 'http://${ProxyHost}:${ProxyPort}'`)
+console.log(`Proxy running at: 'http://${ProxyHostname}:${ProxyPort}'`)

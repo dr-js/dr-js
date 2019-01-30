@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.19.0-dev.5",
+  "version": "0.19.0-dev.6",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "build-library-webpack": "babel-node ./script/webpack production profile",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/common/module/Option/parser.test.js\"",
+    "test-mocha-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/node/server/Responder/RateLimit.test.js\"",
     "test-mocha-common": "mocha --require @babel/register \"source/common/**/*.test.js\"",
     "test-mocha-node": "mocha --require @babel/register \"source/node/**/*.test.js\"",
     "test-mocha-browser": "mocha --require @babel/register \"source/browser/**/*.test.js\"",

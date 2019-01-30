@@ -34,7 +34,7 @@ const ConfigPreset = Object.assign({
   [ 'Number', number, (argumentList) => argumentList.map(Number) ],
   [ 'Boolean', boolean, (argumentList) => argumentList.map(Boolean) ],
   [ 'Integer', integer, (argumentList) => argumentList.map(parseInt) ],
-  [ 'Function', basicFunction, undefined ]
+  [ 'Function', basicFunction, undefined ] // TODO: should be form JS config only, always optional?
 ].map(([ typeName, checkTypeFunc, normalizeToTypeFunc ]) => {
   const verifyAllType = getVerifyAll(checkTypeFunc, typeName)
   return {

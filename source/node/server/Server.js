@@ -65,7 +65,7 @@ const createServer = ({ protocol, ...option }) => {
     start: async () => !server.listening && new Promise((resolve, reject) => {
       server.on('error', reject)
       server.listen(option.port, option.hostname, () => {
-        server.removeListener('error', reject)
+        server.removeListener('error', reject) // TODO: use `off()` when node 8 support is dropped
         resolve()
       })
     }),

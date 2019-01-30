@@ -181,6 +181,8 @@
   - `createSafeWriteStream`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`
++ 📄 [source/node/server/TCPProxyServer.js](source/node/server/TCPProxyServer.js)
+  - `createTCPProxyServer`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
@@ -407,6 +409,8 @@
       - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
     - **Server**
       - `createRequestListener`, `createServer`
+    - **TCPProxyServer**
+      - `createTCPProxyServer`
     - **CommonHTML**
       - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
     - **Function**
@@ -465,9 +469,8 @@
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
 >   --server-websocket-group --swg [OPTIONAL]
 >   --server-test-connection --stc [OPTIONAL]
->   --server-cache-http-proxy --schp [OPTIONAL] [ARGUMENT=1-2]
->   --hostname --H -H [OPTIONAL] [ARGUMENT=1]
->   --port --P -P [OPTIONAL] [ARGUMENT=1]
+>   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
+>   --host --H -H [OPTIONAL] [ARGUMENT=1]
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
 >   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
@@ -501,9 +504,8 @@
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
->     export DR_JS_SERVER_CACHE_HTTP_PROXY="[OPTIONAL] [ARGUMENT=1-2]"
->     export DR_JS_HOSTNAME="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_PORT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -537,9 +539,8 @@
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
->     "drJsServerCacheHttpProxy": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
->     "drJsHostname": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsPort": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsServerTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "drJsHost": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],

@@ -14,7 +14,7 @@ import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML
 
 import { commonStartServer } from '../function'
 
-const createServerServeStatic = async ({
+const startServerServeStatic = async ({
   isSimpleServe,
   expireTime, // in msec
   staticRoot,
@@ -89,4 +89,4 @@ const renderItem = (hrefPrefix, hrefFragList, text, size, mtimeMs, extraAttr) =>
 <p class="date">${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</p>
 </a>`
 
-export { createServerServeStatic }
+export { startServerServeStatic }

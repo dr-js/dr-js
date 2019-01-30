@@ -15,13 +15,13 @@ const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createPathPrefixLock(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
-const ServerHost = 'localhost'
+const ServerHostname = 'localhost'
 const ServerPort = 3000
 
 const responderLogEnd = createResponderLogEnd({ log: console.log })
 const responderServeStatic = createResponderServeStatic({})
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHost, port: ServerPort })
+const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     createResponderLog({ log: console.log }),
@@ -76,5 +76,5 @@ const webSocketSet = enableWebSocketServer({
 })
 
 start().then(() => {
-  console.log(`Server running at: 'http://${ServerHost}:${ServerPort}'`)
+  console.log(`Server running at: 'http://${ServerHostname}:${ServerPort}'`)
 })

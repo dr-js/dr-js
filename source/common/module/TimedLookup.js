@@ -44,7 +44,7 @@ const verifyCheckCode = (
 ) => {
   __DEV__ && console.log('verifyCheckCode', timedLookupData.tokenSize, timedLookupData.timeGap, checkCode, timestamp)
   if (typeof (checkCode) !== 'string' || checkCode.length < timedLookupData.tokenSize) throw new Error(`invalid checkCode: ${checkCode}`)
-  return verifyParsedCheckCode(timedLookupData, parseCheckCode(checkCode), timestamp)
+  verifyParsedCheckCode(timedLookupData, parseCheckCode(checkCode), timestamp)
 }
 
 const verifyParsedCheckCode = (
