@@ -21,12 +21,12 @@ const isBasicFunction = (value) => typeof (value) === 'function'
 
 const isOneOf = (value, validList) => validList.includes(value)
 
-const isFuncThrow = (func) => {
+const isFunctionThrow = (func) => {
   try {
     return func() && false
   } catch (error) { return true }
 }
-const isFuncThrowAsync = async (func) => {
+const isFunctionThrowAsync = async (func) => {
   try {
     return (await func()) && false
   } catch (error) { return true }
@@ -48,8 +48,8 @@ export {
   isBasicArray, isArrayLength,
   isBasicFunction,
   isOneOf,
-  isFuncThrow,
-  isFuncThrowAsync,
+  isFunctionThrow,
+  isFunctionThrowAsync,
   isStrictEqual,
   isStringifyEqual
 }

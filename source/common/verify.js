@@ -8,8 +8,8 @@ import {
   isBasicArray, isArrayLength,
   isBasicFunction,
   isOneOf,
-  isFuncThrow,
-  isFuncThrowAsync,
+  isFunctionThrow,
+  isFunctionThrowAsync,
   isStrictEqual,
   isStringifyEqual
 } from './check'
@@ -37,10 +37,10 @@ const basicFunction = createVerify('Function', isBasicFunction)
 
 const oneOf = (value, validList, message) => isOneOf(value, validList) || throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
 
-const doThrow = (func, message) => isFuncThrow(func) || throwError('DoThrow', message)
-const doNotThrow = (func, message) => isFuncThrow(func) && throwError('DoNotThrow', message)
-const doThrowAsync = async (func, message) => (await isFuncThrowAsync(func)) || throwError('DoThrowAsync', message)
-const doNotThrowAsync = async (func, message) => (await isFuncThrowAsync(func)) && throwError('DoThrowAsync', message)
+const doThrow = (func, message) => isFunctionThrow(func) || throwError('DoThrow', message)
+const doNotThrow = (func, message) => isFunctionThrow(func) && throwError('DoNotThrow', message)
+const doThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) || throwError('DoThrowAsync', message)
+const doNotThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) && throwError('DoThrowAsync', message)
 
 const describeEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
 

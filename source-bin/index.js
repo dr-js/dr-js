@@ -5,7 +5,7 @@ import { createReadStream, createWriteStream, readFileSync, writeFileSync } from
 import { start as startREPL } from 'repl'
 
 import { time, binary, stringIndentList } from 'dr-js/module/common/format'
-import { isBasicObject } from 'dr-js/module/common/check'
+import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
@@ -29,7 +29,7 @@ const logAuto = (value) => console.log(isBasicObject(value)
 )
 
 const runMode = async (modeName, optionData) => {
-  const { getOption, getOptionOptional, getSingleOption, getSingleOptionOptional } = optionData
+  const { getOptionOptional, getSingleOption, getSingleOptionOptional } = optionData
   const log = getOptionOptional('quiet')
     ? () => {}
     : console.log
@@ -84,7 +84,7 @@ const runMode = async (modeName, optionData) => {
     case 'append':
       if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
-      return pipeStreamAsync(createWriteStream(argumentList[ 0 ] || process.cwd(), { flags }), process.stdin)
+      return pipeStreamAsync(createWriteStream(argumentList[ 0 ], { flags }), process.stdin)
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
@@ -134,7 +134,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'server-serve-static':
     case 'server-serve-static-simple': {
-      const [ expireTime = 5 * 60 * 1000 ] = getOption(modeName) // expireTime: 5min, in msec
+      const [ expireTime = 5 * 60 * 1000 ] = argumentList // expireTime: 5min, in msec
       const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = getSingleOptionOptional('root') || process.cwd()
       return startServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
@@ -144,21 +144,30 @@ const runMode = async (modeName, optionData) => {
     case 'server-test-connection':
       return startServerTestConnection({ log, ...(await getServerConfig()) })
     case 'server-tcp-proxy': {
-      const targetOptionList = getOption(modeName).map((host) => {
-        const [ hostname, port ] = host.split(':')
-        return { hostname: hostname || 'localhost', port: Number(port) }
-      })
-      let targetOptionIndex = 0
-      const getTargetOption = () => {
-        targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
-        return targetOptionList[ targetOptionIndex ]
+      let targetOptionList
+      let getTargetOption
+      if (!isBasicFunction(argumentList[ 0 ])) {
+        targetOptionList = argumentList.map((host) => {
+          const [ hostname, port ] = host.split(':')
+          return { hostname: hostname || 'localhost', port: Number(port) }
+        })
+        let targetOptionIndex = 0
+        getTargetOption = (socket) => {
+          targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
+          const targetOption = targetOptionList[ targetOptionIndex ]
+          log(`[CONNECT] ${socket.remoteAddress}:${socket.remotePort} => ${targetOption.hostname}:${targetOption.port}`)
+          return targetOption
+        }
+      } else {
+        targetOptionList = [ { hostname: 'custom-hostname', port: 'custom-port' } ]
+        getTargetOption = argumentList[ 0 ]
       }
       const { option, start } = createTCPProxyServer({ getTargetOption, ...(await getServerConfig()) })
       await start()
       return log(stringIndentList('[TCPProxy]', [
         `pid: ${process.pid}`,
-        `from: ${option.hostname}:${option.port}`,
-        ...targetOptionList.map((option) => `to: ${option.hostname}:${option.port}`)
+        `at: ${option.hostname}:${option.port}`,
+        ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)
       ]))
     }
   }

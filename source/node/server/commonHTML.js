@@ -35,14 +35,14 @@ const COMMON_SCRIPT = (injectMap) => {
   const valueObject = {}
   const functionScriptList = []
   Object.entries({
-    qS: querySelectorFunc,
-    qSA: querySelectorAllFunc,
-    cE: createElementFunc,
-    aCL: appendChildListFunc,
-    mECN: modifyElementClassNameFunc,
-    mEA: modifyElementAttributeFunc,
-    iDR: isDocumentReadyFunc,
-    tDR: tillDocumentReadyFunc,
+    qS: querySelector,
+    qSA: querySelectorAll,
+    cE: createElement,
+    aCL: appendChildList,
+    mECN: modifyElementClassName,
+    mEA: modifyElementAttribute,
+    iDR: isDocumentReady,
+    tDR: tillDocumentReady,
     ...injectMap
   }).forEach(([ key, value ]) => {
     if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${value.toString()}</script>`)
@@ -55,22 +55,22 @@ const COMMON_SCRIPT = (injectMap) => {
 }
 
 // common quick function
-const querySelectorFunc = (selector, innerHTML = undefined) => {
+const querySelector = (selector, innerHTML = undefined) => {
   const element = document.querySelector(selector)
   if (element && typeof (innerHTML) === 'string') element.innerHTML = innerHTML
   return element
 }
-const querySelectorAllFunc = (selector) => [ ...document.querySelectorAll(selector) ]
-const createElementFunc = (tagName, attributeMap = {}, childElementList = []) => {
+const querySelectorAll = (selector) => [ ...document.querySelectorAll(selector) ]
+const createElement = (tagName, attributeMap = {}, childElementList = []) => {
   const element = Object.assign(document.createElement(tagName), attributeMap)
   childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
   return element
 }
-const appendChildListFunc = (element, childElementList = []) => childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
-const modifyElementClassNameFunc = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
-const modifyElementAttributeFunc = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
-const isDocumentReadyFunc = () => document.readyState === 'complete'
-const tillDocumentReadyFunc = (func) => {
+const appendChildList = (element, childElementList = []) => childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
+const modifyElementClassName = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
+const modifyElementAttribute = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
+const isDocumentReady = () => document.readyState === 'complete'
+const tillDocumentReady = (func) => {
   if (window.iDR()) return func()
   const onReady = () => {
     if (!window.iDR()) return

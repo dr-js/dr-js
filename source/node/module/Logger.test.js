@@ -64,7 +64,7 @@ describe('Node.Module.Logger', () => {
         return `${logFileIndex}.log`
       },
       queueLengthThreshold: 4,
-      splitInterval: 50
+      splitInterval: 100
     })
     let size, prevSize
 
@@ -72,13 +72,13 @@ describe('Node.Module.Logger', () => {
     add('2')
     add('3')
     add('4')
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(20)
     size = statSync(getCurrentLogPath()).size
     // console.log('4', size)
     strictEqual(size, 0, 'check 0')
 
     add('5')
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(20)
     size = statSync(getCurrentLogPath()).size
     // console.log('5', statSync(getCurrentLogPath()))
     strictEqual(size > 0, true, 'check 1')
@@ -86,7 +86,7 @@ describe('Node.Module.Logger', () => {
 
     add('6')
     save()
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(20)
     size = statSync(getCurrentLogPath()).size
     // console.log('6', size)
     strictEqual(size > prevSize, true, 'check 2')
@@ -94,7 +94,7 @@ describe('Node.Module.Logger', () => {
 
     add('7 should manual split')
     split() // new file, reset split timer
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(20)
     strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 3')
     size = statSync(getCurrentLogPath()).size
     // console.log('7', size)
@@ -103,7 +103,7 @@ describe('Node.Module.Logger', () => {
 
     add('8', [ 'A' ])
     add('9', { k: 'v' }, 'should auto split')
-    await setTimeoutAsync(60) // 60ms since last split, so auto split should run
+    await setTimeoutAsync(90) // 20 + 90ms since last split, so auto split should run
     strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 5')
     size = statSync(getCurrentLogPath()).size
     // console.log('9', size)
@@ -113,7 +113,7 @@ describe('Node.Module.Logger', () => {
     add('10')
     add('11')
     end()
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(20)
     size = statSync(getCurrentLogPath()).size
     // console.log('11', size)
     strictEqual(size > prevSize, true, 'check 7')

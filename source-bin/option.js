@@ -16,14 +16,14 @@ const parseFormat = (modeFormat) => {
 
 const MODE_FORMAT_LIST = [
   'eval|e|0-', // -O=outputFile // -I/$1=scriptFile/scriptString // $@: evalArgv
-  'eval-readline|erl|0-', // ...eval // -R=readlineFile
-  'repl|i',
-  'echo||0-',
-  'cat||0-|P',
-  'write||1|P',
-  'append||1|P',
-  'open|o|0-1',
-  'status|s',
+  'eval-readline|erl|0-', // -R=readlineFile // ...eval
+  'repl|i', // start node REPL
+  'echo||0-', // log $@
+  'cat||0-|P', // for 0 args: pipe stdin to stdout, else read $@ as file and pipe to stdout
+  'write||1|P', // for use like '>': `dr-js --cat source-file | dr-js --write output-file`
+  'append||1|P', // for use like '>>': `dr-js --cat source-file | dr-js --append output-file`
+  'open|o|0-1', // use system default app to open uri or path
+  'status|s', // -h=isHumanReadableOutput // basic system status
   'file-list|ls|0-1|P',
   'file-list-all|ls-R|0-1|P',
   'file-tree|tree|0-1|P',
@@ -31,14 +31,14 @@ const MODE_FORMAT_LIST = [
   'file-modify-copy|cp|2|P',
   'file-modify-move|mv|2|P',
   'file-modify-delete|rm|0-|P',
-  'file-merge|merge|2-|P',
-  'fetch|f|1-3', // initialUrl, jumpMax = 4, timeout = 0
-  'process-status|ps|0-1', // outputMode = 'pid--'
-  'server-serve-static|sss|0-1', // expireTime = 5 * 60 * 1000
-  'server-serve-static-simple|ssss|0-1', // expireTime = 5 * 60 * 1000
-  'server-websocket-group|swg',
-  'server-test-connection|stc',
-  'server-tcp-proxy|stp|1-' // toHostname:toPort ... // -H=hostname:port
+  'file-merge|merge|2-|P', // $@: merged-file, input-file, input-file, ...
+  'fetch|f|1-3', // $@: initialUrl, jumpMax = 4, timeout = 0
+  'process-status|ps|0-1', // -h=isHumanReadableOutput // $@: outputMode = 'pid--'
+  'server-serve-static|sss|0-1', // -H=hostname:port // -R=staticRoot = cwd // $@: expireTime = 5 * 60 * 1000
+  'server-serve-static-simple|ssss|0-1', // -H=hostname:port // -R=staticRoot = cwd // $@: expireTime = 5 * 60 * 1000
+  'server-websocket-group|swg', // -H=hostname:port
+  'server-test-connection|stc', // -H=hostname:port
+  'server-tcp-proxy|stp|1-' // -H=hostname:port // $@: toHostname:toPort, toHostname:toPort, ...
 ].map(parseFormat)
 
 const OPTION_CONFIG = {
