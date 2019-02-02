@@ -15,6 +15,14 @@ import { formatUsage } from 'source-bin/option'
 const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
+const [
+  ,
+  ,
+  PATH_FILE_DELETE_CONFIG_RAW
+] = process.argv
+
+const PATH_FILE_DELETE_CONFIG = resolve(process.cwd(), PATH_FILE_DELETE_CONFIG_RAW)
+
 const renderMarkdownBinOptionFormat = () => [
   renderMarkdownFileLink('source-bin/option.js'),
   '> ```',
@@ -40,14 +48,14 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
     `export { Env, Common, Browser }`
   ].join('\n'))
 
-  writeFileSync(fromRoot('tempFileDelete.config.json'), JSON.stringify({
-    drJsFileModifyDelete: [ ...tempFileList, 'tempFileDelete.config.json' ],
+  writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({
+    drJsFileModifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ],
     drJsQuiet: true
   }))
 }
 
 runMain(async (logger) => {
-  if (existsSync(fromRoot('tempFileDelete.config.json'))) {
+  if (existsSync(PATH_FILE_DELETE_CONFIG)) {
     logger.padLog(`[clear] delete previous temp build file`)
     execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
   }
@@ -76,6 +84,6 @@ runMain(async (logger) => {
     ''
   ].join('\n'))
 
-  logger.log(`output: tempFileDelete.config.json`)
+  logger.log(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
   generateTempFile({ sourceRouteMap, logger })
 }, getLogger('generate-spec', argvFlag('quiet')))

@@ -176,7 +176,7 @@
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/Option.js](source/node/module/Option.js)
-  - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
+  - `ConfigPresetNode`, `createOptionGetter`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
@@ -380,7 +380,7 @@
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **Option**
-      - `ConfigPresetNode`, `createOptionGetter`, `parseOptionMap`, `prepareOption`
+      - `ConfigPresetNode`, `createOptionGetter`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
@@ -440,40 +440,68 @@
 >   --config -c [OPTIONAL] [ARGUMENT=1]
 >       from ENV: set to 'env'
 >       from JS/JSON file: set to 'path/to/config.js|json'
->   --help -h [OPTIONAL] [ARGUMENT=0+]
+>   --help --h -h [OPTIONAL] [ARGUMENT=0+]
 >       show full help, or human readable output
->   --quiet -q [OPTIONAL] [ARGUMENT=0+]
+>   --quiet --q -q [OPTIONAL] [ARGUMENT=0+]
 >       less log
->   --version -v [OPTIONAL] [ARGUMENT=0+]
->       set to enable
->   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
->   --eval-readline --erl [OPTIONAL] [ARGUMENT=0+]
->   --repl --i -i [OPTIONAL]
->   --echo [OPTIONAL] [ARGUMENT=0+]
->   --cat [OPTIONAL] [ARGUMENT=0+]
->   --write [OPTIONAL] [ARGUMENT=1]
->   --append [OPTIONAL] [ARGUMENT=1]
->   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
->   --status --s -s [OPTIONAL]
->   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
->   --file-list-all --ls-R [OPTIONAL] [ARGUMENT=0-1]
->   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
->   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
->   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
->   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
->   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
->   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
->   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
->   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
->   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
->   --server-websocket-group --swg [OPTIONAL]
->   --server-test-connection --stc [OPTIONAL]
->   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
+>   --version --v -v [OPTIONAL] [ARGUMENT=0+]
+>       show version
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
+>       common option: $1=hostname:port/localhost:unused-port
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
+>       common option
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
+>       common option
 >   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
+>       common option
+>   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
+>       eval file or string: -O=outputFile, -I/$1=scriptFile/scriptString, $@=evalArgv
+>   --eval-readline --erl [OPTIONAL] [ARGUMENT=0+]
+>       eval with readline: -R=readlineFile, ...eval
+>   --repl --i -i [OPTIONAL] [ARGUMENT=0+]
+>       start node REPL
+>   --echo [OPTIONAL] [ARGUMENT=0+]
+>       show args: $@=args
+>   --cat [OPTIONAL] [ARGUMENT=0+]
+>       with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout
+>   --write [OPTIONAL] [ARGUMENT=1]
+>       for use like ">": `dr-js --cat source-file | dr-js --write output-file`
+>   --append [OPTIONAL] [ARGUMENT=1]
+>       for use like ">>": `dr-js --cat source-file | dr-js --append output-file`
+>   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
+>       use system default app to open uri or path: $1=irl-or-path/cwd
+>   --status --s -s [OPTIONAL] [ARGUMENT=0+]
+>       basic system status: -h=isHumanReadableOutput
+>   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
+>       list file: $1=path/cwd
+>   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
+>       list all file: $1=path/cwd
+>   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
+>       list all file in tree: $1=path/cwd
+>   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
+>       create directory: $@=pathList
+>   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
+>       copy path: $1=pathFrom, $2=pathTo
+>   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
+>       move path: $1=pathFrom, $2=pathTo
+>   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
+>       delete path: $@=pathList
+>   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
+>       merge to one file: $@=merged-file,input-file,input-file,...
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
+>       fetch uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
+>   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
+>       show system process status: -h=isHumanReadableOutput, $1=outputMode/pid--
+>   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
+>       static file server: -H=hostname:port, -R=staticRoot/cwd, $@=expireTime/5*60*1000
+>   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
+>       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $@=expireTime/5*60*1000
+>   --server-websocket-group --swg [OPTIONAL]
+>       websocket chat server: -H=hostname:port
+>   --server-test-connection --stc [OPTIONAL]
+>       connection test server: -H=hostname:port
+>   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
+>       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -481,15 +509,19 @@
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_EVAL_READLINE="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_REPL="[OPTIONAL]"
+>     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_STATUS="[OPTIONAL]"
+>     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1]"
@@ -505,10 +537,6 @@
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+]"
->     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >   "
 > CONFIG Usage:
 >   {
@@ -516,15 +544,19 @@
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsHost": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsEvalReadline": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsRepl": [ "[OPTIONAL]" ],
+>     "drJsRepl": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsAppend": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsOpen": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsStatus": [ "[OPTIONAL]" ],
+>     "drJsStatus": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsFileList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsFileListAll": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsFileTree": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
@@ -540,9 +572,5 @@
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
 >     "drJsServerTestConnection": [ "[OPTIONAL]" ],
 >     "drJsServerTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+]" ],
->     "drJsHost": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >   }
 > ```

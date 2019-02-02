@@ -1,9 +1,10 @@
 import { resolve, dirname } from 'path'
 import { tryRequire } from 'source/env/tryRequire'
+import { objectDeleteUndefined } from 'source/common/immutable/Object'
 import { createOptionParser } from 'source/common/module/Option/parser'
 import { ConfigPreset } from 'source/common/module/Option/preset'
 
-const { SingleString, AllString } = ConfigPreset
+const { SingleString, AllString, BooleanFlag } = ConfigPreset
 const ConfigPresetNode = {
   ...ConfigPreset,
   SinglePath: { ...SingleString, isPath: true },
@@ -52,10 +53,10 @@ const createOptionGetter = (optionMap) => {
   }
   return {
     optionMap,
-    getOptionOptional,
-    getOption,
-    getSingleOptionOptional: (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ],
-    getSingleOption: (name) => getOption(name, 1)[ 0 ]
+    getOptionOptional, // TODO: rename to `getOptional`
+    getOption, // TODO: rename to `get`
+    getSingleOptionOptional: (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ], // TODO: rename to `getFirstOptional`
+    getSingleOption: (name) => getOption(name, 1)[ 0 ] // TODO: rename to `getFirst`
   }
 }
 
@@ -65,10 +66,36 @@ const prepareOption = (optionConfig) => {
   return { parseOption, formatUsage }
 }
 
+// sample: `config,c,conf,cfg|1-|OP|load config from some ENV|JSON|JS`
+const parseCompactFormat = (format) => {
+  const [
+    nameTag, // name,short-name,alias-name-list
+    argumentCount,
+    attributeTag = '', // B for BooleanFlag, O for optional, P for isPath
+    ...descriptionList
+  ] = format.split('|')
+  const [ name, ...aliasNameList ] = nameTag.split(',')
+  const shortName = aliasNameList[ 0 ]
+  return {
+    ...(attributeTag.includes('B') && BooleanFlag),
+    ...objectDeleteUndefined({
+      name,
+      shortName: (shortName && shortName.length === 1) ? aliasNameList[ 0 ] : undefined,
+      aliasNameList,
+      argumentCount: argumentCount || undefined,
+      description: descriptionList.join('|') || undefined,
+      optional: attributeTag.includes('O') || undefined,
+      isPath: attributeTag.includes('P') || undefined
+    })
+  }
+}
+
 export {
   ConfigPresetNode,
 
   parseOptionMap,
   createOptionGetter,
-  prepareOption
+  prepareOption,
+
+  parseCompactFormat
 }

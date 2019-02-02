@@ -76,11 +76,11 @@ runMain(async (logger) => {
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
     logger.padLog(`test browser`)
-    execSync(`npm run test-puppeteer-mocha`, execOptionRoot)
+    execSync(`npm run test-browser`, execOptionRoot)
 
     logger.padLog(`test output`)
-    execSync(`npm run test-mocha-output-library`, execOptionRoot)
-    execSync(`npm run test-mocha-output-module`, execOptionRoot)
+    execSync(`npm run test-output-library`, execOptionRoot)
+    execSync(`npm run test-output-module`, execOptionRoot)
   }
 
   await clearOutput({ packageJSON, logger })
