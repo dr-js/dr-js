@@ -53,10 +53,10 @@ const verifyParsedCheckCode = (
   timestamp = getTimestamp()
 ) => {
   __DEV__ && console.log('verifyParsedCheckCode', tokenSize, timeGap, [ verifyTag, verifyTimestamp, verifyCode ], timestamp)
-  if (verifyTag !== tag) throw new Error(`tag mismatch: ${verifyTag}, expected: ${tag}`)
-  if (Math.abs(timestamp - verifyTimestamp) > timeGap) throw new Error(`timestamp mismatch: ${verifyTimestamp}, expected: ${timestamp}±${timeGap}`)
+  if (verifyTag !== tag) throw new Error(`tag mismatch: ${verifyTag}, expect: ${tag}`)
+  if (Math.abs(timestamp - verifyTimestamp) > timeGap) throw new Error(`timestamp mismatch: ${verifyTimestamp}, expect: ${timestamp}±${timeGap}`)
   const code = calcCode(size, tokenSize, dataView, verifyTimestamp / timeGap)
-  if (code !== verifyCode) throw new Error(`code mismatch: ${verifyCode}, expected: ${code}`)
+  if (code !== verifyCode) throw new Error(`code mismatch: ${verifyCode}, expect: ${code}`)
 }
 
 const generateLookupData = (option) => {

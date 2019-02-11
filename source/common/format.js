@@ -8,10 +8,10 @@ const describe = (value) => {
 
 const percent = (value) => `${(value * 100).toFixed(2)}%`
 
+const twoDigit = (value) => String(Math.floor(value)).padStart(2, '0')
 const mediaTime = (value) => { // in second
-  const minute = String(Math.floor(value / 60))
-  const second = String(Math.floor(value % 60))
-  return `${minute.padStart(2, '0')}:${second.padStart(2, '0')}`
+  const abs = Math.abs(value)
+  return `${value < 0 ? '-' : ''}${twoDigit(abs / 60)}:${twoDigit(abs % 60)}`
 }
 
 const OVER_THRESHOLD = 0.75
@@ -72,73 +72,29 @@ const binary = (value) => {
 }
 
 const padTable = ({
-  table, // table: list of row, row: list of cell, like: [ [], [] ]
+  table, // table: list of row, row: list of cell, like: [ [ 'cell' ], [ 'cell' ] ]
   padFuncList = [],
   cellPad = ' | ',
-  rowPad = '\n'
-}) => {
-  const widthMaxList = [] // get max width for each cell
-  table.forEach((rowList) => rowList.forEach((text, index) => (widthMaxList[ index ] = Math.max(String(text).length, widthMaxList[ index ] || 0))))
-  return table.map(
-    (rowList) => rowList.map(
-      (text, index) => applyCellPad(String(text), widthMaxList[ index ], padFuncList[ index ])
-    ).join(cellPad)
-  ).join(rowPad)
-}
-const applyCellPad = (text, maxWidth, padFunc) => (!padFunc || padFunc === 'L') ? text.padEnd(maxWidth) // left align [default]
-  : padFunc === 'R' ? text.padStart(maxWidth) // right align
-    : padFunc(text, maxWidth)
+  rowPad = '\n',
+  widthMaxList = table.reduce((o, rowList) => { // max width for each column
+    rowList.forEach((value, index) => {
+      o[ index ] = Math.max(String(value).length, o[ index ] || 0)
+    })
+    return o
+  }, [])
+}) => table.map(
+  (rowList) => rowList.map(
+    (value, index) => {
+      const string = String(value)
+      const padFunc = padFuncList[ index ]
+      const maxWidth = widthMaxList[ index ]
+      return (!padFunc || padFunc === 'L') ? string.padEnd(maxWidth) // left align [default]
+        : padFunc === 'R' ? string.padStart(maxWidth) // right align
+          : padFunc(string, maxWidth)
+    }
+  ).join(cellPad)
+).join(rowPad)
 
-const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }
-const REGEXP_ESCAPE_HTML = /[&<>]/g
-const replaceEscapeHTML = (substring) => ESCAPE_HTML_MAP[ substring ] || substring
-const escapeHTML = (text) => text && text.replace(REGEXP_ESCAPE_HTML, replaceEscapeHTML)
-
-const UNESCAPE_HTML_MAP = { '&amp;': '&', '&lt;': '<', '&gt;': '>' }
-const REGEXP_UNESCAPE_HTML = /(&amp;|&lt;|&gt;)/g
-const replaceUnescapeHTML = (substring) => UNESCAPE_HTML_MAP[ substring ] || substring
-const unescapeHTML = (text) => text && text.replace(REGEXP_UNESCAPE_HTML, replaceUnescapeHTML)
-
-// remove XML invalid Char
-const REGEXP_INVALID_CHAR_XML = /[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm // eslint-disable-line no-control-regex
-const removeInvalidCharXML = (text) => text.replace(REGEXP_INVALID_CHAR_XML, '')
-
-const REGEXP_INDENT_LINE = /\n/g
-const stringIndentLine = (string, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${string.replace(REGEXP_INDENT_LINE, `\n${indentString}`)}`
-
-const stringIndentList = (
-  title,
-  itemList = [],
-  indentStringStart = '  - ',
-  indentString = ' '.repeat(indentStringStart.length)
-) => [
-  title,
-  ...itemList.map((item) => stringIndentLine(item, indentString, indentStringStart))
-].join('\n')
-
-const stringAutoEllipsis = (string = '', limit = 64, head = 32, tail = 16) => string.length > limit
-  ? `${string.slice(0, head)}...${tail > 0 ? string.slice(-tail) : ''} (+${string.length - head - tail})`
-  : string
-const stringListJoinCamelCase = (stringList, fromIndex = 1) => stringList.reduce(
-  (o, string, index) => (index >= fromIndex)
-    ? o + string[ 0 ].toUpperCase() + string.slice(1)
-    : o + string,
-  ''
-)
-
-const prettyStringifyJSON = (value, level = 2) => {
-  const resultList = []
-  prettyStringifyJSONSwitch(resultList, value, Math.max(level, 0) || 0, '')
-  return resultList.join('')
-}
-const prettyStringifyJSONSwitch = (resultList, value, level, padString) => {
-  __DEV__ && console.log(' - - Switch', JSON.stringify({ level, padString }))
-  if (level >= 1 && value) {
-    if (Array.isArray(value)) return prettyStringifyJSONArray(resultList, value, level, padString)
-    if (typeof (value) === 'object') return prettyStringifyJSONObject(resultList, value, level, padString)
-  }
-  resultList.push(JSON.stringify(value))
-}
 const prettyStringifyJSONObject = (resultList, object, level, padString) => {
   const entryList = Object.entries(object)
   __DEV__ && console.log(' - - Object', JSON.stringify({ level, padString, entryListLength: entryList.length }))
@@ -166,28 +122,27 @@ const prettyStringifyJSONArray = (resultList, array, level, padString) => {
   })
   resultList[ resultList.length - 1 ] = `\n${padString}]`
 }
+const prettyStringifyJSONSwitch = (resultList, value, level, padString) => {
+  __DEV__ && console.log(' - - Switch', JSON.stringify({ level, padString }))
+  if (level >= 1 && value) {
+    if (Array.isArray(value)) return prettyStringifyJSONArray(resultList, value, level, padString)
+    if (typeof (value) === 'object') return prettyStringifyJSONObject(resultList, value, level, padString)
+  }
+  resultList.push(JSON.stringify(value))
+}
+const prettyStringifyJSON = (value, level = 2) => {
+  const resultList = []
+  prettyStringifyJSONSwitch(resultList, value, Math.max(level, 0) || 0, '')
+  return resultList.join('')
+}
 
 export {
   describe,
-
   percent,
   mediaTime,
-
   decimal,
   time,
   binary,
-
   padTable,
-
-  escapeHTML,
-  unescapeHTML,
-  removeInvalidCharXML,
-
-  stringIndentLine,
-  stringIndentList,
-
-  stringAutoEllipsis,
-  stringListJoinCamelCase,
-
   prettyStringifyJSON
 }

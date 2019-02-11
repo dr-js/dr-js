@@ -1,7 +1,8 @@
 import { relative, dirname, join as joinPath } from 'path'
 
 import { compareString } from 'dr-js/module/common/compare'
-import { escapeHTML, binary, time as formatTime } from 'dr-js/module/common/format'
+import { binary, time as formatTime } from 'dr-js/module/common/format'
+import { escapeHTML } from 'dr-js/module/common/string'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 
 import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'

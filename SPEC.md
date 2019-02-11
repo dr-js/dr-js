@@ -50,9 +50,11 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+  - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
++ 📄 [source/common/string.js](source/common/string.js)
+  - `autoEllipsis`, `escapeHTML`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -131,10 +133,6 @@
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
-+ 📄 [source/common/module/Option/parser.js](source/common/module/Option/parser.js)
-  - `createOptionParser`
-+ 📄 [source/common/module/Option/preset.js](source/common/module/Option/preset.js)
-  - `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
   - `objectMergeDeep`, `objectSortKey`
 + 📄 [source/env/function.js](source/env/function.js)
@@ -175,10 +173,12 @@
   - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
-+ 📄 [source/node/module/Option.js](source/node/module/Option.js)
-  - `ConfigPresetNode`, `createOptionGetter`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
++ 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
+  - `createOptionParser`
++ 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
+  - `ConfigPreset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`
 + 📄 [source/node/server/TCPProxyServer.js](source/node/server/TCPProxyServer.js)
@@ -304,8 +304,6 @@
   - **Math**
     - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
   - **Module**
-    - **Option**
-      - `createOptionParser`, `ConfigPreset`, `getOptionalFormatFlag`, `getOptionalFormatValue`
     - **AsyncTaskLane**
       - `createAsyncTaskLane`, `selectMinLoadLane`
     - **AsyncTaskQueue**
@@ -340,9 +338,11 @@
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `escapeHTML`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `removeInvalidCharXML`, `stringAutoEllipsis`, `stringIndentLine`, `stringIndentList`, `stringListJoinCamelCase`, `time`, `unescapeHTML`
+    - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
+  - **String**
+    - `autoEllipsis`, `escapeHTML`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
   - **Verify**
@@ -373,14 +373,14 @@
       - `createFileWatcher`
     - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
+    - **Option**
+      - `createOptionParser`, `ConfigPreset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **FactDatabase**
       - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
-    - **Option**
-      - `ConfigPresetNode`, `createOptionGetter`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
@@ -447,7 +447,7 @@
 >   --version --v -v [OPTIONAL] [ARGUMENT=0+]
 >       show version
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
->       common option: $1=hostname:port/localhost:unused-port
+>       common option: $1=hostname:port/localhost:unusedPort
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >       common option
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
@@ -455,47 +455,47 @@
 >   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
 >       common option
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
->       eval file or string: -O=outputFile, -I/$1=scriptFile/scriptString, $@=evalArgv
+>       eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv
 >   --eval-readline --erl [OPTIONAL] [ARGUMENT=0+]
 >       eval with readline: -R=readlineFile, ...eval
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0+]
 >       start node REPL
 >   --echo [OPTIONAL] [ARGUMENT=0+]
->       show args: $@=args
+>       show args: $@=...args
 >   --cat [OPTIONAL] [ARGUMENT=0+]
 >       with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout
 >   --write [OPTIONAL] [ARGUMENT=1]
->       for use like ">": `dr-js --cat source-file | dr-js --write output-file`
+>       for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`
 >   --append [OPTIONAL] [ARGUMENT=1]
->       for use like ">>": `dr-js --cat source-file | dr-js --append output-file`
+>       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
 >   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
->       use system default app to open uri or path: $1=irl-or-path/cwd
+>       use system default app to open uri or path: $0=uriOrPath/cwd
 >   --status --s -s [OPTIONAL] [ARGUMENT=0+]
 >       basic system status: -h=isHumanReadableOutput
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
->       list file: $1=path/cwd
+>       list file: $0=path/cwd
 >   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
->       list all file: $1=path/cwd
+>       list all file: $0=path/cwd
 >   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
->       list all file in tree: $1=path/cwd
+>       list all file in tree: $0=path/cwd
 >   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
->       create directory: $@=pathList
+>       create directory: $@=...pathList
 >   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
->       copy path: $1=pathFrom, $2=pathTo
+>       copy path: $@=pathFrom,pathTo
 >   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
->       move path: $1=pathFrom, $2=pathTo
+>       move path: $@=pathFrom,pathTo
 >   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
->       delete path: $@=pathList
+>       delete path: $@=...pathList
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
->       merge to one file: $@=merged-file,input-file,input-file,...
+>       merge to one file: $@=mergedFile,...inputFileList
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >       fetch uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
->       show system process status: -h=isHumanReadableOutput, $1=outputMode/pid--
+>       show system process status: -h=isHumanReadableOutput, $0=outputMode/"pid--"
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
->       static file server: -H=hostname:port, -R=staticRoot/cwd, $@=expireTime/5*60*1000
+>       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
->       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $@=expireTime/5*60*1000
+>       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000
 >   --server-websocket-group --swg [OPTIONAL]
 >       websocket chat server: -H=hostname:port
 >   --server-test-connection --stc [OPTIONAL]

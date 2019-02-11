@@ -8,7 +8,7 @@ import { collectSourceRouteMap } from 'dr-dev/module/ExportIndex/parseExport'
 import { generateIndexScript, generateExportInfo } from 'dr-dev/module/ExportIndex/generateInfo'
 import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dr-dev/module/ExportIndex/renderMarkdown'
 
-import { stringIndentLine } from 'source/common/format'
+import { indentLine } from 'source/common/string'
 
 import { formatUsage } from 'source-bin/option'
 
@@ -26,7 +26,7 @@ const PATH_FILE_DELETE_CONFIG = resolve(process.cwd(), PATH_FILE_DELETE_CONFIG_R
 const renderMarkdownBinOptionFormat = () => [
   renderMarkdownFileLink('source-bin/option.js'),
   '> ```',
-  stringIndentLine(formatUsage(), '> '),
+  indentLine(formatUsage(), '> '),
   '> ```'
 ]
 

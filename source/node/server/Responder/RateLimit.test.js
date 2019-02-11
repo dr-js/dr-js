@@ -17,7 +17,7 @@ describe('Node.Server.Responder.RateLimit', () => {
       responderDeny: (store, limitLeft) => { deny = limitLeft },
       getRequestKey: (store) => store.requestKey,
       limitCount: 4,
-      expireTime: 50
+      expireTime: 10
     })
 
     const sanityTest = () => {
@@ -62,7 +62,7 @@ describe('Node.Server.Responder.RateLimit', () => {
 
     sanityTest()
 
-    await setTimeoutAsync(50) // test limit reset
+    await setTimeoutAsync(20) // test limit reset
 
     sanityTest()
   })
@@ -82,7 +82,7 @@ describe('Node.Server.Responder.RateLimit', () => {
       responderDeny: (store, limitLeft) => { deny = limitLeft },
       getRequestKey: (store) => store.requestKey,
       limitCount: 4,
-      expireTime: 50
+      expireTime: 10
     })
 
     const sanityTest = async () => {
@@ -151,7 +151,7 @@ describe('Node.Server.Responder.RateLimit', () => {
 
     await sanityTest()
 
-    await setTimeoutAsync(50) // test limit reset
+    await setTimeoutAsync(20) // test limit reset
 
     await sanityTest()
   })

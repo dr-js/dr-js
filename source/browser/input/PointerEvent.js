@@ -60,8 +60,8 @@ const applyPointerEventListener = ({
       : { x: event.clientX, y: event.clientY }
 
   const calcState = (event) => {
-    if (__DEV__ && !timeStart) throw new Error(`[calcState] timeStart expected, get event: ${event.type}`)
-    if (__DEV__ && !event) throw new Error('[calcState] event expected')
+    if (__DEV__ && !timeStart) throw new Error(`[calcState] expect timeStart, get event: ${event.type}`)
+    if (__DEV__ && !event) throw new Error('[calcState] expect event')
     if (event !== prevEvent) {
       const time = clock()
       const point = getEventPoint(event)

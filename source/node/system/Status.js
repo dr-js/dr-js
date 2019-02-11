@@ -4,7 +4,8 @@ import {
   totalmem, freemem, loadavg, uptime
 } from 'os'
 
-import { percent, time, binary, stringIndentLine, stringIndentList } from 'source/common/format'
+import { percent, time, binary } from 'source/common/format'
+import { indentLine, indentList } from 'source/common/string'
 import { tryCall } from 'source/common/error'
 
 const getSystemPlatform = () => ({
@@ -36,7 +37,7 @@ const getSystemNetwork = () => ({
 })
 const describeSystemNetwork = ({ hostname, networkInterface } = getSystemNetwork()) => [
   `[hostname] ${hostname}`,
-  ...Object.entries(networkInterface).map(([ name, addressList ]) => stringIndentList(
+  ...Object.entries(networkInterface).map(([ name, addressList ]) => indentList(
     `[interface] ${name}`,
     addressList.map(({ address, netmask, mac, internal, family, cidr }) => `[${family}${internal ? '|INTERNAL' : ''}] ${cidr || address} (${mac})`)
   ))
@@ -65,7 +66,7 @@ const describeSystemStatus = ({ platform, processor, memory, network, activity }
   memory: describeSystemMemory(memory),
   network: describeSystemNetwork(network),
   activity: describeSystemActivity(activity)
-}).map(([ k, v ]) => `[${k}]\n${stringIndentLine(v)}`).join('\n')
+}).map(([ k, v ]) => `[${k}]\n${indentLine(v)}`).join('\n')
 
 const getProcessStatus = () => ({
   title: process.title,

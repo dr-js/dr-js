@@ -1,55 +1,54 @@
 import { strictEqual } from 'source/common/verify'
 import { createOptionParser } from './parser'
-import { ConfigPreset } from './preset'
 
 const { describe, it } = global
 
-const optionData = {
-  prefixENV: 'prefix-ENV',
-  prefixCONFIG: 'prefix-CONFIG',
-  formatList: [
-    { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
-    { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
-    { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], ...ConfigPreset.AllNumber, argumentCount: 2 },
-    { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0-', description: 'TEST DESCRIPTION A' },
-    { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1-', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
-    { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2-', description: 'TEST DESCRIPTION C\n' }
-  ]
-}
-const optionNameList = optionData.formatList.map(({ name }) => name)
-const { parseCLI, parseENV, parseCONFIG, processOptionMap, formatUsage } = createOptionParser(optionData)
+describe('Node.Module.Option.Parser', () => {
+  const optionData = {
+    prefixENV: 'prefix-ENV',
+    prefixCONFIG: 'prefix-CONFIG',
+    formatList: [
+      { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
+      { name: 'option-name-b', shortName: 'b', argumentCount: 1, argumentListNormalize: (argumentList) => argumentList.map(Number), optional: true },
+      { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], argumentCount: 2, argumentListNormalize: (argumentList) => argumentList.map(Number) },
+      { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0-', description: 'TEST DESCRIPTION A' },
+      { name: 'option-name-bb', shortName: 'B', optional: true, argumentCount: '1-', argumentListNormalize: (argumentList) => argumentList.map(String), description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
+      { name: 'option-name-cc', shortName: 'C', optional: true, argumentCount: '2-', argumentListNormalize: (argumentList) => argumentList.map(Number), description: 'TEST DESCRIPTION C\n' }
+    ]
+  }
+  const optionNameList = optionData.formatList.map(({ name }) => name)
+  const { parseCLI, parseENV, parseCONFIG, processOptionMap, formatUsage } = createOptionParser(optionData)
 
-const checkArgumentList = (optionMap) => {
-  strictEqual(optionMap[ 'option-name-a' ].argumentList.length, 0)
+  const checkArgumentList = (optionMap) => {
+    strictEqual(optionMap[ 'option-name-a' ].argumentList.length, 0)
 
-  strictEqual(optionMap[ 'option-name-b' ].argumentList.length, 1)
-  strictEqual(optionMap[ 'option-name-b' ].argumentList[ 0 ], 1)
+    strictEqual(optionMap[ 'option-name-b' ].argumentList.length, 1)
+    strictEqual(optionMap[ 'option-name-b' ].argumentList[ 0 ], 1)
 
-  strictEqual(optionMap[ 'option-name-c' ].argumentList.length, 2)
-  strictEqual(optionMap[ 'option-name-c' ].argumentList[ 0 ], 1)
-  strictEqual(optionMap[ 'option-name-c' ].argumentList[ 1 ], 2.2)
+    strictEqual(optionMap[ 'option-name-c' ].argumentList.length, 2)
+    strictEqual(optionMap[ 'option-name-c' ].argumentList[ 0 ], 1)
+    strictEqual(optionMap[ 'option-name-c' ].argumentList[ 1 ], 2.2)
 
-  strictEqual(optionMap[ 'option-name-aa' ].argumentList.length, 0)
+    strictEqual(optionMap[ 'option-name-aa' ].argumentList.length, 0)
 
-  strictEqual(optionMap[ 'option-name-bb' ].argumentList.length, 1)
-  strictEqual(optionMap[ 'option-name-bb' ].argumentList[ 0 ], '1')
+    strictEqual(optionMap[ 'option-name-bb' ].argumentList.length, 1)
+    strictEqual(optionMap[ 'option-name-bb' ].argumentList[ 0 ], '1')
 
-  strictEqual(optionMap[ 'option-name-cc' ].argumentList.length, 4)
-  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 0 ], 1)
-  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 1 ], 2.2)
-  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 2 ], 3.3)
-  strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 3 ], 4.4)
-}
+    strictEqual(optionMap[ 'option-name-cc' ].argumentList.length, 4)
+    strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 0 ], 1)
+    strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 1 ], 2.2)
+    strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 2 ], 3.3)
+    strictEqual(optionMap[ 'option-name-cc' ].argumentList[ 3 ], 4.4)
+  }
 
-describe('Common.Module.Option', () => {
-  describe('Option.formatUsage', () => {
+  describe('formatUsage', () => {
     const message = 'TEST_MESSAGE'
     it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
     it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
     it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
   })
 
-  describe('Option.parseCLI', () => {
+  describe('parseCLI', () => {
     const optionMap0 = parseCLI([
       // 'NODE',
       // 'SCRIPT.js',
@@ -92,7 +91,7 @@ describe('Common.Module.Option', () => {
     it('should pass checkArgumentList use combined shortName', () => checkArgumentList(optionMap2))
   })
 
-  describe('Option.parseENV', () => {
+  describe('parseENV', () => {
     const optionMap = parseENV({
       PREFIX_ENV_OPTION_NAME_A: '[]',
       PREFIX_ENV_OPTION_NAME_B: '[ "1" ]',
@@ -106,7 +105,7 @@ describe('Common.Module.Option', () => {
     it('should pass checkArgumentList use nameENV', () => checkArgumentList(optionMap))
   })
 
-  describe('Option.parseCONFIG', () => {
+  describe('parseCONFIG', () => {
     const optionMap = parseCONFIG({
       prefixCONFIGOptionNameA: [],
       prefixCONFIGOptionNameB: [ 1 ],
@@ -120,20 +119,20 @@ describe('Common.Module.Option', () => {
     it('should pass checkArgumentList use nameCONFIG', () => checkArgumentList(optionMap))
   })
 
-  describe('Option test optional && extendFormatList', () => {
+  describe('optional&extendFormatList', () => {
     const optionData1 = {
       prefixENV: 'prefix-ENV',
       prefixCONFIG: 'prefix-CONFIG',
       formatList: [
-        { name: 'option-name-check-target', optional: true, ...ConfigPreset.SingleInteger },
+        { name: 'option-name-check-target', argumentCount: 1, optional: true },
         { name: 'option-with-check-optional', optional: (optionMap, optionFormatSet, format) => optionMap[ 'option-name-check-target' ].argumentList[ 0 ] !== 1 },
         {
           name: 'option-with-extend',
           optional: true,
           extendFormatList: [
             { name: 'extend-option-name-a', argumentCount: 0 },
-            { name: 'extend-option-name-b', optional: true, ...ConfigPreset.SingleInteger },
-            { name: 'extend-option-name-c', ...ConfigPreset.AllNumber, argumentCount: 2 }
+            { name: 'extend-option-name-b', argumentCount: 1, optional: true },
+            { name: 'extend-option-name-c', argumentCount: 2 }
           ]
         }
       ]

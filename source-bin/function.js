@@ -4,7 +4,8 @@ import { cpus } from 'os'
 import { getEndianness } from 'dr-js/module/env/function'
 
 import { createStepper } from 'dr-js/module/common/time'
-import { time, decimal, stringIndentList, stringAutoEllipsis, padTable } from 'dr-js/module/common/format'
+import { time, decimal, padTable } from 'dr-js/module/common/format'
+import { indentList, autoEllipsis } from 'dr-js/module/common/string'
 import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
 import { fetchLikeRequest } from 'dr-js/module/node/net'
@@ -123,7 +124,7 @@ const collectAllProcessStatus = async (outputMode, isHumanReadableOutput) => {
     if (!isHumanReadableOutput) return processRootInfo
     const text = prettyStringifyProcessTree(processRootInfo)
     return (outputMode !== 'tree-wide' && outputMode !== 'tw')
-      ? text.split('\n').map((line) => stringAutoEllipsis(line, 128, 96, 16)).join('\n')
+      ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
       : text
   }
   const processList = sortProcessList(await getProcessList(), outputMode)
@@ -132,11 +133,11 @@ const collectAllProcessStatus = async (outputMode, isHumanReadableOutput) => {
     : processList
 }
 
-const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList = []) => stringIndentList(`[${title}]`, [
+const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList = []) => indentList(`[${title}]`, [
   `pid: ${process.pid}`,
   ...extraList,
   `baseUrl: '${baseUrl}'`,
-  hostname === '0.0.0.0' && stringIndentList('localUrl:', [
+  hostname === '0.0.0.0' && indentList('localUrl:', [
     { address: 'localhost' },
     ...getNetworkIPv4AddressList()
   ].map(({ address }) => `'${protocol}//${address}:${port}'`))

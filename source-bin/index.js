@@ -4,7 +4,8 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary, stringIndentList } from 'dr-js/module/common/format'
+import { time, binary } from 'dr-js/module/common/format'
+import { indentList } from 'dr-js/module/common/string'
 import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
@@ -72,7 +73,7 @@ const runMode = async (modeName, optionData) => {
         : Buffer.from(String(result)))
     }
     case 'repl':
-      return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true })
+      return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require
     case 'echo':
       return logAuto(argumentList)
     case 'cat': {
@@ -164,7 +165,7 @@ const runMode = async (modeName, optionData) => {
       }
       const { option, start } = createTCPProxyServer({ getTargetOption, ...(await getServerConfig()) })
       await start()
-      return log(stringIndentList('[TCPProxy]', [
+      return log(indentList('[TCPProxy]', [
         `pid: ${process.pid}`,
         `at: ${option.hostname}:${option.port}`,
         ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)

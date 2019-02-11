@@ -20,7 +20,7 @@ const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
 const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
   __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // dataBuffer.toString().slice(0, 20)
-  if (dataType !== DATA_TYPE_MAP.OPCODE_BINARY) return webSocket.close(1000, 'OPCODE_BINARY expected')
+  if (dataType !== DATA_TYPE_MAP.OPCODE_BINARY) return webSocket.close(1000, 'expect OPCODE_BINARY')
   const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
   __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
   error && webSocket.close(1000, error.toString())

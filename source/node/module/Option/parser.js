@@ -1,12 +1,12 @@
-import { stringIndentLine, stringListJoinCamelCase } from 'source/common/format'
+import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source/common/string'
 
-// TODO: NOTE: currently all option format must be named, which is good and slightly inconvenient
+// TODO: NOTE: currently all option format must be named, which is good but slightly inconvenient
 
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',
 //   prefixCONFIG: 'prefix-CONFIG',
 //   formatList: [ {
-//     name: 'option-name',                                                   // separate words with '-'
+//     name: 'option-name',                                                   // kebab-case (separate words with '-')
 //     shortName: 'n',                                                        // optional, default '', single char [A-Za-z] CLI name alias, leading with `-`
 //     aliasNameList: [ 'o-n' ],                                              // optional, default [], multi-char CLI name alias, leading with `--`
 //     optional: false || (optionMap, optionFormatSet, format) => Boolean,    // optional, default false, can set checkOptional function, checkOptional should return false for non-optional
@@ -27,7 +27,7 @@ const FORMAT_DEFAULT = {
   nameCONFIG: '', // auto append
   shortName: '', // CLI only
   aliasNameList: [], // CLI only
-  optional: false,
+  optional: false, // false || (optionMap, optionFormatSet, format) => true
   argumentCount: '0', // can be number
   argumentLengthMin: 0, // auto append
   argumentLengthMax: 0, // auto append
@@ -47,10 +47,12 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
 
   const parseFormat = (format, index, upperFormat) => {
     const { name, shortName, aliasNameList, argumentCount } = format
-    const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
-    format.nameENV = (prefixENV ? `${prefixENV}-${name}` : name).split('-').join('_').toUpperCase()
-    format.nameCONFIG = stringListJoinCamelCase((prefixCONFIG ? `${prefixCONFIG}-${name}` : name).split('-'))
+    format.nameENV = joinSnakeCase(splitKebabCase(prefixENV ? `${prefixENV}-${name}` : name))
+    format.nameCONFIG = joinCamelCase(splitKebabCase(prefixCONFIG ? `${prefixCONFIG}-${name}` : name))
+
     format.optional = parseOptional(format.optional, upperFormat)
+
+    const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
     format.argumentLengthMin = parseInt(argumentLengthMinString)
     format.argumentLengthMax = argumentLengthSep
       ? (argumentLengthMaxString ? parseInt(argumentLengthMaxString) : Infinity)
@@ -125,7 +127,7 @@ const getParseArgvList = (nameMapCLI, nameMapCLIShort) => (argvList) => {
     if (REGEXP_FORMAT_CLI_NAME.test(value)) { // test name || alias
       const [ , name, , extraArgument ] = REGEXP_FORMAT_CLI_NAME.exec(value)
       const format = nameMapCLI.get(name)
-      !format && throwParseArgvError(name)
+      !format && throwParseArgvError(name, 'invalid option')
       optionList.push({ format, argumentList: [] })
       extraArgument && getLastOptionArgumentList().push(extraArgument)
     } else if (REGEXP_FORMAT_CLI_SHORT_NAME.test(value)) { // test shortName
@@ -138,15 +140,18 @@ const getParseArgvList = (nameMapCLI, nameMapCLIShort) => (argvList) => {
       extraArgument && getLastOptionArgumentList().push(extraArgument)
     } else { // argument
       !optionList.length && throwParseArgvError(value, 'no leading option found')
-      if (value === '--') getLastOptionArgumentList().push(...argvList.slice(index)) // mark remaining argvList as current option argument
-      else getLastOptionArgumentList().push(value)
+      if (value !== '--') getLastOptionArgumentList().push(value)
+      else { // mark remaining argvList as current option argument
+        getLastOptionArgumentList().push(...argvList.slice(index + 1))
+        break // skip all remaining
+      }
     }
   }
   return optionList
 }
 const REGEXP_FORMAT_CLI_NAME = /^--([A-Za-z][A-Za-z0-9-]*)(=(.*))?$/ // NOTE: may match one extra argument
 const REGEXP_FORMAT_CLI_SHORT_NAME = /^-([A-Za-z]+)(=(.*))?$/ // NOTE: will match merged short command, may match one extra argument
-const throwParseArgvError = (arg, detail = 'invalid option') => { throw new Error(`[ParseArgv] unexpected '${arg}', ${detail}`) }
+const throwParseArgvError = (arg, detail) => { throw new Error(`[ParseArgv] unexpected '${arg}', ${detail}`) }
 
 const getParseCLI = (parseArgvList) => (argvList, optionMap = {}) => parseArgvList(argvList).reduce((o, { format, argumentList }) => {
   if (o[ format.name ]) o[ format.name ].argumentList.push(...argumentList)
@@ -176,8 +181,8 @@ const getProcessOptionMap = (nonOptionalFormatSet, optionalFormatCheckSet) => (o
   const optionFormatSet = new Set()
   Object.entries(optionMap).forEach(([ name, option ]) => {
     const { format, argumentList } = option
-    format.argumentLengthMin > argumentList.length && throwProcessError(`expected ${format.argumentLengthMin - argumentList.length} more argument`, format)
-    format.argumentLengthMax < argumentList.length && throwProcessError(`expected ${argumentList.length - format.argumentLengthMax} less argument`, format)
+    format.argumentLengthMin > argumentList.length && throwProcessError(`expect ${format.argumentLengthMin - argumentList.length} more argument`, format)
+    format.argumentLengthMax < argumentList.length && throwProcessError(`expect ${argumentList.length - format.argumentLengthMax} less argument`, format)
     __DEV__ && optionFormatSet.has(format) && console.warn(`[processOptionList] get duplicate option: ${formatSimple(format)}`)
     option.argumentList = format.argumentListNormalize(argumentList, extendOption)
     format.argumentListVerify(option.argumentList, extendOption)
@@ -220,6 +225,6 @@ const formatRange = (min, max) => `${min}${max === Infinity ? '+' : (max > min ?
 
 const mapJoin = (array, func) => join(...array.map(func))
 const join = (...fragList) => fragList.filter(Boolean).join('\n')
-const indent = (text, count = 2) => count ? stringIndentLine(text, ' '.repeat(count)) : text
+const indent = (text, count = 2) => count ? indentLine(text, ' '.repeat(count)) : text
 
 export { createOptionParser }
