@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.20.0-dev.1",
+  "version": "0.20.0-dev.2",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -20,11 +20,11 @@
     "script-pack-test": "babel-node ./script verbose pack test",
     "script-publish": "babel-node ./script pack publish",
     "script-publish-dev": "babel-node ./script pack publish-dev",
-    "script-generate-spec": "babel-node ./script/generateSpec ./tempFileDelete.config.json",
-    "script-delete-temp-build-file": "babel-node ./source-bin -c ./tempFileDelete.config.json",
+    "script-generate-spec": "cross-env BABEL_ENV=use-source babel-node ./script/generateSpec ./tempFileDelete.config.json",
+    "script-delete-temp-build-file": "cross-env BABEL_ENV=use-source babel-node ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
-    "build-bin": "cross-env BABEL_ENV=build-bin babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
-    "build-bin-dev": "cross-env BABEL_ENV=build-bin-dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
+    "build-bin": "babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
+    "build-bin-dev": "cross-env BABEL_ENV=dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
     "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/",
     "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
     "build-library-webpack": "babel-node ./script/webpack production profile",
@@ -48,7 +48,7 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-dev": "0.0.3-dev.0",
+    "dr-dev": "0.0.3-dev.1",
     "dr-dev-web-puppeteer": "0.0.3-dev.0"
   },
   "sideEffects": false

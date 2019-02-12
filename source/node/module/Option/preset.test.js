@@ -1,22 +1,26 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { objectSortKey } from 'source/common/mutable/Object'
 import { createOptionParser } from './parser'
-import { ConfigPreset, parseCompactFormat } from './preset'
+import { Preset } from './preset'
 
 const { describe, it } = global
 
+// console.log(Object.keys(Preset))
+// console.log(Preset.SinglePath)
+// console.log(Preset.AllPath)
+
 describe('Node.Module.Option.preset', () => {
-  describe('ConfigPreset', () => {
+  describe('Preset', () => {
     const optionData = {
       prefixENV: 'prefix-ENV',
       prefixCONFIG: 'prefix-CONFIG',
       formatList: [
         { name: 'option-name-a', shortName: 'a', argumentCount: 0 },
-        { name: 'option-name-b', shortName: 'b', optional: true, ...ConfigPreset.SingleInteger },
-        { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], ...ConfigPreset.AllNumber, argumentCount: 2 },
+        { name: 'option-name-b', shortName: 'b', optional: true, ...Preset.SingleInteger },
+        { name: 'option-name-c', shortName: 'c', aliasNameList: [ 'onc0', 'onc1' ], ...Preset.AllNumber, argumentCount: 2 },
         { name: 'option-name-aa', shortName: 'A', optional: true, argumentCount: '0-', description: 'TEST DESCRIPTION A' },
-        { name: 'option-name-bb', shortName: 'B', optional: true, ...ConfigPreset.AllString, argumentCount: '1-', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
-        { name: 'option-name-cc', shortName: 'C', optional: true, ...ConfigPreset.AllNumber, argumentCount: '2-', description: 'TEST DESCRIPTION C\n' }
+        { name: 'option-name-bb', shortName: 'B', optional: true, ...Preset.AllString, argumentCount: '1-', description: 'TEST DESCRIPTION B\nTEST DESCRIPTION B\nTEST DESCRIPTION B' },
+        { name: 'option-name-cc', shortName: 'C', optional: true, ...Preset.AllNumber, argumentCount: '2-', description: 'TEST DESCRIPTION C\n' }
       ]
     }
     const optionNameList = optionData.formatList.map(({ name }) => name)
@@ -127,15 +131,15 @@ describe('Node.Module.Option.preset', () => {
         prefixENV: 'prefix-ENV',
         prefixCONFIG: 'prefix-CONFIG',
         formatList: [
-          { name: 'option-name-check-target', optional: true, ...ConfigPreset.SingleInteger },
+          { name: 'option-name-check-target', optional: true, ...Preset.SingleInteger },
           { name: 'option-with-check-optional', optional: (optionMap, optionFormatSet, format) => optionMap[ 'option-name-check-target' ].argumentList[ 0 ] !== 1 },
           {
             name: 'option-with-extend',
             optional: true,
             extendFormatList: [
               { name: 'extend-option-name-a', argumentCount: 0 },
-              { name: 'extend-option-name-b', optional: true, ...ConfigPreset.SingleInteger },
-              { name: 'extend-option-name-c', ...ConfigPreset.AllNumber, argumentCount: 2 }
+              { name: 'extend-option-name-b', optional: true, ...Preset.SingleInteger },
+              { name: 'extend-option-name-c', ...Preset.AllNumber, argumentCount: 2 }
             ]
           }
         ]
@@ -159,55 +163,55 @@ describe('Node.Module.Option.preset', () => {
     })
   })
 
-  it('parseCompactFormat()', () => {
-    const testParseCompactFormat = (compatFormat, expectFormat) => stringifyEqual(
-      objectSortKey(parseCompactFormat(compatFormat)),
+  it('Preset.parseCompact()', () => {
+    const testParseCompact = (compatFormat, expectFormat) => stringifyEqual(
+      objectSortKey(Preset.parseCompact(compatFormat)),
       objectSortKey(expectFormat),
       `should match expect, compatFormat: "${compatFormat}"`
     )
 
-    testParseCompactFormat('config', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config|', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config/|', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config//|', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config///|', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config////|', { name: 'config', aliasNameList: [] })
-    testParseCompactFormat('config||', { name: 'config', aliasNameList: [], description: '|' })
-    testParseCompactFormat('config//||', { name: 'config', aliasNameList: [], description: '|' })
-    testParseCompactFormat('config////|a|b\nc', { name: 'config', aliasNameList: [], description: 'a|b\nc' })
+    testParseCompact('config', { name: 'config', aliasNameList: [] })
+    testParseCompact('config|', { name: 'config', aliasNameList: [] })
+    testParseCompact('config/|', { name: 'config', aliasNameList: [] })
+    testParseCompact('config//|', { name: 'config', aliasNameList: [] })
+    testParseCompact('config///|', { name: 'config', aliasNameList: [] })
+    testParseCompact('config////|', { name: 'config', aliasNameList: [] })
+    testParseCompact('config||', { name: 'config', aliasNameList: [], description: '|' })
+    testParseCompact('config//||', { name: 'config', aliasNameList: [], description: '|' })
+    testParseCompact('config////|a|b\nc', { name: 'config', aliasNameList: [], description: 'a|b\nc' })
 
-    testParseCompactFormat('config,a,b,c', { name: 'config', aliasNameList: [ 'a', 'b', 'c' ], shortName: 'a' })
-    testParseCompactFormat('config,aa,b,c', { name: 'config', aliasNameList: [ 'aa', 'b', 'c' ] })
+    testParseCompact('config,a,b,c', { name: 'config', aliasNameList: [ 'a', 'b', 'c' ], shortName: 'a' })
+    testParseCompact('config,aa,b,c', { name: 'config', aliasNameList: [ 'aa', 'b', 'c' ] })
 
-    testParseCompactFormat('config/SingleString', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompactFormat('config/SS', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompactFormat('config/SN', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompactFormat('config/SI', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompactFormat('config/SF', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompactFormat('config/SP', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', isPath: true, optional: false })
+    testParseCompact('config/SingleString', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
+    testParseCompact('config/SS', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
+    testParseCompact('config/SN', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
+    testParseCompact('config/SI', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
+    testParseCompact('config/SF', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
+    testParseCompact('config/SP', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', isPath: true, optional: false })
 
-    testParseCompactFormat('config/AS', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompactFormat('config/AN', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompactFormat('config/AI', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompactFormat('config/AF', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompactFormat('config/AP', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', isPath: true, optional: false })
+    testParseCompact('config/AS', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
+    testParseCompact('config/AN', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
+    testParseCompact('config/AI', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
+    testParseCompact('config/AF', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
+    testParseCompact('config/AP', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', isPath: true, optional: false })
 
-    testParseCompactFormat('config/T', { name: 'config', aliasNameList: [], argumentCount: '0-', description: 'set to enable', optional: true })
-    testParseCompactFormat('config/O', { name: 'config', aliasNameList: [], optional: true })
-    testParseCompactFormat('config/P', { name: 'config', aliasNameList: [], isPath: true })
-    testParseCompactFormat('config/O,P', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompactFormat('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/T', { name: 'config', aliasNameList: [], argumentCount: '0-', description: 'set to enable', optional: true })
+    testParseCompact('config/O', { name: 'config', aliasNameList: [], optional: true })
+    testParseCompact('config/P', { name: 'config', aliasNameList: [], isPath: true })
+    testParseCompact('config/O,P', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
 
-    testParseCompactFormat('config//0', { name: 'config', aliasNameList: [], argumentCount: '0' })
-    testParseCompactFormat('config//0|', { name: 'config', aliasNameList: [], argumentCount: '0' })
-    testParseCompactFormat('config//1-', { name: 'config', aliasNameList: [], argumentCount: '1-' })
-    testParseCompactFormat('config//1-|', { name: 'config', aliasNameList: [], argumentCount: '1-' })
+    testParseCompact('config//0', { name: 'config', aliasNameList: [], argumentCount: '0' })
+    testParseCompact('config//0|', { name: 'config', aliasNameList: [], argumentCount: '0' })
+    testParseCompact('config//1-', { name: 'config', aliasNameList: [], argumentCount: '1-' })
+    testParseCompact('config//1-|', { name: 'config', aliasNameList: [], argumentCount: '1-' })
 
-    testParseCompactFormat('config/Path,Optional', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompactFormat('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompactFormat('config P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompactFormat('config   /  P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompactFormat('config      P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/Path,Optional', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config   /  P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config      P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
 
     const EXPECT_FORMAT = {
       name: 'config',
@@ -220,28 +224,28 @@ describe('Node.Module.Option.preset', () => {
     }
 
     // compact
-    testParseCompactFormat('config,c,conf,cfg/O,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg/T,O,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg/T,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg/O,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg/T,O,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg/T,P/1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
 
     // compact use space
-    testParseCompactFormat('config,c,conf,cfg O,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg T,O,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg T,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg O,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg T,O,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg T,P 1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
 
     // compact use tab
-    testParseCompactFormat('config,c,conf,cfg\tO,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg\tT,O,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg\tT,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg\tO,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg\tT,O,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg\tT,P\t1-|load config from some ENV|JSON|JS', EXPECT_FORMAT)
 
     // compact use tab-space
-    testParseCompactFormat('config,c,conf,cfg     O,P       1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg     T,O,P     1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg     T,P       1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg     O,P       1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg     T,O,P     1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg     T,P       1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
 
     // compact use sep&space
-    testParseCompactFormat('config,c,conf,cfg  /  O,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg  /  T,O,P  /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
-    testParseCompactFormat('config,c,conf,cfg  /  T,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg  /  O,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg  /  T,O,P  /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+    testParseCompact('config,c,conf,cfg  /  T,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
   })
 })

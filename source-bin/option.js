@@ -1,6 +1,19 @@
-import { ConfigPreset, prepareOption, parseCompactFormat } from 'dr-js/module/node/module/Option/preset'
+import { Preset, prepareOption } from 'dr-js/module/node/module/Option/preset'
 
-const parseList = (...args) => args.map((compactFormat) => ({ ...parseCompactFormat(compactFormat), optional: true }))
+const parseList = (...args) => args.map((compactFormat) => ({
+  ...Preset.parseCompact(compactFormat),
+  optional: true // set all optional
+}))
+
+const COMMON_FORMAT_LIST = parseList(
+  'help,h/T|show full help, or human readable output',
+  'quiet,q/T|less log',
+  'version,v/T|show version',
+  'host,H/SS|common option: $1=hostname:port/localhost:unusedPort',
+  'root,R/SP|common option',
+  'input-file,I/SP|common option',
+  'output-file,O/SP|common option'
+)
 
 const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
@@ -33,16 +46,8 @@ const OPTION_CONFIG = {
   prefixENV: 'dr-js',
   prefixCONFIG: 'dr-js',
   formatList: [
-    ConfigPreset.Config,
-    ...parseList(
-      'help,h/T|show full help, or human readable output',
-      'quiet,q/T|less log',
-      'version,v/T|show version',
-      'host,H/SS|common option: $1=hostname:port/localhost:unusedPort',
-      'root,R/SP|common option',
-      'input-file,I/SP|common option',
-      'output-file,O/SP|common option'
-    ),
+    Preset.Config,
+    ...COMMON_FORMAT_LIST,
     ...MODE_FORMAT_LIST
   ]
 }

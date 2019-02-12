@@ -1,7 +1,7 @@
 const BABEL_ENV = process.env.BABEL_ENV || ''
 const isDev = BABEL_ENV.includes('dev')
 const isModule = BABEL_ENV.includes('module')
-const isBuildBin = BABEL_ENV.includes('build-bin') // for rewriting import form 'dr-js/module' to 'library'(build) or 'source'(test)
+const isUseSource = BABEL_ENV.includes('use-source')
 
 module.exports = {
   presets: [
@@ -14,9 +14,9 @@ module.exports = {
       root: [ './' ],
       alias: isModule ? undefined : {
         '^dr-dev/module/(.+)': 'dr-dev/library/\\1',
-        '^dr-js/module/(.+)': isBuildBin
-          ? './library/\\1'
-          : './source/\\1'
+        '^dr-js/module/(.+)': isUseSource
+          ? './source/\\1' // when direct use/test `./source-bin` with `babel-node`
+          : './library/\\1' // when build to output
       }
     } ]
   ].filter(Boolean),

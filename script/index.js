@@ -66,6 +66,7 @@ const clearOutput = async ({ logger }) => {
 runMain(async (logger) => {
   await verifyNoGitignore({ path: fromRoot('source'), logger })
   await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
+
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
   writeLicenseFile(fromRoot('LICENSE'), packageJSON.license, packageJSON.author)
 
@@ -83,7 +84,7 @@ runMain(async (logger) => {
     execSync(`npm run test-output-module`, execOptionRoot)
   }
 
-  await clearOutput({ packageJSON, logger })
+  await clearOutput({ logger })
   await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
   await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })

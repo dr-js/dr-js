@@ -6,19 +6,6 @@ import { objectDeleteUndefined } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 import { createOptionParser } from './parser'
 
-const verifyOneOf = (selectList) => (argumentList) => {
-  arrayLength(argumentList, 1)
-  oneOf(argumentList[ 0 ], selectList)
-}
-
-const getVerifySingle = (typeVerify, typeName) => (argumentList) => {
-  arrayLength(argumentList, 1)
-  typeVerify(argumentList[ 0 ], `expect ${typeName}`)
-}
-const getVerifyAll = (typeVerify, typeName) => (argumentList) => {
-  argumentList.forEach((v, i) => typeVerify(v, `expect ${typeName} at #${i}`))
-}
-
 const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNormalize = (v) => v, description = '', optional = false) => ({
   argumentCount,
   argumentListNormalize,
@@ -26,48 +13,82 @@ const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNor
   description,
   optional
 })
-const getOneOfPreset = (argumentListVerify, argumentListNormalize) => (selectList) => {
-  argumentListVerify(selectList)
-  return getPreset(1, verifyOneOf(selectList), argumentListNormalize, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
-}
 
-const ConfigPreset = {
+const Preset = {
   Optional: { optional: true },
   Path: { isPath: true },
   Any: getPreset('0-', undefined, undefined, 'any', true),
   Toggle: getPreset('0-', undefined, () => ([ true ]), 'set to enable', true)
 }
-Object.assign(ConfigPreset, ...[
-  // typeName, checkTypeFunc, normalizeToTypeFunc
+
+// Preset: first batch, generated
+Object.assign(Preset, ...[
+  // typeName, verifyFunc, normalizeFunc
   [ 'String', string, (argumentList) => argumentList.map(String) ],
   [ 'Number', number, (argumentList) => argumentList.map(Number) ],
   [ 'Boolean', boolean, (argumentList) => argumentList.map(Boolean) ],
   [ 'Integer', integer, (argumentList) => argumentList.map(parseInt) ],
   [ 'Function', basicFunction, undefined ] // TODO: should be form JS config only, always optional?
-].map(([ typeName, checkTypeFunc, normalizeToTypeFunc ]) => {
-  const verifyAllType = getVerifyAll(checkTypeFunc, typeName)
+].map(([ typeName, verifyFunc, normalizeFunc ]) => {
+  const verifySingle = (argumentList) => {
+    arrayLength(argumentList, 1)
+    verifyFunc(argumentList[ 0 ], `expect ${typeName}`)
+  }
+  const verifyAllType = (argumentList) => argumentList.forEach((v, i) => verifyFunc(v, `expect ${typeName} at #${i}`))
   return {
-    [ `Single${typeName}` ]: getPreset(1, getVerifySingle(checkTypeFunc, typeName), normalizeToTypeFunc),
-    [ `All${typeName}` ]: getPreset('1-', verifyAllType, normalizeToTypeFunc),
-    [ `OneOf${typeName}` ]: normalizeToTypeFunc && getOneOfPreset(verifyAllType, normalizeToTypeFunc)
+    [ `Single${typeName}` ]: getPreset(1, verifySingle, normalizeFunc),
+    [ `All${typeName}` ]: getPreset('1-', verifyAllType, normalizeFunc)
   }
 }))
-Object.assign(ConfigPreset, {
-  SinglePath: { ...ConfigPreset.SingleString, isPath: true },
-  AllPath: { ...ConfigPreset.AllString, isPath: true },
-  Config: { // common config preset
-    ...ConfigPreset.SingleString,
-    optional: true,
-    name: 'config',
-    shortName: 'c',
-    description: [
-      `from ENV: set to 'env'`,
-      `from JS/JSON file: set to 'path/to/config.js|json'`
-    ].join('\n')
+
+const pickOneOf = (selectList) => {
+  if (selectList.length <= 2) throw new Error(`expect more to pick: ${selectList}`)
+  const argumentListVerify = (argumentList) => {
+    arrayLength(argumentList, 1)
+    oneOf(argumentList[ 0 ], selectList)
   }
+  return getPreset(1, argumentListVerify, undefined, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
+}
+const parseCompact = (compactFormat) => {
+  // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
+  const [ compactTag, ...descriptionList ] = compactFormat.split('|')
+  const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
+  const [ name, ...aliasNameList ] = nameTag.split(',')
+  const shortName = aliasNameList[ 0 ]
+  const presetList = presetTag.split(',')
+  return Object.assign(
+    {},
+    ...presetList.map((presetName) => {
+      if (presetName && !Preset[ presetName ]) throw new Error(`invalid presetName: ${presetName}`)
+      return Preset[ presetName ]
+    }).filter(Boolean),
+    objectDeleteUndefined({
+      name,
+      shortName: (shortName && shortName.length === 1) ? aliasNameList[ 0 ] : undefined,
+      aliasNameList,
+      argumentCount: argumentCount || undefined,
+      description: descriptionList.join('|') || undefined
+    })
+  )
+}
+const parseCompactList = (...args) => args.map(parseCompact)
+
+// Preset: second batch, with function
+Object.assign(Preset, {
+  SinglePath: parseCompact('/SingleString,Path'),
+  AllPath: parseCompact('/AllString,Path'),
+  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env"\nfrom JS/JSON file: set to "path/to/config.js|json"'),
+
+  pickOneOf,
+  parseCompact,
+  parseCompactList
 })
-Object.entries(ConfigPreset).forEach(([ key, value ]) => {
-  ConfigPreset[ splitCamelCase(key).map((string) => string.charAt(0).toUpperCase()).join('') ] = value
+
+// Preset: generate compactName
+Object.entries(Preset).forEach(([ key, value ]) => {
+  const compactName = splitCamelCase(key).map((string) => string.charAt(0)).join('')
+  if (__DEV__ && Preset[ compactName ]) throw new Error(`duplicate compactName: ${compactName}`)
+  Preset[ compactName ] = value
 })
 
 // not optional if the format has been set
@@ -120,34 +141,12 @@ const prepareOption = (optionConfig) => {
   return { parseOption, formatUsage }
 }
 
-// sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
-const parseCompactFormat = (format) => {
-  const [ compactTag, ...descriptionList ] = format.split('|')
-  const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
-  const [ name, ...aliasNameList ] = nameTag.split(',')
-  const shortName = aliasNameList[ 0 ]
-  const presetList = presetTag.split(',')
-  return Object.assign(
-    {},
-    ...presetList.map((presetName) => ConfigPreset[ presetName ]).filter(Boolean),
-    objectDeleteUndefined({
-      name,
-      shortName: (shortName && shortName.length === 1) ? aliasNameList[ 0 ] : undefined,
-      aliasNameList,
-      argumentCount: argumentCount || undefined,
-      description: descriptionList.join('|') || undefined
-    })
-  )
-}
-
 export {
-  ConfigPreset,
+  Preset,
   getOptionalFormatFlag,
   getOptionalFormatValue,
 
   parseOptionMap,
   createOptionGetter,
-  prepareOption,
-
-  parseCompactFormat
+  prepareOption
 }

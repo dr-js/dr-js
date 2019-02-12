@@ -178,7 +178,7 @@
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
   - `createOptionParser`
 + 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
-  - `ConfigPreset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
+  - `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServer`
 + 📄 [source/node/server/TCPProxyServer.js](source/node/server/TCPProxyServer.js)
@@ -374,7 +374,7 @@
     - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **Option**
-      - `createOptionParser`, `ConfigPreset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseCompactFormat`, `parseOptionMap`, `prepareOption`
+      - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **FactDatabase**
@@ -437,9 +437,9 @@
 📄 [source-bin/option.js](source-bin/option.js)
 > ```
 > CLI Usage:
->   --config -c [OPTIONAL] [ARGUMENT=1]
->       from ENV: set to 'env'
->       from JS/JSON file: set to 'path/to/config.js|json'
+>   --config --c -c [OPTIONAL] [ARGUMENT=1]
+>       from ENV: set to "env"
+>       from JS/JSON file: set to "path/to/config.js|json"
 >   --help --h -h [OPTIONAL] [ARGUMENT=0+]
 >       show full help, or human readable output
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0+]
