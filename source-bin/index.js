@@ -30,8 +30,8 @@ const logAuto = (value) => console.log(isBasicObject(value)
 )
 
 const runMode = async (modeName, optionData) => {
-  const { getOptionOptional, getSingleOption, getSingleOptionOptional } = optionData
-  const log = getOptionOptional('quiet')
+  const { tryGet, tryGetFirst, getFirst } = optionData
+  const log = tryGet('quiet')
     ? () => {}
     : console.log
   const logTaskResult = (task, path) => task(path).then(
@@ -39,10 +39,10 @@ const runMode = async (modeName, optionData) => {
     (error) => log(`[${modeName}] error: ${path}\n${error.stack || error}`)
   )
 
-  const isHumanReadableOutput = Boolean(getOptionOptional('help'))
-  const argumentList = getOptionOptional(modeName) || []
-  const inputFile = getSingleOptionOptional('input-file')
-  const outputFile = getSingleOptionOptional('output-file')
+  const isHumanReadableOutput = Boolean(tryGet('help'))
+  const argumentList = tryGet(modeName) || []
+  const inputFile = tryGetFirst('input-file')
+  const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
     : pipeStreamAsync(process.stdout, bufferToStream(buffer))
@@ -52,7 +52,7 @@ const runMode = async (modeName, optionData) => {
   )
 
   const getServerConfig = async () => {
-    const hostPair = (getSingleOptionOptional('host') || '').split(':')
+    const hostPair = (tryGetFirst('host') || '').split(':')
     const hostname = hostPair[ 0 ] || '0.0.0.0'
     const port = Number(hostPair[ 1 ] || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname)) // for more stable port
     return { hostname, port }
@@ -67,13 +67,13 @@ const runMode = async (modeName, optionData) => {
         inputFile ? dirname(inputFile) : process.cwd(),
         optionData
       )
-      if (modeName === 'eval-readline') result = await evalReadlineExtend(result, getSingleOption('root'), log)
+      if (modeName === 'eval-readline') result = await evalReadlineExtend(result, getFirst('root'), log)
       return result !== undefined && outputBuffer((result instanceof Buffer)
         ? result
         : Buffer.from(String(result)))
     }
     case 'repl':
-      return startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require
+      return (startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require)
     case 'echo':
       return logAuto(argumentList)
     case 'cat': {
@@ -137,7 +137,7 @@ const runMode = async (modeName, optionData) => {
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 60 * 1000 ] = argumentList // expireTime: 5min, in msec
       const isSimpleServe = modeName === 'server-serve-static-simple'
-      const staticRoot = getSingleOptionOptional('root') || process.cwd()
+      const staticRoot = tryGetFirst('root') || process.cwd()
       return startServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
     }
     case 'server-websocket-group':
@@ -176,12 +176,12 @@ const runMode = async (modeName, optionData) => {
 
 const main = async () => {
   const optionData = await parseOption()
-  const { name: modeName } = MODE_FORMAT_LIST.find(({ name }) => optionData.getOptionOptional(name)) || {}
+  const { name: modeName } = MODE_FORMAT_LIST.find(({ name }) => optionData.tryGet(name)) || {}
 
   if (!modeName) {
-    return logAuto(optionData.getOptionOptional('version')
+    return logAuto(optionData.tryGet('version')
       ? getVersion()
-      : formatUsage(null, optionData.getOptionOptional('help') ? null : 'simple')
+      : formatUsage(null, optionData.tryGet('help') ? null : 'simple')
     )
   }
 

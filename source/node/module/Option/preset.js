@@ -102,20 +102,16 @@ const optionMapResolvePath = (optionMap, pathRoot) => { // NOTE: will mutate arg
 }
 
 const createOptionGetter = (optionMap) => {
-  const getOptionOptional = (name) => optionMap[ name ] && optionMap[ name ].argumentList
-  const getOption = (name, argumentCount) => {
-    const argumentList = getOptionOptional(name)
+  const tryGet = (name) => optionMap[ name ] && optionMap[ name ].argumentList
+  const tryGetFirst = (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
+  const get = (name, argumentCount) => {
+    const argumentList = tryGet(name)
     if (!argumentList) throw new Error(`expect option ${name}`)
     if (argumentCount !== undefined && argumentList.length !== argumentCount) throw new Error(`expect option ${name} with ${argumentCount} value, get ${argumentList.length}`)
     return argumentList
   }
-  return {
-    optionMap,
-    getOptionOptional, // TODO: rename to `getOptional`
-    getOption, // TODO: rename to `get`
-    getSingleOptionOptional: (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ], // TODO: rename to `getFirstOptional`
-    getSingleOption: (name) => getOption(name, 1)[ 0 ] // TODO: rename to `getFirst`
-  }
+  const getFirst = (name) => get(name, 1)[ 0 ]
+  return { optionMap, tryGet, tryGetFirst, get, getFirst }
 }
 
 const prepareOption = (optionConfig) => {
@@ -124,11 +120,8 @@ const prepareOption = (optionConfig) => {
   return { parseOption, formatUsage }
 }
 
-// sample: `config,c,conf,cfg/O,P/1-|load config from some ENV|JSON|JS`
-// sample: `config,c,conf,cfg O,P 1-|load config from some ENV|JSON|JS`
-// sample: `config,c,conf,cfg   O,P   1-|load config from some ENV|JSON|JS`
+// sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
 const parseCompactFormat = (format) => {
-  // name,short-name,...alias-name-list   O,P   1-|some description, and extra '|' is also allowed
   const [ compactTag, ...descriptionList ] = format.split('|')
   const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
   const [ name, ...aliasNameList ] = nameTag.split(',')

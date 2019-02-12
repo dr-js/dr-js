@@ -55,7 +55,7 @@ some helpful quick composed shell scripts:
   >   const { toArrayBuffer } = require('dr-js/library/node/data/Buffer')
   >   const { readFileSync } = require('fs')
   >   const [ mode, ...extraArgv ] = evalArgv
-  >   const loadTimedLookup = () => parseDataArrayBuffer(toArrayBuffer(readFileSync(evalOption.getSingleOption('root'))))
+  >   const loadTimedLookup = () => parseDataArrayBuffer(toArrayBuffer(readFileSync(evalOption.getFirst('root'))))
   >   switch (mode) {
   >     case 'file-generate': case 'fg': {
   >       const [ tag, size, tokenSize, timeGap ] = extraArgv
