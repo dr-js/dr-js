@@ -247,5 +247,19 @@ describe('Node.Module.Option.preset', () => {
     testParseCompact('config,c,conf,cfg  /  O,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
     testParseCompact('config,c,conf,cfg  /  T,O,P  /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
     testParseCompact('config,c,conf,cfg  /  T,P    /  1-  |load config from some ENV|JSON|JS', EXPECT_FORMAT)
+
+    // compact use madness
+    testParseCompact(`config,c,conf,cfg
+      O,P
+      1-
+      |load config from some ENV|JSON|JS`, EXPECT_FORMAT)
+    testParseCompact(`config,c,conf,cfg
+      T,O,P
+      1-
+      |load config from some ENV|JSON|JS`, EXPECT_FORMAT)
+    testParseCompact(`config,c,conf,cfg
+      T,P
+      1-
+      |load config from some ENV|JSON|JS`, EXPECT_FORMAT)
   })
 })

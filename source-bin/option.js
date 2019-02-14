@@ -1,7 +1,6 @@
 import { Preset, prepareOption } from 'dr-js/module/node/module/Option/preset'
 
-const parseList = (...args) => args.map((compactFormat) => ({
-  ...Preset.parseCompact(compactFormat),
+const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(compactFormat, {
   optional: true // set all optional
 }))
 

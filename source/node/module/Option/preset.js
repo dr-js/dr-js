@@ -49,8 +49,10 @@ const pickOneOf = (selectList) => {
   }
   return getPreset(1, argumentListVerify, undefined, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
 }
-const parseCompact = (compactFormat) => {
-  // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
+const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
+  compactFormat,
+  extraOption = {} // is pass array, will be used as: `{ extendFormatList: extraOption }`
+) => {
   const [ compactTag, ...descriptionList ] = compactFormat.split('|')
   const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
   const [ name, ...aliasNameList ] = nameTag.split(',')
@@ -68,10 +70,16 @@ const parseCompact = (compactFormat) => {
       aliasNameList,
       argumentCount: argumentCount || undefined,
       description: descriptionList.join('|') || undefined
-    })
+    }),
+    Array.isArray(extraOption)
+      ? { extendFormatList: extraOption }
+      : extraOption
   )
 }
-const parseCompactList = (...args) => args.map(parseCompact)
+const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(compactFormat)
+  ? parseCompact(...compactFormat)
+  : parseCompact(compactFormat)
+)
 
 // Preset: second batch, with function
 Object.assign(Preset, {
