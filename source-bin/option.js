@@ -40,6 +40,7 @@ const MODE_FORMAT_LIST = parseList(
   'server-test-connection,stc|connection test server: -H=hostname:port',
   'server-tcp-proxy,stp//1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...'
 )
+const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
@@ -53,4 +54,4 @@ const OPTION_CONFIG = {
 
 const { parseOption, formatUsage } = prepareOption(OPTION_CONFIG)
 
-export { MODE_FORMAT_LIST, parseOption, formatUsage }
+export { MODE_NAME_LIST, parseOption, formatUsage }

@@ -22,7 +22,7 @@ import { startServerWebSocketGroup } from './server/websocketGroup'
 import { startServerTestConnection } from './server/testConnection'
 
 import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile, collectAllProcessStatus } from './function'
-import { MODE_FORMAT_LIST, parseOption, formatUsage } from './option'
+import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
 
 const logAuto = (value) => console.log(isBasicObject(value)
   ? JSON.stringify(value, null, 2)
@@ -176,7 +176,7 @@ const runMode = async (modeName, optionData) => {
 
 const main = async () => {
   const optionData = await parseOption()
-  const { name: modeName } = MODE_FORMAT_LIST.find(({ name }) => optionData.tryGet(name)) || {}
+  const modeName = MODE_NAME_LIST.find((name) => optionData.tryGet(name))
 
   if (!modeName) {
     return logAuto(optionData.tryGet('version')

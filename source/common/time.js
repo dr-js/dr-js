@@ -39,7 +39,12 @@ const [ requestFrameUpdate, cancelFrameUpdate ] = global.requestAnimationFrame
   ? [ global.requestAnimationFrame, global.cancelAnimationFrame ]
   : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
 
-const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTimeout }) => {
+const createTimer = ({
+  func,
+  delay,
+  queueTask = setTimeout,
+  cancelTask = clearTimeout
+}) => {
   let token = null
   const update = () => {
     if (!token) return
@@ -53,7 +58,14 @@ const createTimer = ({ func, delay, queueTask = setTimeout, cancelTask = clearTi
     token = null
   }
   const isActive = () => Boolean(token)
-  return { start, stop, isActive }
+  const getDelay = () => delay
+  const setDelay = (nextDelay) => {
+    if (nextDelay === delay) return // skip same delay
+    delay = nextDelay
+    stop()
+    start()
+  }
+  return { start, stop, isActive, getDelay, setDelay }
 }
 
 const createStepper = (prevTime = clock()) => () => {
