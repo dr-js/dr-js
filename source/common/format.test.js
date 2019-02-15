@@ -16,6 +16,8 @@ describe('Common.Format', () => {
   it('describe()', () => {
     strictEqual(describeFormat(), `<undefined> undefined`)
     strictEqual(describeFormat(0), `<number> 0`)
+    strictEqual(describeFormat(NaN), `<number> null`)
+    strictEqual(describeFormat(Infinity), `<number> null`)
     strictEqual(describeFormat(null), `<object> null`)
     strictEqual(describeFormat(undefined), `<undefined> undefined`)
     strictEqual(describeFormat({}), `<object> {}`)

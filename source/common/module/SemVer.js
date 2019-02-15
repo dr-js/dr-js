@@ -1,3 +1,5 @@
+import { compareStringWithNumber } from 'source/common/compare'
+
 const REGEXP_SEMVER = /^(\d+)\.(\d+)\.(\d+)(.*)$/ // simple match
 
 const parseSemVer = (versionString) => {
@@ -23,6 +25,6 @@ const compareSemVer = (stringA, stringB) => { // basically (a - b)
 const compareSemVerLabel = (a, b) => (a === b) ? 0
   : a === '' ? 1
     : b === '' ? -1
-      : a.localeCompare(b) // TODO: may be too simple
+      : compareStringWithNumber(a, b) // TODO: may be too simple
 
 export { parseSemVer, compareSemVer }

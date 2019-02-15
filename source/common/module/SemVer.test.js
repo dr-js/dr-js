@@ -33,10 +33,12 @@ describe('Common.Module.SemVer', () => {
     strictEqual(compareSemVer('111.2.2', '111.2.1'), 1)
 
     strictEqual(compareSemVer('0.0.0-dev', '0.0.0-dev'), 0)
-    strictEqual(compareSemVer('0.0.0-dev', '0.0.0-dev-'), -1)
+    strictEqual(compareSemVer('0.0.0-dev', '0.0.0-dev-'), -45)
     strictEqual(compareSemVer('0.0.0-dev', '0.0.0'), -1)
     strictEqual(compareSemVer('0.0.0', '0.0.0-dev'), 1)
     strictEqual(compareSemVer('0.0.0-dev.0', '0.0.0-dev.1'), -1)
+    strictEqual(compareSemVer('0.0.0-dev.2', '0.0.0-dev.10'), -8)
+    strictEqual(compareSemVer('0.0.0-dev.0-local.2', '0.0.0-dev.0-local.10'), -8)
     strictEqual(compareSemVer('0.0.0-alpha', '0.0.0-beta'), -1)
     strictEqual(compareSemVer('0.0.0-aaaa', '0.0.0-aaab'), -1)
   })

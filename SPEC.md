@@ -46,7 +46,7 @@
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isStrictEqual`, `isString`, `isStringifyEqual`
 + 📄 [source/common/compare.js](source/common/compare.js)
-  - `compareString`, `compareStringLocale`
+  - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
@@ -334,7 +334,7 @@
   - **Check**
     - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isStrictEqual`, `isString`, `isStringifyEqual`
   - **Compare**
-    - `compareString`, `compareStringLocale`
+    - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
   - **Format**
