@@ -1,6 +1,6 @@
 import { relative, dirname, join as joinPath } from 'path'
 
-import { compareString } from 'dr-js/module/common/compare'
+import { compareStringWithNumber } from 'dr-js/module/common/compare'
 import { binary, time as formatTime } from 'dr-js/module/common/format'
 import { escapeHTML } from 'dr-js/module/common/string'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
@@ -81,7 +81,7 @@ p.size { flex: 1; }
 @media only screen and (max-width: 768px) { p.date { display: none; } }
 </style>`
 
-const compareInfo = ({ name: a }, { name: b }) => compareString(a, b)
+const compareInfo = ({ name: a }, { name: b }) => compareStringWithNumber(a, b)
 const formatPathHref = (fragList) => encodeURIComponent(toPosixPath(joinPath(...fragList)))
 const formatPathHTML = (name) => escapeHTML(toPosixPath(name))
 const renderItem = (hrefPrefix, hrefFragList, text, size, mtimeMs, extraAttr) => `<a class="auto-height" href="${hrefPrefix}/${formatPathHref(hrefFragList)}" ${extraAttr || ''}>
