@@ -23,8 +23,8 @@ const compareSemVer = (stringA, stringB) => { // basically (a - b)
 }
 
 const compareSemVerLabel = (a, b) => (a === b) ? 0
-  : a === '' ? 1
-    : b === '' ? -1
-      : compareStringWithNumber(a, b) // TODO: may be too simple
+  : b.startsWith(a) ? 1
+    : a.startsWith(b) ? -1
+      : compareStringWithNumber(a, b)
 
 export { parseSemVer, compareSemVer }
