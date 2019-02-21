@@ -447,9 +447,9 @@
 >   --version --v -v [OPTIONAL] [ARGUMENT=0+]
 >       show version
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
->       common option: $1=hostname:port/localhost:unusedPort
+>       common option: $0=hostname:port (hostname default to 0.0.0.0)
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
->       common option
+>       common option: $0=path/cwd
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
 >       common option
 >   --output-file --O -O [OPTIONAL] [ARGUMENT=1]

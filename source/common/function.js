@@ -113,21 +113,29 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
 }
 
 // to prevent async hanging (un-resolving promise)
-const withTimeoutAsync = (func, timeout) => Promise.race([
-  func(),
-  new Promise((resolve, reject) => setTimeout(
-    () => reject(new Error(`[withTimeoutAsync] timeout after: ${timeout}`)),
-    timeout
-  ))
-])
+const withTimeoutAsync = (func, timeout) => withTimeoutPromise(func(), timeout)
 
-const withTimeoutPromise = (promise, timeout) => Promise.race([
-  promise,
-  new Promise((resolve, reject) => setTimeout(
-    () => reject(new Error(`[withTimeoutPromise] timeout after: ${timeout}`)),
-    timeout
-  ))
-])
+const withTimeoutPromise = (promise, timeout) => {
+  let timeoutToken = null
+  return Promise.race([
+    promise,
+    new Promise((resolve, reject) => {
+      timeoutToken = setTimeout(
+        () => reject(new Error(`timeout after: ${timeout}`)),
+        timeout
+      )
+    })
+  ]).then(
+    (result) => {
+      clearTimeout(timeoutToken)
+      return result
+    },
+    (error) => {
+      clearTimeout(timeoutToken)
+      throw error
+    }
+  )
+}
 
 const createInsideOutPromise = () => {
   let promiseResolve, promiseReject

@@ -6,6 +6,8 @@ import { objectDeleteUndefined } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 import { createOptionParser } from './parser'
 
+const throwError = (message) => { throw new Error(message) }
+
 const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNormalize = (v) => v, description = '', optional = false) => ({
   argumentCount,
   argumentListNormalize,
@@ -42,7 +44,7 @@ Object.assign(Preset, ...[
 }))
 
 const pickOneOf = (selectList) => {
-  if (selectList.length <= 2) throw new Error(`expect more to pick: ${selectList}`)
+  if (selectList.length <= 2) throwError(`expect more to pick: ${selectList}`)
   const argumentListVerify = (argumentList) => {
     arrayLength(argumentList, 1)
     oneOf(argumentList[ 0 ], selectList)
@@ -61,7 +63,7 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
   return Object.assign(
     {},
     ...presetList.map((presetName) => {
-      if (presetName && !Preset[ presetName ]) throw new Error(`invalid presetName: ${presetName}`)
+      if (presetName && !Preset[ presetName ]) throwError(`invalid presetName: ${presetName}`)
       return Preset[ presetName ]
     }).filter(Boolean),
     objectDeleteUndefined({
@@ -95,7 +97,7 @@ Object.assign(Preset, {
 // Preset: generate compactName
 Object.entries(Preset).forEach(([ key, value ]) => {
   const compactName = splitCamelCase(key).map((string) => string.charAt(0)).join('')
-  if (__DEV__ && Preset[ compactName ]) throw new Error(`duplicate compactName: ${compactName}`)
+  if (__DEV__ && Preset[ compactName ]) throwError(`duplicate compactName: ${compactName}`)
   Preset[ compactName ] = value
 })
 
@@ -114,7 +116,7 @@ const parseOptionMap = async ({ parseCLI, parseENV, parseCONFIG, processOptionMa
   const optionMapExtend = !config ? null
     : config === 'env' ? optionMapResolvePath(parseENV(process.env), process.cwd())
       : optionMapResolvePath(
-        parseCONFIG(tryRequire(resolve(process.cwd(), config))),
+        parseCONFIG(tryRequire(resolve(process.cwd(), config)) || throwError(`failed to load config: ${config}`)),
         dirname(resolve(process.cwd(), config))
       )
   const optionMap = processOptionMap({
@@ -135,8 +137,8 @@ const createOptionGetter = (optionMap) => {
   const tryGetFirst = (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
   const get = (name, argumentCount) => {
     const argumentList = tryGet(name)
-    if (!argumentList) throw new Error(`expect option ${name}`)
-    if (argumentCount !== undefined && argumentList.length !== argumentCount) throw new Error(`expect option ${name} with ${argumentCount} value, get ${argumentList.length}`)
+    if (!argumentList) throwError(`expect option ${name}`)
+    if (argumentCount !== undefined && argumentList.length !== argumentCount) throwError(`expect option ${name} with ${argumentCount} value, get ${argumentList.length}`)
     return argumentList
   }
   const getFirst = (name) => get(name, 1)[ 0 ]

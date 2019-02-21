@@ -63,9 +63,9 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
       mainStyle
     ], [
       `<b class="auto-height">${titleHTML}</b>`,
-      relativeRoot && renderItem('/list', [ dirname(relativeRoot) ], '🔙|..'),
-      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem('/list', [ relativeRoot, name ], `📁|${name}/`, 0, mtimeMs)),
-      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem('/file', [ relativeRoot, name ], `📄|${name}`, size, mtimeMs, `download="${name}"`))
+      relativeRoot && renderItem('/list', [ dirname(relativeRoot) ], '🔙','..'),
+      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem('/list', [ relativeRoot, name ], '📁',`${name}/`, 0, mtimeMs)),
+      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem('/file', [ relativeRoot, name ], '📄',name, size, mtimeMs, `download="${name}"`))
     ]))
   })
 }
@@ -84,8 +84,9 @@ p.size { flex: 1; }
 const compareInfo = ({ name: a }, { name: b }) => compareStringWithNumber(a, b)
 const formatPathHref = (fragList) => encodeURIComponent(toPosixPath(joinPath(...fragList)))
 const formatPathHTML = (name) => escapeHTML(toPosixPath(name))
-const renderItem = (hrefPrefix, hrefFragList, text, size, mtimeMs, extraAttr) => `<a class="auto-height" href="${hrefPrefix}/${formatPathHref(hrefFragList)}" ${extraAttr || ''}>
-<p class="name">${formatPathHTML(text)}</p>
+const renderItem = (hrefPrefix, hrefFragList, tag, text, size, mtimeMs, downloadName, href = `${hrefPrefix}/${formatPathHref(hrefFragList)}`) => `<a class="auto-height" href="${href}" ${downloadName ? `download="${downloadName}"` : ''}>
+<object class="name">${downloadName ? `<a href="${href}" target="_blank">${tag}</a>` : tag}</object>
+<p class="name">|${escapeHTML(text)}</p>
 <p class="size">${size ? `${binary(size)}B` : ''}</p>
 <p class="date">${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</p>
 </a>`

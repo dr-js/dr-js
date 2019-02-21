@@ -8,8 +8,8 @@ const COMMON_FORMAT_LIST = parseList(
   'help,h/T|show full help, or human readable output',
   'quiet,q/T|less log',
   'version,v/T|show version',
-  'host,H/SS|common option: $1=hostname:port/localhost:unusedPort',
-  'root,R/SP|common option',
+  'host,H/SS|common option: $0=hostname:port (hostname default to 0.0.0.0)',
+  'root,R/SP|common option: $0=path/cwd',
   'input-file,I/SP|common option',
   'output-file,O/SP|common option'
 )
