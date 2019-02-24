@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.20.2-dev.0",
+  "version": "0.20.2-dev.1",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -31,10 +31,10 @@
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-dev": "cross-env BABEL_ENV=dev mocha --require @babel/register \"source/common/module/SemVer.test.js\"",
-    "test-source": "mocha --require @babel/register \"source/**/*.test.js\"",
-    "test-output-library": "mocha \"output-gitignore/library/**/*.test.js\"",
-    "test-output-module": "mocha --require @babel/register \"output-gitignore/module/**/*.test.js\"",
+    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T \"source/common/module/SemVer.test.js\"",
+    "test-source": "dr-dev --TR @babel/register -T source/ --TFS .test.js",
+    "test-output-library": "dr-dev -T output-gitignore/library/ --TFS .test.js",
+    "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/ --TFS .test.js",
     "// test-browser ================": "",
     "test-browser": "babel-node ./script/testBrowser production",
     "test-browser-dev": "babel-node ./script/testBrowser development",
@@ -48,8 +48,8 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-dev": "0.0.3",
-    "dr-dev-web-puppeteer": "0.0.3"
+    "dr-dev": "0.0.4-dev.0",
+    "dr-dev-web-puppeteer": "0.0.4-dev.0"
   },
   "sideEffects": false
 }
