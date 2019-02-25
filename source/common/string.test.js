@@ -4,17 +4,32 @@ import {
   // indentList,
   // autoEllipsis,
 
-  splitCamelCase, joinCamelCase
+  splitCamelCase, joinCamelCase,
   // splitSnakeCase, joinSnakeCase,
   // splitKebabCase, joinKebabCase,
 
-  // escapeHTML, unescapeHTML,
+  escapeHTML, unescapeHTML
   // removeInvalidCharXML
 } from './string'
 
 const { describe, it } = global
 
 describe('Common.String', () => {
+  it('escapeHTML/unescapeHTML()', () => {
+    const testEscapeUnescapeHTML = (source, expectEscaped) => {
+      strictEqual(escapeHTML(source), expectEscaped, `escapeHTML()`)
+      strictEqual(unescapeHTML(expectEscaped), source, `unescapeHTML()`)
+    }
+
+    testEscapeUnescapeHTML('', '')
+    testEscapeUnescapeHTML('a', 'a')
+    testEscapeUnescapeHTML('&amp;', '&#38;amp;')
+    testEscapeUnescapeHTML('&#38;', '&#38;#38;')
+
+    strictEqual(unescapeHTML('54321&amp;12345'), '54321&12345')
+    strictEqual(unescapeHTML('54321&#38;12345'), '54321&12345')
+  })
+
   it('splitCamelCase()', () => {
     stringifyEqual(splitCamelCase(''), [ '' ])
     stringifyEqual(splitCamelCase('aaaa'), [ 'aaaa' ])

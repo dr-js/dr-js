@@ -27,13 +27,68 @@ const joinKebabCase = (stringList) => stringList.join('-').toLowerCase()
 
 const capFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
-const ESCAPE_HTML_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;' }
-const REGEXP_ESCAPE_HTML = /[&<>]/g
+if (__DEV__) { // code to generate
+  const ESCAPE_HTML_MAP = {}
+  const UNESCAPE_HTML_MAP = {}
+
+  const ESCAPE_LIST = []
+  const UNESCAPE_LIST = []
+  const BASIC_HTML_ESCAPE_LIST = [
+    `" #34 quot`,
+    `& #38 amp`,
+    // apos may not be usable in HTML4 Browser, check:
+    //   https://stackoverflow.com/questions/9187946/escaping-inside-html-tag-attribute-value
+    //   https://stackoverflow.com/questions/2083754/why-shouldnt-apos-be-used-to-escape-single-quotes
+    `' #39 apos`,
+    `< #60 lt`,
+    `> #62 gt`
+  ]
+  BASIC_HTML_ESCAPE_LIST.forEach((value) => {
+    const [ char, decimal, named ] = value.split(' ')
+    const decimalEntity = `&${decimal};`
+    const namedEntity = `&${named};`
+    ESCAPE_HTML_MAP[ char ] = decimalEntity
+    UNESCAPE_HTML_MAP[ decimalEntity ] = char
+    UNESCAPE_HTML_MAP[ namedEntity ] = char
+    ESCAPE_LIST.push(char)
+    UNESCAPE_LIST.push(decimal, named)
+  })
+
+  const REGEXP_ESCAPE_HTML = new RegExp(`[${ESCAPE_LIST.join('')}]`, 'g')
+  const REGEXP_UNESCAPE_HTML = new RegExp(`&(?:${UNESCAPE_LIST.join('|')});`, 'g')
+
+  console.log({
+    ESCAPE_HTML_MAP,
+    UNESCAPE_HTML_MAP,
+    REGEXP_ESCAPE_HTML,
+    REGEXP_UNESCAPE_HTML
+  })
+}
+
+const ESCAPE_HTML_MAP = {
+  '"': '&#34;',
+  '&': '&#38;',
+  "'": '&#39;',
+  '<': '&#60;',
+  '>': '&#62;'
+}
+const REGEXP_ESCAPE_HTML = /["&'<>]/g
 const replaceEscapeHTML = (string) => ESCAPE_HTML_MAP[ string ] || string
 const escapeHTML = (string) => string && string.replace(REGEXP_ESCAPE_HTML, replaceEscapeHTML)
 
-const UNESCAPE_HTML_MAP = { '&amp;': '&', '&lt;': '<', '&gt;': '>' }
-const REGEXP_UNESCAPE_HTML = /(&amp;|&lt;|&gt;)/g
+const UNESCAPE_HTML_MAP = {
+  '&#34;': '"',
+  '&quot;': '"',
+  '&#38;': '&',
+  '&amp;': '&',
+  '&#39;': "'",
+  '&apos;': "'",
+  '&#60;': '<',
+  '&lt;': '<',
+  '&#62;': '>',
+  '&gt;': '>'
+}
+const REGEXP_UNESCAPE_HTML = /&(?:#34|quot|#38|amp|#39|apos|#60|lt|#62|gt);/g
 const replaceUnescapeHTML = (string) => UNESCAPE_HTML_MAP[ string ] || string
 const unescapeHTML = (string) => string && string.replace(REGEXP_UNESCAPE_HTML, replaceUnescapeHTML)
 
