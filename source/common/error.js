@@ -18,13 +18,13 @@ const tryCall = (thisArg, name, ...args) => {
 // for better flow control
 const catchSync = (func, ...args) => {
   let result, resultError
-  try { result = func(...args) } catch (error) { resultError = error }
+  try { result = func(...args) } catch (error) { resultError = error || new Error() }
   return { result, error: resultError }
 }
 
 const catchAsync = async (func, ...args) => {
   let result, resultError
-  try { result = await func(...args) } catch (error) { resultError = error }
+  try { result = await func(...args) } catch (error) { resultError = error || new Error() }
   return { result, error: resultError }
 }
 

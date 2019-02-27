@@ -38,7 +38,7 @@ const createTCPProxyServer = ({
     targetSocket.connect(targetOption.port, targetOption.hostname, () => {
       for (const data of preConnectDataList) targetSocket.write(data)
       preConnectDataList = null
-      socket.removeListener('data', preConnectListener)
+      socket.off('data', preConnectListener)
       socket.on('data', (data) => targetSocket.write(data))
     })
   })
@@ -50,7 +50,7 @@ const createTCPProxyServer = ({
     start: async () => !server.listening && new Promise((resolve, reject) => {
       server.on('error', reject)
       server.listen(port, hostname, () => {
-        server.removeListener('error', reject)
+        server.off('error', reject)
         resolve()
       })
     }),

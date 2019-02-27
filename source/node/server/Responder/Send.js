@@ -93,7 +93,7 @@ const prepareBufferDataAsync = async (buffer, type) => ({
 
 const createResponderFavicon = () => {
   const bufferData = prepareBufferData(
-    Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNMXvf/PwAGnQMR4CJUOAAAAABJRU5ErkJggg==', 'base64'),
+    Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNMXvf/PwAGnQMR4CJUOAAAAABJRU5ErkJggg==', 'base64'), // 1px png #63aeff
     BASIC_EXTENSION_MAP.png
   )
   return (store) => responderSendBufferCompress(store, bufferData)

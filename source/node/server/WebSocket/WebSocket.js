@@ -64,8 +64,8 @@ const createWebSocket = ({
     frameSender.clear()
     frameReceiver.clear()
 
-    socket.removeListener('error', close)
-    socket.removeListener('end', close)
+    socket.off('error', close)
+    socket.off('end', close)
     socket.on('error', NULL_ERROR_LISTENER)
     socket.destroyed || socket.destroy()
 

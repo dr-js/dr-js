@@ -81,7 +81,7 @@ const createFrameSender = (frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT) => {
       // __DEV__ && console.log('[Frame] sendEncodedFrame send')
       const onDataSend = () => {
         // __DEV__ && console.log('[Frame] sendEncodedFrame send finish')
-        socket.removeListener('error', reject)
+        socket.off('error', reject)
         resolve()
       }
       socket.on('error', reject)
@@ -133,7 +133,7 @@ const createFrameReceiver = (frameLengthLimit) => {
     let receiveReject = null
     const resetReceive = () => {
       // __DEV__ && console.log('[Frame] resetReceive')
-      receiveReject && socket.removeListener('error', receiveReject)
+      receiveReject && socket.off('error', receiveReject)
       receiveResolve = null
       receiveReject = null
       resetDecode()
@@ -174,7 +174,7 @@ const createFrameReceiver = (frameLengthLimit) => {
     socket.on('data', onSocketData)
     doClearSocketListener = () => {
       resetReceive()
-      socket.removeListener('data', onSocketData)
+      socket.off('data', onSocketData)
     }
   }
 

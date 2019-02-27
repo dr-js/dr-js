@@ -38,7 +38,7 @@ const bindExitListener = () => {
 const unbindExitListener = () => {
   __DEV__ && console.log('[unbindExitListener]')
   isBind = false
-  EXIT_LISTENER_LIST.forEach(({ event, listener }) => process.removeListener(event, listener))
+  EXIT_LISTENER_LIST.forEach(({ event, listener }) => process.off(event, listener))
 }
 
 const clearExitListener = () => {

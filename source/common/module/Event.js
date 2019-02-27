@@ -1,5 +1,5 @@
 const createHub = () => {
-  let set = new Set()
+  const set = new Set()
   const clear = () => set.clear()
   const subscribe = (listener) => { set.add(listener) }
   const unsubscribe = (listener) => { set.delete(listener) }
@@ -10,40 +10,42 @@ const createHub = () => {
 const createEventBase = () => {
   const setMap = new Map()
   const clear = () => setMap.clear()
-  const addListener = (type, listener) => {
+  const on = (type, listener) => {
     const listenerSet = setMap.get(type)
     listenerSet ? listenerSet.add(listener) : setMap.set(type, new Set([ listener ]))
   }
-  const removeListener = (type, listener) => {
+  const off = (type, listener) => {
     const listenerSet = setMap.get(type)
     listenerSet && listenerSet.delete(listener)
     listenerSet && listenerSet.size === 0 && setMap.delete(type)
   }
-  return { setMap, clear, addListener, removeListener }
+  return { setMap, clear, on, off }
 }
 
 // DOM 'EventTarget' style
-// addEventListener(type, callback)
-// removeEventListener(type, callback)
-// dispatchEvent(event)
+// - clear()
+// - dispatchEvent(event)
+// - addEventListener(type, callback)
+// - removeEventListener(type, callback)
 const createEventTarget = () => {
-  const { setMap, clear, addListener: addEventListener, removeListener: removeEventListener } = createEventBase()
+  const { setMap, clear, on, off } = createEventBase()
   const dispatchEvent = (event) => {
     const listenerSet = setMap.get(event.type)
     listenerSet && listenerSet.forEach((listener) => listener(event))
   }
-  return { clear, addEventListener, removeEventListener, dispatchEvent }
+  return { clear, dispatchEvent, addEventListener: on, removeEventListener: off }
 }
 
 // node 'EventEmitter' style
-// emitter.addListener(eventName, listener)
-// emitter.removeListener(eventName, listener)
-// emitter.removeAllListeners([eventName])
-// emitter.emit(eventName[, ...args])
-// emitter.on(eventName, listener)
-// emitter.off(eventName, listener)
+// - clear()
+// - emit(eventName[, ...args])
+// - on(eventName, listener)
+// - off(eventName, listener)
+// - addListener(eventName, listener)
+// - removeListener(eventName, listener)
+// - removeAllListeners([eventName])
 const createEventEmitter = () => {
-  const { setMap, clear, addListener, removeListener } = createEventBase()
+  const { setMap, clear, on, off } = createEventBase()
   const removeAllListeners = (...eventNameList) => {
     if (!eventNameList.length) setMap.clear()
     else eventNameList.forEach((eventName) => setMap.delete(eventName))
@@ -52,7 +54,7 @@ const createEventEmitter = () => {
     const listenerSet = setMap.get(eventName)
     listenerSet && listenerSet.forEach((listener) => listener(...args))
   }
-  return { clear, addListener, removeListener, removeAllListeners, emit, on: addListener, off: removeListener }
+  return { clear, emit, on, off, addListener: on, removeListener: off, removeAllListeners }
 }
 
 export { createHub, createEventTarget, createEventEmitter }
