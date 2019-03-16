@@ -1,5 +1,6 @@
 import { clock, setTimeoutAsync } from 'source/common/time'
 import { rethrowError } from 'source/common/error'
+import { isPromiseAlike } from 'source/common/check'
 
 // https://davidwalsh.name/javascript-debounce-function
 // https://gist.github.com/nmsdvid/8807205
@@ -48,7 +49,7 @@ const lossyAsync = (func, onError = rethrowError) => {
       if (runningPromise) return
       try {
         const result = func.apply(null, args)
-        if (result instanceof Object && result.then) runningPromise = result.then(onResolve, onReject)
+        if (isPromiseAlike(result)) runningPromise = result.then(onResolve, onReject)
         else onResolve()
       } catch (error) { onReject(error) }
     },

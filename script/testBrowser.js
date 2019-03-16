@@ -26,7 +26,7 @@ runMain(async (logger) => {
   const babelOption = {
     configFile: false,
     babelrc: false,
-    presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ]
+    presets: [ [ '@babel/env', { targets: { node: '10' }, modules: false } ] ]
   }
 
   const entryList = await getScriptFileListFromPathList(

@@ -63,6 +63,12 @@ const fetchLikeRequest = async (url, {
   }
 }
 
+// TODO: NODE-BUG: delay pipe IncomingMessage to next event loop or the `end` even will not fire
+//   node 6 IncomingMessage events fix
+//     - https://github.com/mscdex/busboy/pull/134
+//   http: IncomingMessage not emitting 'end'
+//     - https://github.com/nodejs/node/issues/10344
+
 const wrapPayload = (response, timeout) => {
   let isKeep
   let isDropped
@@ -72,6 +78,7 @@ const wrapPayload = (response, timeout) => {
     isDropped = true
     __DEV__ && console.log('[fetch] payload dropped')
   })
+
   const stream = () => { // TODO: also use async?
     if (isKeep) throw new Error('PAYLOAD_ALREADY_USED') // not receive body twice
     if (isDropped) throw new Error('PAYLOAD_ALREADY_DROPPED')

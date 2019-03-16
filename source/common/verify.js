@@ -7,6 +7,7 @@ import {
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
   isBasicFunction,
+  isPromiseAlike,
   isOneOf,
   isFunctionThrow,
   isFunctionThrowAsync,
@@ -34,6 +35,7 @@ const basicArray = createVerify('Array', isBasicArray)
 const arrayLength = (value, length, message) => isArrayLength(value, length) || throwError('ArrayLength', message, `expect length: ${length}, get: ${isBasicArray(value) ? value.length : describe(value)}`)
 
 const basicFunction = createVerify('Function', isBasicFunction)
+const promiseAlike = createVerify('PromiseAlike', isPromiseAlike)
 
 const oneOf = (value, validList, message) => isOneOf(value, validList) || throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
 
@@ -59,6 +61,7 @@ export {
   basicObject, objectKey, objectContain,
   basicArray, arrayLength,
   basicFunction,
+  promiseAlike,
   oneOf,
   doThrow, doNotThrow,
   doThrowAsync, doNotThrowAsync,

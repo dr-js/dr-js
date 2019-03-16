@@ -16,7 +16,7 @@ runMain(async (logger) => {
     configFile: false,
     babelrc: false,
     cacheDirectory: isProduction,
-    presets: [ [ '@babel/env', { targets: { node: '8.8' }, modules: false } ] ],
+    presets: [ [ '@babel/env', { targets: { node: '10' }, modules: false } ] ],
     plugins: [
       isProduction && [ '@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true } ] // NOTE: for Edge(17.17134) support check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals
     ].filter(Boolean)

@@ -1,4 +1,4 @@
-import { strictEqual, notStringifyEqual } from 'source/common/verify'
+import { strictEqual, stringifyEqual, notStringifyEqual } from 'source/common/verify'
 import {
   arraySet,
   arrayDelete,
@@ -9,13 +9,15 @@ import {
   arrayPop,
   arrayShift,
   arrayConcat,
-  arrayMatchPush,
   arrayMatchDelete,
+  arrayMatchPush,
   arrayMatchMove,
-  arrayFindPush,
   arrayFindDelete,
   arrayFindMove,
-  arrayFindSet
+  arrayFindSet,
+  arrayFindSetOrPush,
+  arrayFindOrPush,
+  arraySplitChunk
 } from './Array'
 
 const { describe, it } = global
@@ -109,14 +111,6 @@ describe('Common.Immutable.Array', () => {
     strictEqual(arrayMatchMove(ARRAY_DATA, 2, 'a')[ 0 ], arrayMatchMove(ARRAY_DATA, 1, 'a')[ 0 ])
     strictEqual(arrayMatchMove(ARRAY_DATA, 2, 'a')[ 1 ], arrayMatchMove(ARRAY_DATA, 1, 'a')[ 1 ])
   })
-  it('should pass arrayFindPush()', () => {
-    notStringifyEqual(arrayFindPush(ARRAY_DATA, (v) => v === 'F', 'F'), ARRAY_DATA)
-    notStringifyEqual(arrayFindPush(ARRAY_DATA, (v) => false, 'F'), ARRAY_DATA)
-    strictEqual(arrayFindPush(ARRAY_DATA, (v) => v === 'a', 'F'), ARRAY_DATA)
-    strictEqual(arrayFindPush(ARRAY_DATA, (v) => true, 'F'), ARRAY_DATA)
-    strictEqual(arrayFindPush(ARRAY_DATA, (v) => false, 'F')[ 2 ], 'F')
-    strictEqual(arrayFindPush(ARRAY_DATA, (v) => false, 'F').length, 3)
-  })
   it('should pass arrayFindDelete()', () => {
     strictEqual(arrayFindDelete(ARRAY_DATA, (v) => v === 'F'), ARRAY_DATA)
     strictEqual(arrayFindDelete(ARRAY_DATA, (v) => false), ARRAY_DATA)
@@ -137,10 +131,41 @@ describe('Common.Immutable.Array', () => {
     strictEqual(arrayFindMove(ARRAY_DATA, (v) => true, 2)[ 1 ], arrayFindMove(ARRAY_DATA, (v) => true, 1)[ 1 ])
   })
   it('should pass arrayFindSet()', () => {
+    strictEqual(arrayFindSet(ARRAY_DATA, (v) => v === 'a', 'a'), ARRAY_DATA)
+    strictEqual(arrayFindSet(ARRAY_DATA, (v) => v === SAMPLE_ARRAY, SAMPLE_ARRAY), ARRAY_DATA)
     strictEqual(arrayFindSet(ARRAY_DATA, (v) => v === 'F', 'F'), ARRAY_DATA)
     strictEqual(arrayFindSet(ARRAY_DATA, (v) => false, 'F'), ARRAY_DATA)
     notStringifyEqual(arrayFindSet(ARRAY_DATA, (v) => v === 'a', 'F'), ARRAY_DATA)
     notStringifyEqual(arrayFindSet(ARRAY_DATA, (v) => true, 'F'), ARRAY_DATA)
     strictEqual(arrayFindSet(ARRAY_DATA, (v) => true, 'F')[ 0 ], 'F')
+  })
+  it('should pass arrayFindSetOrPush()', () => {
+    strictEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => v === 'a', 'a'), ARRAY_DATA)
+    strictEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => v === SAMPLE_ARRAY, SAMPLE_ARRAY), ARRAY_DATA)
+    notStringifyEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => v === 'F', 'F'), ARRAY_DATA)
+    strictEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => v === 'F', 'F')[ ARRAY_DATA.length ], 'F')
+    notStringifyEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => false, 'F'), ARRAY_DATA)
+    strictEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => false, 'F')[ ARRAY_DATA.length ], 'F')
+    notStringifyEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => v === 'a', 'F'), ARRAY_DATA)
+    notStringifyEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => true, 'F'), ARRAY_DATA)
+    strictEqual(arrayFindSetOrPush(ARRAY_DATA, (v) => true, 'F')[ 0 ], 'F')
+  })
+  it('should pass arrayFindOrPush()', () => {
+    notStringifyEqual(arrayFindOrPush(ARRAY_DATA, (v) => v === 'F', 'F'), ARRAY_DATA)
+    notStringifyEqual(arrayFindOrPush(ARRAY_DATA, (v) => false, 'F'), ARRAY_DATA)
+    strictEqual(arrayFindOrPush(ARRAY_DATA, (v) => v === 'a', 'F'), ARRAY_DATA)
+    strictEqual(arrayFindOrPush(ARRAY_DATA, (v) => true, 'F'), ARRAY_DATA)
+    strictEqual(arrayFindOrPush(ARRAY_DATA, (v) => false, 'F')[ 2 ], 'F')
+    strictEqual(arrayFindOrPush(ARRAY_DATA, (v) => false, 'F').length, 3)
+  })
+
+  // misc
+
+  it('should pass arraySplitChunk()', () => {
+    stringifyEqual(arraySplitChunk([], 4), [])
+    stringifyEqual(arraySplitChunk([ 0, 1, 2, 3 ], 4), [ [ 0, 1, 2, 3 ] ])
+    stringifyEqual(arraySplitChunk([ 0, 1, 2, 3 ], 3), [ [ 0, 1, 2 ], [ 3 ] ])
+    stringifyEqual(arraySplitChunk([ 0, 1, 2, 3 ], 2), [ [ 0, 1 ], [ 2, 3 ] ])
+    stringifyEqual(arraySplitChunk([ 0, 1, 2, 3 ], 1), [ [ 0 ], [ 1 ], [ 2 ], [ 3 ] ])
   })
 })

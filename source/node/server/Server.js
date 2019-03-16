@@ -86,8 +86,8 @@ const createRequestListener = ({
     time: clock(), // in msec, relative
     error: null // from failed responder
   })
-  stateStore.request = request
-  stateStore.response = response
+  stateStore.request = request // http.IncomingMessage
+  stateStore.response = response // http.ServerResponse
   try {
     for (const responder of responderList) await responder(stateStore)
   } catch (error) { await responderError(stateStore, error) }

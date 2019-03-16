@@ -19,6 +19,8 @@ const isArrayLength = (value, length) => isBasicArray(value) && value.length ===
 
 const isBasicFunction = (value) => typeof (value) === 'function'
 
+const isPromiseAlike = (value) => Boolean(value && typeof (value.then) === 'function')
+
 const isOneOf = (value, validList) => validList.includes(value)
 
 const isFunctionThrow = (func) => {
@@ -47,6 +49,7 @@ export {
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
   isBasicFunction,
+  isPromiseAlike,
   isOneOf,
   isFunctionThrow,
   isFunctionThrowAsync,

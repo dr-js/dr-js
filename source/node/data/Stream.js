@@ -1,5 +1,6 @@
 import { Duplex } from 'stream'
 
+// TODO: should also check event from writableStream
 const pipeStreamAsync = (writableStream, readableStream) => new Promise((resolve, reject) => {
   readableStream.on('error', reject)
   readableStream.on('end', () => {

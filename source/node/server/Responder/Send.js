@@ -10,6 +10,7 @@ const gzipAsync = promisify(gzip)
 // TODO: check timeout for responderSend?
 
 const setResponseContent = (store, entityTag, type, length) => {
+  if (store.request.aborted) return // Added in: v10.1.0
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   shouldSendContent
@@ -19,6 +20,7 @@ const setResponseContent = (store, entityTag, type, length) => {
 }
 
 const setResponseContentRange = (store, entityTag, type, length = '*', start, end) => {
+  if (store.request.aborted) return // Added in: v10.1.0
   entityTag && store.response.setHeader('etag', entityTag)
   store.response.writeHead(206, { 'content-type': type, 'content-length': end - start + 1, 'content-range': `bytes ${start}-${end}/${length}` })
   return true
@@ -26,15 +28,14 @@ const setResponseContentRange = (store, entityTag, type, length = '*', start, en
 
 const responderSendBuffer = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }) =>
   setResponseContent(store, entityTag, type, length) &&
-  length &&
-  sendBufferAsync(store.response, buffer)
+  length && sendBufferAsync(store.response, buffer)
 
 const responderSendBufferRange = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }, [ start, end ]) =>
   setResponseContentRange(store, entityTag, type, length, start, end) &&
-  length &&
-  sendBufferAsync(store.response, buffer.slice(start, end + 1))
+  length && sendBufferAsync(store.response, buffer.slice(start, end + 1))
 
 const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTag, type = DEFAULT_MIME, length = buffer.length }) => {
+  if (store.request.aborted) return // Added in: v10.1.0
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')
@@ -57,6 +58,7 @@ const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAUL
   pipeStreamAsync(store.response, streamRange)
 
 const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
+  if (store.request.aborted) return // Added in: v10.1.0
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')

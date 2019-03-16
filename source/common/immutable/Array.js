@@ -1,4 +1,7 @@
-// NOTE: all method do not check if the value is a valid array
+// NOTE:
+//   - all method do not check if the array is a valid array
+//   - index should be valid [ 0 , array.length - 1 ]
+//   - set operation should either add/update
 
 const arraySet = (array, index, value) => {
   if (array[ index ] === value) return array
@@ -41,6 +44,8 @@ const arrayConcat = (array, concatArray) => (concatArray && concatArray.length)
   ? [ ...array, ...concatArray ]
   : array
 
+// match: compare with ===
+
 const arrayMatchPush = (array, value) => !array.includes(value)
   ? [ ...array, value ]
   : array
@@ -59,9 +64,7 @@ const arrayMatchMove = (array, index, value) => {
     : array
 }
 
-const arrayFindPush = (array, findFunc, value) => array.find(findFunc) === undefined
-  ? [ ...array, value ]
-  : array
+// find / find or: find with findFunc
 
 const arrayFindDelete = (array, findFunc) => {
   const index = array.findIndex(findFunc)
@@ -85,9 +88,26 @@ const arrayFindSet = (array, findFunc, value) => {
   return result
 }
 
-const arraySplitChunk = (array, chunkLength) => {
+const arrayFindSetOrPush = (array, findFunc, value) => {
+  const index = array.findIndex(findFunc)
+  if (!~index) return [ ...array, value ] // push
+  if (array[ index ] === value) return array
+  const result = [ ...array ]
+  result[ index ] = value
+  return result // set
+}
+
+const arrayFindOrPush = (array, findFunc, value) => array.find(findFunc) === undefined
+  ? [ ...array, value ]
+  : array
+
+// misc
+
+const arraySplitChunk = (array, chunkLength) => { // chunkLength should be Positive Integer (1, 2, 3 ...)
   const result = []
-  for (let index = 0, indexMax = array.length; index < indexMax; index += chunkLength) result.push(array.slice(index, index + chunkLength))
+  for (let index = 0, indexMax = array.length; index < indexMax; index += chunkLength) {
+    result.push(array.slice(index, index + chunkLength))
+  }
   return result
 }
 
@@ -101,12 +121,13 @@ export {
   arrayPop,
   arrayShift,
   arrayConcat,
-  arrayMatchPush,
   arrayMatchDelete,
+  arrayMatchPush,
   arrayMatchMove,
-  arrayFindPush,
   arrayFindDelete,
   arrayFindMove,
   arrayFindSet,
+  arrayFindSetOrPush,
+  arrayFindOrPush,
   arraySplitChunk
 }
