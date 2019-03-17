@@ -2,11 +2,10 @@ import { resolve, sep } from 'path'
 import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
 
-import { argvFlag, runMain } from 'dr-dev/module/main'
-import { getLogger } from 'dr-dev/module/logger'
-import { collectSourceRouteMap } from 'dr-dev/module/ExportIndex/parseExport'
-import { generateIndexScript, generateExportInfo } from 'dr-dev/module/ExportIndex/generateInfo'
-import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dr-dev/module/ExportIndex/renderMarkdown'
+import { collectSourceRouteMap } from 'dr-dev/module/node/export/parse'
+import { generateIndexScript, generateExportInfo } from 'dr-dev/module/node/export/generate'
+import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dr-dev/module/node/export/renderMarkdown'
+import { runMain } from 'dr-dev/module/main'
 
 import { indentLine } from 'source/common/string'
 
@@ -86,4 +85,4 @@ runMain(async (logger) => {
 
   logger.log(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
   generateTempFile({ sourceRouteMap, logger })
-}, getLogger('generate-spec', argvFlag('quiet')))
+}, 'generate-spec')

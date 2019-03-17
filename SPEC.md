@@ -48,7 +48,7 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
+  - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -100,7 +100,7 @@
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
   - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`
 + 📄 [source/common/immutable/function.js](source/common/immutable/function.js)
-  - `createTransformCacheWithInfo`, `transformCache`
+  - `transformCache`
 + 📄 [source/common/math/base.js](source/common/math/base.js)
   - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`
 + 📄 [source/common/math/easing.js](source/common/math/easing.js)
@@ -197,8 +197,6 @@
   - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
   - `createResponderBufferCache`, `createResponderServeStatic`
-+ 📄 [source/node/server/WebSocket/Frame.js](source/node/server/WebSocket/Frame.js)
-  - `createFrameReceiver`, `createFrameSender`
 + 📄 [source/node/server/WebSocket/WebSocket.js](source/node/server/WebSocket/WebSocket.js)
   - `createWebSocket`
 + 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
@@ -207,8 +205,12 @@
   - `enableWebSocketServer`
 + 📄 [source/node/server/WebSocket/WebSocketUpgradeRequest.js](source/node/server/WebSocket/WebSocketUpgradeRequest.js)
   - `createUpdateRequestListener`
-+ 📄 [source/node/server/WebSocket/type.js](source/node/server/WebSocket/type.js)
-  - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
++ 📄 [source/node/server/WebSocket/frameReceiver.js](source/node/server/WebSocket/frameReceiver.js)
+  - `createFrameReceiverStore`, `listenAndReceiveFrame`
++ 📄 [source/node/server/WebSocket/frameSender.js](source/node/server/WebSocket/frameSender.js)
+  - `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`
++ 📄 [source/node/server/WebSocket/function.js](source/node/server/WebSocket/function.js)
+  - `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
 + 📄 [source/node/system/DefaultOpen.js](source/node/system/DefaultOpen.js)
   - `getDefaultOpen`
 + 📄 [source/node/system/ExitListener.js](source/node/system/ExitListener.js)
@@ -300,7 +302,7 @@
       - `objectDelete`, `objectDeleteUndefined`, `objectFindKey`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
-    - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `createTransformCacheWithInfo`, `transformCache`
+    - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `transformCache`
   - **Math**
     - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
   - **Module**
@@ -336,7 +338,7 @@
   - **Compare**
     - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
-    - `catchAsync`, `catchSync`, `rethrowError`, `throwInfo`, `tryCall`
+    - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
   - **Function**
@@ -396,8 +398,6 @@
       - **ServeStatic**
         - `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**
-      - **Frame**
-        - `createFrameReceiver`, `createFrameSender`
       - **WebSocket**
         - `createWebSocket`
       - **WebSocketClient**
@@ -406,7 +406,7 @@
         - `enableWebSocketServer`
       - **WebSocketUpgradeRequest**
         - `createUpdateRequestListener`
-      - `DATA_TYPE_MAP`, `DEFAULT_FRAME_LENGTH_LIMIT`, `DO_MASK_DATA`, `DO_NOT_MASK_DATA`, `FRAME_TYPE_CONFIG_MAP`, `WEB_SOCKET_EVENT_MAP`, `WEB_SOCKET_VERSION`, `getRequestKey`, `getRespondKey`
+      - `createFrameReceiverStore`, `listenAndReceiveFrame`, `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
     - **Server**
       - `createRequestListener`, `createServer`
     - **TCPProxyServer**

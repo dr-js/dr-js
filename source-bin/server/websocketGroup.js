@@ -5,7 +5,7 @@ import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/Buff
 import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBufferCompress, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
-import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from 'dr-js/module/node/server/WebSocket/type'
+import { OPCODE_TYPE, WEBSOCKET_EVENT } from 'dr-js/module/node/server/WebSocket/function'
 import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
 import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'dr-js/module/node/server/commonHTML'
@@ -20,7 +20,7 @@ const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
 const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
   __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // dataBuffer.toString().slice(0, 20)
-  if (dataType !== DATA_TYPE_MAP.OPCODE_BINARY) return webSocket.close(1000, 'expect OPCODE_BINARY')
+  if (dataType !== OPCODE_TYPE.BINARY) return webSocket.close(1000, 'expect BINARY')
   const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
   __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
   error && webSocket.close(1000, error.toString())
@@ -81,18 +81,18 @@ const upgradeRequestProtocol = (store) => {
     __DEV__ && targetInfo && console.log('[sendTargetBuffer] send buffer to', targetInfo.id)
     targetInfo && targetInfo.webSocket.sendBuffer(packBufferPacket(JSON.stringify({ type, targetId, payload: { ...payload, id } }), payloadBuffer))
   }
-  webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
+  webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
     const groupInfo = addUser(groupPath, id, webSocket)
     webSocket.sendBuffer(packBufferPacket(JSON.stringify({ type: TYPE_INFO_USER, payload: { groupPath, id } })))
     sendGroupInfo(groupInfo)
     __DEV__ && console.log(`[RequestProtocol] >> OPEN, current group: ${groupInfo.size} (self included)`, groupPath)
   })
-  webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
+  webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
     const groupInfo = deleteUser(groupPath, id)
     sendGroupInfo(groupInfo)
     __DEV__ && console.log(`[RequestProtocol] >> CLOSE, current group: ${groupInfo.size} (self included)`, groupPath)
   })
-  webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, wrapFrameBufferPacket(webSocket, ([ headerString, payloadBuffer ]) => {
+  webSocket.on(WEBSOCKET_EVENT.FRAME, wrapFrameBufferPacket(webSocket, ([ headerString, payloadBuffer ]) => {
     const { type, payload, targetId } = JSON.parse(headerString)
     if (type === TYPE_CLOSE) webSocket.close(1000, 'CLOSE received')
     if (type === TYPE_BUFFER_GROUP) sendGroupBuffer(groupInfoMap[ groupPath ], type, payload, payloadBuffer)

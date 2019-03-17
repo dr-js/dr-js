@@ -1,8 +1,7 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
-
 import { getUnusedPort } from 'source/node/server/function'
 import { createServer } from 'source/node/server/Server'
-import { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } from './type'
+import { OPCODE_TYPE, WEBSOCKET_EVENT } from './function'
 import { enableWebSocketServer } from './WebSocketServer'
 import { createWebSocketClient } from './WebSocketClient'
 
@@ -21,16 +20,16 @@ describe('Node.Server.WebSocket', () => {
     const webSocketSet = enableWebSocketServer({
       server,
       onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
-        // const { origin, protocolList, isSecure } = webSocket
-        // console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
-        // webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => { console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`) })
-        // webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => { console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`) })
+        const { origin, protocolList, isSecure } = webSocket
+        __DEV__ && console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
+        __DEV__ && webSocket.on(WEBSOCKET_EVENT.OPEN, () => { console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`) })
+        __DEV__ && webSocket.on(WEBSOCKET_EVENT.CLOSE, () => { console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`) })
         stringifyEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
-        webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async ({ dataType, dataBuffer }) => {
+        webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
           // console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
-          if (dataType === DATA_TYPE_MAP.OPCODE_TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-          dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())
-          dataType === DATA_TYPE_MAP.OPCODE_BINARY && webSocket.sendBuffer(dataBuffer)
+          if (dataType === OPCODE_TYPE.TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
+          dataType === OPCODE_TYPE.TEXT && webSocket.sendText(dataBuffer.toString())
+          dataType === OPCODE_TYPE.BINARY && webSocket.sendBuffer(dataBuffer)
         })
         return webSocket.protocolList[ 0 ]
       }
@@ -42,14 +41,14 @@ describe('Node.Server.WebSocket', () => {
       urlString: `ws://${serverHostname}:${serverPort}`,
       option: { requestProtocolString: TEST_PROTOCOL_LIST.join(',') },
       onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
-        webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => resolve(webSocket))
-        setTimeout(reject, 500)
+        webSocket.on(WEBSOCKET_EVENT.OPEN, () => resolve(webSocket))
+        setTimeout(() => reject(new Error('[onUpgradeResponse] timeout')), 500)
       },
       onError: reject
     }))
     const getNextFrame = () => new Promise((resolve, reject) => {
-      webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, ({ dataType, dataBuffer }) => resolve({ dataType, dataBuffer }))
-      setTimeout(reject, 500)
+      webSocket.on(WEBSOCKET_EVENT.FRAME, ({ dataType, dataBuffer }) => resolve({ dataType, dataBuffer }))
+      setTimeout(() => reject(new Error('[getNextFrame] timeout')), 2500)
     })
 
     strictEqual(webSocketSet.size, 1)
@@ -59,20 +58,21 @@ describe('Node.Server.WebSocket', () => {
     {
       webSocket.sendText(TEST_STRING) // big string
       const { dataType, dataBuffer } = await getNextFrame()
-      strictEqual(dataType, DATA_TYPE_MAP.OPCODE_TEXT)
+      strictEqual(dataType, OPCODE_TYPE.TEXT)
       strictEqual(dataBuffer.toString(), TEST_STRING)
     }
 
     {
       webSocket.sendBuffer(TEST_BUFFER) // big buffer
       const { dataType, dataBuffer } = await getNextFrame()
-      strictEqual(dataType, DATA_TYPE_MAP.OPCODE_BINARY)
+      strictEqual(dataType, OPCODE_TYPE.BINARY)
       strictEqual(dataBuffer.size, TEST_BUFFER.size)
     }
 
     webSocket.close(1000, 'CLOSE') // close
+
     await new Promise((resolve, reject) => {
-      webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, resolve)
+      webSocket.on(WEBSOCKET_EVENT.CLOSE, resolve)
       setTimeout(reject, 500)
     })
 

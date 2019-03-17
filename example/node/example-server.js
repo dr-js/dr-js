@@ -6,7 +6,7 @@ const { responderEnd, createResponderLog, createResponderLogEnd } = require('../
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
-const { DATA_TYPE_MAP, WEB_SOCKET_EVENT_MAP } = require('../../output-gitignore/library/node/server/WebSocket/type')
+const { OPCODE_TYPE, WEBSOCKET_EVENT } = require('../../output-gitignore/library/node/server/WebSocket/function')
 const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
 
 const { createExampleServerHTMLResponder } = require('./example-server-html')
@@ -51,23 +51,23 @@ const webSocketSet = enableWebSocketServer({
     const { origin, protocolList, isSecure } = webSocket
     console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
 
-    webSocket.on(WEB_SOCKET_EVENT_MAP.OPEN, () => {
+    webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
       console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
     })
-    webSocket.on(WEB_SOCKET_EVENT_MAP.FRAME, async ({ dataType, dataBuffer }) => {
+    webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
       console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
 
-      if (dataType === DATA_TYPE_MAP.OPCODE_TEXT) {
+      if (dataType === OPCODE_TYPE.TEXT) {
         if (dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
         if (dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(BIG_STRING)
         if (dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
       }
 
       // echo back
-      dataType === DATA_TYPE_MAP.OPCODE_TEXT && webSocket.sendText(dataBuffer.toString())
-      dataType === DATA_TYPE_MAP.OPCODE_BINARY && webSocket.sendBuffer(dataBuffer)
+      dataType === OPCODE_TYPE.TEXT && webSocket.sendText(dataBuffer.toString())
+      dataType === OPCODE_TYPE.BINARY && webSocket.sendBuffer(dataBuffer)
     })
-    webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
+    webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
       console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`)
     })
 

@@ -74,6 +74,7 @@ const createStepper = (prevTime = clock()) => () => {
   prevTime = nextTime
   return result
 }
+
 export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,

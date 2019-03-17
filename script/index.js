@@ -1,10 +1,9 @@
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { argvFlag, runMain } from 'dr-dev/module/main'
-import { getLogger } from 'dr-dev/module/logger'
-import { getScriptFileListFromPathList } from 'dr-dev/module/fileList'
-import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dr-dev/module/commonOutput'
+import { getScriptFileListFromPathList } from 'dr-dev/module/node/fileList'
+import { runMain, argvFlag } from 'dr-dev/module/main'
+import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dr-dev/module/output'
 import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dr-dev/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from 'dr-dev/module/minify'
 import { writeLicenseFile } from 'dr-dev/module/license'
@@ -90,4 +89,4 @@ runMain(async (logger) => {
   await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
   await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
-}, getLogger(process.argv.slice(2).join('+'), argvFlag('quiet')))
+})

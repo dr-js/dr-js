@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from 'crypto'
+import { constants as bufferConstants } from 'buffer'
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 // Frame format:
@@ -22,43 +23,53 @@ import { createHash, randomBytes } from 'crypto'
 //     +---------------------------------------------------------------+
 
 // NOTE: these quadbit will also set RSV123 to 0, thus will ignore extension bits RSV1-3
-const FRAME_TYPE_CONFIG_MAP = {
-  FRAME_COMPLETE: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b1111 },
-  FRAME_FIRST: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b1111 },
-  FRAME_MORE: { FINQuadBit: 0b0000, opcodeQuadBitMask: 0b0000 },
-  FRAME_LAST: { FINQuadBit: 0b1000, opcodeQuadBitMask: 0b0000 }
+const FRAME_CONFIG = {
+  // [ quadbitFIN, quadbitOpcodeMask ]
+  COMPLETE: [ 0b1000, 0b1111 ],
+  FIRST: [ 0b0000, 0b1111 ],
+  MORE: [ 0b0000, 0b0000 ],
+  LAST: [ 0b1000, 0b0000 ]
 }
-const DATA_TYPE_MAP = {
-  OPCODE_CONTINUATION: 0b0000,
-  OPCODE_TEXT: 0b0001,
-  OPCODE_BINARY: 0b0010,
-  OPCODE_CLOSE: 0b1000,
-  OPCODE_PING: 0b1001,
-  OPCODE_PONG: 0b1010
-}
-const DO_MASK_DATA = true
-const DO_NOT_MASK_DATA = false
-const DEFAULT_FRAME_LENGTH_LIMIT = 8 * 1024 * 1024 // 8 MiB
 
-const WEB_SOCKET_VERSION = 13
-const WEB_SOCKET_EVENT_MAP = {
-  OPEN: 'web-socket:open',
-  FRAME: 'web-socket:frame',
-  CLOSE: 'web-socket:close'
+const OPCODE_TYPE = {
+  CONTINUATION: 0b0000,
+  TEXT: 0b0001,
+  BINARY: 0b0010,
+  CLOSE: 0b1000,
+  PING: 0b1001,
+  PONG: 0b1010
 }
-const WEB_SOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+
+const WEBSOCKET_VERSION = 13
+const WEBSOCKET_EVENT = {
+  OPEN: 'ws:open',
+  FRAME: 'ws:frame',
+  CLOSE: 'ws:close'
+}
+
+const WEBSOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 const getRequestKey = () => randomBytes(16).toString('base64')
-const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEB_SOCKET_MAGIC_STRING}`).digest('base64')
+const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEBSOCKET_MAGIC_STRING}`).digest('base64')
+
+const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
+
+// TODO: will overwrite buffer, consider optimize speed?
+const applyMaskQuadletBufferInPlace = (buffer, maskQuadletBuffer) => {
+  for (let index = 0, indexMax = buffer.length; index < indexMax; index++) {
+    buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
+  }
+}
 
 export {
-  FRAME_TYPE_CONFIG_MAP,
-  DATA_TYPE_MAP,
-  DO_MASK_DATA,
-  DO_NOT_MASK_DATA,
-  DEFAULT_FRAME_LENGTH_LIMIT,
+  FRAME_CONFIG,
+  OPCODE_TYPE,
 
-  WEB_SOCKET_VERSION,
-  WEB_SOCKET_EVENT_MAP,
+  WEBSOCKET_VERSION,
+  WEBSOCKET_EVENT,
+
   getRequestKey,
-  getRespondKey
+  getRespondKey,
+
+  BUFFER_MAX_LENGTH,
+  applyMaskQuadletBufferInPlace
 }

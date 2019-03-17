@@ -2,11 +2,11 @@ import { URL } from 'url'
 import { get as httpGet } from 'http'
 import { get as httpsGet } from 'https'
 import { urlToOption } from 'source/node/net'
-import { DO_MASK_DATA, DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRequestKey, getRespondKey } from './type'
+import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRequestKey, getRespondKey } from './function'
 import { createWebSocket } from './WebSocket'
 
-const VALID_WEB_SOCKET_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])
-const SECURE_WEB_SOCKET_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])
+const VALID_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])
+const SECURE_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])
 const DEFAULT_ON_UPGRADE_RESPONSE = (webSocket, response, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
 
 const buildUpgradeRequest = (url, { key, isSecure, headers, origin = '', requestProtocolString = '' }) => {
@@ -21,7 +21,7 @@ const buildUpgradeRequest = (url, { key, isSecure, headers, origin = '', request
       origin,
       'upgrade': 'websocket',
       'connection': 'upgrade',
-      'sec-websocket-version': WEB_SOCKET_VERSION,
+      'sec-websocket-version': WEBSOCKET_VERSION,
       'sec-websocket-key': requestKey,
       'sec-websocket-protocol': requestProtocolString
     }
@@ -34,13 +34,9 @@ const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString
   if (responseKey !== response.headers[ 'sec-websocket-accept' ]) throw new Error('[WebSocketClient][doUpgradeSocket] wrong sec-websocket-accept')
   const protocol = response.headers[ 'sec-websocket-protocol' ]
   if (!requestProtocolString.split(/, */).includes(protocol)) throw new Error(`[WebSocketClient][doUpgradeSocket] unexpected protocol ${protocol}`)
-  webSocket.socket.on('error', webSocket.close)
-  webSocket.socket.on('end', webSocket.close)
   __DEV__ && console.log('[WebSocketClient][doUpgradeSocket]', responseKey)
-  webSocket.listenAndReceiveFrame()
   webSocket.protocol = protocol // the accepted protocol
-  webSocket.setReadyState(webSocket.OPEN)
-  webSocket.emit(WEB_SOCKET_EVENT_MAP.OPEN)
+  webSocket.open()
 }
 
 const createWebSocketClient = ({
@@ -48,12 +44,12 @@ const createWebSocketClient = ({
   option = {},
   onError,
   onUpgradeResponse = DEFAULT_ON_UPGRADE_RESPONSE,
-  frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT
+  frameLengthLimit
 }) => {
   const url = new URL(urlString)
-  if (!VALID_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${url.protocol}`)
+  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${url.protocol}`)
   if (!url.host) throw new Error(`[WebSocketClient] invalid url host: ${url.host}`)
-  option.isSecure = SECURE_WEB_SOCKET_PROTOCOL_SET.has(url.protocol)
+  option.isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(url.protocol)
 
   const { requestOption, requestProtocolString, responseKey } = buildUpgradeRequest(url, option)
   const request = (option.isSecure ? httpsGet : httpGet)(requestOption)
@@ -69,7 +65,7 @@ const createWebSocketClient = ({
     onError(new Error('[WebSocketClient] unexpected response'))
   })
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
-    const webSocket = createWebSocket({ socket, frameLengthLimit, sendFrameMaskType: DO_MASK_DATA })
+    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: true })
 
     webSocket.origin = option.origin
     webSocket.isSecure = option.isSecure

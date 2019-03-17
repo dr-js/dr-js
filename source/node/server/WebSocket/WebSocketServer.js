@@ -1,4 +1,4 @@
-import { DO_NOT_MASK_DATA, DEFAULT_FRAME_LENGTH_LIMIT, WEB_SOCKET_VERSION, WEB_SOCKET_EVENT_MAP, getRespondKey } from './type'
+import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRespondKey } from './function'
 import { createWebSocket } from './WebSocket'
 
 const DEFAULT_ON_UPGRADE_REQUEST = (webSocket, request, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
@@ -8,7 +8,7 @@ const parseUpgradeRequest = (webSocket, request) => {
   const version = parseInt(request.headers[ 'sec-websocket-version' ])
   if (
     !requestKey ||
-    version !== WEB_SOCKET_VERSION ||
+    version !== WEBSOCKET_VERSION ||
     request.method !== 'GET' ||
     request.headers.upgrade.toLowerCase() !== 'websocket'
   ) return webSocket.doCloseSocket(new Error('invalid upgrade request'))
@@ -21,25 +21,28 @@ const parseUpgradeRequest = (webSocket, request) => {
 const doUpgradeSocket = (webSocket, protocol, responseKey) => {
   if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketServer][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
   if (protocol && !webSocket.protocolList.includes(protocol)) throw new Error(`[WebSocketServer][doUpgradeSocket] unexpected protocol ${protocol}`)
-  webSocket.socket.on('error', webSocket.close)
-  webSocket.socket.on('end', webSocket.close)
-  webSocket.socket.write(`HTTP/1.1 101 Switching Protocols\r\nupgrade: websocket\r\nconnection: upgrade\r\nsec-websocket-accept: ${responseKey}\r\n${protocol ? `sec-websocket-protocol: ${protocol}\r\n` : ''}\r\n`)
   __DEV__ && console.log('[WebSocketServer][doUpgradeSocket]', responseKey)
-  webSocket.listenAndReceiveFrame()
   webSocket.protocol = protocol
-  webSocket.setReadyState(webSocket.OPEN)
-  webSocket.emit(WEB_SOCKET_EVENT_MAP.OPEN)
+  webSocket.open()
+  webSocket.socket.write([
+    `HTTP/1.1 101 Switching Protocols`,
+    `upgrade: websocket`,
+    `connection: upgrade`,
+    `sec-websocket-accept: ${responseKey}`,
+    protocol && `sec-websocket-protocol: ${protocol}`,
+    `\r\n`
+  ].filter(Boolean).join('\r\n'))
 }
 
 const enableWebSocketServer = ({
   server,
   onUpgradeRequest = DEFAULT_ON_UPGRADE_REQUEST,
-  frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT
+  frameLengthLimit
 }) => {
   const webSocketSet = new Set()
 
   server.on('upgrade', async (request, socket, bodyHeadBuffer) => {
-    const webSocket = createWebSocket({ socket, frameLengthLimit, sendFrameMaskType: DO_NOT_MASK_DATA, shouldActivePing: true })
+    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: false, shouldPing: true })
     const { responseKey } = parseUpgradeRequest(webSocket, request)
     if (webSocket.isClosed()) return
 
@@ -53,11 +56,11 @@ const enableWebSocketServer = ({
     if (webSocket.isClosed()) return
 
     webSocketSet.add(webSocket)
-    webSocket.on(WEB_SOCKET_EVENT_MAP.CLOSE, () => {
+    webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
       webSocketSet.delete(webSocket)
-      __DEV__ && console.log(`WEB_SOCKET_EVENT_MAP.CLOSE, current active: ${webSocketSet.size}`)
+      __DEV__ && console.log(`WEBSOCKET_EVENT.CLOSE, current active: ${webSocketSet.size}`)
     })
-    __DEV__ && console.log(`WEB_SOCKET_EVENT_MAP.OPEN, current active: ${webSocketSet.size}`)
+    __DEV__ && console.log(`WEBSOCKET_EVENT.OPEN, current active: ${webSocketSet.size}`)
   })
   return webSocketSet
 }

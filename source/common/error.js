@@ -3,12 +3,6 @@ const rethrowError = (error) => {
   throw error
 }
 
-const throwInfo = (info, message = info.type) => { // attach more data to error // TODO: deprecate if not actually using
-  const error = new Error(message)
-  error.info = info
-  throw error
-}
-
 const tryCall = (thisArg, name, ...args) => {
   try {
     return thisArg[ name ](...args)
@@ -30,7 +24,6 @@ const catchAsync = async (func, ...args) => {
 
 export {
   rethrowError,
-  throwInfo,
   tryCall,
   catchSync,
   catchAsync

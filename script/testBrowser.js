@@ -1,9 +1,8 @@
 import { resolve } from 'path'
 import { DefinePlugin } from 'webpack'
 
-import { argvFlag, runMain } from 'dr-dev/module/main'
-import { getLogger } from 'dr-dev/module/logger'
-import { getScriptFileListFromPathList } from 'dr-dev/module/fileList'
+import { getScriptFileListFromPathList } from 'dr-dev/module/node/fileList'
+import { runMain, argvFlag } from 'dr-dev/module/main'
 import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
 import { testWithPuppeteer } from 'dr-dev/module/puppeteer'
 
@@ -55,4 +54,4 @@ runMain(async (logger) => {
   await modify.delete(PATH_TEST_BROWSER_JS)
 
   await testWithPuppeteer({ testScriptString, logger })
-}, getLogger(NAME_TEST_BROWSER, argvFlag('quiet')))
+}, NAME_TEST_BROWSER)
