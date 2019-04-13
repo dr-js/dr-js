@@ -15,32 +15,12 @@
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
   - `packBlobPacket`, `parseBlobPacket`
-+ 📄 [source/browser/font/fontGenerator.js](source/browser/font/fontGenerator.js)
-  - `createFontGenerator`
-+ 📄 [source/browser/font/fontGeneratorBitmap.js](source/browser/font/fontGeneratorBitmap.js)
-  - `createFontGeneratorBitmap`
-+ 📄 [source/browser/font/fontMapper.js](source/browser/font/fontMapper.js)
-  - `createFontMapper`
-+ 📄 [source/browser/font/fontRender.js](source/browser/font/fontRender.js)
-  - `createFontRender`
-+ 📄 [source/browser/font/fontRenderBitmap.js](source/browser/font/fontRenderBitmap.js)
-  - `createFontRenderBitmap`
-+ 📄 [source/browser/graphic/CanvasImageDataOperation.js](source/browser/graphic/CanvasImageDataOperation.js)
-  - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
-+ 📄 [source/browser/graphic/Color.js](source/browser/graphic/Color.js)
-  - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
-+ 📄 [source/browser/graphic/ImageData.js](source/browser/graphic/ImageData.js)
-  - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
-+ 📄 [source/browser/input/EnhancedEventProcessor.js](source/browser/input/EnhancedEventProcessor.js)
-  - `createSwipeEnhancedEventProcessor`
 + 📄 [source/browser/input/KeyCommand.js](source/browser/input/KeyCommand.js)
   - `createKeyCommandHub`
 + 📄 [source/browser/input/PointerEvent.js](source/browser/input/PointerEvent.js)
   - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
 + 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
   - `createHistoryStateStore`
-+ 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
-  - `createInterpolationAutoTimer`, `createVectorAccumulator`
 + 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
   - `createSyncStateStorage`
 + 📄 [source/common/check.js](source/common/check.js)
@@ -231,18 +211,7 @@
       - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
     - **BlobPacket**
       - `packBlobPacket`, `parseBlobPacket`
-  - **Font**
-    - `createFontGenerator`, `createFontGeneratorBitmap`, `createFontMapper`, `createFontRender`, `createFontRenderBitmap`
-  - **Graphic**
-    - **CanvasImageDataOperation**
-      - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
-    - **Color**
-      - `getHexFromRGB`, `getHexFromRGBA`, `getRGBAFromUint32RGBA`, `getUint32RGBA`
-    - **ImageData**
-      - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
   - **Input**
-    - **EnhancedEventProcessor**
-      - `createSwipeEnhancedEventProcessor`
     - **KeyCommand**
       - `createKeyCommandHub`
     - **PointerEvent**
@@ -250,8 +219,6 @@
   - **Module**
     - **HistoryStateStore**
       - `createHistoryStateStore`
-    - **MotionAutoTimer**
-      - `createInterpolationAutoTimer`, `createVectorAccumulator`
     - **StateStorage**
       - `createSyncStateStorage`
   - **DOM**

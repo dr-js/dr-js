@@ -19,7 +19,7 @@ window.addContent(``, `
   const {
     qS,
     Dr: {
-      Common: { Format: { binary, stringAutoEllipsis } },
+      Common: { Format: { binary }, String: { autoEllipsis } },
       Browser: {
         DOM: { applyDragFileListListener },
         Data: { Blob: { parseBlobAsText, parseBlobAsDataURL } }
@@ -39,7 +39,7 @@ window.addContent(``, `
     try {
       const object = JSON.parse(await parseBlobAsText(fileBlob))
       const text = JSON.stringify(object, null, 2)
-      benchTextarea.value = stringAutoEllipsis(text, 1024, 512, 128)
+      benchTextarea.value = autoEllipsis(text, 1024, 512, 128)
       window.BENCH.OBJECT = object
       window.BENCH.TEXT = text
     } catch (error) { benchTextarea.value = `${error.stack || error}` }
@@ -48,7 +48,7 @@ window.addContent(``, `
     const fileBlob = benchInput.files[ 0 ]
     if (!fileBlob) return
     const text = await parseBlobAsText(fileBlob)
-    benchTextarea.value = stringAutoEllipsis(text, 1024, 512, 128)
+    benchTextarea.value = autoEllipsis(text, 1024, 512, 128)
     window.BENCH.TEXT = text
   }
   qS('#bench-to-image').onclick = async () => {
