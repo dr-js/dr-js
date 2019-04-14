@@ -1,33 +1,11 @@
-import { URL } from 'url'
 import { get as httpGet } from 'http'
 import { get as httpsGet } from 'https'
-import { urlToOption } from 'source/node/net'
-import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRequestKey, getRespondKey } from './function'
+import { WEBSOCKET_VERSION, getRequestKey, getRespondKey } from './function'
 import { createWebSocket } from './WebSocket'
 
 const VALID_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])
 const SECURE_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])
 const DEFAULT_ON_UPGRADE_RESPONSE = (webSocket, response, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
-
-const buildUpgradeRequest = (url, { key, isSecure, headers, origin = '', requestProtocolString = '' }) => {
-  const requestKey = key || getRequestKey()
-  const responseKey = getRespondKey(requestKey)
-  const requestOption = {
-    ...urlToOption(url),
-    protocol: undefined, // node do not use 'ws/wss', will use auto set 'http/https' instead
-    port: url.port !== '' ? url.port : (isSecure ? 443 : 80),
-    headers: {
-      ...headers,
-      origin,
-      'upgrade': 'websocket',
-      'connection': 'upgrade',
-      'sec-websocket-version': WEBSOCKET_VERSION,
-      'sec-websocket-key': requestKey,
-      'sec-websocket-protocol': requestProtocolString
-    }
-  }
-  return { requestOption, requestProtocolString, responseKey }
-}
 
 const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString) => {
   if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketClient][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
@@ -41,18 +19,37 @@ const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString
 
 const createWebSocketClient = ({
   urlString,
-  option = {},
+  option: {
+    key,
+    headers,
+    origin = '',
+    requestProtocolString = ''
+  } = {},
   onError,
   onUpgradeResponse = DEFAULT_ON_UPGRADE_RESPONSE,
   frameLengthLimit
 }) => {
-  const url = new URL(urlString)
-  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${url.protocol}`)
-  if (!url.host) throw new Error(`[WebSocketClient] invalid url host: ${url.host}`)
-  option.isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(url.protocol)
+  const urlObject = new URL(urlString)
+  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${urlObject.protocol}`)
+  if (!urlObject.host) throw new Error(`[WebSocketClient] invalid url host: ${urlObject.host}`)
 
-  const { requestOption, requestProtocolString, responseKey } = buildUpgradeRequest(url, option)
-  const request = (option.isSecure ? httpsGet : httpGet)(requestOption)
+  const isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)
+  const requestKey = key || getRequestKey()
+  const responseKey = getRespondKey(requestKey)
+
+  urlObject.protocol = isSecure ? 'https:' : 'http:' // TODO: PATCH: node require `protocol` to match `agent.protocol`, so use 'http:/https:' for 'ws:/wss:' instead
+
+  const request = (isSecure ? httpsGet : httpGet)(urlObject, {
+    headers: {
+      origin,
+      'upgrade': 'websocket',
+      'connection': 'upgrade',
+      'sec-websocket-version': WEBSOCKET_VERSION,
+      'sec-websocket-key': requestKey,
+      'sec-websocket-protocol': requestProtocolString,
+      ...headers
+    }
+  })
 
   request.on('error', (error) => {
     if (request.aborted) return
@@ -67,8 +64,8 @@ const createWebSocketClient = ({
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
     const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: true })
 
-    webSocket.origin = option.origin
-    webSocket.isSecure = option.isSecure
+    webSocket.origin = origin
+    webSocket.isSecure = isSecure
 
     await onUpgradeResponse(webSocket, response, bodyHeadBuffer)
     __DEV__ && webSocket.isClosed() && console.log('[WebSocketClient] UpgradeResponse closed webSocket')

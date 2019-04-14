@@ -6,6 +6,7 @@ import { start as startREPL } from 'repl'
 
 import { time, binary } from 'dr-js/module/common/format'
 import { indentList } from 'dr-js/module/common/string'
+import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
@@ -74,6 +75,10 @@ const runMode = async (modeName, optionData) => {
     }
     case 'repl':
       return (startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require)
+    case 'wait': {
+      const waitTime = argumentList[ 0 ] || 2 * 1000
+      return setTimeoutAsync(waitTime)
+    }
     case 'echo':
       return logAuto(argumentList)
     case 'cat': {

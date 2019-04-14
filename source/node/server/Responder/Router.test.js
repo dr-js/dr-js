@@ -1,4 +1,3 @@
-import { URL } from 'url'
 import { strictEqual, doThrow, doNotThrow } from 'source/common/verify'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import {

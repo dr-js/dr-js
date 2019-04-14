@@ -1,4 +1,3 @@
-import { URL } from 'url'
 import { isBasicObject } from 'source/common/check'
 import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 import {

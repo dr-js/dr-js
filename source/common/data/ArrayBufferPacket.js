@@ -1,4 +1,4 @@
-import { concatArrayBuffer, decatArrayBuffer, fromString, toString } from './ArrayBuffer'
+import { concatArrayBuffer, deconcatArrayBuffer, fromString, toString } from './ArrayBuffer'
 
 const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
 const HEADER_BYTE_SIZE = 4 // Math.ceil(Math.log2(MAX_PACKET_HEADER_SIZE) / 8)
@@ -47,7 +47,7 @@ const parseChainArrayBufferPacket = (chainArrayBufferPacket) => {
   for (let index = 0, indexMax = headerDataView.byteLength / 4; index < indexMax; index++) {
     byteLengthList.push(headerDataView.getUint32(index * 4, false))
   }
-  return decatArrayBuffer(chainArrayBufferPacket, byteLengthList, payloadOffset)
+  return deconcatArrayBuffer(chainArrayBufferPacket, byteLengthList, payloadOffset)
 }
 
 export {

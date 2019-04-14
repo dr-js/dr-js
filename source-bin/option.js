@@ -18,6 +18,7 @@ const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
   'eval-readline,erl/A|eval with readline: -R=readlineFile, ...eval',
   'repl,i/T|start node REPL',
+  'wait/AI/0-1|wait specified time, in msec: $0=waitTime/2*1000',
   'echo/A|show args: $@=...args',
   'cat/AP/0-|with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout',
   'write/SP|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',

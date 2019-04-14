@@ -40,7 +40,7 @@
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `strictEqual`, `string`, `stringifyEqual`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
-  - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
+  - `concatArrayBuffer`, `deconcatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
@@ -122,7 +122,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
+  - `fetchLikeRequest`, `ping`, `requestAsync`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -230,7 +230,7 @@
 - **Common**
   - **Data**
     - **ArrayBuffer**
-      - `concatArrayBuffer`, `decatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
+      - `concatArrayBuffer`, `deconcatArrayBuffer`, `fromString`, `isEqualArrayBuffer`, `toString`
     - **ArrayBufferPacket**
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **CacheMap**
@@ -396,7 +396,7 @@
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
-    - `fetchLikeRequest`, `ping`, `requestAsync`, `urlToOption`
+    - `fetchLikeRequest`, `ping`, `requestAsync`
   - **Resource**
     - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 
@@ -427,6 +427,8 @@
 >       eval with readline: -R=readlineFile, ...eval
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0+]
 >       start node REPL
+>   --wait [OPTIONAL] [ARGUMENT=0-1]
+>       wait specified time, in msec: $0=waitTime/2*1000
 >   --echo [OPTIONAL] [ARGUMENT=0+]
 >       show args: $@=...args
 >   --cat [OPTIONAL] [ARGUMENT=0+]
@@ -483,6 +485,7 @@
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_EVAL_READLINE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_WAIT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
@@ -518,6 +521,7 @@
 >     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsEvalReadline": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsRepl": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsWait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],

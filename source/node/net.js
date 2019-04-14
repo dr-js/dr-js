@@ -1,22 +1,26 @@
 import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
-import { URL } from 'url'
 import { createGunzip } from 'zlib'
 
 import { withRetryAsync } from 'source/common/function'
 import { receiveBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 
-const urlToOption = ({ protocol, hostname, hash, search, pathname, href, port, username, password }) => {
-  const option = { protocol, hostname, hash, search, pathname, href, path: `${pathname}${search}` }
-  if (port !== '') option.port = Number(port)
-  if (username || password) option.auth = `${username}:${password}`
-  return option
-}
+// NOTE: v10.0.0 The class is now available on the global object.
 
-const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
-  const request = (option.protocol === 'https:' ? httpsRequest : httpRequest)(option, resolve)
+const toUrlObject = (url) => url instanceof URL ? url : new URL(url)
+
+const requestAsync = (
+  url,
+  option, // { method, headers, timeout, agent, ... }
+  body // Buffer/String
+) => new Promise((resolve, reject) => {
+  // NOTE: v10.9.0 The url parameter can now be passed along with a separate options object.
+  // NOTE: v7.5.0 The options parameter can be a WHATWG URL object.
+  const urlObject = toUrlObject(url)
+  const request = (urlObject.protocol === 'https:' ? httpsRequest : httpRequest)(urlObject, option, resolve)
   const endWithError = (error) => {
     request.destroy()
+    error.urlObject = urlObject
     error.option = option
     reject(error)
   }
@@ -26,13 +30,20 @@ const requestAsync = (option, body = null) => new Promise((resolve, reject) => {
 })
 
 // ping with a status code of 500 is still a successful ping
-const ping = async ({ url, body, wait = 5000, maxRetry = 0, ...option }) => {
-  option = { ...option, ...urlToOption(new URL(url)), timeout: wait } // will result in error if timeout
-  await withRetryAsync(async () => {
-    const response = await requestAsync(option, body)
+const ping = async (url, {
+  method = 'GET',
+  headers,
+  body,
+  wait = 5 * 1000,
+  maxRetry = 0
+} = {}) => withRetryAsync(
+  async () => { // will result in error if timeout
+    const response = await requestAsync(url, { method, headers, timeout: wait }, body)
     response.destroy() // skip response data
-  }, maxRetry, wait)
-}
+  },
+  maxRetry,
+  wait
+)
 
 // TODO: native fetch do not use timeout but AsyncController
 // NOTE:
@@ -40,26 +51,25 @@ const ping = async ({ url, body, wait = 5000, maxRetry = 0, ...option }) => {
 //   These method can only be called once.
 //   If not, on nextTick, the data will be dropped.
 const fetchLikeRequest = async (url, {
-  method = 'GET',
+  method = 'GET', // TODO: NOTE: in node, `GET|DELETE` method will implicitly skip body, add `content-length` to force send body
   headers: requestHeaders,
   body,
   timeout = 10 * 1000 // in millisecond, 0 for no timeout, will result in error if timeout
 } = {}) => {
   const option = {
-    ...urlToOption(new URL(url)),
     method,
-    headers: { 'accept-encoding': 'gzip', ...requestHeaders }, // TODO: NOTE: in node, `GET|DELETE` method will implicitly skip body, add `content-length` to force send body
+    headers: { 'accept-encoding': 'gzip', ...requestHeaders },
     timeout
   }
   __DEV__ && console.log('[fetch]', option)
-  const response = await requestAsync(option, body)
+  const response = await requestAsync(url, option, body)
   // __DEV__ && response.socket.on('close', () => console.log(`[fetch] socket closed`))
   const status = response.statusCode
   return {
     status,
     ok: (status >= 200 && status < 300),
     headers: response.headers,
-    ...wrapPayload(response, timeout)
+    ...wrapResponse(response, timeout)
   }
 }
 
@@ -69,7 +79,7 @@ const fetchLikeRequest = async (url, {
 //   http: IncomingMessage not emitting 'end'
 //     - https://github.com/nodejs/node/issues/10344
 
-const wrapPayload = (response, timeout) => {
+const wrapResponse = (response, timeout) => {
   let isKeep
   let isDropped
   process.nextTick(() => {
@@ -105,7 +115,6 @@ const toText = (buffer) => buffer.toString()
 const parseJSON = (text) => JSON.parse(text)
 
 export {
-  urlToOption,
   requestAsync,
   ping,
   fetchLikeRequest

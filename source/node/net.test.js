@@ -1,6 +1,5 @@
 import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { resolve } from 'path'
-import { URL } from 'url'
 import { unlinkSync, writeFileSync } from 'fs'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { receiveBufferAsync, sendBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
@@ -10,7 +9,7 @@ import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Res
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import { setTimeoutAsync } from 'source/common/time'
-import { urlToOption, ping, fetchLikeRequest } from './net'
+import { ping, fetchLikeRequest } from './net'
 
 const { describe, it, before, after } = global
 
@@ -67,13 +66,6 @@ after('clear', () => {
 })
 
 describe('Node.Net', () => {
-  it('urlToOption()', () => {
-    const urlObject = new URL('aaa://bbb.ccc:111/ddd?eee=fff#ggg')
-    const option = urlToOption(urlObject)
-    strictEqual(option.port, 111)
-    strictEqual(option.path, '/ddd?eee=fff')
-  })
-
   it('fetchLikeRequest() option: timeout', withTestServer(async (baseUrl) => {
     await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 10 }).then(
       () => { throw new Error('should throw time out error') },
@@ -142,29 +134,29 @@ describe('Node.Net', () => {
   }))
 
   it('ping() simple test', withTestServer(async (baseUrl) => {
-    await ping({ url: `${baseUrl}/test-buffer` })
-    await ping({ url: `${baseUrl}/test-json` })
+    await ping(`${baseUrl}/test-buffer`)
+    await ping(`${baseUrl}/test-json`)
   }))
 
   it('ping() timeout', withTestServer(async (baseUrl) => {
-    await ping({ url: `${baseUrl}/test-buffer`, wait: 10 })
-    await ping({ url: `${baseUrl}/test-timeout`, wait: 50, maxRetry: 2 }).then(
+    await ping(`${baseUrl}/test-buffer`, { wait: 10 })
+    await ping(`${baseUrl}/test-timeout`, { wait: 50, maxRetry: 2 }).then(
       () => { throw new Error('should throw ping timeout error') },
       (error) => `good, expected Error: ${error}`
     )
   }))
 
   it('ping() retryCount', withTestServer(async (baseUrl) => { // total ping = 1 + retryCount
-    await ping({ url: `${baseUrl}/test-retry`, wait: 10, maxRetry: 2 }).then(
+    await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 2 }).then(
       () => { throw new Error('should throw retry error') },
       (error) => `good, expected Error: ${error}`
     )
-    await ping({ url: `${baseUrl}/test-retry`, wait: 10, maxRetry: 0 }) // 4, pass
-    await ping({ url: `${baseUrl}/test-retry`, wait: 10, maxRetry: 3 }) // 4, pass
-    await ping({ url: `${baseUrl}/test-retry`, wait: 10, maxRetry: 2 }).then(
+    await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 0 }) // 4, pass
+    await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 3 }) // 4, pass
+    await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 2 }).then(
       () => { throw new Error('should throw retry error') },
       (error) => `good, expected Error: ${error}`
     )
-    await ping({ url: `${baseUrl}/test-retry`, wait: 10, maxRetry: 0 }) // 4, pass
+    await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 0 }) // 4, pass
   }))
 })

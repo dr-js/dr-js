@@ -20,7 +20,7 @@ const concatArrayBuffer = (arrayBufferList = []) => {
   return resultTypedArray.buffer
 }
 
-const decatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0) => byteLengthList.map((byteLength) => {
+const deconcatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0) => byteLengthList.map((byteLength) => {
   const arrayBuffer = concatedArrayBuffer.slice(byteOffset, byteOffset + byteLength)
   byteOffset += byteLength
   return arrayBuffer
@@ -62,7 +62,7 @@ const fromString = (string = '') => {
 export {
   isEqualArrayBuffer,
   concatArrayBuffer,
-  decatArrayBuffer,
+  deconcatArrayBuffer,
   fromString,
   toString
 }

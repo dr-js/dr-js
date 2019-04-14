@@ -25,7 +25,7 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const responderServeStatic = createResponderServeStatic({})
 const responderProxy = async (store) => {
   const requestBuffer = await receiveBufferAsync(store.request)
-  const proxyResponse = await requestAsync({ hostname: ProxyHostname, port: ProxyPort, path: '/get-proxy' }, requestBuffer)
+  const proxyResponse = await requestAsync(`http://${ProxyHostname}:${ProxyPort}/get-proxy`, null, requestBuffer)
   const responseBuffer = await receiveBufferAsync(proxyResponse)
   store.response.end(responseBuffer)
 }
@@ -85,13 +85,11 @@ start().then(() => {
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
   const requestBuffer = await receiveBufferAsync(originalRequest)
-  const proxyResponse = await requestAsync({
-    hostname: ServerHostname,
-    port: ServerPort,
-    path: originalRequest.url,
-    method: originalRequest.method,
-    headers: originalRequest.headers
-  }, requestBuffer)
+  const proxyResponse = await requestAsync(
+    `http://${ServerHostname}:${ServerPort}${originalRequest.url}`,
+    { method: originalRequest.method, headers: originalRequest.headers },
+    requestBuffer
+  )
   const responseBuffer = await receiveBufferAsync(proxyResponse)
   Object.entries(proxyResponse.headers).forEach(([ name, value ]) => originalResponse.setHeader(name, value))
   originalResponse.statusCode = proxyResponse.statusCode
