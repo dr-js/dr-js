@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.21.0-dev.4",
+  "version": "0.21.0-dev.5",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -48,8 +48,8 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-dev": "0.0.5-dev.2",
-    "dr-dev-web-puppeteer": "0.0.5-dev.2"
+    "dr-dev": "0.0.5-dev.4",
+    "dr-dev-web-puppeteer": "0.0.5-dev.4"
   },
   "sideEffects": false
 }
