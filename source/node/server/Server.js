@@ -47,16 +47,16 @@ const applyServerSessionCache = (server) => {
 }
 
 const createServer = ({ protocol, ...option }) => {
-  if (!VALID_SERVER_PROTOCOL_SET.has(protocol)) throw new Error(`[createServer] invalid protocol: ${protocol}`)
+  if (!VALID_SERVER_PROTOCOL_SET.has(protocol)) throw new Error(`invalid protocol: ${protocol}`)
   option = { ...(protocol === 'https:' ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option }
   option.baseUrl = `${protocol}//${option.hostname}:${option.port}`
 
   const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // NOTE: the argument is different for https/http.createServer
   option.isSecure && applyServerSessionCache(server)
 
-  __DEV__ && server.on('connection', (conn) => {
+  __DEV__ && server.on('connection', (connection) => {
     console.log('connection ++')
-    conn.on('close', () => console.log('connection --'))
+    connection.on('close', () => console.log('connection --'))
   })
 
   return {

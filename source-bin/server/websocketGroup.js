@@ -343,7 +343,6 @@ const mainScriptInit = () => {
       text && addLog({ id, text })
       fileName && addLogWithFile({ id, fileName, fileSize, fileId })
     } else if (type === TYPE_BUFFER_SINGLE) {
-      if (targetId !== STATE.id) throw new Error(`Strange mismatch`) // TODO: test, should not mis-send
       const { id, intent } = payload
       if (intent === 'request') {
         const { fileId } = payload

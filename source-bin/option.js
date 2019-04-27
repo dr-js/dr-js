@@ -5,9 +5,10 @@ const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(c
 }))
 
 const COMMON_FORMAT_LIST = parseList(
-  'help,h/T|show full help, or human readable output',
+  'help,h/T|show full help',
   'quiet,q/T|less log',
   'version,v/T|show version',
+  'json,J/T|output JSON, if supported',
   'host,H/SS|common option: $0=hostname:port (hostname default to 0.0.0.0)',
   'root,R/SP|common option: $0=path/cwd',
   'input-file,I/SP|common option',
@@ -18,13 +19,15 @@ const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
   'eval-readline,erl/A|eval with readline: -R=readlineFile, ...eval',
   'repl,i/T|start node REPL',
+
   'wait/AI/0-1|wait specified time, in msec: $0=waitTime/2*1000',
   'echo/A|show args: $@=...args',
   'cat/AP/0-|with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout',
   'write/SP|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
   'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
-  'status,s/T|basic system status: -h=isHumanReadableOutput',
+  'status,s/T|basic system status: -J=isOutputJSON',
+
   'file-list,ls/AP/0-1|list file: $0=path/cwd',
   'file-list-all,ls-R,lla/AP/0-1|list all file: $0=path/cwd',
   'file-tree,tree/AP/0-1|list all file in tree: $0=path/cwd',
@@ -33,8 +36,11 @@ const MODE_FORMAT_LIST = parseList(
   'file-modify-move,mv/AP/2|move path: $@=pathFrom,pathTo',
   'file-modify-delete,rm/AP/0-|delete path: $@=...pathList',
   'file-merge,merge/AP/2-|merge to one file: $@=mergedFile,...inputFileList',
-  'fetch,f//1-3|fetch uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0',
-  'process-status,ps//0-1|show system process status: -h=isHumanReadableOutput, $0=outputMode/"pid--"',
+
+  'fetch,f//1-3|fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0',
+  'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
+  'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
+
   'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000',
   'server-serve-static-simple,ssss//0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000',
   'server-websocket-group,swg|websocket chat server: -H=hostname:port',

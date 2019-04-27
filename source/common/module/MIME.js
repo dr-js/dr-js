@@ -37,7 +37,7 @@ const BASIC_MIME_DATA_LIST = [
 
   'video/mp4;mp4v;mpg4',
   'video/mpeg;mpg',
-  'video/webm',
+  'video/webm', // should overwrite 'audio/webm'
   'video/x-flv;flv',
   'video/x-ms-wmv;wmv',
   'video/x-msvideo;avi'

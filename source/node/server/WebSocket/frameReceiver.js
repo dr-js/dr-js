@@ -109,7 +109,7 @@ const createFrameDecoder = (frameLengthLimit) => {
             stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_END_FRAME // complete, a 16bit frame
           } else if (initialLength <= 125) {
             decodedDataBufferLength = initialLength
-            if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
+            if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
             stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
           } else if (initialLength === 126) stage = DECODE_STAGE_EXTEND_DATA_LENGTH_2
           else stage = DECODE_STAGE_EXTEND_DATA_LENGTH_8
@@ -121,7 +121,7 @@ const createFrameDecoder = (frameLengthLimit) => {
       case DECODE_STAGE_EXTEND_DATA_LENGTH_2:
         if ((mergedBuffer = tryShiftMergedBuffer(2))) {
           decodedDataBufferLength = mergedBuffer.readUInt16BE(0, !__DEV__)
-          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
+          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
 
           // __DEV__ && console.log('[DECODE_STAGE_EXTEND_DATA_LENGTH_2]', { decodedDataBufferLength })
@@ -131,8 +131,8 @@ const createFrameDecoder = (frameLengthLimit) => {
       case DECODE_STAGE_EXTEND_DATA_LENGTH_8:
         if ((mergedBuffer = tryShiftMergedBuffer(8))) {
           decodedDataBufferLength = mergedBuffer.readUInt32BE(0, !__DEV__) * 0x100000000 + mergedBuffer.readUInt32BE(4, !__DEV__)
-          if (decodedDataBufferLength > BUFFER_MAX_LENGTH) throw new Error('[decode] decodedDataBufferLength exceeds BUFFER_MAX_LENGTH')
-          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`[decode] dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
+          if (decodedDataBufferLength > BUFFER_MAX_LENGTH) throw new Error('decodedDataBufferLength too big')
+          if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
 
           // __DEV__ && console.log('[DECODE_STAGE_EXTEND_DATA_LENGTH_8]', { decodedDataBufferLength })

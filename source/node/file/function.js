@@ -41,7 +41,7 @@ const createPathPrefixLock = (rootPath) => {
   rootPath = resolvePath(rootPath)
   return (relativePath) => { // TODO: may silently drop path, should add fool-proof error/check
     const absolutePath = resolvePath(rootPath, relativePath)
-    if (!absolutePath.startsWith(rootPath)) throw new Error(`[PathPrefixLock] invalid relativePath: ${relativePath}`)
+    if (!absolutePath.startsWith(rootPath)) throw new Error(`invalid relativePath: ${relativePath}`)
     return absolutePath
   }
 }

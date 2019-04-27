@@ -54,7 +54,7 @@ const getPathTypeFromStat = (stat) => stat.isDirectory() ? FILE_TYPE.Directory
 const createDirectory = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(path)
   if (pathStat.isDirectory()) return // directory exist, pass
-  if (pathStat !== ERROR_STAT) throw new Error(`[createDirectory] path already taken by non-directory: ${path}`)
+  if (pathStat !== ERROR_STAT) throw new Error(`path already taken by non-directory: ${path}`)
   await createDirectory(dirname(path)) // check up
   await mkdirAsync(path) // create directory
 }
@@ -62,7 +62,7 @@ const trimDirectory = async (path, maxLevel = 1, pathStat) => {
   if (!maxLevel) return
   if (pathStat === undefined) pathStat = await getPathStat(path)
   if (pathStat !== ERROR_STAT) { // directory exist
-    if (!pathStat.isDirectory()) throw new Error(`[trimDirectory] path taken by non-directory: ${path}`)
+    if (!pathStat.isDirectory()) throw new Error(`path taken by non-directory: ${path}`)
     if (await rmdirAsync(path).catch(onTrimError) === ERROR_NON_EMPTY) return // try delete if empty // TODO: or use slower readDir ?
   }
   await trimDirectory(dirname(path), maxLevel - 1) // check up
@@ -71,7 +71,7 @@ const trimDirectory = async (path, maxLevel = 1, pathStat) => {
 // NOT recursive operation
 const movePath = async (pathFrom, pathTo, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
-  if (pathStat === ERROR_STAT) throw new Error(`[movePath] missing path from ${pathFrom}`)
+  if (pathStat === ERROR_STAT) throw new Error(`missing path from ${pathFrom}`)
   return renameAsync(pathFrom, pathTo)
 }
 const copyPath = async (pathFrom, pathTo, pathStat) => {

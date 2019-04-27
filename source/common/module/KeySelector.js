@@ -11,20 +11,20 @@ const createMultiKeySwitch = ({ keyCount }) => {
   const switchMap = { /* switchKey: value */ }
 
   const set = (value, keySelectorListList) => keySelectorListList.forEach((keySelectorList) => {
-    if (keyCount !== keySelectorList.length) throw new Error(`[set] invalid keySelectorList length: ${keySelectorList.length}, expect: ${keyCount}`)
+    if (keyCount !== keySelectorList.length) throw new Error(`invalid keySelectorList length: ${keySelectorList.length}, expect: ${keyCount}`)
     reduceKeySelector(...keySelectorList).forEach((switchKey) => {
-      if (switchMap[ switchKey ]) throw new Error(`[set] duplicate switchKey: ${switchKey}`)
+      if (switchMap[ switchKey ]) throw new Error(`duplicate switchKey: ${switchKey}`)
       switchMap[ switchKey ] = value
     })
   })
 
   const get = (...keyFragList) => {
-    if (keyCount !== keyFragList.length) throw new Error(`[get] invalid keyCount: ${keyFragList.length}, expect: ${keyCount}`)
+    if (keyCount !== keyFragList.length) throw new Error(`invalid keyCount: ${keyFragList.length}, expect: ${keyCount}`)
     return switchMap[ concatKeyFrag(...keyFragList) ]
   }
 
   const verifyFull = (...keySelectorList) => {
-    if (keyCount !== keySelectorList.length) throw new Error(`[verifyFull] invalid keyCount: ${keySelectorList.length}, expect: ${keyCount}`)
+    if (keyCount !== keySelectorList.length) throw new Error(`invalid keyCount: ${keySelectorList.length}, expect: ${keyCount}`)
     const fullKeyList = reduceKeySelector(...keySelectorList)
     const setKeyList = Object.keys(switchMap)
     if (fullKeyList.length !== setKeyList.length) {

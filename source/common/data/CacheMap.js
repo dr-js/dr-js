@@ -3,7 +3,12 @@ import { createDoublyLinkedList, createNode } from './LinkedList'
 
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
-const createCache = (key, value, size, expireAt) => ({ ...createNode(value), key, size, expireAt })
+const createCache = (key, value, size, expireAt) => ({
+  ...createNode(value), // value, prev, next
+  key,
+  size,
+  expireAt
+})
 
 // Time aware Least Recently Used (TLRU)
 const createCacheMap = ({
@@ -11,7 +16,7 @@ const createCacheMap = ({
   valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1),
   eventHub = createHub() // set to null should be faster, if no event is needed
 }) => {
-  if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`[CacheMap] invalid valueSizeSumMax: ${valueSizeSumMax}`)
+  if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`invalid valueSizeSumMax: ${valueSizeSumMax}`)
 
   const hasEventHub = Boolean(eventHub)
   const {
@@ -75,7 +80,7 @@ const createCacheMap = ({
     },
     packList: () => {
       const dataList = []
-      cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push({ key, value, size, expireAt }))
+      cacheLinkedList.forEachReverse(({ key, value, size, expireAt }) => dataList.push({ key, value, size, expireAt })) // filter data
       return dataList
     },
     parseList: (dataList, time = Date.now()) => dataList.forEach(({ key, value, size, expireAt }) => {

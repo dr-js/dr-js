@@ -8,10 +8,10 @@ const SECURE_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])
 const DEFAULT_ON_UPGRADE_RESPONSE = (webSocket, response, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
 
 const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString) => {
-  if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketClient][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
-  if (responseKey !== response.headers[ 'sec-websocket-accept' ]) throw new Error('[WebSocketClient][doUpgradeSocket] wrong sec-websocket-accept')
+  if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`error readyState ${webSocket.getReadyState()}`)
+  if (responseKey !== response.headers[ 'sec-websocket-accept' ]) throw new Error('wrong sec-websocket-accept')
   const protocol = response.headers[ 'sec-websocket-protocol' ]
-  if (!requestProtocolString.split(/, */).includes(protocol)) throw new Error(`[WebSocketClient][doUpgradeSocket] unexpected protocol ${protocol}`)
+  if (!requestProtocolString.split(/, */).includes(protocol)) throw new Error(`unexpected protocol ${protocol}`)
   __DEV__ && console.log('[WebSocketClient][doUpgradeSocket]', responseKey)
   webSocket.protocol = protocol // the accepted protocol
   webSocket.open()
@@ -30,8 +30,8 @@ const createWebSocketClient = ({
   frameLengthLimit
 }) => {
   const urlObject = new URL(urlString)
-  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)) throw new Error(`[WebSocketClient] invalid url protocol: ${urlObject.protocol}`)
-  if (!urlObject.host) throw new Error(`[WebSocketClient] invalid url host: ${urlObject.host}`)
+  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)) throw new Error(`invalid url protocol: ${urlObject.protocol}`)
+  if (!urlObject.host) throw new Error(`invalid url host: ${urlObject.host}`)
 
   const isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)
   const requestKey = key || getRequestKey()
@@ -59,7 +59,7 @@ const createWebSocketClient = ({
   request.on('response', (response) => {
     __DEV__ && console.log('[WebSocketClient] unexpected response', response)
     request.abort()
-    onError(new Error('[WebSocketClient] unexpected response'))
+    onError(new Error('unexpected response'))
   })
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
     const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: true })

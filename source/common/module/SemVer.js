@@ -3,11 +3,11 @@ import { compareStringWithNumber } from 'source/common/compare'
 const REGEXP_SEMVER = /^(\d+)\.(\d+)\.(\d+)(.*)$/ // simple match
 
 const parseSemVer = (versionString) => {
-  let [ , major, minor, patch, label = '' ] = REGEXP_SEMVER.exec(versionString)
+  let [ , major, minor, patch, label = '' ] = REGEXP_SEMVER.exec(versionString) || []
   major = parseInt(major)
   minor = parseInt(minor)
   patch = parseInt(patch)
-  if (isNaN(major) || isNaN(minor) || isNaN(patch)) throw new Error(`[parseSemVer] invalid versionString: ${versionString}`)
+  if (isNaN(major) || isNaN(minor) || isNaN(patch)) throw new Error(`invalid version: ${versionString}`) // TODO: remove func name in error (should use stack mostly)
   return { major, minor, patch, label }
 }
 

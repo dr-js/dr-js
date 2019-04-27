@@ -234,7 +234,7 @@ describe('Common.Immutable.StateStore', () => {
       strictEqual(callCount, 1)
     })
 
-    it('should pass check reducer', () => {
+    __DEV__ && it('should pass check reducer', () => {
       doThrow(() => {
         const store = createStateStoreEnhanced({ initialState: INITIAL_STATE, enhancer: ENHANCER, reducer: (state, action) => null })
         store.dispatch(ACTION)

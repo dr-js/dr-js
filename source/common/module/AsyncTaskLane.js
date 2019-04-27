@@ -11,7 +11,7 @@ const createAsyncTaskLane = ({
   selectLane = selectMinLoadLane
 }) => {
   laneSize = Number(laneSize)
-  if (!(laneSize >= 1)) throw new Error(`[createTaskLane] invalid laneSize: ${laneSize}`)
+  if (!(laneSize >= 1)) throw new Error(`invalid laneSize: ${laneSize}`)
 
   const laneList = [ /* { index, infoQueue, taskQueue } */ ]
   for (let index = 0; index < laneSize; index++) {

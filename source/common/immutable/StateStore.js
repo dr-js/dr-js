@@ -9,7 +9,7 @@ const createStateStore = (state) => {
   const unsubscribe = (listener) => { listenerList = arrayMatchDelete(listenerList, listener) }
   const getState = () => state
   const setState = (nextState) => {
-    verifyBasicObject(nextState, 'state should be basic Object')
+    __DEV__ && verifyBasicObject(nextState, 'state should be basic Object')
     nextState = objectMerge(state, nextState)
     if (nextState === state) return state
     const prevState = state
@@ -41,7 +41,7 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
 
     isDispatching = true
     enhancer(enhancerStore, action) // may trigger deeper dispatch
-    if (!dispatchingState) throw new Error(`dispatchingState after enhancer is invalid, get: ${JSON.stringify(dispatchingState)}`)
+    if (__DEV__ && !dispatchingState) throw new Error(`invalid dispatchingState from enhancer: ${JSON.stringify(dispatchingState)}`)
     isDispatching = false
 
     isReducing = true
@@ -54,16 +54,16 @@ const createStateStoreEnhanced = ({ initialState, enhancer, reducer }) => {
   }
 
   const subDispatch = (action) => {
-    if (isReducing) throw new Error(`got reducer caused dispatching, action: ${JSON.stringify(action)}`)
+    if (__DEV__ && isReducing) throw new Error(`unexpected reducer dispatch, action: ${JSON.stringify(action)}`)
     enhancer(enhancerStore, action)
     dispatchingState = reducer(dispatchingState, action)
-    verifyBasicObject(dispatchingState, 'reducer should return basic Object state')
+    __DEV__ && verifyBasicObject(dispatchingState, 'reducer should return Object state')
   }
 
   const getState = () => !isDispatching ? getStoreState() : dispatchingState
 
   const dispatch = (action) => {
-    verifyBasicObject(action, 'action should be basic Object')
+    __DEV__ && verifyBasicObject(action, 'action should be basic Object')
     return !isDispatching ? rootDispatch(action) : subDispatch(action)
   }
 

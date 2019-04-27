@@ -19,8 +19,8 @@ const parseUpgradeRequest = (webSocket, request) => {
 }
 
 const doUpgradeSocket = (webSocket, protocol, responseKey) => {
-  if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`[WebSocketServer][doUpgradeSocket] error readyState ${webSocket.getReadyState()}`)
-  if (protocol && !webSocket.protocolList.includes(protocol)) throw new Error(`[WebSocketServer][doUpgradeSocket] unexpected protocol ${protocol}`)
+  if (webSocket.getReadyState() !== webSocket.CONNECTING) throw new Error(`error readyState ${webSocket.getReadyState()}`)
+  if (protocol && !webSocket.protocolList.includes(protocol)) throw new Error(`unexpected protocol ${protocol}`)
   __DEV__ && console.log('[WebSocketServer][doUpgradeSocket]', responseKey)
   webSocket.protocol = protocol
   webSocket.open()

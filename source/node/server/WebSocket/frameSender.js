@@ -38,9 +38,9 @@ const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, is
   } else if (length <= BUFFER_MAX_LENGTH) { // though max length limit is Math.pow(2, 63) octets
     maskLengthOctet = 127
     extendLengthOctetCount = 8
-  } else throw new Error('[encodeFrame] dataBuffer length exceeds BUFFER_MAX_LENGTH')
+  } else throw new Error('dataBuffer length too big')
 
-  if (length > frameSenderStore.frameLengthLimit) throw new Error(`[encodeFrame] dataBuffer length ${length} exceeds limit: ${frameSenderStore.frameLengthLimit}`)
+  if (length > frameSenderStore.frameLengthLimit) throw new Error(`dataBuffer length ${length} exceeds limit: ${frameSenderStore.frameLengthLimit}`)
 
   const maskOctetCount = isMask ? 4 : 0
   const maskQuadletBuffer = (isMask && length) ? randomBytes(4) : DEFAULT_MASK_QUADLET_BUFFER // 4octets | 32bits

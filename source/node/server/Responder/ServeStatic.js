@@ -7,17 +7,20 @@ import {
   responderSendStream, responderSendStreamRange
 } from './Send'
 
-const CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32mB
-const CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
+const DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32MiB
+const DEFAULT_CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512KiB
+const DEFAULT_CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
-const GET_DEFAULT_CACHE_MAP = () => createCacheMap({ valueSizeSumMax: CACHE_BUFFER_SIZE_SUM_MAX })
+const createDefaultCacheMap = () => createCacheMap({ valueSizeSumMax: DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX })
+
+// TODO: support HEAD method?
 
 const createResponderBufferCache = ({
   getBufferData, // (store, cacheKey) => ({ buffer, bufferGzip, length, type, entityTag })
-  sizeSingleMax = CACHE_FILE_SIZE_MAX,
-  expireTime = CACHE_EXPIRE_TIME,
+  sizeSingleMax = DEFAULT_CACHE_FILE_SIZE_MAX,
+  expireTime = DEFAULT_CACHE_EXPIRE_TIME,
   isEnableGzip = false, // will try use `bufferGzip` or compress every time (not good), if `accept-encoding` has `gzip`
-  serveCacheMap = GET_DEFAULT_CACHE_MAP()
+  serveCacheMap = createDefaultCacheMap()
 }) => {
   const responderSendCacheBuffer = isEnableGzip
     ? responderSendBufferCompress
@@ -34,15 +37,12 @@ const createResponderBufferCache = ({
   }
 }
 
-const CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512kB
-const REGEXP_ENCODING_GZIP = /gzip/i
-
 const createResponderServeStatic = ({
-  sizeSingleMax = CACHE_FILE_SIZE_MAX,
-  expireTime = CACHE_EXPIRE_TIME,
+  sizeSingleMax = DEFAULT_CACHE_FILE_SIZE_MAX,
+  expireTime = DEFAULT_CACHE_EXPIRE_TIME,
   isEnableGzip = false, // will try look for `filePath + '.gz'`, if `accept-encoding` has `gzip`
   isEnableRange = true, // only when content is not gzip
-  serveCacheMap = GET_DEFAULT_CACHE_MAP()
+  serveCacheMap = createDefaultCacheMap()
 }) => {
   const serveCache = async (store, filePath, encoding, range) => {
     let bufferData = serveCacheMap.get(filePath)
@@ -88,11 +88,10 @@ const createResponderServeStatic = ({
     const type = getMIMETypeFromFileName(filePath)
     if (acceptGzip && await serve(store, filePath + '.gz', type, 'gzip')) return
     if (await serve(store, filePath, type, undefined, range)) return
-    throw new Error(`[ServeStatic] miss file: ${filePath}`)
+    throw new Error(`miss file: ${filePath}`)
   }
 }
-
-const REGEXP_HEADER_RANGE = /bytes=(\d+)-(\d+)?$/i
+const REGEXP_ENCODING_GZIP = /gzip/i
 
 const parseRangeHeader = (rangeString) => {
   const result = REGEXP_HEADER_RANGE.exec(rangeString)
@@ -102,8 +101,10 @@ const parseRangeHeader = (rangeString) => {
   const end = endString ? parseInt(endString) : Infinity
   if (start < end) return [ start, end ]
 }
+const REGEXP_HEADER_RANGE = /bytes=(\d+)-(\d+)?$/i
 
 export {
+  createDefaultCacheMap,
   createResponderBufferCache,
   createResponderServeStatic
 }

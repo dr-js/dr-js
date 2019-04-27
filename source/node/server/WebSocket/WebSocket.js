@@ -89,7 +89,7 @@ const createWebSocket = ({
     if (!frameDataType) frameDataType = frame.dataType
     frameBufferList.push(frame.dataBuffer)
     frameBufferLength += frame.dataBuffer.length
-    if (frameBufferLength > frameLengthLimit) throw new Error(`[WebSocket] frameBufferList length ${frameBufferLength} exceeds limit: ${frameLengthLimit}`)
+    if (frameBufferLength > frameLengthLimit) throw new Error(`frameBufferList length ${frameBufferLength} exceeds limit: ${frameLengthLimit}`)
 
     __DEV__ && !frame.isFIN && console.log('[WebSocket] need more frame', frameBufferList.length, frameBufferLength)
     if (!frame.isFIN) return null// has more frames
@@ -146,7 +146,7 @@ const createWebSocket = ({
     if (readyState === CLOSED) return
     if (__DEV__ && readyState === CLOSING) console.log('[WebSocket][close] directly doCloseSocket, readyState is CLOSING')
     if (readyState === CLOSING) return doCloseSocket() // exchanged close frame
-    if (readyState !== OPEN && readyState !== CLOSING) throw new Error(`[close] error readyState = ${readyState}`)
+    if (readyState !== OPEN && readyState !== CLOSING) throw new Error(`error readyState = ${readyState}`)
     __DEV__ && console.log('[WebSocket][close] send close frame', { code, reason })
     readyState = CLOSING
     closeTimeoutToken = setTimeout(doCloseSocket, WEBSOCKET_CLOSE_TIMEOUT)
@@ -156,14 +156,14 @@ const createWebSocket = ({
   }
 
   const sendText = (text) => {
-    if (readyState !== OPEN) throw new Error(`[sendBuffer] not open yet: readyState = ${readyState}`)
+    if (readyState !== OPEN) throw new Error(`not open yet: readyState = ${readyState}`)
     __DEV__ && console.log('sendText', text.slice(0, 20))
     encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.TEXT, Buffer.from(text), isMask)
     return sendEncodedFrame(frameSenderStore, socket)
   }
 
   const sendBuffer = (buffer) => {
-    if (readyState !== OPEN) throw new Error(`[sendBuffer] not open yet: readyState = ${readyState}`)
+    if (readyState !== OPEN) throw new Error(`not open yet: readyState = ${readyState}`)
     __DEV__ && console.log('sendBuffer', buffer.length)
     encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.BINARY, buffer, isMask)
     return sendEncodedFrame(frameSenderStore, socket)

@@ -176,7 +176,7 @@
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
   - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
-  - `createResponderBufferCache`, `createResponderServeStatic`
+  - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
 + 📄 [source/node/server/WebSocket/WebSocket.js](source/node/server/WebSocket/WebSocket.js)
   - `createWebSocket`
 + 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
@@ -363,7 +363,7 @@
       - **Send**
         - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
-        - `createResponderBufferCache`, `createResponderServeStatic`
+        - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
     - **WebSocket**
       - **WebSocket**
         - `createWebSocket`
@@ -408,11 +408,13 @@
 >       from ENV: set to "env"
 >       from JS/JSON file: set to "path/to/config.js|json"
 >   --help --h -h [OPTIONAL] [ARGUMENT=0+]
->       show full help, or human readable output
+>       show full help
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0+]
 >       less log
 >   --version --v -v [OPTIONAL] [ARGUMENT=0+]
 >       show version
+>   --json --J -J [OPTIONAL] [ARGUMENT=0+]
+>       output JSON, if supported
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=hostname:port (hostname default to 0.0.0.0)
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
@@ -440,7 +442,7 @@
 >   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
 >       use system default app to open uri or path: $0=uriOrPath/cwd
 >   --status --s -s [OPTIONAL] [ARGUMENT=0+]
->       basic system status: -h=isHumanReadableOutput
+>       basic system status: -J=isOutputJSON
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
 >       list file: $0=path/cwd
 >   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
@@ -458,9 +460,11 @@
 >   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
 >       merge to one file: $@=mergedFile,...inputFileList
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
->       fetch uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
+>       fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
->       show system process status: -h=isHumanReadableOutput, $0=outputMode/"pid--"
+>       show system process status: -J=isOutputJSON, $0=outputMode/"pid--"
+>   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
+>       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
 >       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
@@ -478,6 +482,7 @@
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -502,6 +507,7 @@
 >     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
@@ -514,6 +520,7 @@
 >     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "drJsJson": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "drJsHost": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
@@ -538,6 +545,7 @@
 >     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
 >     "drJsProcessStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "drJsJsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],

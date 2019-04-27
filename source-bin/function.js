@@ -38,7 +38,7 @@ const evalScript = async (
   evalCwd, // inputFile ? dirname(inputFile) : process.cwd()
   evalOption // optionData
 ) => { // NOTE: use eval not Function to allow require() to be called
-  const scriptFunc = await eval(`(evalArgv, evalCwd, evalOption) => { ${evalScriptString} }`) // eslint-disable-line no-eval
+  const scriptFunc = await eval(`async (evalArgv, evalCwd, evalOption) => { ${evalScriptString} }`) // eslint-disable-line no-eval
   return scriptFunc(evalArgv, evalCwd, evalOption) // NOTE: both evalArgv / argumentList is accessible from eval
 }
 
@@ -80,10 +80,10 @@ const fetchWithJump = async (
     if (response.ok) return response
     else if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
       jumpCount++
-      if (jumpCount > jumpMax) throw new Error(`[fetch] ${jumpMax} max jump reached: ${getInfo()}`)
+      if (jumpCount > jumpMax) throw new Error(`${jumpMax} max jump reached: ${getInfo()}`)
       url = new URL(response.headers[ 'location' ], url).href
       cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
-    } else throw new Error(`[fetch] bad status: ${getInfo()}`)
+    } else throw new Error(`bad status: ${getInfo()}`)
   }
 }
 
@@ -118,19 +118,19 @@ const prettyStringifyProcessTree = (processRootInfo) => {
   return resultList.join('\n')
 }
 
-const collectAllProcessStatus = async (outputMode, isHumanReadableOutput) => {
+const collectAllProcessStatus = async (outputMode, isOutputJSON) => {
   if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
     const processRootInfo = await getProcessTree()
-    if (!isHumanReadableOutput) return processRootInfo
+    if (isOutputJSON) return processRootInfo
     const text = prettyStringifyProcessTree(processRootInfo)
     return (outputMode !== 'tree-wide' && outputMode !== 'tw')
       ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
       : text
   }
   const processList = sortProcessList(await getProcessList(), outputMode)
-  return isHumanReadableOutput
-    ? padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
-    : processList
+  return isOutputJSON
+    ? processList
+    : padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
 }
 
 const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList = []) => indentList(`[${title}]`, [

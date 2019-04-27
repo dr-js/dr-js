@@ -12,7 +12,7 @@ const parseRouteToMap = (routeNode, route) => {
       return nextObject(routeNode, ROUTE_ANY)
     } else if (frag[ 0 ] === ':') { // /:PARAM
       const paramName = frag.slice(1)
-      if (!paramName || paramNameList.includes(paramName)) throw new Error(`[parseRouteToMap] invalid frag [${frag}] for route: ${route}`)
+      if (!paramName || paramNameList.includes(paramName)) throw new Error(`invalid frag [${frag}] for route: ${route}`)
       paramNameList.push(paramName)
       return nextObject(routeNode, ROUTE_PARAM)
     } else return nextObject(routeNode, frag) // /frag
@@ -41,7 +41,7 @@ const findRouteFromMap = (routeNode, route) => {
 const appendRouteMap = (routeMap = {}, route = '/', data) => {
   if (Array.isArray(route)) return route.reduce((o, v) => appendRouteMap(routeMap, v, data), routeMap)
   const { routeNode, paramNameList } = parseRouteToMap(routeMap, route)
-  if (routeNode[ ROUTE_DATA ]) throw new Error(`[appendRouteMap] duplicate route: ${route}`)
+  if (routeNode[ ROUTE_DATA ]) throw new Error(`duplicate route: ${route}`)
   routeNode[ ROUTE_DATA ] = { route, paramNameList, data }
   return routeMap
 }

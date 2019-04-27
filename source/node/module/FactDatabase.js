@@ -98,7 +98,7 @@ const createFactDatabase = async ({
     unsubscribe,
     add: (fact) => {
       if (!isActive) return
-      if (factId >= Number.MAX_SAFE_INTEGER) throw new Error(`[FactDatabase] factId is Number.MAX_SAFE_INTEGER: ${factId}`) // TODO: handle Integer explode
+      if (factId >= Number.MAX_SAFE_INTEGER) throw new Error(`factId is too big: ${factId}`) // TODO: handle Integer explode
       fact.id = factId + 1
       factId++
       factLogger.add(encodeFact(fact))

@@ -78,7 +78,7 @@ const GET_PROCESS_LIST_MAP = {
 // NOTE: not a fast command (linux: ~100ms, win32: ~500ms)
 const getProcessList = () => {
   const getProcessList = GET_PROCESS_LIST_MAP[ process.platform ]
-  if (!getProcessList) throw new Error(`[getProcessList] unsupported platform: ${process.platform}`)
+  if (!getProcessList) throw new Error(`unsupported platform: ${process.platform}`)
   return getProcessList()
 }
 

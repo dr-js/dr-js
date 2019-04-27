@@ -6,7 +6,7 @@ const EMPTY_ARRAY_BUFFER = new ArrayBuffer(0)
 
 const packArrayBufferHeader = (headerArrayBuffer) => {
   const headerSize = headerArrayBuffer.byteLength
-  if (headerSize > MAX_PACKET_HEADER_SIZE) throw new Error(`[packArrayBufferPair] headerArrayBuffer exceeds max size ${MAX_PACKET_HEADER_SIZE} with size: ${headerSize}`)
+  if (headerSize > MAX_PACKET_HEADER_SIZE) throw new Error(`headerArrayBuffer exceeds max size ${MAX_PACKET_HEADER_SIZE}, get: ${headerSize}`)
   const headerSizeDataView = new DataView(new ArrayBuffer(HEADER_BYTE_SIZE))
   headerSizeDataView.setUint32(0, headerSize, false)
   return [ headerSizeDataView.buffer, headerArrayBuffer ]

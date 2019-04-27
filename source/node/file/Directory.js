@@ -5,7 +5,7 @@ import { FILE_TYPE, getPathStat, getPathTypeFromStat, createDirectory, deletePat
 const getDirectorySubInfoList = async (path, pathStat) => {
   // __DEV__ && console.log('getDirectorySubInfoList', { path, pathStat: Boolean(pathStat) })
   if (pathStat === undefined) pathStat = await getPathStat(path)
-  if (!pathStat.isDirectory()) throw new Error(`[getDirectorySubInfoList] error pathType: ${getPathTypeFromStat(pathStat)} for ${path}`)
+  if (!pathStat.isDirectory()) throw new Error(`error pathType: ${getPathTypeFromStat(pathStat)} for ${path}`)
   const subInfoList = []
   for (const name of await readdirAsync(path)) {
     const subPath = joinPath(path, name)
@@ -97,7 +97,7 @@ const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
       )
       break
     default:
-      throw new Error(`[getFileList] invalid pathType: ${pathType} for ${path}`)
+      throw new Error(`invalid pathType: ${pathType} for ${path}`)
   }
   return fileList
 }

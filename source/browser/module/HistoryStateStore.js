@@ -2,11 +2,11 @@
 
 const createHistoryStateStore = (state = window.location.href) => {
   const getState = () => {
-    if (listenerSet.size === 0) throw new Error('[createHistoryStateStore] should not getState before subscribe')
+    if (listenerSet.size === 0) throw new Error('should subscribe before getState')
     return state
   }
   const setState = (nextState, shouldPushState) => {
-    if (typeof (nextState) !== 'string') throw new Error(`[createHistoryStateStore] unexpected non-string href: ${nextState}`)
+    if (typeof (nextState) !== 'string') throw new Error(`non-string href: ${nextState}`)
     if (nextState === state) return state
     const prevState = state
     state = nextState

@@ -4,7 +4,7 @@ import { normalize, dirname } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { time, binary } from 'dr-js/module/common/format'
+import { time, binary, prettyStringifyJSON } from 'dr-js/module/common/format'
 import { indentList } from 'dr-js/module/common/string'
 import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
@@ -40,8 +40,8 @@ const runMode = async (modeName, optionData) => {
     (error) => log(`[${modeName}] error: ${path}\n${error.stack || error}`)
   )
 
-  const isHumanReadableOutput = Boolean(tryGet('help'))
   const argumentList = tryGet(modeName) || []
+  const isOutputJSON = Boolean(tryGet('json'))
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
@@ -63,7 +63,7 @@ const runMode = async (modeName, optionData) => {
     case 'eval':
     case 'eval-readline': {
       let result = await evalScript(
-        inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ],
+        inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ],
         inputFile ? argumentList : argumentList.slice(1),
         inputFile ? dirname(inputFile) : process.cwd(),
         optionData
@@ -75,6 +75,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'repl':
       return (startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require)
+
     case 'wait': {
       const waitTime = argumentList[ 0 ] || 2 * 1000
       return setTimeoutAsync(waitTime)
@@ -88,7 +89,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'write':
     case 'append':
-      if (process.stdin.isTTY) throw new Error('[pipe] stdin should not be TTY mode') // teletypewriter(TTY)
+      if (process.stdin.isTTY) throw new Error('unsupported TTY stdin') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
       return pipeStreamAsync(createWriteStream(argumentList[ 0 ], { flags }), process.stdin)
     case 'open': {
@@ -96,10 +97,11 @@ const runMode = async (modeName, optionData) => {
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
     }
     case 'status':
-      return logAuto(isHumanReadableOutput
-        ? describeSystemStatus()
-        : { system: getSystemStatus(), process: getProcessStatus() }
+      return logAuto(isOutputJSON
+        ? { system: getSystemStatus(), process: getProcessStatus() }
+        : describeSystemStatus()
       )
+
     case 'file-list':
     case 'file-list-all':
     case 'file-tree':
@@ -119,6 +121,7 @@ const runMode = async (modeName, optionData) => {
       for (const path of fileList) await pipeStreamAsync(createWriteStream(mergedFile, { flags: 'a' }), createReadStream(path))
       return
     }
+
     case 'fetch': {
       let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
@@ -136,8 +139,15 @@ const runMode = async (modeName, optionData) => {
     }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList
-      return logAuto(await collectAllProcessStatus(outputMode, isHumanReadableOutput))
+      return logAuto(await collectAllProcessStatus(outputMode, isOutputJSON))
     }
+    case 'json-format': {
+      const [ unfoldLevel = 2 ] = argumentList
+      const inputJSON = JSON.parse(readFileSync(inputFile))
+      const outputJSONString = prettyStringifyJSON(inputJSON, unfoldLevel)
+      return writeFileSync(outputFile || inputFile, outputJSONString)
+    }
+
     case 'server-serve-static':
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 60 * 1000 ] = argumentList // expireTime: 5min, in msec
