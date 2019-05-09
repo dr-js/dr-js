@@ -13,4 +13,13 @@ const tryRequire = (name = '') => {
   } catch (error) { __DEV__ && console.log(`[tryRequire] failed for ${name}`, error) }
 }
 
-export { tryRequire }
+const tryRequireResolve = (name = '') => {
+  try {
+    return eval(`require.resolve`)(name) // eslint-disable-line no-eval
+  } catch (error) { __DEV__ && console.log(`[tryRequireResolve] failed for ${name}`, error) }
+}
+
+export {
+  tryRequire,
+  tryRequireResolve
+}

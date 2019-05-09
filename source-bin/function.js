@@ -4,10 +4,11 @@ import { cpus } from 'os'
 import { getEndianness } from 'dr-js/module/env/function'
 
 import { createStepper } from 'dr-js/module/common/time'
-import { time, decimal, padTable } from 'dr-js/module/common/format'
-import { indentList, autoEllipsis } from 'dr-js/module/common/string'
+import { time, decimal } from 'dr-js/module/common/format'
+import { indentList } from 'dr-js/module/common/string'
 import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
+import { DR_BROWSER_SCRIPT_TAG } from 'dr-js/module/node/resource'
 import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
@@ -18,7 +19,7 @@ import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
-import { getProcessList, sortProcessList, getProcessTree } from 'dr-js/module/node/system/ProcessStatus'
+import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
@@ -106,33 +107,6 @@ const collectFile = async (modeName, rootPath) => modeName === 'file-list' ? (aw
     : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
       : ''
 
-const prettyStringifyProcessTree = (processRootInfo) => {
-  const resultList = []
-  const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
-  addLine('', { pid: 'pid', command: 'command' })
-  prettyStringifyTree(
-    [ processRootInfo, -1, false ],
-    ([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]),
-    addLine
-  )
-  return resultList.join('\n')
-}
-
-const collectAllProcessStatus = async (outputMode, isOutputJSON) => {
-  if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
-    const processRootInfo = await getProcessTree()
-    if (isOutputJSON) return processRootInfo
-    const text = prettyStringifyProcessTree(processRootInfo)
-    return (outputMode !== 'tree-wide' && outputMode !== 'tw')
-      ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
-      : text
-  }
-  const processList = sortProcessList(await getProcessList(), outputMode)
-  return isOutputJSON
-    ? processList
-    : padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
-}
-
 const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList = []) => indentList(`[${title}]`, [
   `pid: ${process.pid}`,
   ...extraList,
@@ -162,9 +136,7 @@ const commonStartServer = async ({ protocol, hostname, port, routeConfigList, is
   return { server, option, start, stop }
 }
 
-const getDrBrowserScriptHTML = () => `<script>${readFileSync(`${__dirname}/../library/Dr.browser.js`)}</script>`
-
-export {
+export { // TODO: NOTE: only borrow script from here for test or for another bin/script, will cause bloat when webpack may use both module/library
   packageName,
   packageVersion,
 
@@ -176,9 +148,9 @@ export {
   fetchWithJump,
 
   collectFile,
-  collectAllProcessStatus,
+  collectAllProcessStatus, // TODO: DEPRECATED: import directly
 
   describeServer,
   commonStartServer,
-  getDrBrowserScriptHTML
+  DR_BROWSER_SCRIPT_TAG as getDrBrowserScriptHTML // TODO: DEPRECATED: import directly
 }

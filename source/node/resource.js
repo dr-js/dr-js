@@ -1,6 +1,23 @@
+import { readFileSync } from 'fs'
 import { runInThisContext } from 'vm'
+import { tryRequireResolve } from 'source/env/tryRequire'
 import { fetchLikeRequest } from 'source/node/net'
 import { readFileAsync } from 'source/node/file/function'
+
+const DR_BROWSER_FILE_PATH = () => [
+  // should pass within normal node_module structure
+  `dr-js/library/Dr.browser.js`,
+  // maybe webpack, try some relative path
+  `${__dirname}/../library/Dr.browser.js`,
+  `${__dirname}/Dr.browser.js`,
+  `Dr.browser.js`
+].reduce((o, path) => o || tryRequireResolve(path), null)
+
+let cache
+const DR_BROWSER_SCRIPT_TAG = () => {
+  if (cache === undefined) cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  return cache
+}
 
 // TODO: check if is needed, or simplify
 const loadRemoteScript = async (uri) => {
@@ -22,6 +39,7 @@ const loadJSON = (uri) => uri.includes('://')
   : loadLocalJSON(uri)
 
 export {
+  DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
   loadRemoteScript, loadLocalScript, loadScript,
   loadRemoteJSON, loadLocalJSON, loadJSON
 }

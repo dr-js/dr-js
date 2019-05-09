@@ -1,6 +1,7 @@
 import { catchAsync } from 'dr-js/module/common/error'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 
+import { DR_BROWSER_SCRIPT_TAG } from 'dr-js/module/node/resource'
 import { packBufferPacket, parseBufferPacket } from 'dr-js/module/node/data/BufferPacket'
 import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBufferCompress, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
@@ -10,7 +11,7 @@ import { enableWebSocketServer } from 'dr-js/module/node/server/WebSocket/WebSoc
 import { createUpdateRequestListener } from 'dr-js/module/node/server/WebSocket/WebSocketUpgradeRequest'
 import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'dr-js/module/node/server/commonHTML'
 
-import { commonStartServer, getDrBrowserScriptHTML } from '../function'
+import { commonStartServer } from '../function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
@@ -136,7 +137,7 @@ const startServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, l
       FRAME_LENGTH_LIMIT,
       onload: mainScriptInit
     }),
-    getDrBrowserScriptHTML()
+    DR_BROWSER_SCRIPT_TAG()
   ])), BASIC_EXTENSION_MAP.html)
 
   const routeConfigList = [

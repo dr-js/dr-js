@@ -101,10 +101,14 @@
   - `createEventEmitter`, `createEventTarget`, `createHub`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
   - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
++ 📄 [source/common/module/KeyTree.js](source/common/module/KeyTree.js)
+  - `createKeyTree`
 + 📄 [source/common/module/LevenshteinDistance.js](source/common/module/LevenshteinDistance.js)
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
   - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
++ 📄 [source/common/module/Patch.js](source/common/module/Patch.js)
+  - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
@@ -120,11 +124,11 @@
 + 📄 [source/env/global.js](source/env/global.js)
   - `getEnvironment`, `getGlobal`, `global`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
-  - `tryRequire`
+  - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `ping`, `requestAsync`
 + 📄 [source/node/resource.js](source/node/resource.js)
-  - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
+  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
   - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
@@ -198,7 +202,7 @@
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
 + 📄 [source/node/system/ProcessStatus.js](source/node/system/ProcessStatus.js)
-  - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
+  - `checkProcessExist`, `collectAllProcessStatus`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
@@ -285,10 +289,14 @@
       - `createEventEmitter`, `createEventTarget`, `createHub`
     - **KeySelector**
       - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
+    - **KeyTree**
+      - `createKeyTree`
     - **LevenshteinDistance**
       - `getLevenshteinDistance`
     - **MIME**
       - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
+    - **Patch**
+      - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **SemVer**
@@ -317,7 +325,7 @@
   - **Verify**
     - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`, `tryRequireResolve`
 - **Node**
   - **Data**
     - **Buffer**
@@ -390,7 +398,7 @@
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
     - **ProcessStatus**
-      - `checkProcessExist`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
+      - `checkProcessExist`, `collectAllProcessStatus`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
@@ -398,7 +406,7 @@
   - **Net**
     - `fetchLikeRequest`, `ping`, `requestAsync`
   - **Resource**
-    - `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
+    - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)

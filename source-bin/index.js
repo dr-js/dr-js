@@ -16,13 +16,14 @@ import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { createTCPProxyServer } from 'dr-js/module/node/server/TCPProxyServer'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
+import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus'
 import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
 import { startServerServeStatic } from './server/serveStatic'
 import { startServerWebSocketGroup } from './server/websocketGroup'
 import { startServerTestConnection } from './server/testConnection'
 
-import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile, collectAllProcessStatus } from './function'
+import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile } from './function'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
 
 const logAuto = (value) => console.log(isBasicObject(value)

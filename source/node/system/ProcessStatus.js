@@ -1,5 +1,7 @@
 import { setTimeoutAsync } from 'source/common/time'
-import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync } from 'source/common/data/Tree'
+import { autoEllipsis } from 'source/common/string'
+import { padTable } from 'source/common/format'
+import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTree } from 'source/common/data/Tree'
 import { runQuiet } from './Run'
 
 // a col means \w+\s+, or \s+\w+ (for this output)
@@ -173,6 +175,33 @@ const getSubNodeListFunc = (info) => info.subTree && Object.values(info.subTree)
 const processTreeDepthFirstSearch = createTreeDepthFirstSearch(getSubNodeListFunc)
 const processTreeBottomUpSearchAsync = createTreeBottomUpSearchAsync(getSubNodeListFunc)
 
+const collectAllProcessStatus = async (outputMode, isOutputJSON) => {
+  if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
+    const processRootInfo = await getProcessTree()
+    if (isOutputJSON) return processRootInfo
+    const text = prettyStringifyProcessTree(processRootInfo)
+    return (outputMode !== 'tree-wide' && outputMode !== 'tw')
+      ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
+      : text
+  }
+  const processList = sortProcessList(await getProcessList(), outputMode)
+  return isOutputJSON
+    ? processList
+    : padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
+}
+
+const prettyStringifyProcessTree = (processRootInfo) => {
+  const resultList = []
+  const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
+  addLine('', { pid: 'pid', command: 'command' })
+  prettyStringifyTree(
+    [ processRootInfo, -1, false ],
+    ([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]),
+    addLine
+  )
+  return resultList.join('\n')
+}
+
 export {
   getProcessList,
   sortProcessList,
@@ -185,7 +214,9 @@ export {
   checkProcessExist,
 
   tryKillProcess,
-  tryKillProcessTreeNode
+  tryKillProcessTreeNode,
+
+  collectAllProcessStatus
 }
 
 // For linux: ps
