@@ -19,7 +19,7 @@ import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
-import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus'
+import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus' // TODO: DEPRECATED: import directly
 
 import { name as packageName, version as packageVersion } from '../package.json'
 

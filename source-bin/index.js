@@ -16,8 +16,8 @@ import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { createTCPProxyServer } from 'dr-js/module/node/server/TCPProxyServer'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
-import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus'
-import { getSystemStatus, getProcessStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
+import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'dr-js/module/node/system/ProcessStatus'
+import { getSystemStatus, describeSystemStatus, getCurrentProcessStatus } from 'dr-js/module/node/system/Status'
 
 import { startServerServeStatic } from './server/serveStatic'
 import { startServerWebSocketGroup } from './server/websocketGroup'
@@ -99,7 +99,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'status':
       return logAuto(isOutputJSON
-        ? { system: getSystemStatus(), process: getProcessStatus() }
+        ? { system: getSystemStatus(), process: getCurrentProcessStatus() }
         : describeSystemStatus()
       )
 
@@ -140,7 +140,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList
-      return logAuto(await collectAllProcessStatus(outputMode, isOutputJSON))
+      return logAuto(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList

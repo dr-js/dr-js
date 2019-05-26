@@ -49,14 +49,16 @@ const applyPointerEventListener = ({
     isUseTouchEvent && isCancel && eventSource.removeEventListener('touchcancel', onCancel)
   }
 
+  const getEventPointClient = (event) => ({ x: event.clientX, y: event.clientY })
+  const getEventPointTouch = (event) => {
+    if (!(event instanceof window.TouchEvent)) return { x: event.clientX, y: event.clientY }
+    return event.touches.length
+      ? { x: event.touches[ 0 ].clientX, y: event.touches[ 0 ].clientY }
+      : { x: event.changedTouches[ 0 ].clientX, y: event.changedTouches[ 0 ].clientY }
+  }
   const getEventPoint = (!isUseTouchEvent || !window.TouchEvent)
-    ? (event) => ({ x: event.clientX, y: event.clientY })
-    : (event) => {
-      if (!(event instanceof window.TouchEvent)) return { x: event.clientX, y: event.clientY }
-      return event.touches.length
-        ? { x: event.touches[ 0 ].clientX, y: event.touches[ 0 ].clientY }
-        : { x: event.changedTouches[ 0 ].clientX, y: event.changedTouches[ 0 ].clientY }
-    }
+    ? getEventPointClient
+    : getEventPointTouch
 
   const calcState = (event) => {
     if (__DEV__ && !timeStart) throw new Error(`[calcState] expect timeStart, get event: ${event.type}`)

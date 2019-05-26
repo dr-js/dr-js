@@ -6,7 +6,6 @@ import { runMain, argvFlag } from 'dr-dev/module/main'
 import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dr-dev/module/output'
 import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dr-dev/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from 'dr-dev/module/minify'
-import { writeLicenseFile } from 'dr-dev/module/license'
 
 import { binary } from 'source/common/format'
 import { modify } from 'source/node/file/Modify'
@@ -37,7 +36,7 @@ const buildOutput = async ({ logger: { padLog } }) => {
   execSync('npm run build-bin', execOptionRoot)
 }
 
-const processOutput = async ({ packageJSON, logger }) => {
+const processOutput = async ({ logger }) => {
   const fileListBin = await getScriptFileListFromPathList([ 'bin' ], fromOutput)
   const fileListModule = await getScriptFileListFromPathList([ 'module' ], fromOutput)
   const fileListLibrary = await getScriptFileListFromPathList([ 'library' ], fromOutput)
@@ -67,15 +66,14 @@ runMain(async (logger) => {
   await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
 
   const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
-  writeLicenseFile(fromRoot('LICENSE'), packageJSON.license, packageJSON.author)
 
   if (!argvFlag('pack')) return
 
   await buildOutput({ logger })
-  await processOutput({ packageJSON, logger })
+  await processOutput({ logger })
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
-    await processOutput({ packageJSON, logger }) // once more
+    await processOutput({ logger }) // once more
 
     logger.padLog(`test browser`)
     execSync(`npm run test-browser`, execOptionRoot)

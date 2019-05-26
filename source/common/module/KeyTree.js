@@ -1,4 +1,5 @@
 import { compareString } from 'source/common/compare'
+import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 
 // TODO: NOTE:
 //   keyTreeJSON:
@@ -51,6 +52,13 @@ const createKeyTree = ({
   const REGEXP_MIN_BRACKET_LEFT = new RegExp(`\\[`, 'g')
   const REGEXP_MIN_BRACKET_RIGHT = new RegExp(`(]+)`, 'g')
 
+  return { stringify, parse }
+}
+
+const createKeyTreeEnhanced = ({
+  NAME_KEY = 'key', // should be /\w+/
+  NAME_SUB_LIST = 'subList' // should be /\w+/
+}) => {
   const createBuilder = (rootKey) => {
     const listMap = new Map()
 
@@ -88,11 +96,24 @@ const createKeyTree = ({
     return { add, build }
   }
 
+  const keyTreeJSONDepthFirstSearch = createTreeDepthFirstSearch(([ node, index, upperKey ]) => (
+    node[ NAME_SUB_LIST ] &&
+    node[ NAME_SUB_LIST ].length &&
+    node[ NAME_SUB_LIST ].map((subNode, index) => [ subNode, index, node[ NAME_KEY ] ])
+  ))
+  const walkKeyTreeJSON = (
+    keyTreeJSON,
+    func = ([ node, index, upperKey ]) => {} // return true to stop search
+  ) => keyTreeJSONDepthFirstSearch([ keyTreeJSON, 0, undefined ], func)
+
   return {
-    stringify,
-    parse,
-    createBuilder
+    ...createKeyTree({ NAME_KEY, NAME_SUB_LIST }),
+    createBuilder,
+    walkKeyTreeJSON
   }
 }
 
-export { createKeyTree }
+export {
+  createKeyTree,
+  createKeyTreeEnhanced
+}

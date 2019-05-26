@@ -4,84 +4,96 @@ import { padTable } from 'source/common/format'
 import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTree } from 'source/common/data/Tree'
 import { runQuiet } from './Run'
 
-// a col means \w+\s+, or \s+\w+ (for this output)
-// so every 2 \w\s flip means a col
-const parseTitleCol = (titleString) => {
-  let flipCharType = titleString.charAt(0) === ' '
-  let flipCount = 2
+const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
+  // a col means \w+\s+, or \s+\w+ (for this output)
+  // so every 2 \w\s flip means a col
+  const parseTitleCol = (titleString) => {
+    let flipCharType = titleString.charAt(0) === ' '
+    let flipCount = 2
 
-  const colStartIndexList = [ 0 ] // colStartIndex
+    const colStartIndexList = [ 0 ] // colStartIndex
 
-  for (let index = 0, indexMax = titleString.length; index < indexMax; index++) {
-    const charType = titleString.charAt(index) === ' '
-    if (flipCharType === charType) continue
-    flipCharType = !flipCharType
-    flipCount--
-    if (flipCount === 0) {
-      colStartIndexList.push(index)
-      flipCount = 2
+    for (let index = 0, indexMax = titleString.length; index < indexMax; index++) {
+      const charType = titleString.charAt(index) === ' '
+      if (flipCharType === charType) continue
+      flipCharType = !flipCharType
+      flipCount--
+      if (flipCount === 0) {
+        colStartIndexList.push(index)
+        flipCount = 2
+      }
     }
+    return colStartIndexList
   }
-  return colStartIndexList
-}
 
-const parseRow = (rowString, colStartIndexList, keyList, valueProcessList) => {
-  const itemMap = {}
-  for (let index = 0, indexMax = colStartIndexList.length; index < indexMax; index++) {
-    itemMap[ keyList[ index ] ] = valueProcessList[ index ](rowString.slice(
-      colStartIndexList[ index ],
-      colStartIndexList[ index + 1 ]
-    ))
+  const parseRow = (rowString, colStartIndexList, keyList, valueProcessList) => {
+    const itemMap = {}
+    for (let index = 0, indexMax = colStartIndexList.length; index < indexMax; index++) {
+      itemMap[ keyList[ index ] ] = valueProcessList[ index ](rowString.slice(
+        colStartIndexList[ index ],
+        colStartIndexList[ index + 1 ]
+      ))
+    }
+    return itemMap
   }
-  return itemMap
+
+  const parseTableOutput = (outputString, lineSeparator, keyList = [], valueProcessList = []) => {
+    const [ titleLine, ...rowList ] = outputString.split(lineSeparator)
+    const colStartIndexList = parseTitleCol(titleLine)
+    if (colStartIndexList.length !== keyList.length) throw new Error(`title col mismatch: ${colStartIndexList.length}, expect: ${keyList.length}`)
+    return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
+  }
+
+  const createGetProcessListAsync = (command, lineSeparator, keyList, valueProcessList) => async () => {
+    const { promise, stdoutBufferPromise } = runQuiet({ command })
+    await promise
+    return parseTableOutput((await stdoutBufferPromise).toString(), lineSeparator, keyList, valueProcessList)
+  }
+
+  const valueProcessString = (string) => String(string).trim()
+  const valueProcessInteger = (string) => parseInt(string)
+
+  const ProcessListLinux = [
+    'ps ax -ww -o pid,ppid,args',
+    '\n',
+    [ 'pid', 'ppid', 'command' ],
+    [ valueProcessInteger, valueProcessInteger, valueProcessString ]
+  ]
+  const ProcessListAndroid = [ 'ps ax -o pid,ppid,args', ...ProcessListLinux.slice(1) ]
+  const ProcessListWin32 = [
+    'WMIC PROCESS get Commandline,ParentProcessId,Processid',
+    '\r\r\n', // for WMIC `\r\r\n` output // check: https://stackoverflow.com/questions/24961755/batch-how-to-correct-variable-overwriting-misbehavior-when-parsing-output
+    [ 'command', 'ppid', 'pid' ],
+    [ valueProcessString, valueProcessInteger, valueProcessInteger ]
+  ]
+
+  const getProcessListAsyncLinux = createGetProcessListAsync(...ProcessListLinux)
+  const getProcessListAsyncAndroid = createGetProcessListAsync(...ProcessListAndroid)
+  const getProcessListAsyncWin32 = createGetProcessListAsync(...ProcessListWin32)
+
+  Object.assign(GET_PROCESS_LIST_ASYNC_MAP, {
+    INIT: true,
+    linux: getProcessListAsyncLinux,
+    win32: getProcessListAsyncWin32,
+    darwin: getProcessListAsyncLinux,
+    android: getProcessListAsyncAndroid
+  })
 }
 
-const parseTableOutput = (outputString, lineSeparator, keyList = [], valueProcessList = []) => {
-  const [ titleLine, ...rowList ] = outputString.split(lineSeparator)
-  const colStartIndexList = parseTitleCol(titleLine)
-  if (colStartIndexList.length !== keyList.length) throw new Error(`title col mismatch: ${colStartIndexList.length}, expect: ${keyList.length}`)
-  return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
-}
-
-const createGetProcessList = (command, lineSeparator, keyList, valueProcessList) => async () => {
-  const { promise, stdoutBufferPromise } = runQuiet({ command })
-  await promise
-  return parseTableOutput((await stdoutBufferPromise).toString(), lineSeparator, keyList, valueProcessList)
-}
-
-const valueProcessString = (string) => string.trim()
-const valueProcessInteger = (string) => parseInt(string)
-
-const ProcessListLinux = [
-  'ps ax -ww -o pid,ppid,args',
-  '\n',
-  [ 'pid', 'ppid', 'command' ],
-  [ valueProcessInteger, valueProcessInteger, valueProcessString ]
-]
-const ProcessListAndroid = [ 'ps ax -o pid,ppid,args', ...ProcessListLinux.slice(1) ]
-const ProcessListWin32 = [
-  'WMIC PROCESS get Commandline,ParentProcessId,Processid',
-  '\r\r\n', // for WMIC `\r\r\n` output // check: https://stackoverflow.com/questions/24961755/batch-how-to-correct-variable-overwriting-misbehavior-when-parsing-output
-  [ 'command', 'ppid', 'pid' ],
-  [ valueProcessString, valueProcessInteger, valueProcessInteger ]
-]
-
-const getProcessListLinux = createGetProcessList(...ProcessListLinux)
-const getProcessListAndroid = createGetProcessList(...ProcessListAndroid)
-const getProcessListWin32 = createGetProcessList(...ProcessListWin32)
-
-const GET_PROCESS_LIST_MAP = {
-  linux: getProcessListLinux,
-  win32: getProcessListWin32,
-  darwin: getProcessListLinux,
-  android: getProcessListAndroid
+const GET_PROCESS_LIST_ASYNC_MAP = {
+  INIT: false,
+  linux: null,
+  win32: null,
+  darwin: null,
+  android: null
 }
 
 // NOTE: not a fast command (linux: ~100ms, win32: ~500ms)
-const getProcessList = () => {
-  const getProcessList = GET_PROCESS_LIST_MAP[ process.platform ]
-  if (!getProcessList) throw new Error(`unsupported platform: ${process.platform}`)
-  return getProcessList()
+const getProcessListAsync = () => {
+  if (GET_PROCESS_LIST_ASYNC_MAP.INIT === false) INIT_GET_PROCESS_LIST_ASYNC_MAP()
+  const getProcessListAsync = GET_PROCESS_LIST_ASYNC_MAP[ process.platform ]
+  if (!getProcessListAsync) throw new Error(`unsupported platform: ${process.platform}`)
+  return getProcessListAsync()
 }
 
 const PROCESS_LIST_SORT_MAP = {
@@ -92,13 +104,10 @@ const PROCESS_LIST_SORT_MAP = {
 }
 const sortProcessList = (processList, sortOrder = 'pid--') => processList.sort(PROCESS_LIST_SORT_MAP[ sortOrder ])
 
-const getProcessPidMap = async (processList) => {
-  if (processList === undefined) processList = await getProcessList() // TODO: may be slow (300ms~1000ms)
-  return (processList).reduce((o, info) => {
-    o[ info.pid ] = info
-    return o
-  }, {})
-}
+const toProcessPidMap = (processList) => (processList).reduce((o, info) => {
+  o[ info.pid ] = info
+  return o
+}, {})
 
 // const SAMPLE_PROCESS_TREE = {
 //   pid: 0, ppid: -1, command: 'ROOT',
@@ -107,9 +116,7 @@ const getProcessPidMap = async (processList) => {
 //     2: { ... }
 //   }
 // }
-const getProcessTree = async (processList) => { // NOTE: will mutate process (add subTree)
-  if (processList === undefined) processList = await getProcessList()
-
+const toProcessTree = (processList) => { // NOTE: will mutate processList (add `subTree` value)
   const rootInfo = { pid: 0, ppid: -1, command: 'ROOT' }
   const processMap = { 0: rootInfo }
   const subTreeMap = { 0: {} }
@@ -135,59 +142,66 @@ const getProcessTree = async (processList) => { // NOTE: will mutate process (ad
   return rootInfo
 }
 
-const findProcessTreeNode = async (info, processTree) => {
-  if (processTree === undefined) processTree = await getProcessTree()
-  return processTreeDepthFirstSearch(processTree, (searchInfo) => isSameInfo(info, searchInfo))
-}
-
-const checkProcessExist = async (info, processPidMap) => {
-  if (processPidMap === undefined) processPidMap = await getProcessPidMap()
-  return isSameInfo(info, processPidMap[ info.pid ])
-}
-
-const isSameInfo = ({ pid, ppid, command }, info) => (
+const isInfoMatch = ({ pid, ppid, command }, info) => (
   info &&
   info.pid === pid &&
   (ppid === undefined || info.ppid === ppid) && // allow skip ppid check
   (command === undefined || info.command === command) // allow skip command check
 )
 
-const tryKillProcess = async (info) => { // TODO: may be too expensive?
-  if (!await checkProcessExist(info)) return
+const findProcessPidMapInfo = (info, processPidMap) => isInfoMatch(info, processPidMap[ info.pid ])
+  ? processPidMap[ info.pid ]
+  : undefined
+
+const findProcessTreeInfo = (info, processTree) => processTreeDepthFirstSearch(
+  processTree,
+  (searchInfo) => isInfoMatch(info, searchInfo)
+)
+
+const killProcessInfoAsync = async (info) => { // TODO: may be too expensive?
+  const isExistAsync = async () => isPidExist(info.pid) && findProcessPidMapInfo(info, toProcessPidMap(await getProcessListAsync()))
+
+  if (!await isExistAsync()) return
   process.kill(info.pid)
   await setTimeoutAsync(500)
-  if (!await checkProcessExist(info)) return
+  if (!await isExistAsync()) return
   process.kill(info.pid) // 2nd try
   await setTimeoutAsync(2000)
-  if (!await checkProcessExist(info)) return
+  if (!await isExistAsync()) return
   process.kill(info.pid, 'SIGKILL') // last try
   await setTimeoutAsync(4000)
-  if (await checkProcessExist(info)) throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
+  if (!await isExistAsync()) return
+  throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
 }
 
-const tryKillProcessTreeNode = async (processTreeNode, checkPpid = false) => {
-  const tryKillProcessInfo = checkPpid ? tryKillProcess : ({ pid, command }) => tryKillProcess({ pid, command })
-  processTreeNode && await processTreeBottomUpSearchAsync(processTreeNode, tryKillProcessInfo)
-  processTreeNode && await tryKillProcessInfo(processTreeNode)
+const killProcessTreeInfoAsync = async (processTreeInfo, isMatchPpid = false) => {
+  const killAsync = isMatchPpid
+    ? killProcessInfoAsync
+    : ({ pid, command }) => killProcessInfoAsync({ pid, command })
+  await processTreeBottomUpSearchAsync(processTreeInfo, killAsync)
+  await killAsync(processTreeInfo)
 }
 
 const getSubNodeListFunc = (info) => info.subTree && Object.values(info.subTree)
 const processTreeDepthFirstSearch = createTreeDepthFirstSearch(getSubNodeListFunc)
 const processTreeBottomUpSearchAsync = createTreeBottomUpSearchAsync(getSubNodeListFunc)
 
-const collectAllProcessStatus = async (outputMode, isOutputJSON) => {
+const getAllProcessStatusAsync = async (outputMode) => {
+  const processList = await getProcessListAsync()
+  return outputMode.startsWith('t') // tree|t|tree-wide|tw
+    ? toProcessTree(processList)
+    : sortProcessList(processList, outputMode)
+}
+const describeAllProcessStatusAsync = async (outputMode) => {
+  const status = await getAllProcessStatusAsync(outputMode)
   if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
-    const processRootInfo = await getProcessTree()
-    if (isOutputJSON) return processRootInfo
-    const text = prettyStringifyProcessTree(processRootInfo)
+    const text = prettyStringifyProcessTree(status)
     return (outputMode !== 'tree-wide' && outputMode !== 'tw')
       ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
       : text
+  } else {
+    return padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...status.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
   }
-  const processList = sortProcessList(await getProcessList(), outputMode)
-  return isOutputJSON
-    ? processList
-    : padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...processList.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
 }
 
 const prettyStringifyProcessTree = (processRootInfo) => {
@@ -202,21 +216,41 @@ const prettyStringifyProcessTree = (processRootInfo) => {
   return resultList.join('\n')
 }
 
+const isPidExist = (pid) => {
+  try {
+    // This method will throw an error if the target pid does not exist. As a special case, a signal of 0 can be used to test for the existence of a process.
+    // https://nodejs.org/api/process.html#process_process_kill_pid_signal
+    // https://www.npmjs.com/package/is-running
+    process.kill(pid, 0)
+    return true
+  } catch (error) {
+    __DEV__ && console.warn('[isPidExist]', error)
+    return false
+  }
+}
+
+const getProcessPidMapAsync = async (processList) => toProcessPidMap(processList || await getProcessListAsync()) // TODO: DEPRECATED
+const getProcessTreeAsync = async (processList) => toProcessTree(processList || await getProcessListAsync()) // TODO: DEPRECATED
+const findProcessTreeNodeAsync = async (info, processTree) => findProcessTreeInfo(info, processTree || await getProcessTreeAsync()) // TODO: DEPRECATED
+const checkProcessExistAsync = async (info, processPidMap) => Boolean(findProcessPidMapInfo(info, processPidMap || await getProcessPidMapAsync())) // TODO: DEPRECATED
+const collectAllProcessStatusAsync = async (outputMode, isOutputJSON) => isOutputJSON ? getAllProcessStatusAsync(outputMode) : describeAllProcessStatusAsync(outputMode)
+
 export {
-  getProcessList,
-  sortProcessList,
+  getProcessListAsync, sortProcessList,
+  toProcessPidMap, findProcessPidMapInfo,
+  toProcessTree, findProcessTreeInfo,
+  killProcessInfoAsync, killProcessTreeInfoAsync,
+  getAllProcessStatusAsync, describeAllProcessStatusAsync,
+  isPidExist,
 
-  getProcessPidMap,
-
-  getProcessTree,
-  findProcessTreeNode,
-
-  checkProcessExist,
-
-  tryKillProcess,
-  tryKillProcessTreeNode,
-
-  collectAllProcessStatus
+  getProcessListAsync as getProcessList, // TODO: DEPRECATED: use new name with `async`
+  getProcessPidMapAsync as getProcessPidMap, // TODO: DEPRECATED: use new name with `async`
+  getProcessTreeAsync as getProcessTree, // TODO: DEPRECATED: use new name with `async`
+  findProcessTreeNodeAsync as findProcessTreeNode, // TODO: DEPRECATED: use new name with `async`
+  checkProcessExistAsync as checkProcessExist, // TODO: DEPRECATED: use new name with `async`
+  killProcessInfoAsync as tryKillProcess, // TODO: DEPRECATED: use new name with `async`
+  killProcessTreeInfoAsync as tryKillProcessTreeNode, // TODO: DEPRECATED: use new name with `async`
+  collectAllProcessStatusAsync as collectAllProcessStatus // TODO: DEPRECATED: use new name with `async`
 }
 
 // For linux: ps

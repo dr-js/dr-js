@@ -1,10 +1,9 @@
 import { resolve } from 'path'
-import { DefinePlugin } from 'webpack'
 
 import { getScriptFileListFromPathList } from 'dr-dev/module/node/fileList'
-import { runMain, argvFlag } from 'dr-dev/module/main'
-import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
+import { runMain } from 'dr-dev/module/main'
 import { testWithPuppeteer } from 'dr-dev/module/puppeteer'
+import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
 
 import { readFileAsync } from 'source/node/file/function'
 import { createDirectory } from 'source/node/file/File'
@@ -19,37 +18,24 @@ const NAME_TEST_BROWSER = 'test-browser'
 const PATH_TEST_BROWSER_JS = fromTemp(`${NAME_TEST_BROWSER}.js`)
 
 runMain(async (logger) => {
-  const { mode, isWatch, isProduction, profileOutput, assetMapOutput } = await commonFlag({ argvFlag, fromRoot, logger })
+  const mode = 'production'
+  const isWatch = false
+  const { profileOutput, assetMapOutput, getCommonWebpackConfig } = await commonFlag({ mode, isWatch, fromRoot, logger })
 
+  const config = getCommonWebpackConfig({
+    output: { path: PATH_TEMP, filename: '[name].js', library: 'TEST_BROWSER', libraryTarget: 'window' },
+    entry: {
+      [ NAME_TEST_BROWSER ]: await getScriptFileListFromPathList([
+        'source/env',
+        'source/common',
+        'source/browser'
+      ], fromRoot, (path) => path.endsWith('.test.js'))
+    }
+  })
+
+  logger.padLog(`compile with webpack mode: ${mode}, PATH_TEMP: ${PATH_TEMP}`)
   await createDirectory(PATH_TEMP)
-
-  const babelOption = {
-    configFile: false,
-    babelrc: false,
-    presets: [ [ '@babel/env', { targets: { node: '10' }, modules: false } ] ]
-  }
-
-  const entryList = await getScriptFileListFromPathList(
-    [ 'source/env', 'source/common', 'source/browser' ],
-    fromRoot,
-    (path) => path.endsWith('.test.js')
-  )
-
-  const config = {
-    mode,
-    bail: true,
-    output: { path: PATH_TEMP, filename: '[name].js', library: 'DrTest', libraryTarget: 'umd' },
-    entry: { [ NAME_TEST_BROWSER ]: entryList },
-    resolve: { alias: { source: fromRoot('source') } },
-    module: { rules: [ { test: /\.js$/, use: { loader: 'babel-loader', options: babelOption } } ] },
-    plugins: [ new DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(mode), __DEV__: !isProduction }) ],
-    optimization: { minimize: false },
-    performance: { hints: false } // mute: `The following asset(s) exceed the recommended size limit (250 kB).`
-  }
-
-  logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
   await compileWithWebpack({ config, isWatch, profileOutput, assetMapOutput, logger })
-
   const testScriptString = await readFileAsync(PATH_TEST_BROWSER_JS)
   await modify.delete(PATH_TEST_BROWSER_JS)
 

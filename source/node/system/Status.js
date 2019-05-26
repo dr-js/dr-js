@@ -68,7 +68,7 @@ const describeSystemStatus = ({ platform, processor, memory, network, activity }
   activity: describeSystemActivity(activity)
 }).map(([ k, v ]) => `[${k}]\n${indentLine(v)}`).join('\n')
 
-const getProcessStatus = () => ({
+const getCurrentProcessStatus = () => ({ // status for current node process
   title: process.title,
   pid: process.pid,
   ppid: process.ppid,
@@ -112,5 +112,7 @@ export {
   describeSystemActivity,
   describeSystemStatus,
 
-  getProcessStatus
+  getCurrentProcessStatus,
+
+  getCurrentProcessStatus as getProcessStatus // TODO: DEPRECATE
 }

@@ -102,7 +102,7 @@
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
   - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
 + 📄 [source/common/module/KeyTree.js](source/common/module/KeyTree.js)
-  - `createKeyTree`
+  - `createKeyTree`, `createKeyTreeEnhanced`
 + 📄 [source/common/module/LevenshteinDistance.js](source/common/module/LevenshteinDistance.js)
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
@@ -202,11 +202,11 @@
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
 + 📄 [source/node/system/ProcessStatus.js](source/node/system/ProcessStatus.js)
-  - `checkProcessExist`, `collectAllProcessStatus`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
+  - `checkProcessExist`, `collectAllProcessStatus`, `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `findProcessTreeNode`, `getAllProcessStatusAsync`, `getProcessList`, `getProcessListAsync`, `getProcessPidMap`, `getProcessTree`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`, `tryKillProcess`, `tryKillProcessTreeNode`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
 #### Export Tree
 - **Browser**
@@ -290,7 +290,7 @@
     - **KeySelector**
       - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
     - **KeyTree**
-      - `createKeyTree`
+      - `createKeyTree`, `createKeyTreeEnhanced`
     - **LevenshteinDistance**
       - `getLevenshteinDistance`
     - **MIME**
@@ -398,11 +398,11 @@
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
     - **ProcessStatus**
-      - `checkProcessExist`, `collectAllProcessStatus`, `findProcessTreeNode`, `getProcessList`, `getProcessPidMap`, `getProcessTree`, `sortProcessList`, `tryKillProcess`, `tryKillProcessTreeNode`
+      - `checkProcessExist`, `collectAllProcessStatus`, `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `findProcessTreeNode`, `getAllProcessStatusAsync`, `getProcessList`, `getProcessListAsync`, `getProcessPidMap`, `getProcessTree`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`, `tryKillProcess`, `tryKillProcessTreeNode`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
     - `fetchLikeRequest`, `ping`, `requestAsync`
   - **Resource**

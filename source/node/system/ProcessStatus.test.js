@@ -2,13 +2,16 @@ import { strictEqual } from 'source/common/verify'
 import { run } from './Run'
 import { padTable } from 'source/common/format'
 
-import { getProcessList, getProcessTree } from './ProcessStatus'
+import {
+  getProcessListAsync,
+  toProcessTree
+} from './ProcessStatus'
 
 const { describe, it } = global
 
 describe('Node.System.ProcessStatus', () => {
-  it('getProcessList()', async () => {
-    const result = await getProcessList()
+  it('getProcessListAsync()', async () => {
+    const result = await getProcessListAsync()
     __DEV__ && console.log(padTable({
       table: [
         [ 'pid', 'ppid', 'command' ],
@@ -30,7 +33,7 @@ describe('Node.System.ProcessStatus', () => {
       argList: [ '-e', 'setTimeout(console.log, 200)' ],
       option: { stdio: 'ignore', shell: false } // NOTE: `shell: true` on win32 will leak process
     })
-    const result = await getProcessList()
+    const result = await getProcessListAsync()
 
     subProcess.kill()
     await promise.catch((error) => { __DEV__ && console.log(error) })
@@ -45,9 +48,9 @@ describe('Node.System.ProcessStatus', () => {
     strictEqual(Boolean(subProcessItem), true, 'should have sub-process in list')
   })
 
-  it('getProcessTree()', async () => {
-    const processList = await getProcessList()
-    const rootProcess = await getProcessTree(processList)
+  it('toProcessTree()', async () => {
+    const processList = await getProcessListAsync()
+    const rootProcess = toProcessTree(processList)
     const processItem = processList.find(({ pid, command }) => pid === process.pid && command.includes('node'))
     const subProcessItem = processList.find(({ ppid }) => ppid === process.pid)
     __DEV__ && console.log({ processItem, subProcessItem })

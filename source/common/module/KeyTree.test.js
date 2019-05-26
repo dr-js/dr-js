@@ -1,7 +1,7 @@
 import { strictEqual, deepStrictEqual } from 'assert'
 
 import { getRandomId } from 'source/common/math/random'
-import { createKeyTree } from './KeyTree'
+import { createKeyTreeEnhanced } from './KeyTree'
 
 const { describe, it } = global
 
@@ -12,8 +12,9 @@ describe('source/V1/common/module/KeyTree', () => {
   const {
     stringify,
     parse,
-    createBuilder
-  } = createKeyTree({ NAME_KEY, NAME_SUB_LIST })
+    createBuilder,
+    walkKeyTreeJSON
+  } = createKeyTreeEnhanced({ NAME_KEY, NAME_SUB_LIST })
 
   const TEST_JSON_0 = [ { [ NAME_KEY ]: 'key-0-0-0' } ]
   const TEST_STRING_0 = `[key-0-0-0]`
@@ -107,17 +108,17 @@ describe('source/V1/common/module/KeyTree', () => {
     deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
   })
 
-  it('createBuilder (with unlinked key)', () => {
-    const EXPECTED_ROOT_OBJECT = {
-      [ NAME_KEY ]: 'root',
-      [ NAME_SUB_LIST ]: [
-        { [ NAME_KEY ]: '0', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: '0-0' } ] },
-        { [ NAME_KEY ]: '9', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: '9-9' } ] },
-        { [ NAME_KEY ]: 'u-0', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: 'u-0-1' } ] },
-        { [ NAME_KEY ]: 'u-1' }
-      ]
-    }
+  const EXPECTED_ROOT_OBJECT = {
+    [ NAME_KEY ]: 'root',
+    [ NAME_SUB_LIST ]: [
+      { [ NAME_KEY ]: '0', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: '0-0' } ] },
+      { [ NAME_KEY ]: '9', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: '9-9' } ] },
+      { [ NAME_KEY ]: 'u-0', [ NAME_SUB_LIST ]: [ { [ NAME_KEY ]: 'u-0-1' } ] },
+      { [ NAME_KEY ]: 'u-1' }
+    ]
+  }
 
+  it('createBuilder (with unlinked key)', () => {
     const builder = createBuilder('root')
     builder.add('0', 0, 'root')
     builder.add('0-0', 0, '0')
@@ -132,5 +133,25 @@ describe('source/V1/common/module/KeyTree', () => {
 
     deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
     deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
+  })
+
+  const EXPECTED_WALK_LIST = [
+    [ '0', 0, 'root' ],
+    [ '0-0', 0, '0' ],
+    [ '9', 1, 'root' ],
+    [ '9-9', 0, '9' ],
+    [ 'u-0', 2, 'root' ],
+    [ 'u-0-1', 0, 'u-0' ],
+    [ 'u-1', 3, 'root' ]
+  ]
+
+  it('walkKeyTreeJSON', () => {
+    const resultList = []
+
+    walkKeyTreeJSON(EXPECTED_ROOT_OBJECT, ([ node, index, upperKey ]) => {
+      resultList.push([ node[ NAME_KEY ], index, upperKey ])
+    })
+
+    deepStrictEqual(resultList, EXPECTED_WALK_LIST)
   })
 })
