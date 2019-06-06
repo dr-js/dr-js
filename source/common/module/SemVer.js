@@ -23,8 +23,15 @@ const compareSemVer = (stringA, stringB) => { // basically (a - b)
 }
 
 const compareSemVerLabel = (a, b) => (a === b) ? 0
-  : b.startsWith(a) ? 1
-    : a.startsWith(b) ? -1
+  : isShorterWithoutNumber(a, b) ? 1
+    : isShorterWithoutNumber(b, a) ? -1
       : compareStringWithNumber(a, b)
+
+const REGEXP_DOUBLE_NUMBER = /\d\d/
+
+const isShorterWithoutNumber = (shorter, longer) => (
+  longer.startsWith(shorter) &&
+  !REGEXP_DOUBLE_NUMBER.test(longer.slice(shorter.length - 1, shorter.length + 1))
+)
 
 export { parseSemVer, compareSemVer }

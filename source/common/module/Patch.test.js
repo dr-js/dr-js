@@ -199,5 +199,4 @@ describe('source/V1/common/module/Patch', () => {
       ])
     })
   })
-
 })

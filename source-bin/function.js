@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import { cpus } from 'os'
 
 import { getEndianness } from 'dr-js/module/env/function'

@@ -99,7 +99,7 @@ const routeMapDepthFirstSearch = createTreeDepthFirstSearch(
 //   }
 // }
 
-const createResponderRouteList = ({
+const createResponderRouteListHTML = ({
   getRouteMap, // () => routeMap
   extraBodyList
 }) => {
@@ -130,5 +130,7 @@ export {
   getRouteParamAny,
   getRouteParam,
   describeRouteMap,
-  createResponderRouteList
+  createResponderRouteListHTML,
+
+  createResponderRouteListHTML as createResponderRouteList // TODO: DEPRECATED
 }

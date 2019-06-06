@@ -331,7 +331,7 @@ const mainScriptInit = () => {
 
   const onMessage = async (data, onOpenInfo) => {
     const [ headerString, payloadBlob ] = await parseBlobPacket(data)
-    const { type, targetId, payload } = JSON.parse(headerString)
+    const { type, /* targetId, */ payload } = JSON.parse(headerString)
     if (type === TYPE_INFO_USER) {
       onOpenInfo(payload.id)
     } else if (type === TYPE_INFO_GROUP) {

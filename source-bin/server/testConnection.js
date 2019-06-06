@@ -6,7 +6,7 @@ import { DR_BROWSER_SCRIPT_TAG } from 'dr-js/module/node/resource'
 import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
 import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
-import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteList } from 'dr-js/module/node/server/Responder/Router'
+import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'dr-js/module/node/server/Responder/Router'
 
 import { commonStartServer } from '../function'
 
@@ -58,7 +58,7 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', createResponderRouteList({
+    [ '/', 'GET', createResponderRouteListHTML({
       getRouteMap: () => createRouteMap(routeConfigList),
       extraBodyList: [ DR_BROWSER_SCRIPT_TAG() ]
     }) ]

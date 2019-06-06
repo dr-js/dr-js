@@ -176,7 +176,7 @@
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
   - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
@@ -367,7 +367,7 @@
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
-        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
         - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
