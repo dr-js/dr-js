@@ -4,10 +4,8 @@ import { writeFileSync, existsSync } from 'fs'
 
 import { collectSourceRouteMap } from 'dr-dev/module/node/export/parse'
 import { generateIndexScript, generateExportInfo } from 'dr-dev/module/node/export/generate'
-import { autoAppendMarkdownHeaderLink, renderMarkdownFileLink, renderMarkdownExportPath, renderMarkdownExportTree } from 'dr-dev/module/node/export/renderMarkdown'
+import { getMarkdownFileLink, renderMarkdownAutoAppendHeaderLink, renderMarkdownBlockQuote, renderMarkdownExportPath, renderMarkdownExportTree } from 'dr-dev/module/node/export/renderMarkdown'
 import { runMain } from 'dr-dev/module/main'
-
-import { indentLine } from 'source/common/string'
 
 import { formatUsage } from 'source-bin/option'
 
@@ -22,14 +20,7 @@ const [
 
 const PATH_FILE_DELETE_CONFIG = resolve(process.cwd(), PATH_FILE_DELETE_CONFIG_RAW)
 
-const renderMarkdownBinOptionFormat = () => [
-  renderMarkdownFileLink('source-bin/option.js'),
-  '> ```',
-  indentLine(formatUsage(), '> '),
-  '> ```'
-]
-
-const generateTempFile = ({ sourceRouteMap, logger }) => {
+const generateTempFile = ({ indexScriptMap, logger }) => {
   const tempFileList = []
   const writeTempFile = (path, data) => {
     logger.devLog(`[tempFile] ${path}`)
@@ -37,7 +28,6 @@ const generateTempFile = ({ sourceRouteMap, logger }) => {
     tempFileList.push(path)
   }
 
-  const indexScriptMap = generateIndexScript({ sourceRouteMap })
   Object.entries(indexScriptMap).forEach(([ path, data ]) => writeTempFile(path, data))
 
   writeTempFile(fromRoot('source/Dr.browser.js'), [
@@ -59,18 +49,17 @@ runMain(async (logger) => {
     execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
   }
 
-  logger.padLog(`collect sourceRouteMap`)
+  logger.padLog(`generate exportInfoMap & indexScriptMap`)
   const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], logger })
-
-  logger.padLog(`generate exportInfo`)
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
+  const indexScriptMap = generateIndexScript({ sourceRouteMap })
 
   logger.log(`output: SPEC.md`)
   const initRouteList = fromRoot('source').split(sep)
   writeFileSync(fromRoot('SPEC.md'), [
     '# Specification',
     '',
-    ...autoAppendMarkdownHeaderLink(
+    ...renderMarkdownAutoAppendHeaderLink(
       '#### Export Path',
       ...renderMarkdownExportPath({ exportInfoMap, rootPath: PATH_ROOT }),
       '',
@@ -78,11 +67,12 @@ runMain(async (logger) => {
       ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList }),
       '',
       '#### Bin Option Format',
-      ...renderMarkdownBinOptionFormat()
+      getMarkdownFileLink('source-bin/option.js'),
+      ...renderMarkdownBlockQuote(formatUsage())
     ),
     ''
   ].join('\n'))
 
   logger.log(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
-  generateTempFile({ sourceRouteMap, logger })
+  generateTempFile({ indexScriptMap, logger })
 }, 'generate-spec')

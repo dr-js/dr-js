@@ -4,9 +4,9 @@ import { clock, requestFrameUpdate } from './time'
 const { describe, it } = global
 
 describe('Common.Time', () => {
-  it('clock() should get msec precision', () => {
+  it('clock() should get msec precision', async () => {
     const timeStart = clock()
-    ' '.repeat(8).split('').forEach(() => clock()) // TODO: NOTE: too fast in browser?
+    ' '.repeat(64).split('').forEach(() => clock()) // TODO: NOTE: too fast in browser?
     const timeDiff = clock() - timeStart
     notStrictEqual(timeDiff, 0)
   })

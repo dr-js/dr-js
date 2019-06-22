@@ -31,18 +31,18 @@ const VALID_SERVER_PROTOCOL_SET = new Set([
   DEFAULT_HTTP_OPTION.protocol
 ])
 
-const SSL_SESSION_CACHE_MAX = 4 * 1024
-const SSL_SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
+const SESSION_CACHE_MAX = 4 * 1024
+const SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
 const applyServerSessionCache = (server) => {
-  const sslSessionCacheMap = createCacheMap({ valueSizeSumMax: SSL_SESSION_CACHE_MAX, eventHub: null })
+  const sessionCacheMap = createCacheMap({ valueSizeSumMax: SESSION_CACHE_MAX, eventHub: null })
   server.on('newSession', (sessionId, sessionData, next) => {
     __DEV__ && console.log('newSession', sessionId.toString('hex'))
-    sslSessionCacheMap.set(sessionId.toString('hex'), sessionData, 1, Date.now() + SSL_SESSION_EXPIRE_TIME)
+    sessionCacheMap.set(sessionId.toString('hex'), sessionData, 1, Date.now() + SESSION_EXPIRE_TIME)
     next()
   })
   server.on('resumeSession', (sessionId, next) => {
     __DEV__ && console.log('resumeSession', sessionId.toString('hex'))
-    next(null, sslSessionCacheMap.get(sessionId.toString('hex')) || null)
+    next(null, sessionCacheMap.get(sessionId.toString('hex')) || null)
   })
 }
 
@@ -54,13 +54,19 @@ const createServer = ({ protocol, ...option }) => {
   const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // NOTE: the argument is different for https/http.createServer
   option.isSecure && applyServerSessionCache(server)
 
-  __DEV__ && server.on('connection', (connection) => {
-    console.log('connection ++')
-    connection.on('close', () => console.log('connection --'))
+  const socketSet = new Set()
+  server.on('connection', (socket) => {
+    __DEV__ && console.log('connection ++')
+    socketSet.add(socket)
+    socket.once('close', () => {
+      __DEV__ && console.log('connection --')
+      socketSet.delete(socket)
+    })
   })
 
   return {
     server,
+    socketSet,
     option,
     start: async () => !server.listening && new Promise((resolve, reject) => {
       server.on('error', reject)
@@ -69,7 +75,10 @@ const createServer = ({ protocol, ...option }) => {
         resolve()
       })
     }),
-    stop: async () => server.listening && new Promise((resolve) => server.close(resolve))
+    stop: async ({ isForce = false } = {}) => server.listening && new Promise((resolve) => {
+      server.close(() => resolve())
+      if (isForce) { for (const socket of socketSet) socket.destroy() }
+    })
   }
 }
 
