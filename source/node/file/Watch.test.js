@@ -8,7 +8,7 @@ import { modify } from './Modify'
 import { setTimeoutAsync } from 'source/common/time'
 import { catchAsync } from 'source/common/error'
 
-const { describe, it, after } = global
+const { describe, it, after, info = console.log } = global
 
 const TEST_ROOT = resolve(__dirname, './test-watch-gitignore/')
 
@@ -39,7 +39,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -54,7 +54,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -75,7 +75,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -90,7 +90,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -105,7 +105,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -120,7 +120,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -140,7 +140,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -155,7 +155,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -172,7 +172,7 @@ describe('Node.File.Watch', () => {
       await modify.delete(targetPath)
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -189,7 +189,7 @@ describe('Node.File.Watch', () => {
       await modify.delete(targetPath)
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -204,7 +204,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)
@@ -224,7 +224,7 @@ describe('Node.File.Watch', () => {
       let resultChangeState = null
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
-        if (resultChangeState) console.warn('unexpected extra emit')
+        resultChangeState && info('[WARN] unexpected extra emit')
         resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
       })
       await watcher.setup(targetPath)

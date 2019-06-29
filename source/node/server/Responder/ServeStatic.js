@@ -1,6 +1,7 @@
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
-import { statAsync, readFileAsync, createReadStream } from 'source/node/file/function'
+import { readFileAsync, createReadStream } from 'source/node/file/function'
+import { getPathStat } from 'source/node/file/File'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import {
   responderSendBuffer, responderSendBufferRange, responderSendBufferCompress,
@@ -49,18 +50,17 @@ const createResponderServeStatic = ({
     if (!bufferData) return false
     __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
     encoding && store.response.setHeader('content-encoding', encoding)
-    if (range) {
+    if (!range) await responderSendBuffer(store, bufferData)
+    else {
       if (range[ 1 ] === Infinity) range[ 1 ] = bufferData.length - 1
       await responderSendBufferRange(store, bufferData, range)
-    } else {
-      await responderSendBuffer(store, bufferData)
     }
     return true
   }
 
   const serve = async (store, filePath, type, encoding, range) => {
-    const stat = await (statAsync(filePath).catch((error) => { __DEV__ && console.log(`[serve] no file: ${filePath}`, error) }))
-    if (!stat || !stat.isFile()) return false
+    const stat = await getPathStat(filePath)
+    if (!stat.isFile() || !stat.size) return false
     const length = stat.size
     const entityTag = getWeakEntityTagByStat(stat)
     encoding && store.response.setHeader('content-encoding', encoding)
@@ -70,7 +70,7 @@ const createResponderServeStatic = ({
     } else if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
       await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })
-    } else { // right size, cache
+    } else { // right size, try cache
       const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
       serveCacheMap.set(filePath, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePath}`)

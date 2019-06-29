@@ -75,12 +75,15 @@ runMain(async (logger) => {
   if (argvFlag('test', 'publish', 'publish-dev')) {
     await processOutput({ logger }) // once more
 
-    logger.padLog(`test browser`)
-    execSync(`npm run test-browser`, execOptionRoot)
+    logger.padLog(`lint source`)
+    execSync(`npm run lint`, execOptionRoot)
 
     logger.padLog(`test output`)
     execSync(`npm run test-output-library`, execOptionRoot)
     execSync(`npm run test-output-module`, execOptionRoot)
+
+    logger.padLog(`test browser`)
+    execSync(`npm run test-browser`, execOptionRoot)
   }
 
   await clearOutput({ logger })

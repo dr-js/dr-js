@@ -1,16 +1,18 @@
 import { strictEqual } from 'source/common/verify'
+import { getSampleRange } from 'source/common/math/sample'
+import { getRandomId, getRandomInt, getRandomIntList } from 'source/common/math/random'
 import { createDoublyLinkedList, createNode } from './LinkedList'
 
-const { describe, it } = global
+const { describe, it, info = console.log } = global
 
-const getTestData = () => {
+const getTestData = (length = getRandomInt(4, 16)) => {
   const linkedList = createDoublyLinkedList()
-  const nodeList = [ 0, 1, 2, 3, 4 ].map((index) => {
+  const nodeList = getSampleRange(0, length - 1).map((index) => {
     const node = createNode(`Node${index}`)
     linkedList.push(node)
     return node
   })
-  return { linkedList, nodeList }
+  return { linkedList, nodeList, length }
 }
 
 const doSanityTest = (linkedList, length) => {
@@ -25,36 +27,49 @@ describe('Common.Data.LinkedList', () => {
     doSanityTest(linkedList, 0)
   })
 
+  describe('LinkedList.getNode', () => {
+    const { linkedList, nodeList, length } = getTestData()
+    doSanityTest(linkedList, length)
+    it(`should get first node`, () => strictEqual(linkedList.getNode(0), nodeList[ 0 ]))
+    it(`should get last node`, () => strictEqual(linkedList.getNode(length - 1), nodeList[ length - 1 ]))
+  })
+
   describe('LinkedList.forEach', () => {
-    const { linkedList, nodeList } = getTestData()
-    doSanityTest(linkedList, 5)
-    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ index ].value}`, () => strictEqual(node.value, nodeList[ index ].value)))
+    const { linkedList, nodeList, length } = getTestData()
+    doSanityTest(linkedList, length)
+    linkedList.forEach((node, index) => it(
+      `should has node.value === ${nodeList[ index ].value}`,
+      () => strictEqual(node.value, nodeList[ index ].value)
+    ))
   })
 
   describe('LinkedList.remove', () => {
-    const { linkedList, nodeList } = getTestData()
+    const { linkedList, nodeList, length } = getTestData()
     linkedList.remove(nodeList[ 1 ])
-    linkedList.remove(nodeList[ 4 ])
-    doSanityTest(linkedList, 3)
+    linkedList.remove(nodeList[ length - 1 ])
+    doSanityTest(linkedList, length - 2)
   })
 
   describe('LinkedList.removeBetween', () => {
-    const { linkedList, nodeList } = getTestData()
-    linkedList.removeBetween(nodeList[ 1 ], nodeList[ 4 ])
+    const { linkedList, nodeList, length } = getTestData()
+    linkedList.removeBetween(nodeList[ 1 ], nodeList[ length - 1 ])
     doSanityTest(linkedList, 1)
     it(`should has head.next === ${nodeList[ 0 ].value}`, () => strictEqual(linkedList.getHead().next, nodeList[ 0 ]))
     it(`should has tail.prev === ${nodeList[ 0 ].value}`, () => strictEqual(linkedList.getTail().prev, nodeList[ 0 ]))
   })
 
   describe('LinkedList.reverse', () => {
-    const { linkedList, nodeList } = getTestData()
+    const { linkedList, nodeList, length } = getTestData()
     linkedList.reverse()
-    doSanityTest(linkedList, 5)
-    linkedList.forEach((node, index) => it(`should has node.value === ${nodeList[ 4 - index ].value}`, () => strictEqual(node.value, nodeList[ 4 - index ].value)))
+    doSanityTest(linkedList, length)
+    linkedList.forEach((node, index) => it(
+      `should has node.value === ${nodeList[ (length - 1) - index ].value}`,
+      () => strictEqual(node.value, nodeList[ (length - 1) - index ].value)
+    ))
   })
 
   describe('LinkedList.setFirst', () => {
-    const { linkedList, nodeList } = getTestData()
+    const { linkedList, nodeList } = getTestData(5)
     linkedList.setFirst(nodeList[ 3 ])
     doSanityTest(linkedList, 5)
     it(`should has head.next === ${nodeList[ 3 ].value}`, () => strictEqual(linkedList.getHead().next, nodeList[ 3 ]))
@@ -62,10 +77,76 @@ describe('Common.Data.LinkedList', () => {
   })
 
   describe('LinkedList.setLast', () => {
-    const { linkedList, nodeList } = getTestData()
+    const { linkedList, nodeList } = getTestData(5)
     linkedList.setLast(nodeList[ 1 ])
     doSanityTest(linkedList, 5)
     it(`should has tail.prev === ${nodeList[ 1 ].value}`, () => strictEqual(linkedList.getTail().prev, nodeList[ 1 ]))
     it(`should has head.next.next === ${nodeList[ 2 ].value}`, () => strictEqual(linkedList.getHead().next.next, nodeList[ 2 ]))
+  })
+
+  describe('LinkedList stress test', () => {
+    const { linkedList } = getTestData(0xff)
+
+    const pickRandomNode = () => linkedList.getNode(getRandomInt(0, linkedList.getLength() - 1))
+    const operationList = [
+      [ 'create some', () => { linkedList.unshift(createNode(getRandomId('n'))) } ],
+      [ 'create some', () => { linkedList.unshift(createNode(getRandomId('n'))) } ], // for balance length
+      [ 'drop some', () => { linkedList.getLength() !== 0 && linkedList.remove(pickRandomNode()) } ],
+      [ 'drop the node before tail', () => { linkedList.getLength() !== 0 && linkedList.remove(linkedList.getTail().prev) } ],
+      [ 'move node to first', () => { linkedList.getLength() !== 0 && linkedList.setFirst(pickRandomNode()) } ]
+    ]
+    const operationCount = operationList.length
+
+    const head = linkedList.getHead()
+    const tail = linkedList.getTail()
+
+    const sanityCheck = (message) => {
+      strictEqual(head, linkedList.getHead())
+      strictEqual(tail, linkedList.getTail())
+      strictEqual(head.prev, null)
+      strictEqual(tail.next, null)
+
+      const length = linkedList.getLength()
+      const nodeList = []
+      let prevNode = linkedList.getHead()
+      try {
+        linkedList.forEach((node, index) => {
+          if (node.prev !== prevNode || prevNode.next !== node) {
+            console.log('get node:', node.value, `node.prev:`, node.prev.value, `expect:`, prevNode.value)
+            throw new Error(`broken prev link`)
+          }
+          nodeList.push(node)
+          prevNode = node
+        })
+      } catch (error) {
+        console.log('[Error]', {
+          length,
+          nodeList: nodeList.map(({ value, prev, next }) => ({
+            value,
+            prvValue: prev ? prev.value : `bad: ${prev}`,
+            nextValue: next ? next.value : `bad: ${next}`
+          })),
+          prevNodeValue: prevNode.value
+        }, error)
+        throw error
+      }
+    }
+
+    let testLeft = __DEV__ ? 0xfffff : 0xffff
+    it(`stress-test #${testLeft}`, () => {
+      sanityCheck('start')
+      while (testLeft !== 0) {
+        info(`testLeft: ${testLeft}, linkedList length: ${linkedList.getLength()}`)
+        const numberList = getRandomIntList(0, 0xffff, Math.min(0xfff, testLeft))
+        for (const number of numberList) {
+          const index = number % operationCount
+          const [ title, func ] = operationList[ index ]
+          // console.log({ title, linkedListLength: linkedList.getLength() })
+          func()
+          sanityCheck(title)
+        }
+        testLeft -= numberList.length
+      }
+    })
   })
 })

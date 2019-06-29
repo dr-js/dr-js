@@ -18,6 +18,16 @@ const createDoublyLinkedList = () => {
   const getHead = () => head
   const getTail = () => tail
   const getLength = () => __DEV__ ? devNodeSet.size : length
+  const getNode = (index) => { // should avoid in performance related code
+    if (__DEV__ && (index < 0 || index > length - 1)) throw new Error(`[DoublyLinkedList][getNode] invalid index: ${index}`)
+    let node = head.next
+    index = Math.min(index, length - 1)
+    while (index !== 0) {
+      node = node.next
+      index--
+    }
+    return node
+  }
   const insertAfter = (node, prevNode) => {
     if (__DEV__ && devNodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
     if (__DEV__ && !isFreeNode(node)) throw new Error('[DoublyLinkedList][insertAfter] invalid node')
@@ -114,7 +124,7 @@ const createDoublyLinkedList = () => {
     // set
     node.prev = head
     node.next = head.next
-    head.next = node
+    node.next.prev = head.next = node
   }
   const setLast = (node) => {
     if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][setLast] missing node')
@@ -125,9 +135,9 @@ const createDoublyLinkedList = () => {
     prev.next = next
     next.prev = prev
     // set
-    node.prev = tail.prev
     node.next = tail
-    tail.prev = node
+    node.prev = tail.prev
+    node.prev.next = tail.prev = node
   }
 
   return {
@@ -135,6 +145,7 @@ const createDoublyLinkedList = () => {
     getHead,
     getTail,
     getLength,
+    getNode,
     insertAfter,
     insertBefore,
     remove,

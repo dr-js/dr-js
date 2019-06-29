@@ -13,7 +13,7 @@ const createCache = (key, value, size, expireAt) => ({
 // Time aware Least Recently Used (TLRU)
 const createCacheMap = ({
   valueSizeSumMax,
-  valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1),
+  valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1), // limit big value for cache efficiently
   eventHub = createHub() // set to null should be faster, if no event is needed
 }) => {
   if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`invalid valueSizeSumMax: ${valueSizeSumMax}`)
