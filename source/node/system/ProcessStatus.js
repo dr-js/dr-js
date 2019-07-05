@@ -229,28 +229,13 @@ const isPidExist = (pid) => {
   }
 }
 
-const getProcessPidMapAsync = async (processList) => toProcessPidMap(processList || await getProcessListAsync()) // TODO: DEPRECATED
-const getProcessTreeAsync = async (processList) => toProcessTree(processList || await getProcessListAsync()) // TODO: DEPRECATED
-const findProcessTreeNodeAsync = async (info, processTree) => findProcessTreeInfo(info, processTree || await getProcessTreeAsync()) // TODO: DEPRECATED
-const checkProcessExistAsync = async (info, processPidMap) => Boolean(findProcessPidMapInfo(info, processPidMap || await getProcessPidMapAsync())) // TODO: DEPRECATED
-const collectAllProcessStatusAsync = async (outputMode, isOutputJSON) => isOutputJSON ? getAllProcessStatusAsync(outputMode) : describeAllProcessStatusAsync(outputMode)
-
 export {
   getProcessListAsync, sortProcessList,
   toProcessPidMap, findProcessPidMapInfo,
   toProcessTree, findProcessTreeInfo,
   killProcessInfoAsync, killProcessTreeInfoAsync,
   getAllProcessStatusAsync, describeAllProcessStatusAsync,
-  isPidExist,
-
-  getProcessListAsync as getProcessList, // TODO: DEPRECATED: use new name with `async`
-  getProcessPidMapAsync as getProcessPidMap, // TODO: DEPRECATED: use new name with `async`
-  getProcessTreeAsync as getProcessTree, // TODO: DEPRECATED: use new name with `async`
-  findProcessTreeNodeAsync as findProcessTreeNode, // TODO: DEPRECATED: use new name with `async`
-  checkProcessExistAsync as checkProcessExist, // TODO: DEPRECATED: use new name with `async`
-  killProcessInfoAsync as tryKillProcess, // TODO: DEPRECATED: use new name with `async`
-  killProcessTreeInfoAsync as tryKillProcessTreeNode, // TODO: DEPRECATED: use new name with `async`
-  collectAllProcessStatusAsync as collectAllProcessStatus // TODO: DEPRECATED: use new name with `async`
+  isPidExist
 }
 
 // For linux: ps

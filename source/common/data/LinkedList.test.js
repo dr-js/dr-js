@@ -27,13 +27,6 @@ describe('Common.Data.LinkedList', () => {
     doSanityTest(linkedList, 0)
   })
 
-  describe('LinkedList.getNode', () => {
-    const { linkedList, nodeList, length } = getTestData()
-    doSanityTest(linkedList, length)
-    it(`should get first node`, () => strictEqual(linkedList.getNode(0), nodeList[ 0 ]))
-    it(`should get last node`, () => strictEqual(linkedList.getNode(length - 1), nodeList[ length - 1 ]))
-  })
-
   describe('LinkedList.forEach', () => {
     const { linkedList, nodeList, length } = getTestData()
     doSanityTest(linkedList, length)
@@ -68,17 +61,17 @@ describe('Common.Data.LinkedList', () => {
     ))
   })
 
-  describe('LinkedList.setFirst', () => {
+  describe('LinkedList.moveToFirst', () => {
     const { linkedList, nodeList } = getTestData(5)
-    linkedList.setFirst(nodeList[ 3 ])
+    linkedList.moveToFirst(nodeList[ 3 ])
     doSanityTest(linkedList, 5)
     it(`should has head.next === ${nodeList[ 3 ].value}`, () => strictEqual(linkedList.getHead().next, nodeList[ 3 ]))
     it(`should has tail.prev.prev === ${nodeList[ 2 ].value}`, () => strictEqual(linkedList.getTail().prev.prev, nodeList[ 2 ]))
   })
 
-  describe('LinkedList.setLast', () => {
+  describe('LinkedList.moveToLast', () => {
     const { linkedList, nodeList } = getTestData(5)
-    linkedList.setLast(nodeList[ 1 ])
+    linkedList.moveToLast(nodeList[ 1 ])
     doSanityTest(linkedList, 5)
     it(`should has tail.prev === ${nodeList[ 1 ].value}`, () => strictEqual(linkedList.getTail().prev, nodeList[ 1 ]))
     it(`should has head.next.next === ${nodeList[ 2 ].value}`, () => strictEqual(linkedList.getHead().next.next, nodeList[ 2 ]))
@@ -87,19 +80,28 @@ describe('Common.Data.LinkedList', () => {
   describe('LinkedList stress test', () => {
     const { linkedList } = getTestData(0xff)
 
-    const pickRandomNode = () => linkedList.getNode(getRandomInt(0, linkedList.getLength() - 1))
+    const pickRandomNode = () => {
+      let index = getRandomInt(0, linkedList.getLength() - 1)
+      let node = linkedList.getHead().next
+      while (index !== 0) {
+        node = node.next
+        index--
+      }
+      return node
+    }
+
     const operationList = [
       [ 'create some', () => { linkedList.unshift(createNode(getRandomId('n'))) } ],
       [ 'create some', () => { linkedList.unshift(createNode(getRandomId('n'))) } ], // for balance length
       [ 'drop some', () => { linkedList.getLength() !== 0 && linkedList.remove(pickRandomNode()) } ],
       [ 'drop the node before tail', () => { linkedList.getLength() !== 0 && linkedList.remove(linkedList.getTail().prev) } ],
-      [ 'move node to first', () => { linkedList.getLength() !== 0 && linkedList.setFirst(pickRandomNode()) } ]
+      [ 'move node to first', () => { linkedList.getLength() !== 0 && linkedList.moveToFirst(pickRandomNode()) } ],
+      [ 'move node to last', () => { linkedList.getLength() !== 0 && linkedList.moveToLast(pickRandomNode()) } ]
     ]
     const operationCount = operationList.length
 
     const head = linkedList.getHead()
     const tail = linkedList.getTail()
-
     const sanityCheck = (message) => {
       strictEqual(head, linkedList.getHead())
       strictEqual(tail, linkedList.getTail())
@@ -113,13 +115,13 @@ describe('Common.Data.LinkedList', () => {
         linkedList.forEach((node, index) => {
           if (node.prev !== prevNode || prevNode.next !== node) {
             console.log('get node:', node.value, `node.prev:`, node.prev.value, `expect:`, prevNode.value)
-            throw new Error(`broken prev link`)
+            throw new Error(`[${message}] broken prev link`)
           }
           nodeList.push(node)
           prevNode = node
         })
       } catch (error) {
-        console.log('[Error]', {
+        console.log(`[Error|${message}]`, {
           length,
           nodeList: nodeList.map(({ value, prev, next }) => ({
             value,

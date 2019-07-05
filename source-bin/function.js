@@ -7,7 +7,6 @@ import { time, decimal } from 'dr-js/module/common/format'
 import { indentList } from 'dr-js/module/common/string'
 import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
-import { DR_BROWSER_SCRIPT_TAG } from 'dr-js/module/node/resource'
 import { fetchLikeRequest } from 'dr-js/module/node/net'
 import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
 import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
@@ -18,7 +17,6 @@ import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
 
 import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
-import { collectAllProcessStatus } from 'dr-js/module/node/system/ProcessStatus' // TODO: DEPRECATED: import directly
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
@@ -147,9 +145,7 @@ export { // TODO: NOTE: only borrow script from here for test or for another bin
   fetchWithJump,
 
   collectFile,
-  collectAllProcessStatus, // TODO: DEPRECATED: import directly
 
   describeServer,
-  commonStartServer,
-  DR_BROWSER_SCRIPT_TAG as getDrBrowserScriptHTML // TODO: DEPRECATED: import directly
+  commonStartServer
 }

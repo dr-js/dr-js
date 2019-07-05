@@ -176,7 +176,7 @@
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
-  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+  - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
   - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
@@ -202,11 +202,11 @@
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
 + 📄 [source/node/system/ProcessStatus.js](source/node/system/ProcessStatus.js)
-  - `checkProcessExist`, `collectAllProcessStatus`, `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `findProcessTreeNode`, `getAllProcessStatusAsync`, `getProcessList`, `getProcessListAsync`, `getProcessPidMap`, `getProcessTree`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`, `tryKillProcess`, `tryKillProcessTreeNode`
+  - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
 #### Export Tree
 - **Browser**
@@ -367,7 +367,7 @@
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
-        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteList`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
+        - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
         - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
@@ -398,11 +398,11 @@
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
     - **ProcessStatus**
-      - `checkProcessExist`, `collectAllProcessStatus`, `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `findProcessTreeNode`, `getAllProcessStatusAsync`, `getProcessList`, `getProcessListAsync`, `getProcessPidMap`, `getProcessTree`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`, `tryKillProcess`, `tryKillProcessTreeNode`
+      - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
     - `fetchLikeRequest`, `ping`, `requestAsync`
   - **Resource**

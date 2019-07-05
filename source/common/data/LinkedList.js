@@ -1,41 +1,41 @@
 // LinkedList
-// has many: Node
-// each contains: value
+//   head { value: null, prev: null, next }
+//   node { value, prev, next } index = 0
+//   node { value, prev, next } index = 1
+//   ...
+//   node { value, prev, next } index = length - 1
+//   tail { value: null, prev, next: null }
+
+const createNode = (value, prev = null, next = null) => ({ value, prev, next })
+
+const isFreeNode = ({ prev, next }) => prev === null && next === null
+const isLinkNode = ({ prev, next }) => prev !== null && next !== null
+// const isLinkHead = ({ prev, next }) => prev === null && next !== null
+// const isLinkTail = ({ prev, next }) => prev !== null && next === null
 
 const createDoublyLinkedList = () => {
-  let devNodeSet
+  let devNodeSet // only in dev mode
   let head, tail, length
   const clear = () => {
     if (__DEV__) devNodeSet = new Set()
     head = createNode(null)
-    tail = createNode(null)
+    tail = createNode(null, head)
     head.next = tail
-    tail.prev = head
     length = 0
   }
   clear()
 
   const getHead = () => head
   const getTail = () => tail
-  const getLength = () => __DEV__ ? devNodeSet.size : length
-  const getNode = (index) => { // should avoid in performance related code
-    if (__DEV__ && (index < 0 || index > length - 1)) throw new Error(`[DoublyLinkedList][getNode] invalid index: ${index}`)
-    let node = head.next
-    index = Math.min(index, length - 1)
-    while (index !== 0) {
-      node = node.next
-      index--
-    }
-    return node
-  }
+  const getLength = () => __DEV__ ? devNodeSet.size : length // node count (do not count head/tail)
   const insertAfter = (node, prevNode) => {
     if (__DEV__ && devNodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
     if (__DEV__ && !isFreeNode(node)) throw new Error('[DoublyLinkedList][insertAfter] invalid node')
     if (__DEV__ && prevNode !== head && !devNodeSet.has(prevNode)) throw new Error('[DoublyLinkedList][insertAfter] invalid prevNode')
     const { next } = prevNode
-    prevNode.next = next.prev = node
     node.prev = prevNode
     node.next = next
+    prevNode.next = next.prev = node
     length++
     __DEV__ && devNodeSet.add(node)
   }
@@ -44,13 +44,13 @@ const createDoublyLinkedList = () => {
     if (__DEV__ && !isFreeNode(node)) throw new Error('[DoublyLinkedList][insertAfter] invalid node')
     if (__DEV__ && nextNode !== tail && !devNodeSet.has(nextNode)) throw new Error('[DoublyLinkedList][insertBefore] invalid nextNode')
     const { prev } = nextNode
-    nextNode.prev = prev.next = node
     node.prev = prev
     node.next = nextNode
+    nextNode.prev = prev.next = node
     length++
     __DEV__ && devNodeSet.add(node)
   }
-  const remove = (node) => { // TODO: rename to `delete`?
+  const remove = (node) => {
     if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][remove] missing node')
     if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][remove] invalid node')
     const { prev, next } = node
@@ -77,7 +77,7 @@ const createDoublyLinkedList = () => {
       node = node.next
     }
   }
-  const forEach = (callback) => {
+  const forEach = (callback) => { // index from 0, node from head to tail (do not count head/tail)
     let node = head.next
     let index = 0
     while (node !== tail) {
@@ -87,7 +87,7 @@ const createDoublyLinkedList = () => {
       index++
     }
   }
-  const forEachReverse = (callback) => { // the index starts from length - 1
+  const forEachReverse = (callback) => { // index from length - 1, node from tail to head (do not count head/tail)
     let node = tail.prev
     let index = __DEV__ ? devNodeSet.size - 1 : length - 1
     while (node !== head) {
@@ -113,9 +113,9 @@ const createDoublyLinkedList = () => {
     prev.prev = head
     next.next = tail
   }
-  const setFirst = (node) => {
-    if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][setFirst] missing node')
-    if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][setFirst] invalid node')
+  const moveToFirst = (node) => {
+    if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][moveToFirst] missing node')
+    if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][moveToFirst] invalid node')
     if (node === head.next) return
     // pick
     const { prev, next } = node
@@ -126,9 +126,9 @@ const createDoublyLinkedList = () => {
     node.next = head.next
     node.next.prev = head.next = node
   }
-  const setLast = (node) => {
-    if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][setLast] missing node')
-    if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][setLast] invalid node')
+  const moveToLast = (node) => {
+    if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][moveToLast] missing node')
+    if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][moveToLast] invalid node')
     if (node === tail.prev) return
     // pick
     const { prev, next } = node
@@ -145,7 +145,6 @@ const createDoublyLinkedList = () => {
     getHead,
     getTail,
     getLength,
-    getNode,
     insertAfter,
     insertBefore,
     remove,
@@ -153,8 +152,9 @@ const createDoublyLinkedList = () => {
     forEach,
     forEachReverse,
     reverse,
-    setFirst,
-    setLast,
+    moveToFirst,
+    moveToLast,
+
     push: (node) => insertBefore(node, tail),
     pop: () => remove(tail.prev),
     unshift: (node) => insertAfter(node, head),
@@ -162,12 +162,7 @@ const createDoublyLinkedList = () => {
   }
 }
 
-const createNode = (value, prev = null, next = null) => ({ value, prev, next })
-
-const isFreeNode = ({ prev, next }) => prev === null && next === null
-const isLinkNode = ({ prev, next }) => prev !== null && next !== null
-
 export {
-  createDoublyLinkedList,
-  createNode
+  createNode,
+  createDoublyLinkedList
 }

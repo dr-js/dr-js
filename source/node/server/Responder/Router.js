@@ -130,7 +130,5 @@ export {
   getRouteParamAny,
   getRouteParam,
   describeRouteMap,
-  createResponderRouteListHTML,
-
-  createResponderRouteListHTML as createResponderRouteList // TODO: DEPRECATED
+  createResponderRouteListHTML
 }

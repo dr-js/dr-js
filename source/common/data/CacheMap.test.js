@@ -66,22 +66,21 @@ describe('Common.Data.CacheMap', () => {
     const { cacheMap, dataList } = getTestData(3)
     dataList.forEach(({ key, value }) => cacheMap.set(key, value))
 
-    const packDataList = cacheMap.packList()
+    const packDataList = cacheMap.saveCacheList()
     // console.log('packDataList', packDataList)
 
     const reloadPackDataList = JSON.parse(JSON.stringify(packDataList))
     stringifyEqual(reloadPackDataList, packDataList)
 
-    cacheMap.parseList(packDataList)
+    cacheMap.loadCacheList(reloadPackDataList) // should skip all, since cache data is same
     doSanityTest(cacheMap, 3)
 
     const loadCacheMap = createCacheMap({ valueSizeSumMax: 3 })
-    loadCacheMap.parseList(packDataList)
+    loadCacheMap.loadCacheList(reloadPackDataList) // should apply all, since the map is empty
     doSanityTest(loadCacheMap, 3)
 
-    const repackDataList = loadCacheMap.packList()
+    const repackDataList = loadCacheMap.saveCacheList()
     // console.log('repackDataList', repackDataList)
-
     stringifyEqual(repackDataList, packDataList)
   })
 })
