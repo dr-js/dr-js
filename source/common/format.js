@@ -95,44 +95,59 @@ const padTable = ({
   ).join(cellPad)
 ).join(rowPad)
 
-const prettyStringifyJSONObject = (resultList, object, level, padString) => {
-  const entryList = Object.entries(object)
-  __DEV__ && console.log(' - - Object', JSON.stringify({ level, padString, entryListLength: entryList.length }))
-  if (entryList.length === 0) return resultList.push('{}')
-  resultList.push('{\n')
-  const nextLevel = level - 1
-  const nextPadString = `${padString}  `
-  entryList.forEach(([ key, value ]) => {
-    resultList.push(nextPadString, JSON.stringify(key), ': ')
-    prettyStringifyJSONSwitch(resultList, value, nextLevel, nextPadString)
-    resultList.push(',\n')
-  })
-  resultList[ resultList.length - 1 ] = `\n${padString}}`
-}
-const prettyStringifyJSONArray = (resultList, array, level, padString) => {
-  __DEV__ && console.log(' - - Array', JSON.stringify({ level, padString, arrayLength: array.length }))
-  if (array.length === 0) return resultList.push('[]')
-  resultList.push('[\n')
-  const nextLevel = level - 1
-  const nextPadString = `${padString}  `
-  array.forEach((value) => {
-    resultList.push(nextPadString)
-    prettyStringifyJSONSwitch(resultList, value, nextLevel, nextPadString)
-    resultList.push(',\n')
-  })
-  resultList[ resultList.length - 1 ] = `\n${padString}]`
-}
-const prettyStringifyJSONSwitch = (resultList, value, level, padString) => {
-  __DEV__ && console.log(' - - Switch', JSON.stringify({ level, padString }))
-  if (level >= 1 && value) {
-    if (Array.isArray(value)) return prettyStringifyJSONArray(resultList, value, level, padString)
-    if (typeof (value) === 'object') return prettyStringifyJSONObject(resultList, value, level, padString)
+const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
+  const stringifySwitch = (resultList, value, level, padString) => {
+    __DEV__ && console.log(' - - Switch', JSON.stringify({ level, padString }))
+    if (level >= 1 && value) {
+      if (Array.isArray(value)) return stringifyArray(resultList, value, level, padString)
+      if (typeof (value) === 'object') return stringifyObject(resultList, value, level, padString)
+    }
+    const result = JSON.stringify(value)
+    const isSkippedResult = result === undefined
+    !isSkippedResult && resultList.push(result)
+    return isSkippedResult
   }
-  resultList.push(JSON.stringify(value))
-}
-const prettyStringifyJSON = (value, level = 2) => {
+  const stringifyObject = (resultList, object, level, padString) => {
+    const keyList = Object.keys(object)
+    __DEV__ && console.log(' - - Object', JSON.stringify({ level, padString, keyListLength: keyList.length }))
+    resultList.push('{\n')
+    const nextLevel = level - 1
+    const nextPadString = `${padString}${pad}`
+    for (let index = 0, indexMax = keyList.length; index < indexMax; index++) {
+      const key = keyList[ index ]
+      const value = object[ key ]
+      const startIndex = resultList.length
+      resultList.push('') // placeholder
+      const isSkippedResult = stringifySwitch(resultList, value, nextLevel, nextPadString)
+      if (isSkippedResult) resultList.length--
+      else {
+        resultList[ startIndex ] = `${nextPadString}${JSON.stringify(key)}: `
+        resultList.push(',\n')
+      }
+    }
+    resultList[ resultList.length - 1 ] = resultList.length === 1
+      ? '{}'
+      : `\n${padString}}`
+  }
+  const stringifyArray = (resultList, array, level, padString) => {
+    __DEV__ && console.log(' - - Array', JSON.stringify({ level, padString, arrayLength: array.length }))
+    resultList.push('[\n')
+    const nextLevel = level - 1
+    const nextPadString = `${padString}${pad}`
+    for (let index = 0, indexMax = array.length; index < indexMax; index++) {
+      const value = array[ index ]
+      resultList.push(nextPadString)
+      const isSkippedResult = stringifySwitch(resultList, value, nextLevel, nextPadString)
+      if (isSkippedResult) resultList.push('null')
+      resultList.push(',\n')
+    }
+    resultList[ resultList.length - 1 ] = resultList.length === 1
+      ? '[]'
+      : `\n${padString}]`
+  }
+
   const resultList = []
-  prettyStringifyJSONSwitch(resultList, value, Math.max(level, 0) || 0, '')
+  stringifySwitch(resultList, value, Math.max(unfoldLevel, 0) || 0, '')
   return resultList.join('')
 }
 

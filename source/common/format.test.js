@@ -5,9 +5,9 @@ import {
   mediaTime,
   decimal,
   time,
-  binary
-  // padTable,
-  // prettyStringifyJSON
+  binary,
+  padTable,
+  prettyStringifyJSON
 } from './format'
 
 const { describe, it } = global
@@ -115,5 +115,138 @@ describe('Common.Format', () => {
     strictEqual(binary(-100000000), `-95.37Mi`)
     strictEqual(binary(-100000000000), `-93.13Gi`)
     strictEqual(binary(-Number.MAX_SAFE_INTEGER), `-8192.00Ti`)
+  })
+
+  it('padTable()', () => {
+    const testPadTable = (table, padFuncList, outputLineList = []) => strictEqual(padTable({ table, padFuncList }), outputLineList.join('\n'))
+
+    testPadTable([], undefined, [])
+    testPadTable([ [], [] ], undefined, [ '', '' ])
+    testPadTable([
+      [ 0, 1, 2, 3 ],
+      [ 0, 1 ]
+    ], undefined, [
+      '0 | 1 | 2 | 3',
+      '0 | 1'
+    ])
+    testPadTable([
+      [ 1111, 1111, 1111, 1111 ],
+      [ 0, 0, 0, 0 ]
+    ], [ 'L', 'R', 'L' ], [
+      '1111 | 1111 | 1111 | 1111',
+      '0    |    0 | 0    | 0   '
+    ])
+  })
+
+  it('prettyStringifyJSON()', () => {
+    const testPrettyStringifyJSON = (value, { unfoldLevel, pad } = {}, outputLineList = []) => strictEqual(prettyStringifyJSON(value, unfoldLevel, pad), outputLineList.join('\n'))
+
+    testPrettyStringifyJSON(null, undefined, [ 'null' ])
+    testPrettyStringifyJSON(NaN, undefined, [ 'null' ])
+    testPrettyStringifyJSON(Infinity, undefined, [ 'null' ])
+
+    testPrettyStringifyJSON(undefined, undefined, [ '' ])
+    testPrettyStringifyJSON(() => {}, undefined, [ '' ])
+    testPrettyStringifyJSON(Object.assign(() => {}, { toJSON: () => 'some-value' }), undefined, [ '"some-value"' ])
+    testPrettyStringifyJSON(Symbol(''), undefined, [ '' ])
+
+    testPrettyStringifyJSON({}, undefined, [ '{}' ])
+    testPrettyStringifyJSON([], undefined, [ '[]' ])
+
+    testPrettyStringifyJSON({ a: undefined, b: () => {} }, undefined, [ '{}' ])
+
+    testPrettyStringifyJSON(Object.assign([ Object.assign([], { length: 2 }) ], { length: 2 }), undefined, [
+      '[',
+      '  [',
+      '    null,',
+      '    null',
+      '  ],',
+      '  null',
+      ']'
+    ])
+    testPrettyStringifyJSON(Object.assign([ Object.assign([], { length: 2 }) ], { length: 2 }), { unfoldLevel: 1 }, [
+      '[',
+      '  [null,null],',
+      '  null',
+      ']'
+    ])
+
+    const COMPLEX_OBJECT = {
+      a: undefined,
+      b: () => {},
+      c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
+      d: Symbol(''),
+      _: {
+        _a: undefined,
+        _b: () => {},
+        _c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
+        _d: Symbol('')
+      }
+    }
+    testPrettyStringifyJSON(COMPLEX_OBJECT, undefined, [
+      '{',
+      '  "c": "some-value",',
+      '  "_": {',
+      '    "_c": "some-value"',
+      '  }',
+      '}'
+    ])
+    testPrettyStringifyJSON(COMPLEX_OBJECT, { unfoldLevel: 1 }, [
+      '{',
+      '  "c": "some-value",',
+      '  "_": {"_c":"some-value"}',
+      '}'
+    ])
+    testPrettyStringifyJSON(COMPLEX_OBJECT, { unfoldLevel: 1, pad: '' }, [
+      '{',
+      '"c": "some-value",',
+      '"_": {"_c":"some-value"}',
+      '}'
+    ])
+
+    const COMPLEX_ARRAY = [
+      undefined,
+      () => {},
+      Object.assign(() => {}, { toJSON: () => 'some-value' }),
+      Symbol(''),
+      [
+        undefined,
+        () => {},
+        Object.assign(() => {}, { toJSON: () => 'some-value' }),
+        Symbol('')
+      ]
+    ]
+    testPrettyStringifyJSON(COMPLEX_ARRAY, undefined, [
+      '[',
+      '  null,',
+      '  null,',
+      '  "some-value",',
+      '  null,',
+      '  [',
+      '    null,',
+      '    null,',
+      '    "some-value",',
+      '    null',
+      '  ]',
+      ']'
+    ])
+    testPrettyStringifyJSON(COMPLEX_ARRAY, { unfoldLevel: 1 }, [
+      '[',
+      '  null,',
+      '  null,',
+      '  "some-value",',
+      '  null,',
+      '  [null,null,"some-value",null]',
+      ']'
+    ])
+    testPrettyStringifyJSON(COMPLEX_ARRAY, { unfoldLevel: 1, pad: '' }, [
+      '[',
+      'null,',
+      'null,',
+      '"some-value",',
+      'null,',
+      '[null,null,"some-value",null]',
+      ']'
+    ])
   })
 })

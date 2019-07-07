@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.22.0",
+  "version": "0.22.1-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "build-library-webpack-dev": "babel-node ./script/webpack development watch",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/common/data/CacheMap.test.js",
+    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/common/format.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
@@ -44,8 +44,8 @@
     "npm": ">=6"
   },
   "devDependencies": {
-    "dr-dev": "0.0.6-dev.5",
-    "dr-dev-web-puppeteer": "0.0.6-dev.5"
+    "dr-dev": "0.0.6-dev.6",
+    "dr-dev-web-puppeteer": "0.0.6-dev.6"
   },
   "sideEffects": false
 }
