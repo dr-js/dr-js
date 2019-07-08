@@ -1,8 +1,13 @@
+const escapeString = (string) => JSON.stringify(string).slice(1, -1)
 const describe = (value) => {
-  const valueType = typeof (value)
-  let valueString
-  if (valueType === 'function') valueString = '()=>{...}'
-  else try { valueString = JSON.stringify(value) } catch (error) { valueString = `{...}` }
+  const valueType = Object.prototype.toString.call(value).slice(8, -1) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
+  const valueString = valueType === 'String' ? JSON.stringify(value)
+    : valueType === 'Object' ? `{${escapeString(Object.keys(value))}}`
+      : valueType === 'Array' ? `[#${value.length}]`
+        : valueType === 'Function' ? `()=>{...}`
+          : valueType === 'AsyncFunction' ? `async()=>{...}`
+            : valueType === 'RegExp' ? String(value)
+              : escapeString(String(value))
   return `<${valueType}> ${valueString}`
 }
 

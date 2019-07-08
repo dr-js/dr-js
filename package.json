@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.22.1-dev.0",
+  "version": "0.22.1",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -10,7 +10,6 @@
   "browser": "library/Dr.browser.js",
   "scripts": {
     "// script ======================": "",
-    "script-base": "babel-node ./script quiet",
     "script-pack": "babel-node ./script quiet pack",
     "script-pack-test": "babel-node ./script verbose pack test",
     "script-publish": "babel-node ./script pack publish",

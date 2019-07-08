@@ -1,6 +1,6 @@
 import { strictEqual } from 'source/common/verify'
 import {
-  describe as describeFormat,
+  describe as describeValue,
   percent,
   mediaTime,
   decimal,
@@ -14,22 +14,39 @@ const { describe, it } = global
 
 describe('Common.Format', () => {
   it('describe()', () => {
-    strictEqual(describeFormat(), `<undefined> undefined`)
-    strictEqual(describeFormat(0), `<number> 0`)
-    strictEqual(describeFormat(NaN), `<number> null`)
-    strictEqual(describeFormat(Infinity), `<number> null`)
-    strictEqual(describeFormat(null), `<object> null`)
-    strictEqual(describeFormat(undefined), `<undefined> undefined`)
-    strictEqual(describeFormat({}), `<object> {}`)
-    strictEqual(describeFormat([]), `<object> []`)
-    strictEqual(describeFormat([ {} ]), `<object> [{}]`)
-    strictEqual(describeFormat({ '': [] }), `<object> {"":[]}`)
-    strictEqual(describeFormat(() => {}), `<function> ()=>{...}`)
-    strictEqual(describeFormat(function () {}), `<function> ()=>{...}`)
+    strictEqual(describeValue(), `<Undefined> undefined`)
+    strictEqual(describeValue(undefined), `<Undefined> undefined`)
 
-    const loop = {}
-    loop.loop = loop
-    strictEqual(describeFormat(loop), `<object> {...}`)
+    strictEqual(describeValue(null), `<Null> null`)
+
+    strictEqual(describeValue(false), `<Boolean> false`)
+
+    strictEqual(describeValue(/^[\n]\w$/), `<RegExp> /^[\\n]\\w$/`)
+
+    strictEqual(describeValue(Symbol('123\n')), `<Symbol> Symbol(123\\n)`)
+
+    strictEqual(describeValue(new Set([ 1, 2 ])), `<Set> [object Set]`)
+
+    strictEqual(describeValue(' '), `<String> " "`)
+    strictEqual(describeValue('\n'), `<String> "\\n"`)
+    strictEqual(describeValue('!@#$ "abc" QWE'), `<String> "!@#$ \\"abc\\" QWE"`)
+
+    strictEqual(describeValue(0), `<Number> 0`)
+    strictEqual(describeValue(1e9), `<Number> 1000000000`)
+    strictEqual(describeValue(NaN), `<Number> NaN`)
+    strictEqual(describeValue(Infinity), `<Number> Infinity`)
+
+    strictEqual(describeValue(() => {}), `<Function> ()=>{...}`)
+    strictEqual(describeValue(function () {}), `<Function> ()=>{...}`)
+    strictEqual(describeValue(async () => {}), `<AsyncFunction> async()=>{...}`)
+    strictEqual(describeValue(async function () {}), `<AsyncFunction> async()=>{...}`)
+
+    strictEqual(describeValue([]), `<Array> [#0]`)
+    strictEqual(describeValue([ {} ]), `<Array> [#1]`)
+    strictEqual(describeValue([ 0, 1, 2, 3, 4, 5 ]), `<Array> [#6]`)
+
+    strictEqual(describeValue({}), `<Object> {}`)
+    strictEqual(describeValue({ '': [], 1: 1, a: 'a', ' a a ': '' }), `<Object> {"1","","a"," a a "}`)
   })
 
   it('percent()', () => {

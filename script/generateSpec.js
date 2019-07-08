@@ -13,8 +13,8 @@ const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
 const [
-  ,
-  ,
+  , // node
+  , // script.js
   PATH_FILE_DELETE_CONFIG_RAW
 ] = process.argv
 
