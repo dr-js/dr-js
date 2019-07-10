@@ -33,7 +33,7 @@ const tryParseJSONObject = (text, defaultResult = {}) => {
 
 const getValueByKeyList = (value, keyList) => {
   for (const key of keyList) {
-    if (value && typeof (value) === 'object' && value.hasOwnProperty(key)) value = value[ key ]
+    if (value && Object.prototype.hasOwnProperty.call(value, key)) value = value[ key ]
     else return
   }
   return value

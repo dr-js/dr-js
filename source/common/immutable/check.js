@@ -6,7 +6,7 @@ const isObjectShallowEqual = (value, target) => {
   for (let index = 0, indexMax = valueKeyList.length; index < indexMax; index++) {
     const valueKey = valueKeyList[ index ]
     const targetKey = targetKeyList[ index ]
-    if (!target.hasOwnProperty(valueKey) || value[ valueKey ] !== target[ targetKey ]) return false
+    if (!Object.prototype.hasOwnProperty.call(target, valueKey) || value[ valueKey ] !== target[ targetKey ]) return false
   }
   return true
 }

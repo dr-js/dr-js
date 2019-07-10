@@ -11,7 +11,7 @@ const isObjectAlike = (value) => { // can have key/value: object/array/function
 }
 
 const isBasicObject = (value) => typeof (value) === 'object' && value !== null && !Array.isArray(value)
-const isObjectKey = (value, key) => isBasicObject(value) && value.hasOwnProperty(key)
+const isObjectKey = (value, key) => isBasicObject(value) && Object.prototype.hasOwnProperty.call(value, key)
 const isObjectContain = (value, target) => isBasicObject(value) && Object.entries(target).every(([ key, targetValue ]) => value[ key ] === targetValue)
 
 const isBasicArray = Array.isArray

@@ -5,7 +5,7 @@ const objectSet = (object, key, value) => (object[ key ] !== value)
   : object
 
 const objectDelete = (object, key) => {
-  if (!object.hasOwnProperty(key)) return object
+  if (!Object.prototype.hasOwnProperty.call(object, key)) return object
   const result = { ...object }
   delete result[ key ]
   return result
@@ -27,7 +27,7 @@ const objectMap = (object, mapFunc) => {
 const objectPickKey = (object, keyList) => { // not copy value from prototype
   const result = {}
   for (const key of keyList) {
-    if (object.hasOwnProperty(key)) result[ key ] = object[ key ]
+    if (Object.prototype.hasOwnProperty.call(object, key)) result[ key ] = object[ key ]
   }
   return result
 }

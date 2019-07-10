@@ -3,7 +3,6 @@
 [![i:npm]][l:npm]
 [![i:ci]][l:ci]
 [![i:size]][l:size]
-[![i:lint]][l:lint]
 [![i:npm-dev]][l:npm]
 
 A collection of strange functions
@@ -15,8 +14,6 @@ A collection of strange functions
 [l:ci]: https://travis-ci.org/dr-js/dr-js
 [i:size]: https://packagephobia.now.sh/badge?p=dr-js
 [l:size]: https://packagephobia.now.sh/result?p=dr-js
-[i:lint]: https://img.shields.io/badge/code_style-standard_ES6+-yellow.svg
-[l:lint]: https://standardjs.com
 
 [//]: # (NON_PACKAGE_CONTENT)
 

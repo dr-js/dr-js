@@ -69,14 +69,16 @@ runMain(async (logger) => {
 
   if (!argvFlag('pack')) return
 
+  if (argvFlag('test', 'publish', 'publish-dev')) {
+    logger.padLog(`lint source`)
+    execSync(`npm run lint`, execOptionRoot)
+  }
+
   await buildOutput({ logger })
   await processOutput({ logger })
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
     await processOutput({ logger }) // once more
-
-    logger.padLog(`lint source`)
-    execSync(`npm run lint`, execOptionRoot)
 
     logger.padLog(`test output`)
     execSync(`npm run test-output-library`, execOptionRoot)

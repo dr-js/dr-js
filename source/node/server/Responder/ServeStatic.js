@@ -46,7 +46,7 @@ const createResponderServeStatic = ({
   serveCacheMap = createDefaultCacheMap()
 }) => {
   const serveCache = async (store, filePath, encoding, range) => {
-    let bufferData = serveCacheMap.get(filePath)
+    const bufferData = serveCacheMap.get(filePath)
     if (!bufferData) return false
     __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
     encoding && store.response.setHeader('content-encoding', encoding)
