@@ -41,15 +41,15 @@ const getRandomIntList = (a, b, count) => {
   const from = Math.min(a, b)
   const to = Math.max(a, b)
   const resultList = []
-  for (let i = 0, iMax = Math.min(count, (to - from + 1)); i < iMax; i++) {
-    let next = RANDOM_INT(from, to - i)
-    let j = 0
-    while (j < resultList.length) {
-      if (resultList[ j ] > next) break
+  for (let index = 0, indexMax = Math.min(count, (to - from + 1)); index < indexMax; index++) {
+    let next = RANDOM_INT(from, to - index)
+    let insertIndex = 0
+    while (insertIndex < resultList.length) {
+      if (resultList[ insertIndex ] > next) break
       next++
-      j++
+      insertIndex++
     }
-    resultList.splice(j, 0, next)
+    resultList.splice(insertIndex, 0, next)
   }
   return resultList
 }

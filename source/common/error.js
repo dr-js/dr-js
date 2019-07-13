@@ -22,6 +22,15 @@ const catchAsync = async (func, ...args) => {
   return { result, error: resultError }
 }
 
+// NOTE: reference async-less implementation
+// const catchAsync = (func, ...args) => {
+//   try {
+//     return Promise.resolve(func(...args)).then(packResult, packError)
+//   } catch (error) { return Promise.resolve(packError(error)) }
+// }
+// const packResult = (result) => ({ result, error: undefined })
+// const packError = (error) => ({ result: undefined, error: error || new Error() })
+
 export {
   rethrowError,
   tryCall,

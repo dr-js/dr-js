@@ -41,8 +41,13 @@ const oneOf = (value, validList, message) => isOneOf(value, validList) || throwE
 
 const doThrow = (func, message) => isFunctionThrow(func) || throwError('DoThrow', message)
 const doNotThrow = (func, message) => isFunctionThrow(func) && throwError('DoNotThrow', message)
+
 const doThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) || throwError('DoThrowAsync', message)
-const doNotThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) && throwError('DoThrowAsync', message)
+const doNotThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) && throwError('DoNotThrowAsync', message)
+
+// NOTE: reference async-less implementation
+// const doThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => !isThrow && throwError('DoThrowAsync', message))
+// const doNotThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => isThrow && throwError('DoNotThrowAsync', message))
 
 const describeEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
 

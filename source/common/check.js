@@ -33,6 +33,16 @@ const isFunctionThrowAsync = async (func) => {
     return (await func()) && false
   } catch (error) { return true }
 }
+
+// NOTE: reference async-less implementation
+// const isFunctionThrowAsync = (func) => {
+//   try {
+//     return Promise.resolve(func()).then(funcNotThrow, funcDoThrow)
+//   } catch (error) { return Promise.resolve(true) }
+// }
+// const funcNotThrow = () => false
+// const funcDoThrow = () => true
+
 const isStrictEqual = (value, target) => Object.is(value, target)
 const isStringifyEqual = (value, target) => {
   if (Object.is(value, target)) return true

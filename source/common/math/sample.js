@@ -7,14 +7,14 @@ const getSample = (func, size) => {
 // from <= to
 // returns [ from, from + 1, from + 2, ..., to -2, to - 1, to ]
 const getSampleRange = (from, to) => getSample(
-  (i) => (i + from),
+  (index) => (index + from),
   to - from + 1
 )
 
 // divide = 1, 2, 3, ...
 // returns [ 0, 1 / divide, 2 / divide, ..., (divide - 1) / divide, 1 ]
 const getSampleRate = (divide) => getSample(
-  (i) => i / divide,
+  (index) => index / divide,
   1 + divide
 )
 

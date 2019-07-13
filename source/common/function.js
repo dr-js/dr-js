@@ -89,6 +89,22 @@ const withRepeatAsync = async (func, count = 0, wait = 0) => {
   }
 }
 
+// NOTE: reference async-less implementation
+// const withRepeatAsync = (func, count = 0, wait = 0) => {
+//   let looped = 0
+//   const loopThen = () => {
+//     if (!(count > looped)) return // done
+//     const startTime = clock()
+//     return Promise.resolve(func(looped, count)).then(() => {
+//       looped++
+//       const remainingTime = wait - (clock() - startTime)
+//       if (remainingTime > 0) return setTimeoutAsync(remainingTime).then(loopThen)
+//       return loopThen()
+//     })
+//   }
+//   return Promise.resolve(loopThen())
+// }
+
 // if maxRetry is always 0, should just skip this wrap
 const withRetry = (func, maxRetry = Infinity) => {
   let failed = 0
@@ -112,6 +128,28 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
     }
   }
 }
+
+// NOTE: reference async-less implementation
+// const withRetryAsync = (func, maxRetry = Infinity, wait = 0) => {
+//   let failed = 0
+//   const promiseFunc = () => {
+//     try {
+//       return Promise.resolve(func(failed, maxRetry))
+//     } catch (error) { return Promise.reject(error) }
+//   }
+//   const loopThen = () => {
+//     const startTime = clock()
+//     return promiseFunc().then(onResult, (error) => {
+//       failed++
+//       if (maxRetry < failed) return Promise.reject(error)
+//       const remainingTime = wait - (clock() - startTime)
+//       if (remainingTime > 0) return setTimeoutAsync(remainingTime).then(loopThen)
+//       return loopThen()
+//     })
+//   }
+//   return loopThen()
+// }
+// const onResult = (result) => result
 
 // to prevent async hanging (un-resolving promise)
 const withTimeoutAsync = (func, timeout) => withTimeoutPromise(func(), timeout)
