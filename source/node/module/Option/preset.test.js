@@ -181,7 +181,7 @@ describe('Node.Module.Option.preset', () => {
     testParseCompact('config////|a|b\nc', { name: 'config', aliasNameList: [], description: 'a|b\nc' })
 
     testParseCompact('config,a,b,c', { name: 'config', aliasNameList: [ 'a', 'b', 'c' ], shortName: 'a' })
-    testParseCompact('config,aa,b,c', { name: 'config', aliasNameList: [ 'aa', 'b', 'c' ] })
+    testParseCompact('config,aa,b,c', { name: 'config', aliasNameList: [ 'aa', 'b', 'c' ], shortName: 'b' })
 
     testParseCompact('config/SingleString', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
     testParseCompact('config/SS', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })

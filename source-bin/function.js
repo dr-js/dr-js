@@ -114,7 +114,12 @@ const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList 
   ].map(({ address }) => `'${protocol}//${address}:${port}'`))
 ].filter(Boolean))
 
-const commonStartServer = async ({ protocol, hostname, port, routeConfigList, isAddFavicon, title, extraInfoList, log }) => {
+const commonStartServer = async ({
+  protocol, hostname, port,
+  routeConfigList,
+  isAddFavicon, title, extraInfoList,
+  log
+}) => {
   const { server, option, start, stop } = createServer({ protocol, hostname, port })
   const responderLogEnd = createResponderLogEnd({ log })
   if (isAddFavicon) routeConfigList = [ ...routeConfigList, [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ] ]

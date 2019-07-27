@@ -20,12 +20,12 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
   const routeConfigList = [
     [ [ '/test-describe', '/test-describe/*' ], Object.keys(METHOD_MAP), async (store) => {
       const { url, method, httpVersion, rawHeaders, socket: { remoteAddress, remotePort } } = store.request
-      const describeString = JSON.stringify({
+      const describeObject = {
         from: `${remoteAddress}:${remotePort}`,
         request: { url, method, httpVersion, headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')) }
-      }, null, 2)
-      log(`[test-describe]\n${describeString}`)
-      return responderSendBufferCompress(store, { buffer: Buffer.from(describeString), type: BASIC_EXTENSION_MAP.json })
+      }
+      log(`[test-describe]\n${JSON.stringify(describeObject, null, 2)}`)
+      return responderSendJSON(store, { object: describeObject })
     } ],
     [ [ '/test-echo-post', '/test-echo-post/:mime' ], 'POST', async (store) => {
       const { url: { searchParams } } = store.getState()
@@ -41,7 +41,7 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
     [ [ '/test-timeout', '/test-timeout/:wait' ], BASIC_METHOD_LIST, async (store) => {
       const wait = parseInt(getRouteParam(store, 'wait')) || 200
       await setTimeoutAsync(wait)
-      return responderSendJSON(store, { object: {} })
+      return responderSendJSON(store, { object: { wait } })
     } ],
     [ [ '/test-status-code', '/test-status-code/:status-code' ], BASIC_METHOD_LIST, async (store) => {
       const statusCode = parseInt(getRouteParam(store, 'status-code')) || 200
@@ -54,7 +54,7 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
         const currentCount = (retryMap[ count ] || 0) + 1
         retryMap[ count ] = currentCount % count
         currentCount === count
-          ? responderSendJSON(store, { object: {} })
+          ? await responderSendJSON(store, { object: { count } })
           : store.response.destroy()
       }
     })() ],
@@ -65,9 +65,7 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
   ]
 
   await commonStartServer({
-    protocol,
-    hostname,
-    port,
+    protocol, hostname, port,
     routeConfigList,
     isAddFavicon: true,
     title: 'TestConnection',

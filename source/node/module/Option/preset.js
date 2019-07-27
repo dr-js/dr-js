@@ -57,8 +57,7 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
 ) => {
   const [ compactTag, ...descriptionList ] = compactFormat.split('|')
   const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
-  const [ name, ...aliasNameList ] = nameTag.split(',')
-  const shortName = aliasNameList[ 0 ]
+  const nameTagList = nameTag.split(',') // [ name, ...aliasNameList ]
   const presetList = presetTag.split(',')
   return Object.assign(
     {},
@@ -67,9 +66,9 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
       return Preset[ presetName ]
     }).filter(Boolean),
     objectDeleteUndefined({
-      name,
-      shortName: (shortName && shortName.length === 1) ? aliasNameList[ 0 ] : undefined,
-      aliasNameList,
+      name: nameTagList[ 0 ],
+      shortName: nameTagList.find((nameTag) => nameTag.length === 1),
+      aliasNameList: nameTagList.slice(1),
       argumentCount: argumentCount || undefined,
       description: descriptionList.join('|') || undefined
     }),
