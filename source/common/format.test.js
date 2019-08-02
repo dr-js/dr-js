@@ -193,31 +193,43 @@ describe('Common.Format', () => {
       b: () => {},
       c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
       d: Symbol(''),
+      e: {},
+      f: [],
       _: {
         _a: undefined,
         _b: () => {},
         _c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
-        _d: Symbol('')
+        _d: Symbol(''),
+        _e: {},
+        _f: []
       }
     }
     testPrettyStringifyJSON(COMPLEX_OBJECT, undefined, [
       '{',
       '  "c": "some-value",',
+      '  "e": {},',
+      '  "f": [],',
       '  "_": {',
-      '    "_c": "some-value"',
+      '    "_c": "some-value",',
+      '    "_e": {},',
+      '    "_f": []',
       '  }',
       '}'
     ])
     testPrettyStringifyJSON(COMPLEX_OBJECT, { unfoldLevel: 1 }, [
       '{',
       '  "c": "some-value",',
-      '  "_": {"_c":"some-value"}',
+      '  "e": {},',
+      '  "f": [],',
+      '  "_": {"_c":"some-value","_e":{},"_f":[]}',
       '}'
     ])
     testPrettyStringifyJSON(COMPLEX_OBJECT, { unfoldLevel: 1, pad: '' }, [
       '{',
       '"c": "some-value",',
-      '"_": {"_c":"some-value"}',
+      '"e": {},',
+      '"f": [],',
+      '"_": {"_c":"some-value","_e":{},"_f":[]}',
       '}'
     ])
 

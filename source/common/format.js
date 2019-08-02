@@ -116,6 +116,7 @@ const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
     const keyList = Object.keys(object)
     __DEV__ && console.log(' - - Object', JSON.stringify({ level, padString, keyListLength: keyList.length }))
     resultList.push('{\n')
+    const resultListLength = resultList.length
     const nextLevel = level - 1
     const nextPadString = `${padString}${pad}`
     for (let index = 0, indexMax = keyList.length; index < indexMax; index++) {
@@ -130,13 +131,14 @@ const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
         resultList.push(',\n')
       }
     }
-    resultList[ resultList.length - 1 ] = resultList.length === 1
+    resultList[ resultList.length - 1 ] = resultList.length === resultListLength
       ? '{}'
       : `\n${padString}}`
   }
   const stringifyArray = (resultList, array, level, padString) => {
     __DEV__ && console.log(' - - Array', JSON.stringify({ level, padString, arrayLength: array.length }))
     resultList.push('[\n')
+    const resultListLength = resultList.length
     const nextLevel = level - 1
     const nextPadString = `${padString}${pad}`
     for (let index = 0, indexMax = array.length; index < indexMax; index++) {
@@ -146,7 +148,7 @@ const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
       if (isSkippedResult) resultList.push('null')
       resultList.push(',\n')
     }
-    resultList[ resultList.length - 1 ] = resultList.length === 1
+    resultList[ resultList.length - 1 ] = resultList.length === resultListLength
       ? '[]'
       : `\n${padString}]`
   }
