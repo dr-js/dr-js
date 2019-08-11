@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.22.3-dev.0",
+  "version": "0.22.3",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -39,12 +39,12 @@
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
   "engines": {
-    "node": ">=10.15",
-    "npm": ">=6"
+    "node": ">=10.16",
+    "npm": ">=6.10"
   },
   "devDependencies": {
-    "dr-dev": "0.0.6",
-    "dr-dev-web-puppeteer": "0.0.6"
+    "dr-dev": "0.0.7-dev.0",
+    "dr-dev-web-puppeteer": "0.0.7-dev.0"
   },
   "sideEffects": false
 }
