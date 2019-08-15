@@ -136,7 +136,7 @@
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `bufferToStream`, `pipeStreamAsync`
+  - `bufferToReadableStream`, `pipeStreamAsync`
 + 📄 [source/node/data/function.js](source/node/data/function.js)
   - `getRandomBufferAsync`
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
@@ -335,7 +335,7 @@
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
-      - `bufferToStream`, `pipeStreamAsync`
+      - `bufferToReadableStream`, `pipeStreamAsync`
     - `getRandomBufferAsync`
   - **File**
     - **Compress**
@@ -474,9 +474,9 @@
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
->       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000
+>       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
->       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000
+>       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-websocket-group --swg [OPTIONAL]
 >       websocket chat server: -H=hostname:port
 >   --server-test-connection --stc [OPTIONAL]

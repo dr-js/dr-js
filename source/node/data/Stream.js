@@ -1,4 +1,4 @@
-import { Duplex } from 'stream'
+import { Readable } from 'stream'
 
 // TODO: should also check event from writableStream
 const pipeStreamAsync = (writableStream, readableStream) => new Promise((resolve, reject) => {
@@ -10,14 +10,14 @@ const pipeStreamAsync = (writableStream, readableStream) => new Promise((resolve
   readableStream.pipe(writableStream)
 })
 
-const bufferToStream = (buffer) => {
-  const stream = new Duplex()
-  stream.push(buffer)
-  stream.push(null)
-  return stream
+const bufferToReadableStream = (buffer) => {
+  const readableStream = new Readable()
+  readableStream.push(buffer)
+  readableStream.push(null)
+  return readableStream
 }
 
 export {
   pipeStreamAsync,
-  bufferToStream
+  bufferToReadableStream
 }

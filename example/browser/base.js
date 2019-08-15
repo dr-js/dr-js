@@ -52,20 +52,20 @@ Object.assign(window, {
 window.addContent(`
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; outline-color: #f00; }
-::-webkit-scrollbar-thumb { background: #0004; }
-::-webkit-scrollbar-thumb:hover { background: #0006; }
+
+* { scrollbar-color: #888a #6664; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #8886; }
+::-webkit-scrollbar-thumb:hover { background: #888a; }
+
+body { overflow: auto; display: flex; flex-flow: column; height: 100vh; font-family: monospace; font-size: 16px; }
+
 button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: hsla(0, 0%, 70%, 0.4); box-shadow: inset 0 0 0 1px #888; }
 button:hover, .button:hover { background: hsla(0, 0%, 80%, 0.4); box-shadow: inset 0 0 0 1px #aaa; }
 button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; box-shadow: inset 0 0 0 1px #e00; }
 button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: hsla(0, 0%, 100%, 0.4); box-shadow: unset; }
-@media (pointer: fine) { 
-  ::-webkit-scrollbar { width: 14px; height: 14px; }
-  button, .button, .auto-height { min-height: 20px; font-size: 14px; } 
-}
-@media (pointer: coarse) { 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  button, .button, .auto-height { min-height: 32px; font-size: 18px; } 
-}
+@media (pointer: fine) { button, .button, .auto-height { min-height: 20px; font-size: 14px; } }
+@media (pointer: coarse) { button, .button, .auto-height { min-height: 32px; font-size: 18px; } }
 
 textarea { outline: none; resize: none; background: transparent; }
 canvas { background-color: #ddd; margin: 0; padding: 0; border: 0; image-rendering: pixelated; }

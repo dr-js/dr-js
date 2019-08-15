@@ -9,7 +9,7 @@ import { indentList } from 'dr-js/module/common/string'
 import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
 
-import { pipeStreamAsync, bufferToStream } from 'dr-js/module/node/data/Stream'
+import { pipeStreamAsync, bufferToReadableStream } from 'dr-js/module/node/data/Stream'
 import { createDirectory } from 'dr-js/module/node/file/File'
 import { modify } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
@@ -47,7 +47,7 @@ const runMode = async (modeName, optionData) => {
   const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
-    : pipeStreamAsync(process.stdout, bufferToStream(buffer))
+    : pipeStreamAsync(process.stdout, bufferToReadableStream(buffer))
   const outputStream = (stream) => pipeStreamAsync(
     outputFile ? createWriteStream(outputFile) : process.stdout,
     stream
@@ -151,7 +151,7 @@ const runMode = async (modeName, optionData) => {
 
     case 'server-serve-static':
     case 'server-serve-static-simple': {
-      const [ expireTime = 5 * 60 * 1000 ] = argumentList // expireTime: 5min, in msec
+      const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
       const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = tryGetFirst('root') || process.cwd()
       return startServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })

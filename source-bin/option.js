@@ -41,8 +41,8 @@ const MODE_FORMAT_LIST = parseList(
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
-  'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000',
-  'server-serve-static-simple,ssss//0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*60*1000',
+  'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
+  'server-serve-static-simple,ssss//0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-websocket-group,swg|websocket chat server: -H=hostname:port',
   'server-test-connection,stc|connection test server: -H=hostname:port',
   'server-tcp-proxy,stp//1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...'

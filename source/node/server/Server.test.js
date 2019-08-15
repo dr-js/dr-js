@@ -1,6 +1,6 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { fetchLikeRequest } from 'source/node/net'
-import { bufferToStream } from 'source/node/data/Stream'
+import { bufferToReadableStream } from 'source/node/data/Stream'
 import { createServer, createRequestListener } from './Server'
 import { getUnusedPort } from './function'
 import {
@@ -34,9 +34,9 @@ describe('Node.Server.Server', () => {
             [ '/test-buffer-range', 'GET', (store) => responderSendBufferRange(store, { buffer: TEST_BUFFER }, [ 4, 8 ]) ],
             [ '/test-buffer-gzip', 'GET', (store) => responderSendBufferCompress(store, { buffer: TEST_BUFFER }) ],
 
-            [ '/test-stream', 'GET', (store) => responderSendStream(store, { stream: bufferToStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
-            [ '/test-stream-range', 'GET', (store) => responderSendStreamRange(store, { streamRange: bufferToStream(TEST_BUFFER.slice(4, 8 + 1)), length: TEST_BUFFER.length }, [ 4, 8 ]) ],
-            [ '/test-stream-gzip', 'GET', (store) => responderSendStreamCompress(store, { stream: bufferToStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
+            [ '/test-stream', 'GET', (store) => responderSendStream(store, { stream: bufferToReadableStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
+            [ '/test-stream-range', 'GET', (store) => responderSendStreamRange(store, { streamRange: bufferToReadableStream(TEST_BUFFER.slice(4, 8 + 1)), length: TEST_BUFFER.length }, [ 4, 8 ]) ],
+            [ '/test-stream-gzip', 'GET', (store) => responderSendStreamCompress(store, { stream: bufferToReadableStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
 
             [ '/test-json', 'GET', (store) => responderSendJSON(store, { object: { testKey: 'testValue' } }) ]
           ]),

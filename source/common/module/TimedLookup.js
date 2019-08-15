@@ -28,13 +28,14 @@ const verifyOption = ({
   tag = getTimestamp().toString(36), // /^\w*$/ only, public visible, set a long tag will cause long checkCode
   size = 64 * 1024, // in byte, 32 based, min 1024byte
   tokenSize = 8, // in byte, min 2byte, max 13byte (limited by calc step `Math.pow(16, tokenSize)`)
-  timeGap = 30 // in sec, min 1sec, set amount of client-server time diff is accepted
+  timeGap = 30, // in sec, min 1sec, set amount of client-server time diff is accepted
+  info = null // extra data, any JSON value, can be used for marking what this is for
 }) => {
   if (!/^\w*$/.test(tag)) throw new Error(`invalid tag: ${tag}`)
   if (!Number.isInteger(size) || size <= 1024 || size % 32) throw new Error(`invalid size: ${size}`)
   if (!Number.isInteger(tokenSize) || tokenSize > 13 || tokenSize < 2) throw new Error(`invalid tokenSize: ${tokenSize}`)
   if (!Number.isInteger(timeGap) || timeGap < 1) throw new Error(`invalid timeGap: ${timeGap}`)
-  return { tag, size, tokenSize, timeGap }
+  return { tag, size, tokenSize, timeGap, info }
 }
 
 const verifyCheckCode = (
@@ -88,15 +89,15 @@ const parseCheckCode = (checkCodeString) => {
   return resultList // [ tagString, timestamp, codeString ]
 }
 
-const packDataArrayBuffer = ({ tag, size, tokenSize, timeGap, dataView }) => packArrayBufferPacket(
-  JSON.stringify([ tag, size, tokenSize, timeGap ]),
+const packDataArrayBuffer = ({ tag, size, tokenSize, timeGap, info, dataView }) => packArrayBufferPacket(
+  JSON.stringify([ tag, size, tokenSize, timeGap, info ]),
   dataView.buffer
 )
 
 const parseDataArrayBuffer = (dataArrayBuffer) => {
   const [ headerString, payloadArrayBuffer ] = parseArrayBufferPacket(dataArrayBuffer)
-  const [ tag, size, tokenSize, timeGap ] = JSON.parse(headerString)
-  return { tag, size, tokenSize, timeGap, dataView: new DataView(payloadArrayBuffer) }
+  const [ tag, size, tokenSize, timeGap, info = null ] = JSON.parse(headerString)
+  return { tag, size, tokenSize, timeGap, info, dataView: new DataView(payloadArrayBuffer) }
 }
 
 export {

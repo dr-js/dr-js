@@ -17,18 +17,18 @@ NOTE: (of the weirdness, may get changed later)
 basic usage syntax:
 
 - eval script string
-  > ```bash
+  > ```shell script
   > dr-js\
   >   -e "return require('dr-js/library/common/format').describe(evalArgv)"\
   >     arg0 arg1 "arg2 with space"
   > ```
 - for result & output log
-  > ```bash
+  > ```shell script
   > dr-js\
   >   -e "return console.log(evalArgv), 123" arg0 arg1 > output.log
   > ```
 - for result only
-  > ```bash
+  > ```shell script
   > dr-js\
   >   -O result.txt\
   >   -e "return console.log(evalArgv), 123" arg0 arg1
@@ -38,7 +38,7 @@ some helpful quick composed shell scripts:
 
 - format JSON
   > for cut up super-long JSON, or fold super-deep ones
-  > ```bash
+  > ```shell script
   > ARG0_FILE_JSON=package-lock.json
   > ARG1_FORMAT_JSON_LEVEL=3
   > 
@@ -49,7 +49,7 @@ some helpful quick composed shell scripts:
   > ```
 
 - simple TimedLookup
-  > ```bash
+  > ```shell script
   > dr-js -e "$(cat <<- 'EOM'
   >   const { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } = require('dr-js/library/common/module/TimedLookup')
   >   const { toArrayBuffer } = require('dr-js/library/node/data/Buffer')
@@ -58,8 +58,8 @@ some helpful quick composed shell scripts:
   >   const loadTimedLookup = () => parseDataArrayBuffer(toArrayBuffer(readFileSync(evalOption.getFirst('root'))))
   >   switch (mode) {
   >     case 'file-generate': case 'fg': {
-  >       const [ tag, size, tokenSize, timeGap ] = extraArgv
-  >       return Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size: Number(size), tokenSize: Number(tokenSize), timeGap: Number(timeGap) })))
+  >       const [ tag, size, tokenSize, timeGap, info = null ] = extraArgv
+  >       return Buffer.from(packDataArrayBuffer(generateLookupData({ tag, size: Number(size), tokenSize: Number(tokenSize), timeGap: Number(timeGap), info: info && JSON.parse(info) })))
   >     }
   >     case 'check-code-generate': case 'ccg': {
   >       const [ timestamp ] = extraArgv
