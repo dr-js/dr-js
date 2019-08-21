@@ -10,14 +10,14 @@ import { setTimeoutAsync } from 'dr-js/module/common/time'
 import { isBasicObject, isBasicFunction } from 'dr-js/module/common/check'
 
 import { pipeStreamAsync, bufferToReadableStream } from 'dr-js/module/node/data/Stream'
-import { createDirectory } from 'dr-js/module/node/file/File'
-import { modify } from 'dr-js/module/node/file/Modify'
+import { createDirectory } from 'dr-js/module/node/file/Directory'
+import { modifyMove, modifyCopy, modifyDelete } from 'dr-js/module/node/file/Modify'
 import { autoTestServerPort } from 'dr-js/module/node/server/function'
 import { createTCPProxyServer } from 'dr-js/module/node/server/TCPProxyServer'
 import { getDefaultOpen } from 'dr-js/module/node/system/DefaultOpen'
 import { runSync } from 'dr-js/module/node/system/Run'
-import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'dr-js/module/node/system/ProcessStatus'
-import { getSystemStatus, describeSystemStatus, getCurrentProcessStatus } from 'dr-js/module/node/system/Status'
+import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'dr-js/module/node/system/Process'
+import { getSystemStatus, describeSystemStatus } from 'dr-js/module/node/system/Status'
 
 import { startServerServeStatic } from './server/serveStatic'
 import { startServerWebSocketGroup } from './server/websocketGroup'
@@ -98,10 +98,7 @@ const runMode = async (modeName, optionData) => {
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
     }
     case 'status':
-      return logAuto(isOutputJSON
-        ? { system: getSystemStatus(), process: getCurrentProcessStatus() }
-        : describeSystemStatus()
-      )
+      return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
 
     case 'file-list':
     case 'file-list-all':
@@ -111,11 +108,11 @@ const runMode = async (modeName, optionData) => {
       for (const path of argumentList) await logTaskResult(createDirectory, path)
       return
     case 'file-modify-copy':
-      return modify.copy(argumentList[ 0 ], argumentList[ 1 ])
+      return modifyCopy(argumentList[ 0 ], argumentList[ 1 ])
     case 'file-modify-move':
-      return modify.move(argumentList[ 0 ], argumentList[ 1 ])
+      return modifyMove(argumentList[ 0 ], argumentList[ 1 ])
     case 'file-modify-delete':
-      for (const path of argumentList) await logTaskResult(modify.delete, path)
+      for (const path of argumentList) await logTaskResult(modifyDelete, path)
       return
     case 'file-merge': {
       const [ mergedFile, ...fileList ] = argumentList

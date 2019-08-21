@@ -5,11 +5,11 @@ import { padTable } from 'source/common/format'
 import {
   getProcessListAsync,
   toProcessTree
-} from './ProcessStatus'
+} from './Process'
 
 const { describe, it } = global
 
-describe('Node.System.ProcessStatus', () => {
+describe('Node.System.Process', () => {
   it('getProcessListAsync()', async () => {
     const result = await getProcessListAsync()
     __DEV__ && console.log(padTable({

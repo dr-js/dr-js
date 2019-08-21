@@ -136,21 +136,21 @@
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `bufferToReadableStream`, `pipeStreamAsync`
+  - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
 + 📄 [source/node/data/function.js](source/node/data/function.js)
   - `getRandomBufferAsync`
 + 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
   - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
-+ 📄 [source/node/file/File.js](source/node/file/File.js)
-  - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `trimDirectory`
+  - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
-  - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
+  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyMove`
++ 📄 [source/node/file/Path.js](source/node/file/Path.js)
+  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `nearestExistPath`, `toPosixPath`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
-  - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+  - `appendFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
@@ -201,12 +201,12 @@
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
   - `getNetworkIPv4AddressList`
-+ 📄 [source/node/system/ProcessStatus.js](source/node/system/ProcessStatus.js)
++ 📄 [source/node/system/Process.js](source/node/system/Process.js)
   - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runQuiet`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
 #### Export Tree
 - **Browser**
@@ -335,20 +335,20 @@
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
-      - `bufferToReadableStream`, `pipeStreamAsync`
+      - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
     - `getRandomBufferAsync`
   - **File**
     - **Compress**
       - `checkBloat`, `compressFile`, `compressFileList`
     - **Directory**
-      - `copyDirectoryInfoTree`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
-    - **File**
-      - `ERROR_STAT`, `FILE_TYPE`, `copyPath`, `createDirectory`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `trimDirectory`
+      - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
     - **Modify**
-      - `copyDirectory`, `copyFile`, `deleteDirectory`, `deleteFile`, `modify`, `move`, `withTempDirectory`
+      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyMove`
+    - **Path**
+      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `nearestExistPath`, `toPosixPath`
     - **Watch**
       - `createFileWatcher`
-    - `appendFileAsync`, `copyFileAsync`, `createPathPrefixLock`, `createReadStream`, `createReadlineFromFileAsync`, `createReadlineFromStreamAsync`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `nearestExistAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `toPosixPath`, `trimPathDepth`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
+    - `appendFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
   - **Module**
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
@@ -397,12 +397,12 @@
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **NetworkAddress**
       - `getNetworkIPv4AddressList`
-    - **ProcessStatus**
+    - **Process**
       - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **Run**
       - `run`, `runQuiet`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getCurrentProcessStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
     - `fetchLikeRequest`, `ping`, `requestAsync`
   - **Resource**

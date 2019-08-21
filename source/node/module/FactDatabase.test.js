@@ -2,7 +2,7 @@ import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { resolve } from 'path'
 import { createFactDatabase, tryDeleteExtraCache } from './FactDatabase'
 import { getFileList } from 'source/node/file/Directory'
-import { modify } from 'source/node/file/Modify'
+import { modifyDelete } from 'source/node/file/Modify'
 
 const { describe, it, after } = global
 
@@ -59,7 +59,7 @@ const basicTest = async (pathFactDirectory) => {
   return factDB.getState()
 }
 
-after('clear', () => modify.delete(TEST_ROOT))
+after('clear', () => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.FactDatabase', () => {
   it('createFactDatabase()', async () => {

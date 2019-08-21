@@ -1,6 +1,6 @@
-import { join as joinPath, dirname, basename } from 'path'
-import { readdirAsync } from './function'
-import { FILE_TYPE, getPathStat, getPathTypeFromStat, createDirectory, deletePath, movePath, copyPath } from './File'
+import { join, dirname, basename } from 'path'
+import { readdirAsync, mkdirAsync } from './function'
+import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, movePath, copyPath, deletePath } from './Path'
 
 const getDirectorySubInfoList = async (path, pathStat) => {
   // __DEV__ && console.log('getDirectorySubInfoList', { path, pathStat: Boolean(pathStat) })
@@ -8,7 +8,7 @@ const getDirectorySubInfoList = async (path, pathStat) => {
   if (!pathStat.isDirectory()) throw new Error(`error pathType: ${getPathTypeFromStat(pathStat)} for ${path}`)
   const subInfoList = []
   for (const name of await readdirAsync(path)) {
-    const subPath = joinPath(path, name)
+    const subPath = join(path, name)
     const stat = await getPathStat(subPath)
     const type = getPathTypeFromStat(stat)
     subInfoList.push({ path: subPath, name, stat, type })
@@ -61,20 +61,20 @@ const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback)
   }
 }
 
+const moveDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
+  await createDirectory(pathTo)
+  for (const { path, name, stat } of subInfoListMap[ root ]) await movePath(path, join(pathTo, name), stat)
+}
+
 const copyDirectoryInfoTree = async (infoTree, pathTo) => {
   await createDirectory(pathTo)
   const pathToMap = { [ infoTree.root ]: pathTo }
   return walkDirectoryInfoTree(infoTree, ({ path, name, stat }) => {
     const upperPath = dirname(path)
-    const pathTo = joinPath(pathToMap[ upperPath ], name)
+    const pathTo = join(pathToMap[ upperPath ], name)
     pathToMap[ path ] = pathTo
     return copyPath(path, pathTo, stat)
   })
-}
-
-const moveDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
-  await createDirectory(pathTo)
-  for (const { path, name, stat } of subInfoListMap[ root ]) await movePath(path, joinPath(pathTo, name), stat)
 }
 
 const deleteDirectoryInfoTree = async (infoTree) => walkDirectoryInfoTreeBottomUp(
@@ -82,19 +82,31 @@ const deleteDirectoryInfoTree = async (infoTree) => walkDirectoryInfoTreeBottomU
   ({ path, stat }) => deletePath(path, stat)
 )
 
+const createDirectory = async (path, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (pathStat.isDirectory()) return // directory exist, pass
+  if (pathStat !== STAT_ERROR) throw new Error(`path already taken by non-directory: ${path}`)
+  await createDirectory(dirname(path)) // check up
+  await mkdirAsync(path) // create directory
+}
+
+const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirectoryInfoTree(await getDirectoryInfoTree(pathFrom, pathStat), pathTo)
+
+const deleteDirectory = async (path, pathStat) => {
+  await deleteDirectoryInfoTree(await getDirectoryInfoTree(path, pathStat))
+  return deletePath(path, pathStat)
+}
+
 const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
   const fileList = []
   const pathStat = await getPathStat(path)
   const pathType = getPathTypeFromStat(pathStat)
   switch (pathType) {
-    case FILE_TYPE.File:
+    case PATH_TYPE.File:
       fileCollector(fileList, { path, name: basename(path), stat: pathStat, type: pathType })
       break
-    case FILE_TYPE.Directory:
-      await walkDirectoryInfoTree(
-        await getDirectoryInfoTree(path, pathStat),
-        (info) => info.type === FILE_TYPE.File && fileCollector(fileList, info)
-      )
+    case PATH_TYPE.Directory:
+      await walkDirectoryInfoTree(await getDirectoryInfoTree(path, pathStat), (info) => info.type === PATH_TYPE.File && fileCollector(fileList, info))
       break
     default:
       throw new Error(`invalid pathType: ${pathType} for ${path}`)
@@ -106,10 +118,17 @@ const DEFAULT_FILE_COLLECTOR = (fileList, { path }) => fileList.push(path)
 export {
   getDirectorySubInfoList,
   getDirectoryInfoTree,
+
   walkDirectoryInfoTree,
   walkDirectoryInfoTreeBottomUp,
-  copyDirectoryInfoTree,
+
   moveDirectoryInfoTree,
+  copyDirectoryInfoTree,
   deleteDirectoryInfoTree,
+
+  createDirectory,
+  copyDirectory,
+  deleteDirectory,
+
   getFileList
 }

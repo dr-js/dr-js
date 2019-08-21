@@ -2,7 +2,8 @@ import { dirname } from 'path'
 import { watch } from 'fs'
 import { throttle } from 'source/common/function'
 import { createHub } from 'source/common/module/Event'
-import { statAsync, nearestExistAsync } from './function'
+import { statAsync } from './function'
+import { nearestExistPath } from './Path'
 
 // single node only: a file, or one level of directory
 // will throttle event
@@ -90,14 +91,14 @@ const createFileWatcher = ({
       }
     } else {
       __DEV__ && console.log(`[Watch] targetPath invisible`)
-      const nearestExistPath = await nearestExistAsync(targetPath)
-      if (nearestExistPath === watcherPath) return // same nearest path
+      const nearestPath = await nearestExistPath(targetPath)
+      if (nearestPath === watcherPath) return // same nearest path
       clearWatch()
-      __DEV__ && console.log(`[Watch] change nearestExistPath: ${nearestExistPath}`)
+      __DEV__ && console.log(`[Watch] change nearestPath: ${nearestPath}`)
 
-      watcherPath = nearestExistPath
+      watcherPath = nearestPath
       watcherPathStat = targetStat
-      watcher = watch(nearestExistPath, { persistent, recursive: false })
+      watcher = watch(nearestPath, { persistent, recursive: false })
       watcher.addListener('error', onErrorEvent)
       watcher.addListener('change', onErrorEvent)
     }

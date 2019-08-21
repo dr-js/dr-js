@@ -1,5 +1,5 @@
 import { createGzip } from 'zlib'
-import { statAsync, unlinkAsync, readableAsync, createReadStream, createWriteStream } from './function'
+import { createReadStream, createWriteStream, statAsync, unlinkAsync, readableAsync } from './function'
 
 const compressFile = (
   inputFile,

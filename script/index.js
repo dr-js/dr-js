@@ -8,7 +8,7 @@ import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dr-de
 import { getTerserOption, minifyFileListWithTerser } from 'dr-dev/module/minify'
 
 import { binary } from 'source/common/format'
-import { modify } from 'source/node/file/Modify'
+import { modifyDelete } from 'source/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
@@ -58,7 +58,7 @@ const clearOutput = async ({ logger }) => {
 
   logger.log(`clear test`)
   const fileList = await getScriptFileListFromPathList([ '.' ], fromOutput, (path) => path.endsWith('.test.js'))
-  for (const filePath of fileList) await modify.delete(filePath)
+  for (const filePath of fileList) await modifyDelete(filePath)
 }
 
 runMain(async (logger) => {

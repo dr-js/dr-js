@@ -8,7 +8,8 @@ import { indentList } from 'dr-js/module/common/string'
 import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
 
 import { fetchLikeRequest } from 'dr-js/module/node/net'
-import { createReadlineFromFileAsync } from 'dr-js/module/node/file/function'
+import { createReadlineFromStreamAsync } from 'dr-js/module/node/data/Stream'
+import { createReadStream } from 'dr-js/module/node/file/function'
 import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
 
 import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
@@ -53,7 +54,7 @@ const evalReadlineExtend = async (result, readlineFile, log) => {
   const logLineCheck = logLineInterval
     ? () => (lineCounter % logLineInterval === 0) && log(`line: ${decimal(lineCounter)} (+${time(stepper())})`)
     : () => {}
-  await createReadlineFromFileAsync(readlineFile, (string) => {
+  await createReadlineFromStreamAsync(createReadStream(readlineFile), (string) => {
     lineString = string
     logLineCheck()
     onLineSync(lineString, lineCounter)

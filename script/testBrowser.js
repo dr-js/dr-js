@@ -6,8 +6,8 @@ import { testWithPuppeteer } from 'dr-dev/module/puppeteer'
 import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
 
 import { readFileAsync } from 'source/node/file/function'
-import { createDirectory } from 'source/node/file/File'
-import { modify } from 'source/node/file/Modify'
+import { createDirectory } from 'source/node/file/Directory'
+import { modifyDelete } from 'source/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_TEMP = resolve(__dirname, '../.temp-gitignore')
@@ -37,7 +37,7 @@ runMain(async (logger) => {
   await createDirectory(PATH_TEMP)
   await compileWithWebpack({ config, isWatch, profileOutput, assetMapOutput, logger })
   const testScriptString = await readFileAsync(PATH_TEST_BROWSER_JS)
-  await modify.delete(PATH_TEST_BROWSER_JS)
+  await modifyDelete(PATH_TEST_BROWSER_JS)
 
   await testWithPuppeteer({ testScriptString, logger })
 }, NAME_TEST_BROWSER)

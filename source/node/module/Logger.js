@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { createLogQueue } from 'source/node/data/LogQueue'
-import { createDirectory } from 'source/node/file/File'
+import { createDirectory } from 'source/node/file/Directory'
 import { createSafeWriteStream } from './SafeWrite'
 
 const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createLogQueue({

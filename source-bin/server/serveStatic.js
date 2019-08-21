@@ -5,7 +5,7 @@ import { binary, time as formatTime } from 'dr-js/module/common/format'
 import { escapeHTML } from 'dr-js/module/common/string'
 import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
 
-import { createPathPrefixLock, toPosixPath } from 'dr-js/module/node/file/function'
+import { toPosixPath, createPathPrefixLock } from 'dr-js/module/node/file/Path'
 import { getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
 import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
 import { responderSendBufferCompress } from 'dr-js/module/node/server/Responder/Send'
@@ -19,9 +19,7 @@ const startServerServeStatic = async ({
   isSimpleServe,
   expireTime, // in msec
   staticRoot,
-  protocol = 'http:',
-  hostname,
-  port,
+  protocol = 'http:', hostname, port,
   log
 }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)

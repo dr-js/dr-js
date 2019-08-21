@@ -1,15 +1,20 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { join as joinPath, dirname, resolve } from 'path'
 import { getSample } from 'source/common/math/sample'
-import { FILE_TYPE, createDirectory, deletePath } from './File'
+import { PATH_TYPE, getPathStat, getPathTypeFromStat, deletePath } from './Path'
 import {
   getDirectorySubInfoList,
   getDirectoryInfoTree,
+
   walkDirectoryInfoTree,
   walkDirectoryInfoTreeBottomUp,
-  copyDirectoryInfoTree,
+
   moveDirectoryInfoTree,
+  copyDirectoryInfoTree,
   deleteDirectoryInfoTree,
+
+  createDirectory,
+
   getFileList
 } from './Directory'
 
@@ -25,14 +30,25 @@ const invalidPath = '../../../../../../../../../../../../../../../../../../../..
 const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/')
 const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/')
 const directoryPath2 = resolve(TEST_ROOT, '1/')
-const directoryPath3 = resolve(TEST_ROOT, 'a/')
-const directoryPath4 = resolve(TEST_ROOT, 'a0/')
-const directoryPath5 = resolve(TEST_ROOT, 'a1/')
+
+const directoryPathMove = resolve(TEST_ROOT, 'move-source/b/c/d/e/')
+const directoryPathMoveSource = resolve(TEST_ROOT, 'move-source/')
+const directoryPathMoveTarget = resolve(TEST_ROOT, 'move-target/')
+
+const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/')
+const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/')
+const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/')
+
+const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/')
+const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/')
 
 before('prepare', async () => {
   await createDirectory(TEST_ROOT)
   await createDirectory(directoryPath0)
   await createDirectory(directoryPath1)
+  await createDirectory(directoryPathMove)
+  await createDirectory(directoryPathCopy)
+  await createDirectory(directoryPathDelete)
 })
 
 after('clear', async () => {
@@ -71,11 +87,11 @@ describe('Node.File.Directory', () => {
     // console.log(infoTree)
 
     strictEqual(infoTree.root, TEST_ROOT)
-    strictEqual(infoTree.subInfoListMap[ infoTree.root ].length, 2)
-    strictEqual(Object.keys(infoTree.subInfoListMap).length, 11)
+    strictEqual(infoTree.subInfoListMap[ infoTree.root ].length, 5)
+    strictEqual(Object.keys(infoTree.subInfoListMap).length, 26)
     stringifyEqual(
       infoTree.subInfoListMap[ infoTree.root ].map(({ type }) => type),
-      getSample(() => FILE_TYPE.Directory, infoTree.subInfoListMap[ infoTree.root ].length)
+      getSample(() => PATH_TYPE.Directory, infoTree.subInfoListMap[ infoTree.root ].length)
     )
   })
 
@@ -85,7 +101,7 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    strictEqual(callbackCount, 10)
+    strictEqual(callbackCount, 25)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath2), (info) => {
@@ -100,7 +116,7 @@ describe('Node.File.Directory', () => {
       // console.log(' - - info', info)
       callbackCount++
     })
-    strictEqual(callbackCount, 10)
+    strictEqual(callbackCount, 25)
 
     const checkNameList = '2345'.split('')
     await walkDirectoryInfoTreeBottomUp(await getDirectoryInfoTree(directoryPath2), (info) => {
@@ -109,22 +125,22 @@ describe('Node.File.Directory', () => {
     })
   })
 
-  it('copyDirectoryInfoTree()', async () => {
-    await copyDirectoryInfoTree(await getDirectoryInfoTree(directoryPath3), directoryPath4)
+  it('moveDirectoryInfoTree()', async () => {
+    await moveDirectoryInfoTree(await getDirectoryInfoTree(directoryPathMoveSource), directoryPathMoveTarget)
 
     let callbackCount = 0
-    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath4), (info) => {
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathMoveTarget), (info) => {
       // console.log(' - - info', info)
       callbackCount++
     })
     strictEqual(callbackCount, 4)
   })
 
-  it('moveDirectoryInfoTree()', async () => {
-    await moveDirectoryInfoTree(await getDirectoryInfoTree(directoryPath4), directoryPath5)
+  it('copyDirectoryInfoTree()', async () => {
+    await copyDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopySource), directoryPathCopyTarget)
 
     let callbackCount = 0
-    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), (info) => {
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopyTarget), (info) => {
       // console.log(' - - info', info)
       callbackCount++
     })
@@ -132,14 +148,27 @@ describe('Node.File.Directory', () => {
   })
 
   it('deleteDirectoryInfoTree()', async () => {
-    await deleteDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), directoryPath5)
+    await deleteDirectoryInfoTree(await getDirectoryInfoTree(directoryPathDeleteSource), directoryPathDeleteSource)
 
     let callbackCount = 0
-    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPath5), (info) => {
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathDeleteSource), (info) => {
       // console.log(' - - info', info)
       callbackCount++
     })
     strictEqual(callbackCount, 0)
+  })
+
+  it('createDirectory()', async () => {
+    await createDirectory(directoryPath2)
+    await createDirectory(directoryPath0)
+    await createDirectory(directoryPath1)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), PATH_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), PATH_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath2)), PATH_TYPE.Directory)
+
+    let getExpectedError = false
+    try { await createDirectory(SOURCE_FILE) } catch (error) { getExpectedError = true }
+    strictEqual(getExpectedError, true)
   })
 
   describe('getFileList()', () => {

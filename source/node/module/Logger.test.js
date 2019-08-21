@@ -2,8 +2,8 @@ import { resolve } from 'path'
 import { readFileSync, statSync } from 'fs'
 import { strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
-import { createDirectory } from 'source/node/file/File'
-import { modify } from 'source/node/file/Modify'
+import { createDirectory } from 'source/node/file/Directory'
+import { modifyDelete } from 'source/node/file/Modify'
 import { createSimpleLogger, createLogger } from './Logger'
 
 const { describe, it, before, after } = global
@@ -11,7 +11,7 @@ const { describe, it, before, after } = global
 const TEST_ROOT = resolve(__dirname, './test-logger-gitignore/')
 
 before('prepare', () => createDirectory(TEST_ROOT))
-after('clear', () => modify.delete(TEST_ROOT))
+after('clear', () => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.Logger', () => {
   it('createSimpleLogger()', async () => {

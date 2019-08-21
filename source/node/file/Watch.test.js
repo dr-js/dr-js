@@ -1,12 +1,11 @@
 import { resolve } from 'path'
 import { stringifyEqual } from 'source/common/verify'
-import { writeFileAsync, renameAsync, mkdirAsync } from './function'
-
-import { createFileWatcher } from './Watch'
-import { createDirectory } from './File'
-import { modify } from './Modify'
 import { setTimeoutAsync } from 'source/common/time'
 import { catchAsync } from 'source/common/error'
+import { writeFileAsync, renameAsync, mkdirAsync } from './function'
+import { createDirectory } from './Directory'
+import { modifyDelete } from './Modify'
+import { createFileWatcher } from './Watch'
 
 const { describe, it, after, info = console.log } = global
 
@@ -29,7 +28,7 @@ const createWatcherTest = (tag, func) => async () => {
 }
 
 after('clear', async () => {
-  await modify.delete(TEST_ROOT)
+  await modifyDelete(TEST_ROOT)
 })
 
 describe('Node.File.Watch', () => {
@@ -110,7 +109,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await modify.delete(fromTest('file'))
+      await modifyDelete(fromTest('file'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -125,12 +124,12 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await modify.delete(fromTest('folder/folder-file'))
+      await modifyDelete(fromTest('folder/folder-file'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
 
       resultChangeState = null
-      await modify.delete(fromTest('folder'))
+      await modifyDelete(fromTest('folder'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -169,7 +168,7 @@ describe('Node.File.Watch', () => {
       const targetPath = fromTest('file')
       let resultChangeState = null
 
-      await modify.delete(targetPath)
+      await modifyDelete(targetPath)
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
@@ -186,7 +185,7 @@ describe('Node.File.Watch', () => {
       const targetPath = fromTest('folder')
       let resultChangeState = null
 
-      await modify.delete(targetPath)
+      await modifyDelete(targetPath)
 
       watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
@@ -209,7 +208,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await modify.delete(targetPath)
+      await modifyDelete(targetPath)
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 
@@ -229,7 +228,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await modify.delete(targetPath)
+      await modifyDelete(targetPath)
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 

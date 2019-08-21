@@ -4,7 +4,8 @@ import { lossyAsync } from 'source/common/function'
 import { tryParseJSONObject } from 'source/common/data/function'
 import { createStateStore } from 'source/common/immutable/StateStore'
 
-import { readFileAsync, writeFileAsync, unlinkAsync, createReadlineFromFileAsync } from 'source/node/file/function'
+import { createReadlineFromStreamAsync } from 'source/node/data/Stream'
+import { readFileAsync, writeFileAsync, unlinkAsync, createReadStream } from 'source/node/file/function'
 import { getDirectorySubInfoList } from 'source/node/file/Directory'
 import { createLogger } from './Logger'
 
@@ -163,7 +164,7 @@ const tryLoadFactInfoFromLog = async (factInfo, { factLogFileList, decodeFact, a
   __DEV__ && factLogFileList.length && console.log('found fact log file:', factLogFileList.length, 'maxFactLogId:', maxFactLogId)
 
   for (const { path, name } of factLogFileList) {
-    await createReadlineFromFileAsync(path, (logText) => { // TODO: should check multiline log? (from non-JSON encodeFact output)
+    await createReadlineFromStreamAsync(createReadStream(path), (logText) => { // TODO: should check multiline log? (from non-JSON encodeFact output)
       const fact = logText && decodeFact(logText)
       if (!fact || fact.id <= factId) return
       if (fact.id !== factId + 1) throw new Error(`invalid factId: ${fact.id}, should be: ${factId + 1}. file: ${name}`)

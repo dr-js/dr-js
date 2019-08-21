@@ -53,7 +53,7 @@ const main = async () => {
   // process.nextTick(() => process.exit())
   // process.exit()
 
-  // factDB.end()
+  factDB.end()
 }
 
 main().catch(console.error)
