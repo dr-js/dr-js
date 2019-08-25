@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dr-js",
-  "version": "0.23.0-dev.1",
+  "version": "0.23.0-dev.2",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -10,19 +10,19 @@
   "browser": "library/Dr.browser.js",
   "scripts": {
     "// script ======================": "",
-    "script-pack": "babel-node ./script quiet pack",
-    "script-pack-test": "babel-node ./script verbose pack test",
-    "script-publish": "babel-node ./script pack publish",
-    "script-publish-dev": "babel-node ./script pack publish-dev",
-    "script-generate-spec": "cross-env BABEL_ENV=use-source babel-node ./script/generateSpec ./tempFileDelete.config.json",
-    "script-delete-temp-build-file": "cross-env BABEL_ENV=use-source babel-node ./source-bin -c ./tempFileDelete.config.json",
+    "script-pack": "node -r @babel/register ./script quiet pack",
+    "script-pack-test": "node -r @babel/register ./script verbose pack test",
+    "script-publish": "node -r @babel/register ./script pack publish",
+    "script-publish-dev": "node -r @babel/register ./script pack publish-dev",
+    "script-generate-spec": "cross-env BABEL_ENV=use-source node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
+    "script-delete-temp-build-file": "cross-env BABEL_ENV=use-source node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
     "build-bin": "babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
     "build-bin-dev": "cross-env BABEL_ENV=dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
     "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/",
     "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
-    "build-library-webpack": "babel-node ./script/webpack production profile",
-    "build-library-webpack-dev": "babel-node ./script/webpack development watch",
+    "build-library-webpack": "node -r @babel/register ./script/webpack production profile",
+    "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
     "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/node/system/Run.test.js",
@@ -30,8 +30,8 @@
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
     "// test-browser ================": "",
-    "test-browser": "babel-node ./script/testBrowser production",
-    "test-browser-dev": "babel-node ./script/testBrowser development",
+    "test-browser": "node -r @babel/register ./script/testBrowser production",
+    "test-browser-dev": "node -r @babel/register ./script/testBrowser development",
     "// =============================": "",
     "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json",
     "lint": "eslint ./source/ ./source-bin/ ./script/ ./example/",
@@ -43,8 +43,8 @@
     "npm": ">=6.10"
   },
   "devDependencies": {
-    "dr-dev": "0.0.7-dev.0",
-    "dr-dev-web-puppeteer": "0.0.7-dev.0"
+    "dr-dev": "0.0.7-dev.1",
+    "dr-dev-web-puppeteer": "0.0.7-dev.1"
   },
   "sideEffects": false
 }

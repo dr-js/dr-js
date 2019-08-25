@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 
-import { getScriptFileListFromPathList } from 'dr-dev/module/node/fileList'
+import { getScriptFileListFromPathList } from 'dr-dev/module/node/file'
 import { runMain } from 'dr-dev/module/main'
 import { testWithPuppeteer } from 'dr-dev/module/puppeteer'
 import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'

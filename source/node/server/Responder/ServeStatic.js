@@ -1,7 +1,7 @@
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
 import { readFileAsync, createReadStream } from 'source/node/file/function'
-import { getPathStat } from 'source/node/file/Directory'
+import { getPathStat } from 'source/node/file/Path'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import {
   responderSendBuffer, responderSendBufferRange, responderSendBufferCompress,
