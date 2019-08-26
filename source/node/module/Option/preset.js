@@ -30,7 +30,7 @@ Object.assign(Preset, ...[
   [ 'Number', number, (argumentList) => argumentList.map(Number) ],
   [ 'Boolean', boolean, (argumentList) => argumentList.map(Boolean) ],
   [ 'Integer', integer, (argumentList) => argumentList.map(parseInt) ],
-  [ 'Function', basicFunction, undefined ] // TODO: should be form JS config only, always optional?
+  [ 'Function', basicFunction, undefined ] // TODO: should be from JS config only, always optional?
 ].map(([ typeName, verifyFunc, normalizeFunc ]) => {
   const verifySingle = (argumentList) => {
     arrayLength(argumentList, 1)

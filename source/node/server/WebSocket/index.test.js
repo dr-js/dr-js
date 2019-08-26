@@ -13,7 +13,7 @@ const TEST_BUFFER = Buffer.allocUnsafe(8 * 1024 * 1024)
 
 describe('Node.Server.WebSocket', () => {
   it('enableWebSocketServer + createWebSocketClient', async () => {
-    const serverHostname = 'localhost'
+    const serverHostname = '127.0.0.1'
     const serverPort = await getUnusedPort()
 
     const { server, start, stop } = createServer({ protocol: 'http:', hostname: serverHostname, port: serverPort })

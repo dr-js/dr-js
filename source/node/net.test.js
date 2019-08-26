@@ -21,7 +21,7 @@ const BUFFER_SCRIPT = Buffer.from([
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 
 const withTestServer = (asyncTest) => async () => {
-  const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
+  const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
   let retryCount = 0
   server.on('request', createRequestListener({
     responderList: [

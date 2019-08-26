@@ -13,9 +13,9 @@ const { enableWebSocketServer } = require('../../output-gitignore/library/node/s
 
 const { createExampleServerHTMLResponder } = require('./example-server-html')
 
-const ServerHostname = 'localhost'
+const ServerHostname = '127.0.0.1'
 const ServerPort = 3000
-const ProxyHostname = 'localhost'
+const ProxyHostname = '127.0.0.1'
 const ProxyPort = 4000
 
 const fromPath = (...args) => resolve(__dirname, ...args)

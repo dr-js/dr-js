@@ -1,5 +1,7 @@
 import { strictEqual } from 'source/common/verify'
-import { getSampleRange } from 'source/common/math/sample'
+import { time } from 'source/common/format'
+import { createStepper } from 'source/common/time'
+import { getSampleRange, getSample } from 'source/common/math/sample'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
@@ -7,10 +9,10 @@ import {
   toString
 } from './ArrayBuffer'
 
-const { describe, it } = global
+const { describe, it, info = console.log } = global
 
 describe('Common.Data.ArrayBuffer', () => {
-  // test full 16bit range, both odd and event
+  // test full 16bit range, both odd and even
   const byteList0 = getSampleRange(0, 65535).reduce((o, uint16) => {
     o.push(uint16 >> 8, uint16 % 256)
     return o
@@ -50,5 +52,16 @@ describe('Common.Data.ArrayBuffer', () => {
 
     strictEqual(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
     strictEqual(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
+  })
+
+  it('stress', () => {
+    const stepper = createStepper()
+    const arrayBufferBig = concatArrayBuffer(getSample(() => arrayBuffer0, 1024)) // 1024 * 65536 = 64MiB
+    info('done build data', time(stepper()))
+    const string = toString(arrayBufferBig)
+    info('toString data', time(stepper()))
+    const arrayBufferOutput = fromString(string)
+    info('fromString data', time(stepper()))
+    strictEqual(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig), true)
   })
 })

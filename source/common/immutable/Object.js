@@ -47,6 +47,12 @@ const objectDeleteUndefined = (object) => {
   return result || object
 }
 
+const objectFromEntries = (iterable) => {
+  const result = {}
+  for (const [ key, value ] of iterable) result[ key ] = value
+  return result
+}
+
 export {
   objectSet,
   objectDelete,
@@ -54,5 +60,6 @@ export {
   objectMap,
   objectPickKey,
   objectFindKey,
-  objectDeleteUndefined
+  objectDeleteUndefined,
+  objectFromEntries
 }

@@ -21,7 +21,7 @@ const TEST_BUFFER = Buffer.from(TEST_BUFFER_TEXT)
 
 describe('Node.Server.Server', () => {
   it('createServer()', async () => {
-    const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
+    const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
 
     server.on('request', createRequestListener({
       responderList: [

@@ -4,9 +4,9 @@ import { createServer, Socket } from 'net'
 // TODO: no multi target server support (load balancing)
 
 const createTCPProxyServer = ({
-  hostname = 'localhost',
+  hostname = '127.0.0.1',
   port,
-  targetHostname = 'localhost',
+  targetHostname = '127.0.0.1',
   targetPort,
   getTargetOption = (socket) => ({ hostname: targetHostname, port: targetPort }) // can also be used for connection check
 }) => {

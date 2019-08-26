@@ -20,7 +20,7 @@ const SOURCE_JSON = resolve(__dirname, '../../package.json')
 const SOURCE_SCRIPT = resolve(__dirname, './test-resource-script-gitignore.js')
 
 const withTestServer = (asyncTest) => async () => {
-  const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: 'localhost', port: await getUnusedPort() })
+  const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
   server.on('request', createRequestListener({
     responderList: [
       createResponderRouter({

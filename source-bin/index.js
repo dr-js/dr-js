@@ -163,7 +163,7 @@ const runMode = async (modeName, optionData) => {
       if (!isBasicFunction(argumentList[ 0 ])) {
         targetOptionList = argumentList.map((host) => {
           const [ hostname, port ] = host.split(':')
-          return { hostname: hostname || 'localhost', port: Number(port) }
+          return { hostname: hostname || '127.0.0.1', port: Number(port) }
         })
         let targetOptionIndex = 0
         getTargetOption = (socket) => {

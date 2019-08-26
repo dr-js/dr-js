@@ -15,7 +15,7 @@ const fromPath = (...args) => resolve(__dirname, ...args)
 const fromStaticRoot = createPathPrefixLock(fromPath('../'))
 const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(store)))
 
-const ServerHostname = 'localhost'
+const ServerHostname = '127.0.0.1'
 const ServerPort = 3000
 
 const responderLogEnd = createResponderLogEnd({ log: console.log })

@@ -11,7 +11,7 @@ import { responderEnd } from './Responder/Common'
 
 const DEFAULT_HTTPS_OPTION = {
   protocol: 'https:',
-  hostname: 'localhost',
+  hostname: '127.0.0.1',
   port: 443,
   isSecure: true,
   // key: 'BUFFER: KEY.pem', // [optional]
@@ -22,7 +22,7 @@ const DEFAULT_HTTPS_OPTION = {
 }
 const DEFAULT_HTTP_OPTION = {
   protocol: 'http:',
-  hostname: 'localhost',
+  hostname: '127.0.0.1',
   port: 80,
   isSecure: false
 }
