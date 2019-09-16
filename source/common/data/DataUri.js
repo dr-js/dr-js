@@ -6,8 +6,8 @@ import { encode as encodeBase64, decode as decodeBase64 } from './Base64'
 
 const encode = ({
   value, // string or ArrayBuffer
-  mime = '',
-  paramMap = null
+  mime, // optional, default to undefined
+  paramMap // optional, default to undefined
 }) => {
   const isPayloadBase64 = !isString(value)
   const payloadString = (isPayloadBase64 ? encodeBase64 : encodeURIComponent)(value)
@@ -24,8 +24,8 @@ const decode = (string = '') => {
   const headerStringList = string.slice(__DEV__ ? 'data:'.length : 5, payloadIndex).split(';').filter(Boolean)
   const isPayloadBase64 = headerStringList[ headerStringList.length - 1 ] === 'base64'
   isPayloadBase64 && headerStringList.pop()
-  const mime = (headerStringList.length && !headerStringList[ 0 ].includes('=') && headerStringList.shift()) || '' // mime type do not have `=`
-  const paramMap = headerStringList.length === 0 ? null
+  const mime = (headerStringList.length && !headerStringList[ 0 ].includes('=') && headerStringList.shift()) || undefined // mime type do not have `=`
+  const paramMap = headerStringList.length === 0 ? undefined
     : objectFromEntries(new URLSearchParams(headerStringList.join('&')).entries())
   const value = (isPayloadBase64 ? decodeBase64 : decodeURIComponent)(string.slice(payloadIndex + 1), isPayloadBase64)
   return { value, mime, paramMap }
