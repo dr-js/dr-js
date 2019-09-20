@@ -1,12 +1,15 @@
 {
   "private": true,
-  "name": "dr-js",
-  "version": "0.23.0-dev.4",
+  "name": "@dr-js/core",
+  "version": "0.0.0-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
   "repository": "github:dr-js/dr-js",
-  "bin": "bin/index.js",
+  "bin": {
+    "dr-js": "bin/index.js",
+    "DJ": "bin/index.js"
+  },
   "browser": "library/Dr.browser.js",
   "scripts": {
     "// script ======================": "",

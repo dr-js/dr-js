@@ -91,5 +91,5 @@ runMain(async (logger) => {
   await clearOutput({ logger })
   await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
+  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, extraArgs: [ '--access', 'public' ], logger })
 })

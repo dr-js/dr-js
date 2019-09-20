@@ -1,12 +1,12 @@
-import { setTimeoutAsync } from 'dr-js/module/common/time'
-import { arraySplitChunk } from 'dr-js/module/common/immutable/Array'
-import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import { setTimeoutAsync } from '@dr-js/core/module/common/time'
+import { arraySplitChunk } from '@dr-js/core/module/common/immutable/Array'
+import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
-import { DR_BROWSER_SCRIPT_TAG } from 'dr-js/module/node/resource'
-import { receiveBufferAsync } from 'dr-js/module/node/data/Buffer'
-import { responderEndWithStatusCode } from 'dr-js/module/node/server/Responder/Common'
-import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from 'dr-js/module/node/server/Responder/Send'
-import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'dr-js/module/node/server/Responder/Router'
+import { DR_BROWSER_SCRIPT_TAG } from '@dr-js/core/module/node/resource'
+import { receiveBufferAsync } from '@dr-js/core/module/node/data/Buffer'
+import { responderEndWithStatusCode } from '@dr-js/core/module/node/server/Responder/Common'
+import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from '@dr-js/core/module/node/server/Responder/Send'
+import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
 
 import { commonStartServer } from '../function'
 

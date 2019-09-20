@@ -1,4 +1,4 @@
-import { Preset, prepareOption } from 'dr-js/module/node/module/Option/preset'
+import { Preset, prepareOption } from '@dr-js/core/module/node/module/Option/preset'
 
 const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(compactFormat, {
   optional: true // set all optional
@@ -40,6 +40,9 @@ const MODE_FORMAT_LIST = parseList(
   'fetch,f//1-3|fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
+
+  // TODO: add 7z fast bin?
+  // TODO: add fast batch command like {file} {F} {...F} {directory} {D} {...D}?
 
   'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-serve-static-simple,ssss//0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',

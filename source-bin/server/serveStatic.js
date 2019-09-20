@@ -1,17 +1,17 @@
 import { relative, dirname, join as joinPath } from 'path'
 
-import { compareStringWithNumber } from 'dr-js/module/common/compare'
-import { binary, time as formatTime } from 'dr-js/module/common/format'
-import { escapeHTML } from 'dr-js/module/common/string'
-import { BASIC_EXTENSION_MAP } from 'dr-js/module/common/module/MIME'
+import { compareStringWithNumber } from '@dr-js/core/module/common/compare'
+import { binary, time as formatTime } from '@dr-js/core/module/common/format'
+import { escapeHTML } from '@dr-js/core/module/common/string'
+import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
-import { toPosixPath, createPathPrefixLock } from 'dr-js/module/node/file/Path'
-import { getDirectorySubInfoList } from 'dr-js/module/node/file/Directory'
-import { responderEndWithRedirect } from 'dr-js/module/node/server/Responder/Common'
-import { responderSendBufferCompress } from 'dr-js/module/node/server/Responder/Send'
-import { getRouteParamAny } from 'dr-js/module/node/server/Responder/Router'
-import { createResponderServeStatic } from 'dr-js/module/node/server/Responder/ServeStatic'
-import { COMMON_LAYOUT, COMMON_STYLE } from 'dr-js/module/node/server/commonHTML'
+import { toPosixPath, createPathPrefixLock } from '@dr-js/core/module/node/file/Path'
+import { getDirectorySubInfoList } from '@dr-js/core/module/node/file/Directory'
+import { responderEndWithRedirect } from '@dr-js/core/module/node/server/Responder/Common'
+import { responderSendBufferCompress } from '@dr-js/core/module/node/server/Responder/Send'
+import { getRouteParamAny } from '@dr-js/core/module/node/server/Responder/Router'
+import { createResponderServeStatic } from '@dr-js/core/module/node/server/Responder/ServeStatic'
+import { COMMON_LAYOUT, COMMON_STYLE } from '@dr-js/core/module/node/server/commonHTML'
 
 import { commonStartServer } from '../function'
 

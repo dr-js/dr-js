@@ -6,7 +6,7 @@ import { readFileAsync } from 'source/node/file/function'
 
 const DR_BROWSER_FILE_PATH = () => [
   // should pass within normal node_module structure
-  `dr-js/library/Dr.browser.js`,
+  `@dr-js/core/library/Dr.browser.js`,
   // maybe webpack, try some relative path
   `${__dirname}/../library/Dr.browser.js`,
   `${__dirname}/Dr.browser.js`,

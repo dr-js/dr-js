@@ -25,7 +25,7 @@ output-gitignore/
 
 # bin
 
-for CLI usage, try `npx dr-js -h`
+for CLI usage, try `npx @dr-js/core -h`
 
 
 # module
@@ -52,11 +52,11 @@ and edit `babel.config.js` as:
 const isModule = false
 module.exports = {
   plugins: [
-    [ 'module-resolver', { alias: isModule ? undefined : { 'dr-js/module/(.+)': 'dr-js/library/' } } ]
+    [ 'module-resolver', { alias: isModule ? undefined : { '@dr-js/core/module/(.+)': '@dr-js/core/library/' } } ]
   ]
 }
 ```
 this way,
-in source code you can still `import { ... } from 'dr-js/module/...'`,
-and the output code will be `const { ... } = require('dr-js/library/...')`,
+in source code you can still `import { ... } from '@dr-js/core/module/...'`,
+and the output code will be `const { ... } = require('@dr-js/core/library/...')`,
 for IDE with code analysis, module based code will generate more help info

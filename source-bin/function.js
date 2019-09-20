@@ -1,23 +1,23 @@
 import { cpus } from 'os'
 
-import { getEndianness } from 'dr-js/module/env/function'
+import { getEndianness } from '@dr-js/core/module/env/function'
 
-import { createStepper } from 'dr-js/module/common/time'
-import { time, decimal } from 'dr-js/module/common/format'
-import { indentList } from 'dr-js/module/common/string'
-import { prettyStringifyTree } from 'dr-js/module/common/data/Tree'
+import { createStepper } from '@dr-js/core/module/common/time'
+import { time, decimal } from '@dr-js/core/module/common/format'
+import { indentList } from '@dr-js/core/module/common/string'
+import { prettyStringifyTree } from '@dr-js/core/module/common/data/Tree'
 
-import { fetchLikeRequest } from 'dr-js/module/node/net'
-import { createReadlineFromStreamAsync } from 'dr-js/module/node/data/Stream'
-import { createReadStream } from 'dr-js/module/node/file/function'
-import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from 'dr-js/module/node/file/Directory'
+import { fetchLikeRequest } from '@dr-js/core/module/node/net'
+import { createReadlineFromStreamAsync } from '@dr-js/core/module/node/data/Stream'
+import { createReadStream } from '@dr-js/core/module/node/file/function'
+import { getFileList, getDirectorySubInfoList, getDirectoryInfoTree } from '@dr-js/core/module/node/file/Directory'
 
-import { createServer, createRequestListener } from 'dr-js/module/node/server/Server'
-import { responderEnd, createResponderLog, createResponderLogEnd } from 'dr-js/module/node/server/Responder/Common'
-import { createResponderFavicon } from 'dr-js/module/node/server/Responder/Send'
-import { createResponderRouter, createRouteMap } from 'dr-js/module/node/server/Responder/Router'
+import { createServer, createRequestListener } from '@dr-js/core/module/node/server/Server'
+import { responderEnd, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
+import { createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
+import { createResponderRouter, createRouteMap } from '@dr-js/core/module/node/server/Responder/Router'
 
-import { getNetworkIPv4AddressList } from 'dr-js/module/node/system/NetworkAddress'
+import { getNetworkIPv4AddressList } from '@dr-js/core/module/node/system/NetworkAddress'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
