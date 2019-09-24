@@ -20,11 +20,11 @@ const TYPE_BUFFER_GROUP = '#BUFFER_GROUP'
 const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
 const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
-  __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // dataBuffer.toString().slice(0, 20)
+  __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // String(dataBuffer).slice(0, 20)
   if (dataType !== OPCODE_TYPE.BINARY) return webSocket.close(1000, 'expect BINARY')
   const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
   __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
-  error && webSocket.close(1000, error.toString())
+  error && webSocket.close(1000, String(error))
 }
 
 // TODO: keep limited message history?

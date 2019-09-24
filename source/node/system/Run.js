@@ -2,33 +2,36 @@ import { spawn, spawnSync } from 'child_process'
 import { catchAsync } from 'source/common/error'
 import { receiveBufferAsync } from 'source/node/data/Buffer'
 
+const getOption = (option, quiet) => ({
+  stdio: quiet ? [ 'ignore', 'pipe', 'pipe' ] : 'inherit',
+  shell: false,
+  ...option
+})
 const getExitError = (error, exitData) => Object.assign(
-  error || new Error(`non-zero exit code: ${exitData.code}, signal: ${exitData.signal}`),
+  error || new Error(`exit code: ${exitData.code || '?'}, signal: ${exitData.signal || 'process error'}`),
   exitData
 )
 
-const run = ({ command, argList = [], option }) => {
-  const subProcess = spawn(command, argList, { stdio: 'inherit', shell: true, ...option })
+const run = ({ command, argList = [], option, quiet = false }) => {
+  const subProcess = spawn(command, argList, getOption(option, quiet))
+  const stdoutPromise = quiet ? receiveBufferAsync(subProcess.stdout) : undefined
+  const stderrPromise = quiet ? receiveBufferAsync(subProcess.stderr) : undefined
   const promise = new Promise((resolve, reject) => {
-    subProcess.on('error', (error) => reject(getExitError(error, { command, argList, code: 1, signal: 'process error' }))) // default error code
-    subProcess.on('exit', (code, signal) => code !== 0
-      ? reject(getExitError(null, { command, argList, code, signal }))
-      : resolve({ command, argList, code, signal }))
+    subProcess.on('error', (error) => reject(getExitError(error, { command, argList, stdoutPromise, stderrPromise }))) // default error code
+    subProcess.on('exit', (code, signal) => {
+      const data = { command, argList, code, signal, stdoutPromise, stderrPromise }
+      if (code !== 0) reject(getExitError(null, data))
+      else resolve(data)
+    })
   })
-  return { subProcess, promise }
+  return { subProcess, promise, stdoutPromise, stderrPromise }
 }
 
-const runSync = ({ command, argList = [], option }) => {
-  const { status: code, signal, error } = spawnSync(command, argList, { stdio: 'inherit', shell: true, ...option })
-  if (error || code) throw getExitError(error, { command, argList, code, signal })
-  return { command, argList, code, signal }
-}
-
-const runQuiet = ({ command, argList, option }) => {
-  const { subProcess, promise } = run({ command, argList, option: { stdio: [ 'ignore', 'pipe', 'pipe' ], ...option } })
-  const stdoutBufferPromise = receiveBufferAsync(subProcess.stdout)
-  const stderrBufferPromise = receiveBufferAsync(subProcess.stderr)
-  return { subProcess, promise, stdoutBufferPromise, stderrBufferPromise }
+const runSync = ({ command, argList = [], option, quiet = false }) => {
+  const { error, status: code, signal, stdout, stderr } = spawnSync(command, argList, getOption(option, quiet))
+  const data = { command, argList, code, signal, stdout, stderr }
+  if (error || code) throw getExitError(error, data)
+  return data
 }
 
 const withCwd = (pathCwd, taskAsync) => async (...args) => {
@@ -43,6 +46,5 @@ const withCwd = (pathCwd, taskAsync) => async (...args) => {
 export {
   run,
   runSync,
-  runQuiet,
   withCwd
 }

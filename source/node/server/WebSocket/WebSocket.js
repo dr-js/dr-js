@@ -109,7 +109,7 @@ const createWebSocket = ({
     switch (frame.dataType) {
       case OPCODE_TYPE.CLOSE: {
         const code = (frame.dataBufferLength >= 2 && frame.dataBuffer.readUInt16BE(0, !__DEV__)) || 1000
-        const reason = (frame.dataBufferLength >= 3 && frame.dataBuffer.slice(2, frame.dataBufferLength).toString()) || ''
+        const reason = (frame.dataBufferLength >= 3 && String(frame.dataBuffer.slice(2, frame.dataBufferLength))) || ''
         __DEV__ && console.log('[WebSocket] onReceiveFrame CLOSE', { code, reason })
         return close(code, reason)
       }
@@ -186,7 +186,7 @@ const createWebSocket = ({
 
   const sendPing = (dataBuffer = DEFAULT_BUFFER) => {
     if (readyState !== OPEN) return
-    __DEV__ && console.log('sendPing', dataBuffer.toString())
+    __DEV__ && console.log('sendPing', String(dataBuffer))
     setNextPong()
     encodePingFrame(frameSenderStore, dataBuffer, isMask)
     return sendEncodedFrame(frameSenderStore, socket)
@@ -194,7 +194,7 @@ const createWebSocket = ({
 
   const sendPong = (dataBuffer = DEFAULT_BUFFER) => {
     if (readyState !== OPEN) return
-    __DEV__ && console.log('sendPong', dataBuffer.toString())
+    __DEV__ && console.log('sendPong', String(dataBuffer))
     encodePongFrame(frameSenderStore, dataBuffer, isMask)
     return sendEncodedFrame(frameSenderStore, socket)
   }

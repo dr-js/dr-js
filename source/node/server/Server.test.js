@@ -66,7 +66,7 @@ describe('Node.Server.Server', () => {
     )
     strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer-range`)).text(),
-      TEST_BUFFER.slice(4, 8 + 1).toString(),
+      String(TEST_BUFFER.slice(4, 8 + 1)),
       'fetch /test-buffer-range'
     )
     strictEqual(
@@ -82,7 +82,7 @@ describe('Node.Server.Server', () => {
     )
     strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-stream-range`)).text(),
-      TEST_BUFFER.slice(4, 8 + 1).toString(),
+      String(TEST_BUFFER.slice(4, 8 + 1)),
       'fetch /test-stream-range'
     )
     strictEqual(

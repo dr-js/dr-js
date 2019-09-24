@@ -32,7 +32,7 @@ const getVersion = () => ({
 })
 
 const evalScript = async (
-  evalScriptString, // inputFile ? readFileSync(inputFile).toString() : argumentList[ 0 ]
+  evalScriptString, // inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ]
   evalArgv, // inputFile ? argumentList : argumentList.slice(1)
   evalCwd, // inputFile ? dirname(inputFile) : process.cwd()
   evalOption // optionData
@@ -109,7 +109,7 @@ const describeServer = ({ baseUrl, protocol, hostname, port }, title, extraList 
   `pid: ${process.pid}`,
   ...extraList,
   `baseUrl: '${baseUrl}'`,
-  hostname === '0.0.0.0' && indentList('localUrl:', [
+  (hostname === '0.0.0.0' || hostname === '::') && indentList('localUrl:', [
     { address: 'localhost' },
     ...getNetworkIPv4AddressList()
   ].map(({ address }) => `'${protocol}//${address}:${port}'`))

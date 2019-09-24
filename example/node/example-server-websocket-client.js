@@ -21,7 +21,7 @@ createWebSocketClient({
       setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
     })
     webSocket.on(WEBSOCKET_EVENT.FRAME, ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
+      console.log(`>> FRAME:`, dataType, dataBuffer.length, String(dataBuffer).slice(0, 20))
     })
     webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
       console.log(`>> CLOSE`)

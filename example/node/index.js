@@ -1,4 +1,4 @@
-const { runQuiet } = require('../../output-gitignore/library/node/system/Run')
+const { run } = require('../../output-gitignore/library/node/system/Run')
 const { describeSystemStatus } = require('../../output-gitignore/library/node/system/Status')
 
 const main = async () => {
@@ -6,9 +6,10 @@ const main = async () => {
   console.log(describeSystemStatus())
 
   console.log('== exec ========================')
-  const { promise, stdoutBufferPromise } = runQuiet({ command: process.platform === 'win32' ? 'dir' : 'ls -l' })
+  const [ command, ...argList ] = (process.platform === 'win32' ? 'CMD.exe /S /C dir' : 'ls -l').split(' ')
+  const { promise, stdoutPromise } = run({ command, argList, quiet: true })
   await promise
-  console.warn((await stdoutBufferPromise).toString())
+  console.warn(String(await stdoutPromise))
 }
 
 main().catch(console.error)

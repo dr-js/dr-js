@@ -70,7 +70,7 @@ const createServer = ({ protocol, ...option }) => {
     option,
     start: async () => !server.listening && new Promise((resolve, reject) => {
       server.on('error', reject)
-      server.listen(option.port, option.hostname, () => {
+      server.listen(option.port, option.hostname.replace(/[[\]]/g, ''), () => {
         server.off('error', reject)
         resolve()
       })

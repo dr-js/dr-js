@@ -1,14 +1,14 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.0.0-dev.0",
+  "version": "0.0.0-dev.1",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
   "repository": "github:dr-js/dr-js",
   "bin": {
     "dr-js": "bin/index.js",
-    "DJ": "bin/index.js"
+    "DR": "bin/index.js"
   },
   "browser": "library/Dr.browser.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
     "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/common/data/DataUri.test.js",
+    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/node/system/Run.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
@@ -46,8 +46,8 @@
     "npm": ">=6.10"
   },
   "devDependencies": {
-    "dr-dev": "0.0.7-dev.3",
-    "dr-dev-web-puppeteer": "0.0.7-dev.3"
+    "@dr-js/dev": "0.0.0-dev.0",
+    "@dr-js/dev-web-puppeteer": "0.0.0-dev.0"
   },
   "sideEffects": false
 }

@@ -154,7 +154,7 @@ const createFrameDecoder = (frameLengthLimit) => {
           decodedIsMask && applyMaskQuadletBufferInPlace(decodedDataBuffer, decodedMaskQuadletBuffer)
           stage = DECODE_STAGE_END_FRAME
 
-          // __DEV__ && console.log('[DECODE_STAGE_DATA_BUFFER]', { decodedDataBuffer }, decodedDataBuffer.toString())
+          // __DEV__ && console.log('[DECODE_STAGE_DATA_BUFFER]', { decodedDataBuffer }, String(decodedDataBuffer))
           return true
         }
         break

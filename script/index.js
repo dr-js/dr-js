@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { getScriptFileListFromPathList } from 'dr-dev/module/node/file'
-import { runMain, argvFlag } from 'dr-dev/module/main'
-import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from 'dr-dev/module/output'
-import { processFileList, fileProcessorBabel, fileProcessorWebpack } from 'dr-dev/module/fileProcessor'
-import { getTerserOption, minifyFileListWithTerser } from 'dr-dev/module/minify'
+import { getScriptFileListFromPathList } from '@dr-js/dev/module/node/file'
+import { runMain, argvFlag } from '@dr-js/dev/module/main'
+import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from '@dr-js/dev/module/output'
+import { processFileList, fileProcessorBabel, fileProcessorWebpack } from '@dr-js/dev/module/fileProcessor'
+import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
 
 import { binary } from 'source/common/format'
 import { modifyDelete } from 'source/node/file/Modify'
@@ -91,5 +91,5 @@ runMain(async (logger) => {
   await clearOutput({ logger })
   await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, extraArgs: [ '--access', 'public' ], logger })
+  await publishOutput({ flagList: process.argv, isPublicScoped: true, packageJSON, pathPackagePack, logger })
 })

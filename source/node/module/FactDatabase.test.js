@@ -8,7 +8,7 @@ const { describe, it, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-fact-database-gitignore/')
 
-const TEST_TEXT = (new Date()).toString()
+const TEST_TEXT = String(new Date())
 
 const basicTest = async (pathFactDirectory) => {
   const factDB = await createFactDatabase({ pathFactDirectory, onError: console.error })

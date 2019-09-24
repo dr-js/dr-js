@@ -52,7 +52,7 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
 
     format.optional = parseOptional(format.optional, upperFormat)
 
-    const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(argumentCount.toString())
+    const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(String(argumentCount))
     format.argumentLengthMin = parseInt(argumentLengthMinString)
     format.argumentLengthMax = argumentLengthSep
       ? (argumentLengthMaxString ? parseInt(argumentLengthMaxString) : Infinity)
@@ -84,7 +84,7 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
     parseCONFIG: getParseCONFIG(nameMapCONFIG),
     processOptionMap: getProcessOptionMap(nonOptionalFormatSet, optionalFormatCheckSet),
     formatUsage: (message, isSimple = false) => join(
-      message && `Message:\n${indent(message.toString())}`,
+      message && `Message:\n${indent(String(message))}`,
       `CLI Usage:\n${indent(usageCLI(formatList))}`,
       !isSimple && `ENV Usage:\n${indent(usageENV(formatList))}`,
       !isSimple && `CONFIG Usage:\n${indent(usageCONFIG(formatList))}`

@@ -55,16 +55,16 @@ const webSocketSet = enableWebSocketServer({
       console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
     })
     webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
+      console.log(`>> FRAME:`, dataType, dataBuffer.length, String(dataBuffer).slice(0, 20))
 
       if (dataType === OPCODE_TYPE.TEXT) {
-        if (dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-        if (dataBuffer.toString() === 'BIG STRING') return webSocket.sendText(BIG_STRING)
-        if (dataBuffer.toString() === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
+        if (String(dataBuffer) === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
+        if (String(dataBuffer) === 'BIG STRING') return webSocket.sendText(BIG_STRING)
+        if (String(dataBuffer) === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
       }
 
       // echo back
-      dataType === OPCODE_TYPE.TEXT && webSocket.sendText(dataBuffer.toString())
+      dataType === OPCODE_TYPE.TEXT && webSocket.sendText(String(dataBuffer))
       dataType === OPCODE_TYPE.BINARY && webSocket.sendBuffer(dataBuffer)
     })
     webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {

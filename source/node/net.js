@@ -111,7 +111,7 @@ const wrapResponse = (response, timeout) => {
   const json = () => text().then(parseJSON)
   return { stream, buffer, arrayBuffer, text, json }
 }
-const toText = (buffer) => buffer.toString()
+const toText = (buffer) => String(buffer)
 const parseJSON = (text) => JSON.parse(text)
 
 export {

@@ -53,11 +53,17 @@ const runMode = async (modeName, optionData) => {
     stream
   )
 
-  const getServerConfig = async () => {
-    const hostPair = (tryGetFirst('host') || '').split(':')
-    const hostname = hostPair[ 0 ] || '0.0.0.0'
-    const port = Number(hostPair[ 1 ] || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname)) // for more stable port
+  // for ipv6 should use host like: `[::]:80`
+  const parseHost = (host, defaultHostname = '127.0.0.1') => {
+    const hostnameList = host.split(':')
+    const port = Number(hostnameList.pop())
+    const hostname = hostnameList.join(':') || defaultHostname
     return { hostname, port }
+  }
+
+  const getServerConfig = async () => {
+    const { hostname, port } = parseHost(tryGetFirst('host') || '', '0.0.0.0')
+    return { hostname, port: port || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) } // for more stable port
   }
 
   switch (modeName) {
@@ -161,10 +167,7 @@ const runMode = async (modeName, optionData) => {
       let targetOptionList
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
-        targetOptionList = argumentList.map((host) => {
-          const [ hostname, port ] = host.split(':')
-          return { hostname: hostname || '127.0.0.1', port: Number(port) }
-        })
+        targetOptionList = argumentList.map((host) => parseHost(host, '127.0.0.1'))
         let targetOptionIndex = 0
         getTargetOption = (socket) => {
           targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length

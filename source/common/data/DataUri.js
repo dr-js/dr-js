@@ -13,7 +13,7 @@ const encode = ({
   const payloadString = (isPayloadBase64 ? encodeBase64 : encodeURIComponent)(value)
   const headerString = [
     mime,
-    paramMap && new URLSearchParams(paramMap).toString().replace(/&/g, ';'),
+    paramMap && String(new URLSearchParams(paramMap)).replace(/&/g, ';'),
     isPayloadBase64 && 'base64'
   ].filter(Boolean).join(';')
   return `data:${headerString},${payloadString}`

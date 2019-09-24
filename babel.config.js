@@ -1,4 +1,4 @@
-const { getBabelConfig } = require('dr-dev/library/babel')
+const { getBabelConfig } = require('@dr-js/dev/library/babel')
 
 const BABEL_ENV = process.env.BABEL_ENV || ''
 const isUseSource = BABEL_ENV.includes('use-source')

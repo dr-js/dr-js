@@ -44,7 +44,7 @@ const COMMON_SCRIPT = (injectMap) => {
     tDR: tillDocumentReady,
     ...injectMap
   }).forEach(([ key, value ]) => {
-    if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${value.toString()}</script>`)
+    if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${String(value)}</script>`)
     else valueObject[ key ] = value
   })
   return [

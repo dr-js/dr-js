@@ -2,7 +2,7 @@ import { setTimeoutAsync } from 'source/common/time'
 import { autoEllipsis } from 'source/common/string'
 import { padTable } from 'source/common/format'
 import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTree } from 'source/common/data/Tree'
-import { runQuiet } from './Run'
+import { run } from './Run'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   // a col means \w+\s+, or \s+\w+ (for this output)
@@ -44,10 +44,13 @@ const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
     return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
   }
 
-  const createGetProcessListAsync = (command, lineSeparator, keyList, valueProcessList) => async () => {
-    const { promise, stdoutBufferPromise } = runQuiet({ command })
-    await promise
-    return parseTableOutput((await stdoutBufferPromise).toString(), lineSeparator, keyList, valueProcessList)
+  const createGetProcessListAsync = (commandString, lineSeparator, keyList, valueProcessList) => {
+    const [ command, ...argList ] = commandString.split(' ')
+    return async () => {
+      const { promise, stdoutPromise } = run({ command, argList, quiet: true })
+      await promise
+      return parseTableOutput(String(await stdoutPromise), lineSeparator, keyList, valueProcessList)
+    }
   }
 
   const valueProcessString = (string) => String(string).trim()

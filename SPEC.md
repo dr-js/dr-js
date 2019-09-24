@@ -208,7 +208,7 @@
 + 📄 [source/node/system/Process.js](source/node/system/Process.js)
   - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
-  - `run`, `runQuiet`, `runSync`, `withCwd`
+  - `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
   - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
@@ -408,7 +408,7 @@
     - **Process**
       - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **Run**
-      - `run`, `runQuiet`, `runSync`, `withCwd`
+      - `run`, `runSync`, `withCwd`
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**

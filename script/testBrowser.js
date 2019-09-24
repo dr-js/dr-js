@@ -1,9 +1,9 @@
 import { resolve } from 'path'
 
-import { getScriptFileListFromPathList } from 'dr-dev/module/node/file'
-import { runMain } from 'dr-dev/module/main'
-import { testWithPuppeteer } from 'dr-dev/module/puppeteer'
-import { compileWithWebpack, commonFlag } from 'dr-dev/module/webpack'
+import { getScriptFileListFromPathList } from '@dr-js/dev/module/node/file'
+import { runMain } from '@dr-js/dev/module/main'
+import { testWithPuppeteer } from '@dr-js/dev/module/puppeteer'
+import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack'
 
 import { readFileAsync } from 'source/node/file/function'
 import { createDirectory } from 'source/node/file/Directory'

@@ -26,9 +26,9 @@ describe('Node.Server.WebSocket', () => {
         __DEV__ && webSocket.on(WEBSOCKET_EVENT.CLOSE, () => { console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`) })
         stringifyEqual(webSocket.protocolList, TEST_PROTOCOL_LIST)
         webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
-          // console.log(`>> FRAME:`, dataType, dataBuffer.length, dataBuffer.toString().slice(0, 20))
-          if (dataType === OPCODE_TYPE.TEXT && dataBuffer.toString() === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-          dataType === OPCODE_TYPE.TEXT && webSocket.sendText(dataBuffer.toString())
+          // console.log(`>> FRAME:`, dataType, dataBuffer.length, String(dataBuffer).slice(0, 20))
+          if (dataType === OPCODE_TYPE.TEXT && String(dataBuffer) === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
+          dataType === OPCODE_TYPE.TEXT && webSocket.sendText(String(dataBuffer))
           dataType === OPCODE_TYPE.BINARY && webSocket.sendBuffer(dataBuffer)
         })
         return webSocket.protocolList[ 0 ]
@@ -59,7 +59,7 @@ describe('Node.Server.WebSocket', () => {
       webSocket.sendText(TEST_STRING) // big string
       const { dataType, dataBuffer } = await getNextFrame()
       strictEqual(dataType, OPCODE_TYPE.TEXT)
-      strictEqual(dataBuffer.toString(), TEST_STRING)
+      strictEqual(String(dataBuffer), TEST_STRING)
     }
 
     {
