@@ -4,7 +4,7 @@ const { createServer: createHttpServer } = require('http')
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
 const { requestAsync } = require('../../output-gitignore/library/node/net')
 const { receiveBufferAsync } = require('../../output-gitignore/library/node/data/Buffer')
-const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
+const { createServerPack, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
@@ -30,7 +30,7 @@ const responderProxy = async (store) => {
   store.response.end(responseBuffer)
 }
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
+const { server, start, option } = createServerPack({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     (store) => { console.log(`[server] get: ${store.request.url}`) },

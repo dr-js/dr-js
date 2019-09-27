@@ -11,8 +11,6 @@ import { enableWebSocketServer } from '@dr-js/core/module/node/server/WebSocket/
 import { createUpdateRequestListener } from '@dr-js/core/module/node/server/WebSocket/WebSocketUpgradeRequest'
 import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from '@dr-js/core/module/node/server/commonHTML'
 
-import { commonStartServer } from '../function'
-
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'
 const TYPE_INFO_USER = '#INFO_USER'
@@ -122,7 +120,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const startServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, log }) => {
+const configure = ({ serverPack }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -145,30 +143,23 @@ const startServerWebSocketGroup = async ({ protocol = 'http:', hostname, port, l
     [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ]
   ]
 
-  const { server, option: { baseUrl } } = await commonStartServer({
-    protocol,
-    hostname,
-    port,
-    routeConfigList,
-    isAddFavicon: true,
-    title: 'WebSocketGroup',
-    log
-  })
-
+  const { server, option: { baseUrl } } = serverPack
   enableWebSocketServer({
     server,
     onUpgradeRequest: createUpdateRequestListener({
-      responderList: [
-        createResponderRouter({
-          routeMap: createRouteMap([
-            [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ]
-          ]),
-          baseUrl
-        })
-      ]
+      responderList: [ createResponderRouter({
+        routeMap: createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ]),
+        baseUrl
+      }) ]
     }),
     frameLengthLimit: FRAME_LENGTH_LIMIT
   })
+
+  return {
+    routeConfigList,
+    isAddFavicon: true,
+    title: 'WebSocketGroup'
+  }
 }
 
 const mainStyle = `<style>
@@ -403,4 +394,4 @@ const mainScriptInit = () => {
   })
 }
 
-export { startServerWebSocketGroup }
+export { configure }

@@ -13,9 +13,9 @@ const DR_BROWSER_FILE_PATH = () => [
   `Dr.browser.js`
 ].reduce((o, path) => o || tryRequireResolve(path), null)
 
-let cache
+let cache = ''
 const DR_BROWSER_SCRIPT_TAG = () => {
-  if (cache === undefined) cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
   return cache
 }
 

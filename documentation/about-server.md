@@ -22,9 +22,9 @@ import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 ```
 
-check the function: `createServer()`, basically:
+check the function: `createServerPack()`, basically:
 ```js
-const createServer = (option) => ({ // option check `DEFAULT_HTTPS_OPTION` and `DEFAULT_HTTP_OPTION`
+const createServerPack = (option) => ({ // option check `DEFAULT_HTTPS_OPTION` and `DEFAULT_HTTP_OPTION`
   server, // from createHttpServer or createHttpsServer
   option,
   start: async () => {},

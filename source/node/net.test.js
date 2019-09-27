@@ -4,7 +4,7 @@ import { unlinkSync, writeFileSync } from 'fs'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { receiveBufferAsync, sendBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 import { getUnusedPort } from 'source/node/server/function'
-import { createServer, createRequestListener } from 'source/node/server/Server'
+import { createServerPack, createRequestListener } from 'source/node/server/Server'
 import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
@@ -21,7 +21,7 @@ const BUFFER_SCRIPT = Buffer.from([
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 
 const withTestServer = (asyncTest) => async () => {
-  const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
+  const { server, start, stop, option: { baseUrl } } = createServerPack({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
   let retryCount = 0
   server.on('request', createRequestListener({
     responderList: [

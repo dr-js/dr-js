@@ -167,10 +167,10 @@
   - `createOptionParser`
 + 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
   - `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
++ 📄 [source/node/server/Proxy.js](source/node/server/Proxy.js)
+  - `createTCPProxyListener`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
-  - `createRequestListener`, `createServer`
-+ 📄 [source/node/server/TCPProxyServer.js](source/node/server/TCPProxyServer.js)
-  - `createTCPProxyServer`
+  - `createRequestListener`, `createServerPack`, `describeServerPack`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
@@ -203,8 +203,6 @@
   - `getDefaultOpen`
 + 📄 [source/node/system/ExitListener.js](source/node/system/ExitListener.js)
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
-+ 📄 [source/node/system/NetworkAddress.js](source/node/system/NetworkAddress.js)
-  - `getNetworkIPv4AddressList`
 + 📄 [source/node/system/Process.js](source/node/system/Process.js)
   - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
@@ -390,10 +388,10 @@
       - **WebSocketUpgradeRequest**
         - `createUpdateRequestListener`
       - `createFrameReceiverStore`, `listenAndReceiveFrame`, `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
+    - **Proxy**
+      - `createTCPProxyListener`
     - **Server**
-      - `createRequestListener`, `createServer`
-    - **TCPProxyServer**
-      - `createTCPProxyServer`
+      - `createRequestListener`, `createServerPack`, `describeServerPack`
     - **CommonHTML**
       - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
     - **Function**
@@ -403,8 +401,6 @@
       - `getDefaultOpen`
     - **ExitListener**
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
-    - **NetworkAddress**
-      - `getNetworkIPv4AddressList`
     - **Process**
       - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **Run**
@@ -441,8 +437,6 @@
 >       common option
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
 >       eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv
->   --eval-readline --erl [OPTIONAL] [ARGUMENT=0+]
->       eval with readline: -R=readlineFile, ...eval
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0+]
 >       start node REPL
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
@@ -455,26 +449,20 @@
 >       for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`
 >   --append [OPTIONAL] [ARGUMENT=1]
 >       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
->   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
->       use system default app to open uri or path: $0=uriOrPath/cwd
+>   --merge [OPTIONAL] [ARGUMENT=2+]
+>       merge to one file: $@=mergedFile,...inputFileList
+>   --create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
+>       create directory: $@=...pathList
+>   --modify-copy --cp [OPTIONAL] [ARGUMENT=2]
+>       copy path: $@=pathFrom,pathTo
+>   --modify-move --mv [OPTIONAL] [ARGUMENT=2]
+>       move path: $@=pathFrom,pathTo
+>   --modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
+>       delete path: $@=...pathList
 >   --status --s -s [OPTIONAL] [ARGUMENT=0+]
 >       basic system status: -J=isOutputJSON
->   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
->       list file: $0=path/cwd
->   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
->       list all file: $0=path/cwd
->   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
->       list all file in tree: $0=path/cwd
->   --file-create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
->       create directory: $@=...pathList
->   --file-modify-copy --cp [OPTIONAL] [ARGUMENT=2]
->       copy path: $@=pathFrom,pathTo
->   --file-modify-move --mv [OPTIONAL] [ARGUMENT=2]
->       move path: $@=pathFrom,pathTo
->   --file-modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
->       delete path: $@=...pathList
->   --file-merge --merge [OPTIONAL] [ARGUMENT=2+]
->       merge to one file: $@=mergedFile,...inputFileList
+>   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
+>       use system default app to open uri or path: $0=uriOrPath/cwd
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >       fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
@@ -504,23 +492,19 @@
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_EVAL_READLINE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WAIT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
+>     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
+>     export DR_JS_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
+>     export DR_JS_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_FILE_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_FILE_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_FILE_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_FILE_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_FILE_MERGE="[OPTIONAL] [ARGUMENT=2+]"
+>     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1]"
@@ -532,40 +516,36 @@
 >   "
 > CONFIG Usage:
 >   {
->     "drJsConfig": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsHelp": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsQuiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsVersion": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsJson": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsHost": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsRoot": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsInputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsOutputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsEval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsEvalReadline": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsRepl": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsWait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsEcho": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsCat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsWrite": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsAppend": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "drJsOpen": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsStatus": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsFileList": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsFileListAll": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsFileTree": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsFileCreateDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsFileModifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "drJsFileModifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "drJsFileModifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "drJsFileMerge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
->     "drJsFetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
->     "drJsProcessStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsJsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsServerServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsServerServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "drJsServerWebsocketGroup": [ "[OPTIONAL]" ],
->     "drJsServerTestConnection": [ "[OPTIONAL]" ],
->     "drJsServerTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "config": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "help": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "quiet": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "version": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "json": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "repl": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "wait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "echo": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
+>     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
+>     "modifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
+>     "modifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "status": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "fetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
+>     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "serverWebsocketGroup": [ "[OPTIONAL]" ],
+>     "serverTestConnection": [ "[OPTIONAL]" ],
+>     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >   }
 > ```

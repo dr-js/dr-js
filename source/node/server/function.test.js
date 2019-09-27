@@ -1,6 +1,6 @@
 import { strictEqual } from 'source/common/verify'
 import { getUnusedPort, autoTestServerPort } from './function'
-import { createServer } from './Server'
+import { createServerPack } from './Server'
 
 const { describe, it } = global
 
@@ -29,7 +29,7 @@ describe('Node.Server.function', () => {
   it('getUnusedPort() check', async () => {
     const port = await getUnusedPort()
 
-    const { start, stop } = createServer({ protocol: 'http:', hostname: '0.0.0.0', port })
+    const { start, stop } = createServerPack({ protocol: 'http:', hostname: '0.0.0.0', port })
     await start()
 
     await getUnusedPort(port, '0.0.0.0').then(
@@ -43,7 +43,7 @@ describe('Node.Server.function', () => {
   it('autoTestServerPort() check', async () => {
     const occupyPort = async () => {
       const port = await getUnusedPort()
-      const { start, stop } = createServer({ protocol: 'http:', hostname: '0.0.0.0', port })
+      const { start, stop } = createServerPack({ protocol: 'http:', hostname: '0.0.0.0', port })
       await start()
       return { port, stop }
     }

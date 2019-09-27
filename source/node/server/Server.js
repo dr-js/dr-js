@@ -1,35 +1,17 @@
 import { constants } from 'crypto'
+import { networkInterfaces } from 'os'
+import { createServer as createTCPServer } from 'net'
+import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
 // TODO: add http2
 
 import { clock } from 'source/common/time'
+import { indentList } from 'source/common/string'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder/Common'
-
-const DEFAULT_HTTPS_OPTION = {
-  protocol: 'https:',
-  hostname: '127.0.0.1',
-  port: 443,
-  isSecure: true,
-  // key: 'BUFFER: KEY.pem', // [optional]
-  // cert: 'BUFFER: CERT.pem', // [optional]
-  // ca: 'BUFFER: CA.pem', // [optional]
-  // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -out path/dh2048.pem 2048`
-  secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
-}
-const DEFAULT_HTTP_OPTION = {
-  protocol: 'http:',
-  hostname: '127.0.0.1',
-  port: 80,
-  isSecure: false
-}
-const VALID_SERVER_PROTOCOL_SET = new Set([
-  DEFAULT_HTTPS_OPTION.protocol,
-  DEFAULT_HTTP_OPTION.protocol
-])
 
 const SESSION_CACHE_MAX = 4 * 1024
 const SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
@@ -46,13 +28,41 @@ const applyServerSessionCache = (server) => {
   })
 }
 
-const createServer = ({ protocol, ...option }) => {
-  if (!VALID_SERVER_PROTOCOL_SET.has(protocol)) throw new Error(`invalid protocol: ${protocol}`)
-  option = { ...(protocol === 'https:' ? DEFAULT_HTTPS_OPTION : DEFAULT_HTTP_OPTION), ...option }
+const createServerPack = ({ protocol, ...option }) => {
+  if (
+    protocol !== 'tcp:' &&
+    protocol !== 'tls:' &&
+    protocol !== 'http:' &&
+    protocol !== 'https:'
+  ) throw new Error(`invalid protocol: ${protocol}`)
+  const isSecure = (
+    protocol === 'tls:' ||
+    protocol === 'https:'
+  )
+  option = {
+    isSecure,
+    protocol,
+    port: isSecure ? 443 : 80,
+    hostname: '127.0.0.1',
+    ...(isSecure && { // https only
+      // key: 'BUFFER: KEY.pem', // [optional]
+      // cert: 'BUFFER: CERT.pem', // [optional]
+      // ca: 'BUFFER: CA.pem', // [optional]
+      // SNICallback: (hostname, callback) => callback(null, secureContext), // [optional]
+      // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
+      secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
+    }),
+    ...option
+  }
   option.baseUrl = `${protocol}//${option.hostname}:${option.port}`
 
-  const server = option.isSecure ? createHttpsServer(option) : createHttpServer() // NOTE: the argument is different for https/http.createServer
-  option.isSecure && applyServerSessionCache(server)
+  const server = protocol === 'tcp:' ? createTCPServer()
+    : protocol === 'tls:' ? createTLSServer(option)
+      : protocol === 'http:' ? createHttpServer()
+        : protocol === 'https:' ? createHttpsServer(option)
+          : null
+
+  isSecure && applyServerSessionCache(server)
 
   const socketSet = new Set()
   server.on('connection', (socket) => {
@@ -64,7 +74,7 @@ const createServer = ({ protocol, ...option }) => {
     })
   })
 
-  return {
+  return { // call this serverPack
     server,
     socketSet,
     option,
@@ -103,7 +113,24 @@ const createRequestListener = ({
   await responderEnd(stateStore)
 }
 
+const describeServerPack = (
+  { baseUrl, protocol, hostname, port, isIpv6 = hostname.startsWith('[') },
+  title,
+  extraList = []
+) => indentList(`[${title}]`, [
+  ...extraList,
+  `baseUrl: '${baseUrl}'`,
+  ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? [] : Object.entries(networkInterfaces())
+    .reduce((o, [ interfaceName, interfaceList ]) => {
+      interfaceList.forEach(({ address, family }) => (isIpv6 || family === 'IPv4') && o.push([ isIpv6 ? `[${address}]` : address, interfaceName ]))
+      return o
+    }, [])
+    .map(([ address, interfaceName ]) => `localUrl: '${protocol}//${address}:${port}' [${interfaceName}]`))
+].filter(Boolean))
+
 export {
-  createServer,
-  createRequestListener
+  createServerPack,
+  createRequestListener,
+
+  describeServerPack
 }

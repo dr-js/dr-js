@@ -1,7 +1,7 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { fetchLikeRequest } from 'source/node/net'
 import { bufferToReadableStream } from 'source/node/data/Stream'
-import { createServer, createRequestListener } from './Server'
+import { createServerPack, createRequestListener } from './Server'
 import { getUnusedPort } from './function'
 import {
   responderSendBuffer,
@@ -20,8 +20,8 @@ const TEST_BUFFER_TEXT = 'TEST BUFFER!'.repeat(32)
 const TEST_BUFFER = Buffer.from(TEST_BUFFER_TEXT)
 
 describe('Node.Server.Server', () => {
-  it('createServer()', async () => {
-    const { server, start, stop, option: { baseUrl } } = createServer({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
+  it('createServerPack()', async () => {
+    const { server, start, stop, option: { baseUrl } } = createServerPack({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
 
     server.on('request', createRequestListener({
       responderList: [

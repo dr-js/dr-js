@@ -1,7 +1,7 @@
 const { resolve } = require('path')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
-const { createServer, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
+const { createServerPack, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { responderEnd, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
@@ -21,7 +21,7 @@ const ServerPort = 3000
 const responderLogEnd = createResponderLogEnd({ log: console.log })
 const responderServeStatic = createResponderServeStatic({})
 
-const { server, start, option } = createServer({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
+const { server, start, option } = createServerPack({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     createResponderLog({ log: console.log }),

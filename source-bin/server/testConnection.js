@@ -4,17 +4,43 @@ import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
 import { DR_BROWSER_SCRIPT_TAG } from '@dr-js/core/module/node/resource'
 import { receiveBufferAsync } from '@dr-js/core/module/node/data/Buffer'
-import { responderEndWithStatusCode } from '@dr-js/core/module/node/server/Responder/Common'
-import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData } from '@dr-js/core/module/node/server/Responder/Send'
-import { METHOD_MAP, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
+import { createRequestListener, describeServerPack } from '@dr-js/core/module/node/server/Server'
+import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
+import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
+import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
 
-import { commonStartServer } from '../function'
+const commonStartServer = async ({
+  serverPack: { server, option, start },
+  log,
+  routeConfigList, isAddFavicon,
+  title, extraInfoList
+}) => {
+  const responderLogEnd = createResponderLogEnd({ log })
+  server.on('request', createRequestListener({
+    responderList: [
+      createResponderLog({ log }),
+      createResponderRouter({
+        routeMap: createRouteMap([
+          ...routeConfigList,
+          isAddFavicon && [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
+        ].filter(Boolean)),
+        baseUrl: option.baseUrl
+      })
+    ],
+    responderEnd: (store) => {
+      responderEnd(store)
+      responderLogEnd(store)
+    }
+  }))
+  await start()
+  log(describeServerPack(option, title, extraInfoList))
+}
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
 // TODO: support CORS for testing
 
-const startServerTestConnection = async ({ protocol = 'http:', hostname, port, log }) => {
+const configure = ({ log }) => {
   const bufferData = prepareBufferData(Buffer.from(`TEST CONTENT`))
 
   const routeConfigList = [
@@ -64,13 +90,11 @@ const startServerTestConnection = async ({ protocol = 'http:', hostname, port, l
     }) ]
   ]
 
-  await commonStartServer({
-    protocol, hostname, port,
+  return {
     routeConfigList,
     isAddFavicon: true,
-    title: 'TestConnection',
-    log
-  })
+    title: 'TestConnection'
+  }
 }
 
-export { startServerTestConnection }
+export { commonStartServer, configure }

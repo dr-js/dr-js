@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
-import { normalize, dirname } from 'path'
+import { cpus } from 'os'
+import { resolve, normalize } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
+
+import { getEndianness } from '@dr-js/core/module/env/function'
 
 import { time, binary, prettyStringifyJSON } from '@dr-js/core/module/common/format'
 import { indentList } from '@dr-js/core/module/common/string'
@@ -13,26 +16,39 @@ import { pipeStreamAsync, bufferToReadableStream } from '@dr-js/core/module/node
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
 import { modifyMove, modifyCopy, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
-import { createTCPProxyServer } from '@dr-js/core/module/node/server/TCPProxyServer'
+import { createServerPack } from '@dr-js/core/module/node/server/Server'
+import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
 import { getDefaultOpen } from '@dr-js/core/module/node/system/DefaultOpen'
 import { runSync } from '@dr-js/core/module/node/system/Run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/core/module/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
 
-import { startServerServeStatic } from './server/serveStatic'
-import { startServerWebSocketGroup } from './server/websocketGroup'
-import { startServerTestConnection } from './server/testConnection'
+import { commonStartServer, configure as configureServerTestConnection } from './server/testConnection'
+import { configure as configureServerServeStatic } from './server/serveStatic'
+import { configure as configureServerWebSocketGroup } from './server/websocketGroup'
 
-import { packageName, packageVersion, getVersion, evalScript, evalReadlineExtend, fetchWithJump, collectFile } from './function'
+import { modulePathHack, evalScript, fetchWithJump } from './function'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
+
+import { name as packageName, version as packageVersion } from '../package.json'
 
 const logAuto = (value) => console.log(isBasicObject(value)
   ? JSON.stringify(value, null, 2)
   : value
 )
 
+const getVersion = () => ({
+  packageName,
+  packageVersion,
+  nodeVersion: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  endianness: getEndianness(),
+  cpuCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: fix Termux, check: https://github.com/termux/termux-app/issues/299
+})
+
 const runMode = async (modeName, optionData) => {
-  const { tryGet, tryGetFirst, getFirst } = optionData
+  const { tryGet, tryGetFirst } = optionData
   const log = tryGet('quiet')
     ? () => {}
     : console.log
@@ -60,28 +76,33 @@ const runMode = async (modeName, optionData) => {
     const hostname = hostnameList.join(':') || defaultHostname
     return { hostname, port }
   }
-
-  const getServerConfig = async () => {
+  const getServerPack = async (protocol = 'http:') => {
     const { hostname, port } = parseHost(tryGetFirst('host') || '', '0.0.0.0')
-    return { hostname, port: port || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) } // for more stable port
+    return createServerPack({
+      protocol,
+      hostname,
+      port: port || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) // for more stable port
+    })
+  }
+  const startServer = async (configureFunc, option) => {
+    const serverPack = await getServerPack()
+    return commonStartServer({ serverPack, log, ...configureFunc({ serverPack, log, ...option }) })
   }
 
   switch (modeName) {
-    case 'eval':
-    case 'eval-readline': {
-      let result = await evalScript(
+    case 'eval': {
+      modulePathHack()
+      const result = await evalScript(
         inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ],
+        inputFile || resolve(process.cwd(), '__SCRIPT_STRING__'),
         inputFile ? argumentList : argumentList.slice(1),
-        inputFile ? dirname(inputFile) : process.cwd(),
         optionData
       )
-      if (modeName === 'eval-readline') result = await evalReadlineExtend(result, getFirst('root'), log)
-      return result !== undefined && outputBuffer((result instanceof Buffer)
-        ? result
-        : Buffer.from(String(result)))
+      return result !== undefined && outputBuffer(Buffer.isBuffer(result) ? result : Buffer.from(String(result)))
     }
     case 'repl':
-      return (startREPL({ prompt: '> ', input: process.stdin, output: process.stdout, useGlobal: true }).context.require = require)
+      modulePathHack()
+      return startREPL({ useGlobal: true })
 
     case 'wait': {
       const waitTime = argumentList[ 0 ] || 2 * 1000
@@ -99,6 +120,12 @@ const runMode = async (modeName, optionData) => {
       if (process.stdin.isTTY) throw new Error('unsupported TTY stdin') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
       return pipeStreamAsync(createWriteStream(argumentList[ 0 ], { flags }), process.stdin)
+    case 'merge': {
+      const [ mergedFile, ...fileList ] = argumentList
+      for (const path of fileList) await pipeStreamAsync(createWriteStream(mergedFile, { flags: 'a' }), createReadStream(path))
+      return
+    }
+
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
       return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
@@ -106,25 +133,16 @@ const runMode = async (modeName, optionData) => {
     case 'status':
       return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
 
-    case 'file-list':
-    case 'file-list-all':
-    case 'file-tree':
-      return logAuto(await collectFile(modeName, argumentList[ 0 ] || process.cwd()))
-    case 'file-create-directory':
+    case 'create-directory':
       for (const path of argumentList) await logTaskResult(createDirectory, path)
       return
-    case 'file-modify-copy':
+    case 'modify-copy':
       return modifyCopy(argumentList[ 0 ], argumentList[ 1 ])
-    case 'file-modify-move':
+    case 'modify-move':
       return modifyMove(argumentList[ 0 ], argumentList[ 1 ])
-    case 'file-modify-delete':
+    case 'modify-delete':
       for (const path of argumentList) await logTaskResult(modifyDelete, path)
       return
-    case 'file-merge': {
-      const [ mergedFile, ...fileList ] = argumentList
-      for (const path of fileList) await pipeStreamAsync(createWriteStream(mergedFile, { flags: 'a' }), createReadStream(path))
-      return
-    }
 
     case 'fetch': {
       let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
@@ -147,28 +165,25 @@ const runMode = async (modeName, optionData) => {
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      const inputJSON = JSON.parse(readFileSync(inputFile))
-      const outputJSONString = prettyStringifyJSON(inputJSON, unfoldLevel)
-      return writeFileSync(outputFile || inputFile, outputJSONString)
+      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(readFileSync(inputFile))), unfoldLevel))
     }
 
     case 'server-serve-static':
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
-      const isSimpleServe = modeName === 'server-serve-static-simple'
       const staticRoot = tryGetFirst('root') || process.cwd()
-      return startServerServeStatic({ isSimpleServe, expireTime: Number(expireTime), staticRoot, log, ...(await getServerConfig()) })
+      return startServer(configureServerServeStatic, { isSimpleServe: modeName === 'server-serve-static-simple', expireTime: Number(expireTime), staticRoot })
     }
     case 'server-websocket-group':
-      return startServerWebSocketGroup({ log, ...(await getServerConfig()) })
+      return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
-      return startServerTestConnection({ log, ...(await getServerConfig()) })
+      return startServer(configureServerTestConnection)
     case 'server-tcp-proxy': {
       let targetOptionList
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
         targetOptionList = argumentList.map((host) => parseHost(host, '127.0.0.1'))
-        let targetOptionIndex = 0
+        let targetOptionIndex = 0 // selected in round robin order
         getTargetOption = (socket) => {
           targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
           const targetOption = targetOptionList[ targetOptionIndex ]
@@ -179,7 +194,8 @@ const runMode = async (modeName, optionData) => {
         targetOptionList = [ { hostname: 'custom-hostname', port: 'custom-port' } ]
         getTargetOption = argumentList[ 0 ]
       }
-      const { option, start } = createTCPProxyServer({ getTargetOption, ...(await getServerConfig()) })
+      const { server, option, start } = await getServerPack('tcp:')
+      server.on('connection', createTCPProxyListener({ getTargetOption }))
       await start()
       return log(indentList('[TCPProxy]', [
         `pid: ${process.pid}`,

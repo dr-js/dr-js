@@ -1,6 +1,6 @@
 let ENDIANNESS_CACHED = ''
 const getEndianness = () => {
-  if (ENDIANNESS_CACHED === undefined) {
+  if (ENDIANNESS_CACHED === '') {
     ENDIANNESS_CACHED = 'unknown'
     try {
       const uint8Array = new Uint8Array(new ArrayBuffer(2))

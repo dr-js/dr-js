@@ -37,10 +37,7 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
     `export { Env, Common, Browser }`
   ].join('\n'))
 
-  writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({
-    drJsFileModifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ],
-    drJsQuiet: true
-  }))
+  writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))
 }
 
 runMain(async (logger) => {

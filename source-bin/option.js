@@ -17,7 +17,6 @@ const COMMON_FORMAT_LIST = parseList(
 
 const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
-  'eval-readline,erl/A|eval with readline: -R=readlineFile, ...eval',
   'repl,i/T|start node REPL',
 
   'wait/AI/0-1|wait specified time, in msec: $0=waitTime/2*1000',
@@ -25,24 +24,17 @@ const MODE_FORMAT_LIST = parseList(
   'cat/AP/0-|with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout',
   'write/SP|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
-  'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
+  'merge/AP/2-|merge to one file: $@=mergedFile,...inputFileList',
+  'create-directory,mkdir/AP/0-|create directory: $@=...pathList',
+  'modify-copy,cp/AP/2|copy path: $@=pathFrom,pathTo',
+  'modify-move,mv/AP/2|move path: $@=pathFrom,pathTo',
+  'modify-delete,rm/AP/0-|delete path: $@=...pathList',
+
   'status,s/T|basic system status: -J=isOutputJSON',
-
-  'file-list,ls/AP/0-1|list file: $0=path/cwd',
-  'file-list-all,ls-R,lla/AP/0-1|list all file: $0=path/cwd',
-  'file-tree,tree/AP/0-1|list all file in tree: $0=path/cwd',
-  'file-create-directory,mkdir/AP/0-|create directory: $@=...pathList',
-  'file-modify-copy,cp/AP/2|copy path: $@=pathFrom,pathTo',
-  'file-modify-move,mv/AP/2|move path: $@=pathFrom,pathTo',
-  'file-modify-delete,rm/AP/0-|delete path: $@=...pathList',
-  'file-merge,merge/AP/2-|merge to one file: $@=mergedFile,...inputFileList',
-
+  'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
   'fetch,f//1-3|fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
-
-  // TODO: add 7z fast bin?
-  // TODO: add fast batch command like {file} {F} {...F} {directory} {D} {...D}?
 
   'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-serve-static-simple,ssss//0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
@@ -54,7 +46,7 @@ const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
 
 const OPTION_CONFIG = {
   prefixENV: 'dr-js',
-  prefixCONFIG: 'dr-js',
+  // prefixCONFIG: 'dr-js',
   formatList: [
     Preset.Config,
     ...COMMON_FORMAT_LIST,

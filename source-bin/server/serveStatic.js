@@ -13,14 +13,10 @@ import { getRouteParamAny } from '@dr-js/core/module/node/server/Responder/Route
 import { createResponderServeStatic } from '@dr-js/core/module/node/server/Responder/ServeStatic'
 import { COMMON_LAYOUT, COMMON_STYLE } from '@dr-js/core/module/node/server/commonHTML'
 
-import { commonStartServer } from '../function'
-
-const startServerServeStatic = async ({
+const configure = ({
   isSimpleServe,
   expireTime, // in msec
-  staticRoot,
-  protocol = 'http:', hostname, port,
-  log
+  staticRoot
 }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
   const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
@@ -30,20 +26,14 @@ const startServerServeStatic = async ({
     [ isSimpleServe ? '/*' : '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
     !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
     !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
-  ].filter(Boolean)
+  ]
 
-  await commonStartServer({
-    protocol,
-    hostname,
-    port,
+  return {
     routeConfigList,
     isAddFavicon: !isSimpleServe,
     title: `ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`,
-    extraInfoList: [
-      `staticRoot: '${staticRoot}'`,
-      `expireTime: ${formatTime(expireTime)}` ],
-    log
-  })
+    extraInfoList: [ `staticRoot: '${staticRoot}'`, `expireTime: ${formatTime(expireTime)}` ]
+  }
 }
 
 const responderFilePathList = async (store, rootPath, staticRoot) => {
@@ -81,13 +71,8 @@ p.size { flex: 1; }
 
 const compareInfo = ({ name: a }, { name: b }) => compareStringWithNumber(a, b)
 const renderItem = (
-  hrefPrefix,
-  hrefFragList,
-  tag,
-  name,
-  size,
-  mtimeMs,
-  isDownload,
+  hrefPrefix, hrefFragList,
+  tag, name, size, mtimeMs, isDownload,
   // generated
   HREF = `href="${hrefPrefix}/${encodeURIComponent(toPosixPath(joinPath(...hrefFragList)))}"`,
   NAME = escapeHTML(name)
@@ -98,4 +83,4 @@ const renderItem = (
 <p class="date">${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</p>
 </a>`
 
-export { startServerServeStatic }
+export { configure }
