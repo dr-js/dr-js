@@ -1,16 +1,16 @@
-const COMMON_LAYOUT = (extraHeadList = [], extraBodyList = []) => [
-  `<!DOCTYPE html>`,
-  `<html>`,
-  `<head>`,
-  `<meta charset="utf-8">`,
-  `<meta name="viewport" content="minimum-scale=1, width=device-width">`,
-  ...extraHeadList,
-  `</head>`,
-  `<body>`,
-  ...extraBodyList,
-  `</body>`,
-  `</html>`
-].join('\n')
+const filterJoin = (array) => array.filter(Boolean).join('\n')
+
+const COMMON_LAYOUT = (extraHeadList = [], extraBodyList = []) => `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="minimum-scale=1, width=device-width">
+${filterJoin(extraHeadList)}
+</head>
+<body>
+${filterJoin(extraBodyList)}
+</body>
+</html>`
 
 const COMMON_STYLE = () => `<style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; outline-color: #f00; }
@@ -47,10 +47,10 @@ const COMMON_SCRIPT = (injectMap) => {
     if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${String(value)}</script>`)
     else valueObject[ key ] = value
   })
-  return [
+  return filterJoin([
     `<script>Object.assign(window, ${JSON.stringify(valueObject)})</script>`, // object first
     ...functionScriptList
-  ].join('\n')
+  ])
 }
 
 // common quick function

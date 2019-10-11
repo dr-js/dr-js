@@ -143,8 +143,6 @@
   - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
 + 📄 [source/node/data/function.js](source/node/data/function.js)
   - `getRandomBufferAsync`
-+ 📄 [source/node/file/Compress.js](source/node/file/Compress.js)
-  - `checkBloat`, `compressFile`, `compressFileList`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -157,8 +155,6 @@
   - `appendFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
-+ 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
-  - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
@@ -344,8 +340,6 @@
       - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
     - `getRandomBufferAsync`
   - **File**
-    - **Compress**
-      - `checkBloat`, `compressFile`, `compressFileList`
     - **Directory**
       - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
     - **Modify**
@@ -360,8 +354,6 @@
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **EntityTag**
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
-    - **FactDatabase**
-      - `INITIAL_FACT_INFO`, `createFactDatabase`, `tryDeleteExtraCache`, `tryLoadFactInfo`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
     - **SafeWrite**

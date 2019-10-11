@@ -15,7 +15,7 @@ import { responderEnd } from './Responder/Common'
 
 const SESSION_CACHE_MAX = 4 * 1024
 const SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
-const applyServerSessionCache = (server) => {
+const applyServerSessionCache = (server) => { // TODO: consider move to `ticketKeys`: https://nodejs.org/dist/latest-v12.x/docs/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
   const sessionCacheMap = createCacheMap({ valueSizeSumMax: SESSION_CACHE_MAX, eventHub: null })
   server.on('newSession', (sessionId, sessionData, next) => {
     __DEV__ && console.log('newSession', sessionId.toString('hex'))
@@ -50,6 +50,8 @@ const createServerPack = ({ protocol, ...option }) => {
       // ca: 'BUFFER: CA.pem', // [optional]
       // SNICallback: (hostname, callback) => callback(null, secureContext), // [optional]
       // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
+
+      // TODO: drop after support only nodejs@12+ (default to `minVersion: 'TLSv1.2'`)
       secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
     }),
     ...option
@@ -114,18 +116,22 @@ const createRequestListener = ({
 }
 
 const describeServerPack = (
-  { baseUrl, protocol, hostname, port, isIpv6 = hostname.startsWith('[') },
+  { baseUrl, protocol, hostname, port },
   title,
   extraList = []
 ) => indentList(`[${title}]`, [
   ...extraList,
   `baseUrl: '${baseUrl}'`,
-  ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? [] : Object.entries(networkInterfaces())
-    .reduce((o, [ interfaceName, interfaceList ]) => {
-      interfaceList.forEach(({ address, family }) => (isIpv6 || family === 'IPv4') && o.push([ isIpv6 ? `[${address}]` : address, interfaceName ]))
-      return o
-    }, [])
-    .map(([ address, interfaceName ]) => `localUrl: '${protocol}//${address}:${port}' [${interfaceName}]`))
+  ...(
+    (hostname && hostname !== '0.0.0.0' && hostname !== '[::]')
+      ? []
+      : Object.entries(networkInterfaces())
+        .reduce((o, [ interfaceName, interfaceList ]) => {
+          interfaceList.forEach(({ address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
+          return o
+        }, [])
+        .map(([ address, interfaceName ]) => `localUrl: '${protocol}//${address}:${port}' [${interfaceName}]`)
+  )
 ].filter(Boolean))
 
 export {

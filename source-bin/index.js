@@ -70,7 +70,7 @@ const runMode = async (modeName, optionData) => {
   )
 
   // for ipv6 should use host like: `[::]:80`
-  const parseHost = (host, defaultHostname = '127.0.0.1') => {
+  const parseHost = (host, defaultHostname) => {
     const hostnameList = host.split(':')
     const port = Number(hostnameList.pop())
     const hostname = hostnameList.join(':') || defaultHostname
@@ -165,7 +165,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(readFileSync(inputFile))), unfoldLevel))
+      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(readFileSync(inputFile)), unfoldLevel))
     }
 
     case 'server-serve-static':
