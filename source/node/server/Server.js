@@ -1,11 +1,10 @@
-import { constants } from 'crypto'
 import { networkInterfaces } from 'os'
 import { createServer as createTCPServer } from 'net'
 import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
-// TODO: add http2
+// TODO: add http2?
 
 import { clock } from 'source/common/time'
 import { indentList } from 'source/common/string'
@@ -29,31 +28,19 @@ const applyServerSessionCache = (server) => { // TODO: consider move to `ticketK
 }
 
 const createServerPack = ({ protocol, ...option }) => {
-  if (
-    protocol !== 'tcp:' &&
-    protocol !== 'tls:' &&
-    protocol !== 'http:' &&
-    protocol !== 'https:'
-  ) throw new Error(`invalid protocol: ${protocol}`)
-  const isSecure = (
-    protocol === 'tls:' ||
-    protocol === 'https:'
-  )
+  if (![ 'tcp:', 'tls:', 'http:', 'https:' ].includes(protocol)) throw new Error(`invalid protocol: ${protocol}`)
+  const isSecure = [ 'tls:', 'https:' ].includes(protocol)
   option = {
     isSecure,
     protocol,
     port: isSecure ? 443 : 80,
     hostname: '127.0.0.1',
-    ...(isSecure && { // https only
-      // key: 'BUFFER: KEY.pem', // [optional]
-      // cert: 'BUFFER: CERT.pem', // [optional]
-      // ca: 'BUFFER: CA.pem', // [optional]
-      // SNICallback: (hostname, callback) => callback(null, secureContext), // [optional]
-      // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
-
-      // TODO: drop after support only nodejs@12+ (default to `minVersion: 'TLSv1.2'`)
-      secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2 // https://taylorpetrick.com/blog/post/https-nodejs-letsencrypt
-    }),
+    // https only
+    // key: 'BUFFER: KEY.pem', // [optional]
+    // cert: 'BUFFER: CERT.pem', // [optional]
+    // ca: 'BUFFER: CA.pem', // [optional]
+    // SNICallback: (hostname, callback) => callback(null, secureContext), // [optional]
+    // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
     ...option
   }
   option.baseUrl = `${protocol}//${option.hostname}:${option.port}`

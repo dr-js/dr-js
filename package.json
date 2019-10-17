@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.0.0-dev.3",
+  "version": "0.0.0-dev.4",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -42,8 +42,8 @@
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
   "engines": {
-    "node": ">=10.16",
-    "npm": ">=6.10"
+    "node": ">=12.13",
+    "npm": ">=6.12"
   },
   "devDependencies": {
     "@dr-js/dev": "0.0.0-dev.1",
