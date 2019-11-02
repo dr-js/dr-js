@@ -14,26 +14,26 @@ const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
-const execOptionRoot = { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit', shell: true }
+const execShell = (command) => execSync(command, { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit', shell: true })
 
 const buildOutput = async ({ logger: { padLog } }) => {
-  padLog(`generate index.js & spec doc`)
-  execSync('npm run script-generate-spec', execOptionRoot)
+  padLog('generate index.js & spec doc')
+  execShell('npm run script-generate-spec')
 
-  padLog(`build library-webpack`)
-  execSync('npm run build-library-webpack', execOptionRoot)
+  padLog('build library-webpack')
+  execShell('npm run build-library-webpack')
 
-  padLog(`delete temp build file`)
-  execSync('npm run script-delete-temp-build-file', execOptionRoot)
+  padLog('delete temp build file')
+  execShell('npm run script-delete-temp-build-file')
 
-  padLog(`build library-babel`)
-  execSync('npm run build-library-babel', execOptionRoot)
+  padLog('build library-babel')
+  execShell('npm run build-library-babel')
 
-  padLog(`build module`)
-  execSync('npm run build-module', execOptionRoot)
+  padLog('build module')
+  execShell('npm run build-module')
 
-  padLog(`build bin`)
-  execSync('npm run build-bin', execOptionRoot)
+  padLog('build bin')
+  execShell('npm run build-bin')
 }
 
 const processOutput = async ({ logger }) => {
@@ -54,9 +54,9 @@ const processOutput = async ({ logger }) => {
 }
 
 const clearOutput = async ({ logger }) => {
-  logger.padLog(`clear output`)
+  logger.padLog('clear output')
 
-  logger.log(`clear test`)
+  logger.log('clear test')
   const fileList = await getScriptFileListFromPathList([ '.' ], fromOutput, (path) => path.endsWith('.test.js'))
   for (const filePath of fileList) await modifyDelete(filePath)
 }
@@ -70,8 +70,8 @@ runMain(async (logger) => {
   if (!argvFlag('pack')) return
 
   if (argvFlag('test', 'publish', 'publish-dev')) {
-    logger.padLog(`lint source`)
-    execSync(`npm run lint`, execOptionRoot)
+    logger.padLog('lint source')
+    execShell('npm run lint')
   }
 
   await buildOutput({ logger })
@@ -80,12 +80,12 @@ runMain(async (logger) => {
   if (argvFlag('test', 'publish', 'publish-dev')) {
     await processOutput({ logger }) // once more
 
-    logger.padLog(`test output`)
-    execSync(`npm run test-output-library`, execOptionRoot)
-    execSync(`npm run test-output-module`, execOptionRoot)
+    logger.padLog('test output')
+    execShell('npm run test-output-library')
+    execShell('npm run test-output-module')
 
-    logger.padLog(`test browser`)
-    execSync(`npm run test-browser`, execOptionRoot)
+    logger.padLog('test browser')
+    execShell('npm run test-browser')
   }
 
   await clearOutput({ logger })

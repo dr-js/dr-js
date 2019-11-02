@@ -88,9 +88,7 @@ const withRepeatAsync = async (func, count = 0, wait = 0) => {
     if (remainingTime > 0) await setTimeoutAsync(remainingTime)
   }
 }
-
-// NOTE: reference async-less implementation
-// const withRepeatAsync = (func, count = 0, wait = 0) => {
+// const withRepeatAsync = (func, count = 0, wait = 0) => { // NOTE: reference async-less implementation
 //   let looped = 0
 //   const loopThen = () => {
 //     if (!(count > looped)) return // done
@@ -128,9 +126,7 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
     }
   }
 }
-
-// NOTE: reference async-less implementation
-// const withRetryAsync = (func, maxRetry = Infinity, wait = 0) => {
+// const withRetryAsync = (func, maxRetry = Infinity, wait = 0) => { // NOTE: reference async-less implementation
 //   let failed = 0
 //   const promiseFunc = () => {
 //     try {

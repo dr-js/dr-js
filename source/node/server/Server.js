@@ -108,6 +108,7 @@ const describeServerPack = (
   extraList = []
 ) => indentList(`[${title}]`, [
   ...extraList,
+  `pid: '${process.pid}'`,
   `baseUrl: '${baseUrl}'`,
   ...(
     (hostname && hostname !== '0.0.0.0' && hostname !== '[::]')

@@ -1,6 +1,4 @@
-import { global } from 'source/env/global'
-
-const { XMLHttpRequest, Blob, TextDecoder } = global
+const { XMLHttpRequest, Blob, TextDecoder } = window
 
 const REGEXP_HEADER_SEPARATOR = /[\r\n]+/
 

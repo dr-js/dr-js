@@ -28,14 +28,13 @@ const isFunctionThrow = (func) => {
     return func() && false
   } catch (error) { return true }
 }
+
 const isFunctionThrowAsync = async (func) => {
   try {
     return (await func()) && false
   } catch (error) { return true }
 }
-
-// NOTE: reference async-less implementation
-// const isFunctionThrowAsync = (func) => {
+// const isFunctionThrowAsync = (func) => { // NOTE: reference async-less implementation
 //   try {
 //     return Promise.resolve(func()).then(funcNotThrow, funcDoThrow)
 //   } catch (error) { return Promise.resolve(true) }

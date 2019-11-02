@@ -1,6 +1,6 @@
-import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
+import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { receiveBufferAsync, sendBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 import { getUnusedPort } from 'source/node/server/function'

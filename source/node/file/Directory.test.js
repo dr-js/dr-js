@@ -1,5 +1,5 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { join as joinPath, dirname, resolve } from 'path'
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { getSample } from 'source/common/math/sample'
 import { PATH_TYPE, getPathStat, getPathTypeFromStat, deletePath } from './Path'
 import {
@@ -22,7 +22,7 @@ const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/')
 const SOURCE_FILE = resolve(__dirname, './function.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
+const SOURCE_DIRECTORY = resolve(__dirname, '../data/')
 const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../')
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'

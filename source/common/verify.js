@@ -44,10 +44,8 @@ const doNotThrow = (func, message) => isFunctionThrow(func) && throwError('DoNot
 
 const doThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) || throwError('DoThrowAsync', message)
 const doNotThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) && throwError('DoNotThrowAsync', message)
-
-// NOTE: reference async-less implementation
-// const doThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => !isThrow && throwError('DoThrowAsync', message))
-// const doNotThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => isThrow && throwError('DoNotThrowAsync', message))
+// const doThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => !isThrow && throwError('DoThrowAsync', message)) // NOTE: reference async-less implementation
+// const doNotThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => isThrow && throwError('DoNotThrowAsync', message)) // NOTE: reference async-less implementation
 
 const describeEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
 

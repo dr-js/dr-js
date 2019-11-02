@@ -21,9 +21,7 @@ const catchAsync = async (func, ...args) => {
   try { result = await func(...args) } catch (error) { resultError = error || new Error() }
   return { result, error: resultError }
 }
-
-// NOTE: reference async-less implementation
-// const catchAsync = (func, ...args) => {
+// const catchAsync = (func, ...args) => { // NOTE: reference async-less implementation
 //   try {
 //     return Promise.resolve(func(...args)).then(packResult, packError)
 //   } catch (error) { return Promise.resolve(packError(error)) }

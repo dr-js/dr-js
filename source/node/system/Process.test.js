@@ -31,7 +31,7 @@ describe('Node.System.Process', () => {
     const { subProcess, promise } = run({
       command: 'node',
       argList: [ '-e', 'setTimeout(console.log, 200)' ],
-      option: { stdio: 'ignore', shell: false } // NOTE: `shell: true` on win32 will leak process
+      quiet: true
     })
     const result = await getProcessListAsync()
 

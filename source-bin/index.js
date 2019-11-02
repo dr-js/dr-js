@@ -208,17 +208,12 @@ const runMode = async (modeName, optionData) => {
 
 const main = async () => {
   const optionData = await parseOption()
+  if (optionData.tryGet('version')) return logAuto(getVersion())
+  if (optionData.tryGet('help')) return logAuto(formatUsage())
   const modeName = MODE_NAME_LIST.find((name) => optionData.tryGet(name))
-
-  if (!modeName) {
-    return logAuto(optionData.tryGet('version')
-      ? getVersion()
-      : formatUsage(null, optionData.tryGet('help') ? null : 'simple')
-    )
-  }
-
+  if (!modeName) throw new Error('no mode specified')
   await runMode(modeName, optionData).catch((error) => {
-    console.warn(`[Error] in mode: ${modeName}:`, error.stack || error)
+    console.warn(`[Error] in mode: ${modeName}: ${error.stack || error}`)
     process.exit(2)
   })
 }

@@ -1,6 +1,6 @@
 import { strictEqual, stringifyEqual, notStrictEqual, notStringifyEqual, doThrow, doNotThrow } from 'source/common/verify'
-import { objectMerge } from './Object'
 import { createInsideOutPromise } from 'source/common/function'
+import { objectMerge } from './Object'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
 
 const { describe, it } = global

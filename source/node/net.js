@@ -5,8 +5,6 @@ import { createGunzip } from 'zlib'
 import { withRetryAsync } from 'source/common/function'
 import { receiveBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 
-// NOTE: v10.0.0 The class is now available on the global object.
-
 const toUrlObject = (url) => url instanceof URL ? url : new URL(url)
 
 const requestAsync = (
@@ -14,8 +12,6 @@ const requestAsync = (
   option, // { method, headers, timeout, agent, ... }
   body // Buffer/String
 ) => new Promise((resolve, reject) => {
-  // NOTE: v10.9.0 The url parameter can now be passed along with a separate options object.
-  // NOTE: v7.5.0 The options parameter can be a WHATWG URL object.
   const urlObject = toUrlObject(url)
   const request = (urlObject.protocol === 'https:' ? httpsRequest : httpRequest)(urlObject, option, resolve)
   const endWithError = (error) => {

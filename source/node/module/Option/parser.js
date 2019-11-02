@@ -216,7 +216,7 @@ const formatUsageCONFIG = (format) => join(
 
 const formatUsageBase = ({ optional, argumentLengthMin, argumentLengthMax }, ...args) => [
   ...args,
-  optional && (optional === OPTIONAL_TRUE ? '[OPTIONAL]' : '[OPTIONAL-CHECK]'),
+  optional === OPTIONAL_TRUE && '[OPTIONAL]',
   (argumentLengthMin || argumentLengthMax) && `[ARGUMENT=${formatRange(argumentLengthMin, argumentLengthMax)}]`
 ].filter(Boolean).join(' ')
 
