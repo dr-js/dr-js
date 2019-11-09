@@ -164,17 +164,17 @@ const configure = ({ serverPack }) => {
 
 const mainStyle = `<style>
 label { display: flex; align-items: center; }
-p { position: relative; padding: 14px 4px 2px; border-top: 1px solid #ddd; word-break: break-all; }
-p:hover { background: #f5f5f5; }
-pre { overflow: auto; padding: 0 2px; max-height: 10em; border-left: 1px solid #ddd; color: #666; }
+p { position: relative; padding: 14px 4px 2px; border-top: 1px solid var(--c-fill-n); word-break: break-all; }
+p:hover { background: var(--c-fill-s); }
+pre { overflow: auto; padding: 0 2px; max-height: 10em; border-left: 1px solid var(--c-fill-n); color: #888; }
 input { flex: 1; }
 .flex-column { display: flex; flex-flow: column; }
 .non-flex { flex-shrink: 0; }
 .time-tag, .id-tag { position: absolute; top: 0; font-size: 12px; line-height: 12px; }
-.time-tag { right: 0; color: #aaa }
+.time-tag { right: 0; color: var(--c-fill-d); }
 .id-tag { left: 0; }
-.color-self { color: #63aeff }
-.color-system { color: #aaa }
+.color-self { color: var(--c-dr); }
+.color-system { color: var(--c-fill-d); }
 </style>`
 
 const mainHTML = `
@@ -209,7 +209,7 @@ const mainScriptInit = () => {
       Browser: {
         Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
         Resource: { createDownloadWithBlob },
-        DOM: { applyDragFileListListener },
+        DOM: { applyReceiveFileListListener },
         Input: { KeyCommand: { createKeyCommandHub } }
       }
     }
@@ -388,7 +388,7 @@ const mainScriptInit = () => {
   addKeyCommand({ target: qS('#id'), checkMap: { key: 'Enter' }, callback: toggleWebSocket })
   start()
 
-  applyDragFileListListener(document, (fileList) => {
+  applyReceiveFileListListener(document, (fileList) => {
     const payloadFile = qS('#payload-file')
     if (payloadFile) payloadFile.files = fileList
   })

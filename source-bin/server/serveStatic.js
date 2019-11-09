@@ -61,8 +61,8 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
 const mainStyle = `<style>
 body { white-space: pre; }
 a, b { display: flex; align-items: center; }
-a { text-decoration: none; border-top: 1px solid #ddd; }
-a:hover { background: #eee; }
+a { text-decoration: none; border-top: 1px solid var(--c-fill-n); }
+a:hover { background: var(--c-fill-s); }
 p.name { overflow: hidden; text-overflow: ellipsis; }
 p.size, p.date { padding-left: 1em; text-align: right; opacity: 0.5 }
 p.size { flex: 1; }

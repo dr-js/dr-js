@@ -15,19 +15,22 @@ const muteEvent = (event) => {
   event.stopPropagation()
   event.preventDefault()
 }
-const applyDragFileListListener = (eventSource = window.document, onFileList) => {
+// TODO: use modern https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/items (wait Safari, or not?)
+const applyReceiveFileListListener = (eventSource = window.document, onFileList) => {
   const dropListener = (event) => {
     muteEvent(event)
-    const { files } = event.dataTransfer
+    const { files } = event.dataTransfer || event.clipboardData
     files && files.length && onFileList(files) // FileList (Array-like, contains File)
   }
   eventSource.addEventListener('dragenter', muteEvent)
   eventSource.addEventListener('dragover', muteEvent)
   eventSource.addEventListener('drop', dropListener)
+  eventSource.addEventListener('paste', dropListener)
   return () => {
     eventSource.removeEventListener('dragenter', muteEvent)
     eventSource.removeEventListener('dragover', muteEvent)
     eventSource.removeEventListener('drop', dropListener)
+    eventSource.removeEventListener('paste', dropListener)
   }
 }
 
@@ -57,7 +60,7 @@ const getElementAtViewport = (clientPosition, excludeElementList) => {
 
 export {
   throttleByAnimationFrame,
-  applyDragFileListListener,
+  applyReceiveFileListListener,
   getPathElementList,
   getElementAtViewport
 }

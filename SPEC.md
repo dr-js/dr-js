@@ -6,7 +6,7 @@
 
 #### Export Path
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
-  - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
+  - `applyReceiveFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
@@ -224,7 +224,7 @@
     - **StateStorage**
       - `createSyncStateStorage`
   - **DOM**
-    - `applyDragFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
+    - `applyReceiveFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
     - `fetchLikeRequest`
   - **Resource**

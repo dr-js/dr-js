@@ -5,12 +5,9 @@ import { fetchLikeRequest } from 'source/node/net'
 import { readFileAsync } from 'source/node/file/function'
 
 const DR_BROWSER_FILE_PATH = () => [
-  // should pass within normal node_module structure
-  `@dr-js/core/library/Dr.browser.js`,
-  // maybe webpack, try some relative path
-  `${__dirname}/../library/Dr.browser.js`,
-  `${__dirname}/Dr.browser.js`,
-  `Dr.browser.js`
+  `./Dr.browser.js`, // maybe after webpack
+  `../Dr.browser.js`, // relative to source/env/tryRequire
+  `@dr-js/core/library/Dr.browser.js` // within normal node_module structure
 ].reduce((o, path) => o || tryRequireResolve(path), null)
 
 let cache = ''

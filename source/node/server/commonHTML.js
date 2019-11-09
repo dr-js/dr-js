@@ -12,20 +12,31 @@ ${filterJoin(extraBodyList)}
 </body>
 </html>`
 
-const COMMON_STYLE = () => `<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; outline-color: #f00; }
+const COMMON_STYLE = ({ boxReset = true, bodyReset = true }) => `<style>
+:root { --c-dr: #63aeff; --c-warn: #f22;
+  --c-fill-s: hsla(0, 0%, 53%, 0.1); --c-fill-l: hsla(0, 0%, 53%, 0.3); --c-fill-n: hsla(0, 0%, 53%, 0.5); --c-fill-d: hsla(0, 0%, 53%, 0.7);
+  --ct-fg-n: #000; --ct-fg-d: #222; --ct-bg-n: #fff; --ct-bg-d: #ddd;
+}
+@media (prefers-color-scheme: dark) { :root { --ct-fg-n: #fff; --ct-fg-d: #bbb; --ct-bg-n: #000; --ct-bg-d: #222; } }
 
-* { scrollbar-color: #888a #6664; scrollbar-width: thin; }
+* { scrollbar-color: var(--c-fill-d) var(--c-fill-l); scrollbar-width: thin; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: #8886; }
-::-webkit-scrollbar-thumb:hover { background: #888a; }
+::-webkit-scrollbar-track { background: var(--c-fill-l); }
+::-webkit-scrollbar-thumb { background: var(--c-fill-d); }
+::-webkit-scrollbar-thumb:hover { background: var(--c-fill-n); }
 
-body { overflow: auto; display: flex; flex-flow: column; height: 100vh; font-family: monospace; font-size: 16px; }
+*, *::before, *::after { ${boxReset ? 'margin: 0; padding: 0; box-sizing: border-box;' : ''}
+  outline-color: var(--c-warn); color: var(--ct-fg-n); border-color: var(--c-fill-n); background-color: transparent; 
+}
+body { ${bodyReset ? 'overflow: auto; display: flex; flex-flow: column; height: 100vh; font-family: monospace; font-size: 16px;' : ''}
+  background: var(--ct-bg-n);
+}
+p { color: var(--ct-fg-d); }
 
-button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: hsla(0, 0%, 70%, 0.4); box-shadow: inset 0 0 0 1px #888; }
-button:hover, .button:hover { background: hsla(0, 0%, 80%, 0.4); box-shadow: inset 0 0 0 1px #aaa; }
-button.select, button:hover.select, .button.select, .button:hover.select { color: #e00; box-shadow: inset 0 0 0 1px #e00; }
-button:disabled, button:disabled:hover, .button:disabled, .button:disabled:hover { cursor: default; background: hsla(0, 0%, 100%, 0.4); box-shadow: unset; }
+button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: var(--c-fill-l); box-shadow: inset 0 0 0 1px var(--c-fill-n); }
+button:hover, .button:hover { background: var(--c-fill-n); box-shadow: inset 0 0 0 1px var(--c-fill-d); }
+button.select, .button.select { color: var(--c-warn); box-shadow: inset 0 0 0 1px var(--c-warn); }
+button:disabled, .button:disabled { cursor: default; background: var(--c-fill-s); box-shadow: unset; }
 @media (pointer: fine) { button, .button, .auto-height { min-height: 20px; font-size: 14px; } }
 @media (pointer: coarse) { button, .button, .auto-height { min-height: 32px; font-size: 18px; } }
 </style>`

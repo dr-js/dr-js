@@ -21,7 +21,7 @@ window.addContent(``, `
     Dr: {
       Common: { Format: { binary }, String: { autoEllipsis } },
       Browser: {
-        DOM: { applyDragFileListListener },
+        DOM: { applyReceiveFileListListener },
         Data: { Blob: { parseBlobAsText, parseBlobAsDataURL } }
       }
     }
@@ -83,7 +83,7 @@ window.addContent(``, `
   }
 
   benchInput.addEventListener('change', updateBenchInput)
-  applyDragFileListListener(document.body, (fileList) => {
+  applyReceiveFileListListener(document.body, (fileList) => {
     benchInput.files = fileList
     updateBenchInput()
   })

@@ -1,6 +1,6 @@
 import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source/common/string'
 
-// TODO: NOTE: currently all option format must be named, which is good but slightly inconvenient
+// TODO: NOTE: currently all option format must be named, which is good but slightly inconvenient, add a default `_` name?
 
 // const sampleOptionFormatData = {
 //   prefixENV: 'prefix-ENV',

@@ -53,7 +53,7 @@ const pickOneOf = (selectList) => {
 }
 const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
   compactFormat,
-  extraOption = {} // if pass array, will be used as: `{ extendFormatList: extraOption }`
+  extraOptionOrExtendFormatList // if pass array, will be used as: `{ extendFormatList: extraOption }`
 ) => {
   const [ compactTag, ...descriptionList ] = compactFormat.split('|')
   const [ nameTag, presetTag = '', argumentCount ] = compactTag.split(/\s*[\s/]\s*/)
@@ -72,9 +72,9 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
       argumentCount: argumentCount || undefined,
       description: descriptionList.join('|') || undefined
     }),
-    Array.isArray(extraOption)
-      ? { extendFormatList: extraOption }
-      : extraOption
+    Array.isArray(extraOptionOrExtendFormatList)
+      ? { extendFormatList: extraOptionOrExtendFormatList }
+      : extraOptionOrExtendFormatList || {}
   )
 }
 const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(compactFormat)
