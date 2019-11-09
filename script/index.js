@@ -14,7 +14,7 @@ const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
-const execShell = (command) => execSync(command, { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit', shell: true })
+const execShell = (command) => execSync(command, { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit' })
 
 const buildOutput = async ({ logger: { padLog } }) => {
   padLog('generate index.js & spec doc')

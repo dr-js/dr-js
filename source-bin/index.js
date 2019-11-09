@@ -22,12 +22,13 @@ import { getDefaultOpen } from '@dr-js/core/module/node/system/DefaultOpen'
 import { runSync } from '@dr-js/core/module/node/system/Run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/core/module/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
+import { fetchWithJump } from '@dr-js/core/module/node/net'
 
 import { commonStartServer, configure as configureServerTestConnection } from './server/testConnection'
 import { configure as configureServerServeStatic } from './server/serveStatic'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup'
 
-import { modulePathHack, evalScript, fetchWithJump } from './function'
+import { modulePathHack, evalScript } from './function'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
 
 import { name as packageName, version as packageVersion } from '../package.json'
@@ -148,12 +149,13 @@ const runMode = async (modeName, optionData) => {
       let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
-      const response = await fetchWithJump(
-        initialUrl,
-        { headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, timeout },
+      const response = await fetchWithJump(initialUrl, {
+        headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` },
+        timeout,
         jumpMax,
-        (url, jumpCount, cookieList) => log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
-      )
+        preFetch: (url, jumpCount, cookieList) => log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
+      })
+      if (!response.ok) throw new Error(`bad status: ${response.status}`)
       const contentLength = Number(response.headers[ 'content-length' ])
       log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
       await outputStream(response.stream())

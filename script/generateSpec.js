@@ -43,7 +43,7 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
 runMain(async (logger) => {
   if (existsSync(PATH_FILE_DELETE_CONFIG)) {
     logger.padLog(`[clear] delete previous temp build file`)
-    execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore', shell: true })
+    execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore' })
   }
 
   logger.padLog(`generate exportInfoMap & indexScriptMap`)

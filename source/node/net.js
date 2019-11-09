@@ -110,8 +110,30 @@ const wrapResponse = (response, timeout) => {
 const toText = (buffer) => String(buffer)
 const parseJSON = (text) => JSON.parse(text)
 
+const fetchWithJump = async (initialUrl, {
+  fetch = fetchLikeRequest,
+  jumpMax = 0, // 0 for unlimited jump
+  preFetch, // = (url, jumpCount, cookieList) => {}
+  ...option
+}) => {
+  let url = initialUrl
+  let jumpCount = 0
+  let cookieList = [ option.headers && option.headers[ 'cookie' ] ].filter(Boolean)
+  while (true) {
+    preFetch && await preFetch(url, jumpCount, cookieList)
+    const response = await fetch(url, { ...option, headers: { ...option.headers, 'cookie': cookieList.join(';') } })
+    if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
+      jumpCount++
+      if (jumpCount > jumpMax) throw new Error(`JUMP_MAX_REACHED`)
+      url = new URL(response.headers[ 'location' ], url).href
+      cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
+    } else return response
+  }
+}
+
 export {
   requestAsync,
   ping,
-  fetchLikeRequest
+  fetchLikeRequest,
+  fetchWithJump
 }
