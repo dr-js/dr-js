@@ -128,7 +128,7 @@ const runMode = async (modeName, optionData) => {
 
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
-      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ] })
+      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ], option: { shell: true } })
     }
     case 'status':
       return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
