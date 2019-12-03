@@ -38,7 +38,7 @@ const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST })
 const createResponderLogEnd = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
   const { statusCode } = store.response
   const { time, error } = store.getState()
-  const timeString = `${clock() - time}ms`
+  const timeString = `${Math.round(clock() - time)}ms`
   log(
     describeRequest(store.request),
     error
