@@ -168,7 +168,7 @@
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServerPack`, `describeServerPack`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
-  - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
+  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
@@ -385,7 +385,7 @@
     - **Server**
       - `createRequestListener`, `createServerPack`, `describeServerPack`
     - **CommonHTML**
-      - `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
+      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
     - **Function**
       - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**

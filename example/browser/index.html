@@ -5,6 +5,24 @@
 <link rel="icon" href="../favicon.ico">
 <script src="../../output-gitignore/library/Dr.browser.js"></script>
 <script>window.Dr || document.write('<script src="https://unpkg.com/@dr-js/core"><\/script>')</script>
-<script src="base.js"></script>
-<script src="test-bench.js"></script>
-<script src="test-canvas.js"></script>
+<script type="module">
+  import { COMMON_STYLE, COMMON_FUNC_MAP } from '../../source/node/server/commonHTML.js'
+
+  const parseHTMLFunc = (HTML) => {
+    const elementList = [ ...window.cE('div', { innerHTML: HTML }).children ]
+    elementList.forEach((element) => element.remove())
+    return elementList
+  }
+  const addContent = (headHTML, bodyHTML, func) => window.tDR(() => {
+    headHTML && parseHTMLFunc(headHTML).forEach((element) => document.head.appendChild(element))
+    bodyHTML && parseHTMLFunc(bodyHTML).forEach((element) => document.body.appendChild(element))
+    func && func()
+  })
+
+  // apply style & script
+  document.head.innerHTML += COMMON_STYLE()
+  Object.assign(window, { ...COMMON_FUNC_MAP(), addContent })
+</script>
+<script type="module" src="test-base.js"></script>
+<script type="module" src="test-bench.js"></script>
+<script type="module" src="test-canvas.js"></script>

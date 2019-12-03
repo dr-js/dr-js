@@ -1,5 +1,4 @@
 import { clock } from 'source/common/time'
-import { time as formatTime } from 'source/common/format'
 
 // TODO: add responderEndRandomErrorStatus?
 
@@ -29,7 +28,7 @@ const DEFAULT_DESCRIBE_REQUEST = ({
 }) => `[${method}] ${host || ''}${url} (${remoteAddress}:${remotePort})`
 
 const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
-  const userAgentString = store.request.headers[ 'user-agent' ] || 'no-user-agent'
+  const userAgentString = store.request.headers[ 'user-agent' ] || 'none'
   log(
     describeRequest(store.request),
     '[UA]', userAgentString
@@ -39,7 +38,7 @@ const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST })
 const createResponderLogEnd = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
   const { statusCode } = store.response
   const { time, error } = store.getState()
-  const timeString = formatTime(clock() - time)
+  const timeString = `${clock() - time}ms`
   log(
     describeRequest(store.request),
     error

@@ -12,7 +12,10 @@ ${filterJoin(extraBodyList)}
 </body>
 </html>`
 
-const COMMON_STYLE = ({ boxReset = true, bodyReset = true }) => `<style>
+const COMMON_STYLE = ({
+  boxReset = true,
+  bodyReset = true
+} = {}) => `<style>
 :root { --c-dr: #63aeff; --c-warn: #f22;
   --c-fill-s: hsla(0, 0%, 53%, 0.1); --c-fill-l: hsla(0, 0%, 53%, 0.3); --c-fill-n: hsla(0, 0%, 53%, 0.5); --c-fill-d: hsla(0, 0%, 53%, 0.7);
   --ct-fg-n: #000; --ct-fg-d: #222; --ct-bg-n: #fff; --ct-bg-d: #ddd;
@@ -45,14 +48,7 @@ const COMMON_SCRIPT = (injectMap) => {
   const valueObject = {}
   const functionScriptList = []
   Object.entries({
-    qS: querySelector,
-    qSA: querySelectorAll,
-    cE: createElement,
-    aCL: appendChildList,
-    mECN: modifyElementClassName,
-    mEA: modifyElementAttribute,
-    iDR: isDocumentReady,
-    tDR: tillDocumentReady,
+    ...COMMON_FUNC_MAP(),
     ...injectMap
   }).forEach(([ key, value ]) => {
     if (typeof (value) === 'function') functionScriptList.push(`<script>window[${JSON.stringify(key)}] = ${String(value)}</script>`)
@@ -64,7 +60,16 @@ const COMMON_SCRIPT = (injectMap) => {
   ])
 }
 
-// common quick function
+const COMMON_FUNC_MAP = () => ({ // common quick function
+  qS: querySelector,
+  qSA: querySelectorAll,
+  cE: createElement,
+  aCL: appendChildList,
+  mECN: modifyElementClassName,
+  mEA: modifyElementAttribute,
+  iDR: isDocumentReady,
+  tDR: tillDocumentReady
+})
 const querySelector = (selector, innerHTML = undefined) => {
   const element = document.querySelector(selector)
   if (element && typeof (innerHTML) === 'string') element.innerHTML = innerHTML
@@ -93,5 +98,5 @@ const tillDocumentReady = (func) => {
 export {
   COMMON_LAYOUT,
   COMMON_STYLE,
-  COMMON_SCRIPT
+  COMMON_SCRIPT, COMMON_FUNC_MAP
 }
