@@ -29,12 +29,15 @@ const COMMON_STYLE = ({
 ::-webkit-scrollbar-thumb:hover { background: var(--c-fill-n); }
 
 *, *::before, *::after { ${boxReset ? 'margin: 0; padding: 0; box-sizing: border-box;' : ''}
-  outline-color: var(--c-warn); color: var(--ct-fg-n); border-color: var(--c-fill-n); background-color: transparent; 
+  outline-color: var(--c-warn); border-color: var(--c-fill-n);
 }
 body { ${bodyReset ? 'overflow: auto; display: flex; flex-flow: column; height: 100vh; font-family: monospace; font-size: 16px;' : ''}
-  background: var(--ct-bg-n);
 }
+
+body, input, textarea, select, button { color: var(--ct-fg-n); }
+body, input, textarea, select, option { background: var(--ct-bg-n); }
 p { color: var(--ct-fg-d); }
+a { color: var(--c-dr); }
 
 button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: var(--c-fill-l); box-shadow: inset 0 0 0 1px var(--c-fill-n); }
 button:hover, .button:hover { background: var(--c-fill-n); box-shadow: inset 0 0 0 1px var(--c-fill-d); }

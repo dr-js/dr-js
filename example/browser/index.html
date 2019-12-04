@@ -20,9 +20,10 @@
   })
 
   // apply style & script
-  document.head.innerHTML += COMMON_STYLE()
+  document.head.innerHTML += COMMON_STYLE({ boxReset: false, bodyReset: false })
   Object.assign(window, { ...COMMON_FUNC_MAP(), addContent })
 </script>
 <script type="module" src="test-base.js"></script>
 <script type="module" src="test-bench.js"></script>
 <script type="module" src="test-canvas.js"></script>
+<script type="module" src="test-css.js"></script>

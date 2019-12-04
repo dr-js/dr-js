@@ -2,7 +2,6 @@ import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { arraySplitChunk } from '@dr-js/core/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
-import { DR_BROWSER_SCRIPT_TAG } from '@dr-js/core/module/node/resource'
 import { receiveBufferAsync } from '@dr-js/core/module/node/data/Buffer'
 import { createRequestListener, describeServerPack } from '@dr-js/core/module/node/server/Server'
 import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
@@ -84,10 +83,7 @@ const configure = ({ log }) => {
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', createResponderRouteListHTML({
-      getRouteMap: () => createRouteMap(routeConfigList),
-      extraBodyList: [ DR_BROWSER_SCRIPT_TAG() ]
-    }) ]
+    [ '/', 'GET', createResponderRouteListHTML({ getRouteMap: () => createRouteMap(routeConfigList) }) ]
   ]
 
   return {
