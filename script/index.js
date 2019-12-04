@@ -2,12 +2,11 @@ import { resolve } from 'path'
 import { execSync } from 'child_process'
 
 import { getScriptFileListFromPathList } from '@dr-js/dev/module/node/file'
-import { runMain, argvFlag } from '@dr-js/dev/module/main'
-import { initOutput, packOutput, verifyOutputBinVersion, verifyNoGitignore, publishOutput } from '@dr-js/dev/module/output'
+import { initOutput, packOutput, verifyOutputBin, verifyNoGitignore, publishOutput } from '@dr-js/dev/module/output'
 import { processFileList, fileProcessorBabel, fileProcessorWebpack } from '@dr-js/dev/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
+import { runMain, argvFlag } from '@dr-js/dev/module/main'
 
-import { binary } from 'source/common/format'
 import { modifyDelete } from 'source/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
@@ -16,23 +15,23 @@ const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 const execShell = (command) => execSync(command, { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit' })
 
-const buildOutput = async ({ logger: { padLog } }) => {
-  padLog('generate index.js & spec doc')
+const buildOutput = async ({ logger }) => {
+  logger.padLog('generate index.js & spec doc')
   execShell('npm run script-generate-spec')
 
-  padLog('build library-webpack')
+  logger.padLog('build library-webpack')
   execShell('npm run build-library-webpack')
 
-  padLog('delete temp build file')
+  logger.padLog('delete temp build file')
   execShell('npm run script-delete-temp-build-file')
 
-  padLog('build library-babel')
+  logger.padLog('build library-babel')
   execShell('npm run build-library-babel')
 
-  padLog('build module')
+  logger.padLog('build module')
   execShell('npm run build-module')
 
-  padLog('build bin')
+  logger.padLog('build bin')
   execShell('npm run build-bin')
 }
 
@@ -50,7 +49,7 @@ const processOutput = async ({ logger }) => {
   sizeReduce += await processFileList({ fileList: [ ...fileListBin, ...fileListModule, ...fileListLibraryNoBrowser ], processor: fileProcessorBabel, rootPath: PATH_OUTPUT, logger })
   sizeReduce += await processFileList({ fileList: [ fromOutput('library/Dr.browser.js') ], processor: fileProcessorWebpack, rootPath: PATH_OUTPUT, logger })
 
-  logger.padLog(`total size reduce: ${binary(sizeReduce)}B`)
+  logger.padLog(`total size reduce: ${sizeReduce}B`)
 }
 
 const clearOutput = async ({ logger }) => {
@@ -87,7 +86,7 @@ runMain(async (logger) => {
   }
 
   await clearOutput({ logger })
-  await verifyOutputBinVersion({ matchStringList: [ packageJSON.name, packageJSON.version, process.version, process.platform, process.arch ], fromOutput, logger })
+  await verifyOutputBin({ fromOutput, packageJSON, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: process.argv, isPublicScoped: true, packageJSON, pathPackagePack, logger })
+  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
 })

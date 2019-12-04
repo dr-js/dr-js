@@ -167,7 +167,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(readFileSync(inputFile)), unfoldLevel))
+      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(readFileSync(inputFile))), unfoldLevel))
     }
 
     case 'server-serve-static':

@@ -11,26 +11,29 @@ const throttleByAnimationFrame = (func) => {
   }
 }
 
-const muteEvent = (event) => {
-  event.stopPropagation()
-  event.preventDefault()
-}
 // TODO: use modern https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/items (wait Safari, or not?)
 const applyReceiveFileListListener = (eventSource = window.document, onFileList) => {
-  const dropListener = (event) => {
-    muteEvent(event)
+  const muteEvent = (event) => {
+    event.stopPropagation()
+    event.preventDefault()
+  }
+  const pasteListener = (event) => {
     const { files } = event.dataTransfer || event.clipboardData
     files && files.length && onFileList(files) // FileList (Array-like, contains File)
+  }
+  const dropListener = (event) => {
+    muteEvent(event) // or browser will redirect to the dropped file
+    pasteListener(event)
   }
   eventSource.addEventListener('dragenter', muteEvent)
   eventSource.addEventListener('dragover', muteEvent)
   eventSource.addEventListener('drop', dropListener)
-  eventSource.addEventListener('paste', dropListener)
+  eventSource.addEventListener('paste', pasteListener)
   return () => {
     eventSource.removeEventListener('dragenter', muteEvent)
     eventSource.removeEventListener('dragover', muteEvent)
     eventSource.removeEventListener('drop', dropListener)
-    eventSource.removeEventListener('paste', dropListener)
+    eventSource.removeEventListener('paste', pasteListener)
   }
 }
 
