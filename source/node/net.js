@@ -112,7 +112,7 @@ const parseJSON = (text) => JSON.parse(text)
 
 const fetchWithJump = async (initialUrl, {
   fetch = fetchLikeRequest,
-  jumpMax = 0, // 0 for unlimited jump
+  jumpMax = 0, // 0 for no jump, use 'Infinity' for unlimited jump
   preFetch, // = (url, jumpCount, cookieList) => {}
   ...option
 }) => {
