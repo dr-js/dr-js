@@ -27,7 +27,7 @@ const MODE_FORMAT_LIST = parseList(
   'merge/AP/2-|merge to one file: $@=mergedFile,...inputFileList',
   'create-directory,mkdir/AP/0-|create directory: $@=...pathList',
   'modify-copy,cp/AP/2|copy path: $@=pathFrom,pathTo',
-  'modify-move,mv/AP/2|move path: $@=pathFrom,pathTo',
+  'modify-rename,mv/AP/2|rename path: $@=pathFrom,pathTo',
   'modify-delete,rm/AP/0-|delete path: $@=...pathList',
 
   'status,s/T|basic system status: -J=isOutputJSON',

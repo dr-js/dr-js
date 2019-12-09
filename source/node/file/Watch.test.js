@@ -134,7 +134,7 @@ describe('Node.File.Watch', () => {
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
-    it('file move change (not upper node)', createWatcherTest('file-move', async ({ fromTest, watcher }) => {
+    it('file rename change (not upper node)', createWatcherTest('file-rename', async ({ fromTest, watcher }) => {
       const targetPath = fromTest('file')
       let resultChangeState = null
 
@@ -149,7 +149,7 @@ describe('Node.File.Watch', () => {
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
 
-    it('directory move change (not upper node)', createWatcherTest('directory-move', async ({ fromTest, watcher }) => {
+    it('directory rename change (not upper node)', createWatcherTest('directory-rename', async ({ fromTest, watcher }) => {
       const targetPath = fromTest('folder')
       let resultChangeState = null
 

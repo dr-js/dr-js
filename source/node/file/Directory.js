@@ -1,6 +1,6 @@
 import { join, dirname, basename } from 'path'
 import { readdirAsync, mkdirAsync } from './function'
-import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, movePath, copyPath, deletePath } from './Path'
+import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath } from './Path'
 
 const getDirectorySubInfoList = async (path, pathStat) => {
   // __DEV__ && console.log('getDirectorySubInfoList', { path, pathStat: Boolean(pathStat) })
@@ -61,11 +61,6 @@ const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback)
   }
 }
 
-const moveDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
-  await createDirectory(pathTo)
-  for (const { path, name, stat } of subInfoListMap[ root ]) await movePath(path, join(pathTo, name), stat)
-}
-
 const copyDirectoryInfoTree = async (infoTree, pathTo) => {
   await createDirectory(pathTo)
   const pathToMap = { [ infoTree.root ]: pathTo }
@@ -75,6 +70,11 @@ const copyDirectoryInfoTree = async (infoTree, pathTo) => {
     pathToMap[ path ] = pathTo
     return copyPath(path, pathTo, stat)
   })
+}
+
+const renameDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
+  await createDirectory(pathTo)
+  for (const { path, name, stat } of subInfoListMap[ root ]) await renamePath(path, join(pathTo, name), stat)
 }
 
 const deleteDirectoryInfoTree = async (infoTree) => walkDirectoryInfoTreeBottomUp(
@@ -122,8 +122,8 @@ export {
   walkDirectoryInfoTree,
   walkDirectoryInfoTreeBottomUp,
 
-  moveDirectoryInfoTree,
   copyDirectoryInfoTree,
+  renameDirectoryInfoTree,
   deleteDirectoryInfoTree,
 
   createDirectory,

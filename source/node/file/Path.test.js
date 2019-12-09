@@ -6,8 +6,8 @@ import {
   PATH_TYPE,
   getPathStat,
   getPathTypeFromStat,
-  movePath,
   copyPath,
+  renamePath,
   deletePath,
   createPathPrefixLock
 } from './Path'
@@ -76,13 +76,13 @@ describe('Node.File.Path', () => {
     strictEqual(getPathTypeFromStat(await getPathStat(directoryPath3)), PATH_TYPE.Directory)
   })
 
-  it('movePath()', async () => {
+  it('renamePath()', async () => {
     let getExpectedError = false
-    try { await movePath(invalidPath, TEST_ROOT) } catch (error) { getExpectedError = true }
+    try { await renamePath(invalidPath, TEST_ROOT) } catch (error) { getExpectedError = true }
     strictEqual(getExpectedError, true)
 
-    await movePath(filePath1, filePath2)
-    await movePath(directoryPath3, directoryPath4)
+    await renamePath(filePath1, filePath2)
+    await renamePath(directoryPath3, directoryPath4)
 
     strictEqual(await getPathStat(filePath1), STAT_ERROR)
     strictEqual(await getPathStat(directoryPath3), STAT_ERROR)

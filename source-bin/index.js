@@ -14,7 +14,7 @@ import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
 
 import { pipeStreamAsync, bufferToReadableStream } from '@dr-js/core/module/node/data/Stream'
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
-import { modifyMove, modifyCopy, modifyDelete } from '@dr-js/core/module/node/file/Modify'
+import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
 import { createServerPack } from '@dr-js/core/module/node/server/Server'
 import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
@@ -139,8 +139,8 @@ const runMode = async (modeName, optionData) => {
       return
     case 'modify-copy':
       return modifyCopy(argumentList[ 0 ], argumentList[ 1 ])
-    case 'modify-move':
-      return modifyMove(argumentList[ 0 ], argumentList[ 1 ])
+    case 'modify-rename':
+      return modifyRename(argumentList[ 0 ], argumentList[ 1 ])
     case 'modify-delete':
       for (const path of argumentList) await logTaskResult(modifyDelete, path)
       return

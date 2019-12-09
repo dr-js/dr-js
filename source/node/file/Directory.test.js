@@ -9,8 +9,8 @@ import {
   walkDirectoryInfoTree,
   walkDirectoryInfoTreeBottomUp,
 
-  moveDirectoryInfoTree,
   copyDirectoryInfoTree,
+  renameDirectoryInfoTree,
   deleteDirectoryInfoTree,
 
   createDirectory,
@@ -31,13 +31,13 @@ const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/')
 const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/')
 const directoryPath2 = resolve(TEST_ROOT, '1/')
 
-const directoryPathMove = resolve(TEST_ROOT, 'move-source/b/c/d/e/')
-const directoryPathMoveSource = resolve(TEST_ROOT, 'move-source/')
-const directoryPathMoveTarget = resolve(TEST_ROOT, 'move-target/')
-
 const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/')
 const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/')
 const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/')
+
+const directoryPathRename = resolve(TEST_ROOT, 'rename-source/b/c/d/e/')
+const directoryPathRenameSource = resolve(TEST_ROOT, 'rename-source/')
+const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/')
 
 const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/')
 const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/')
@@ -46,7 +46,7 @@ before('prepare', async () => {
   await createDirectory(TEST_ROOT)
   await createDirectory(directoryPath0)
   await createDirectory(directoryPath1)
-  await createDirectory(directoryPathMove)
+  await createDirectory(directoryPathRename)
   await createDirectory(directoryPathCopy)
   await createDirectory(directoryPathDelete)
 })
@@ -125,22 +125,22 @@ describe('Node.File.Directory', () => {
     })
   })
 
-  it('moveDirectoryInfoTree()', async () => {
-    await moveDirectoryInfoTree(await getDirectoryInfoTree(directoryPathMoveSource), directoryPathMoveTarget)
+  it('copyDirectoryInfoTree()', async () => {
+    await copyDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopySource), directoryPathCopyTarget)
 
     let callbackCount = 0
-    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathMoveTarget), (info) => {
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopyTarget), (info) => {
       // console.log(' - - info', info)
       callbackCount++
     })
     strictEqual(callbackCount, 4)
   })
 
-  it('copyDirectoryInfoTree()', async () => {
-    await copyDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopySource), directoryPathCopyTarget)
+  it('renameDirectoryInfoTree()', async () => {
+    await renameDirectoryInfoTree(await getDirectoryInfoTree(directoryPathRenameSource), directoryPathRenameTarget)
 
     let callbackCount = 0
-    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathCopyTarget), (info) => {
+    await walkDirectoryInfoTree(await getDirectoryInfoTree(directoryPathRenameTarget), (info) => {
       // console.log(' - - info', info)
       callbackCount++
     })

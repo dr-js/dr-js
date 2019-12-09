@@ -3,8 +3,8 @@ import { resolve } from 'path'
 import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat } from './Path'
 import { createDirectory } from './Directory'
 import {
-  modifyMove,
   modifyCopy,
+  modifyRename,
   modifyDelete
 } from './Modify'
 
@@ -31,11 +31,11 @@ after('clear', async () => {
 })
 
 describe('Node.File.Modify', () => {
-  it('copy/move/delete File', async () => {
+  it('copy/rename/delete File', async () => {
     await modifyCopy(SOURCE_FILE, filePath0)
     strictEqual(getPathTypeFromStat(await getPathStat(filePath0)), PATH_TYPE.File)
 
-    await modifyMove(filePath0, filePath1)
+    await modifyRename(filePath0, filePath1)
     strictEqual(await getPathStat(filePath0), STAT_ERROR)
     strictEqual(getPathTypeFromStat(await getPathStat(filePath1)), PATH_TYPE.File)
 
@@ -43,11 +43,11 @@ describe('Node.File.Modify', () => {
     strictEqual(await getPathStat(filePath1), STAT_ERROR)
   })
 
-  it('copy/move/delete Directory', async () => {
+  it('copy/rename/delete Directory', async () => {
     await modifyCopy(SOURCE_DIRECTORY, directoryPath0)
     strictEqual(getPathTypeFromStat(await getPathStat(directoryPath0)), PATH_TYPE.Directory)
 
-    await modifyMove(directoryPath0, directoryPath1)
+    await modifyRename(directoryPath0, directoryPath1)
     strictEqual(await getPathStat(directoryPath0), STAT_ERROR)
     strictEqual(getPathTypeFromStat(await getPathStat(directoryPath1)), PATH_TYPE.Directory)
 

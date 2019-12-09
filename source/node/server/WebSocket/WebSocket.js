@@ -127,7 +127,7 @@ const createWebSocket = ({
   }
 
   const open = () => {
-    socket.on('error', close) // TODO: move to `source/node/server/WebSocket/WebSocket.js`
+    socket.on('error', close)
     // socket.on('close', close) // TODO: check
     socket.on('end', close)
     listenAndReceiveFrame(

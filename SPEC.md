@@ -144,11 +144,11 @@
 + 📄 [source/node/data/function.js](source/node/data/function.js)
   - `getRandomBufferAsync`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
+  - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `renameDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
-  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyMove`
+  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
 + 📄 [source/node/file/Path.js](source/node/file/Path.js)
-  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `nearestExistPath`, `toPosixPath`
+  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcher`
 + 📄 [source/node/file/function.js](source/node/file/function.js)
@@ -341,11 +341,11 @@
     - `getRandomBufferAsync`
   - **File**
     - **Directory**
-      - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `moveDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
+      - `copyDirectory`, `copyDirectoryInfoTree`, `createDirectory`, `deleteDirectory`, `deleteDirectoryInfoTree`, `getDirectoryInfoTree`, `getDirectorySubInfoList`, `getFileList`, `renameDirectoryInfoTree`, `walkDirectoryInfoTree`, `walkDirectoryInfoTreeBottomUp`
     - **Modify**
-      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyMove`
+      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
     - **Path**
-      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `movePath`, `nearestExistPath`, `toPosixPath`
+      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
     - **Watch**
       - `createFileWatcher`
     - `appendFileAsync`, `copyFileAsync`, `createReadStream`, `createWriteStream`, `executableAsync`, `mkdirAsync`, `openAsync`, `readFileAsync`, `readableAsync`, `readdirAsync`, `renameAsync`, `rmdirAsync`, `statAsync`, `truncateAsync`, `unlinkAsync`, `visibleAsync`, `writableAsync`, `writeFileAsync`
@@ -447,8 +447,8 @@
 >       create directory: $@=...pathList
 >   --modify-copy --cp [OPTIONAL] [ARGUMENT=2]
 >       copy path: $@=pathFrom,pathTo
->   --modify-move --mv [OPTIONAL] [ARGUMENT=2]
->       move path: $@=pathFrom,pathTo
+>   --modify-rename --mv [OPTIONAL] [ARGUMENT=2]
+>       rename path: $@=pathFrom,pathTo
 >   --modify-delete --rm [OPTIONAL] [ARGUMENT=0+]
 >       delete path: $@=...pathList
 >   --status --s -s [OPTIONAL] [ARGUMENT=0+]
@@ -493,7 +493,7 @@
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_MODIFY_MOVE="[OPTIONAL] [ARGUMENT=2]"
+>     export DR_JS_MODIFY_RENAME="[OPTIONAL] [ARGUMENT=2]"
 >     export DR_JS_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
@@ -527,7 +527,7 @@
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "modifyMove": [ "[OPTIONAL] [ARGUMENT=2]" ],
+>     "modifyRename": [ "[OPTIONAL] [ARGUMENT=2]" ],
 >     "modifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "status": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],

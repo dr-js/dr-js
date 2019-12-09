@@ -39,18 +39,18 @@ const getPathTypeFromStat = (stat) => stat.isDirectory() ? PATH_TYPE.Directory
       : PATH_TYPE.Error
 
 // NOT recursive operation
-const movePath = async (pathFrom, pathTo, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
-  if (pathStat === STAT_ERROR) throw new Error(`missing path from ${pathFrom}`)
-  return renameAsync(pathFrom, pathTo)
-}
-
 const copyPath = async (pathFrom, pathTo, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
   if (pathStat.isDirectory() && (await getPathStat(pathTo)).isDirectory()) return __DEV__ && console.log('[copyPath] both directory exist, skipped')
   return pathStat.isDirectory()
     ? mkdirAsync(pathTo)
     : copyFileAsync(pathFrom, pathTo)
+}
+
+const renamePath = async (pathFrom, pathTo, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
+  if (pathStat === STAT_ERROR) throw new Error(`missing path from ${pathFrom}`)
+  return renameAsync(pathFrom, pathTo)
 }
 
 const deletePath = async (path, pathStat) => {
@@ -84,8 +84,8 @@ export {
   getPathStat,
   getPathTypeFromStat,
 
-  movePath,
   copyPath,
+  renamePath,
   deletePath,
   nearestExistPath,
 
