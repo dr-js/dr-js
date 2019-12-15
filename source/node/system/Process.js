@@ -5,23 +5,18 @@ import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyString
 import { run } from './Run'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
-  // a col means \w+\s+, or \s+\w+ (for this output)
-  // so every 2 \w\s flip means a col
-  const parseTitleCol = (titleString) => {
+  const parseTitleCol = (titleString) => { // a col means \w+\s+, or \s+\w+ (for this output), so every 2 \w\s flip means a col
     let flipCharType = titleString.charAt(0) === ' '
     let flipCount = 2
-
     const colStartIndexList = [ 0 ] // colStartIndex
-
     for (let index = 0, indexMax = titleString.length; index < indexMax; index++) {
       const charType = titleString.charAt(index) === ' '
       if (flipCharType === charType) continue
       flipCharType = !flipCharType
       flipCount--
-      if (flipCount === 0) {
-        colStartIndexList.push(index)
-        flipCount = 2
-      }
+      if (flipCount !== 0) continue
+      colStartIndexList.push(index)
+      flipCount = 2
     }
     return colStartIndexList
   }

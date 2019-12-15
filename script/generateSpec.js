@@ -34,7 +34,7 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
     `import * as Env from 'source/env'`,
     `import * as Common from 'source/common'`,
     `import * as Browser from 'source/browser'`,
-    `export { Env, Common, Browser }`
+    'export { Env, Common, Browser }'
   ].join('\n'))
 
   writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))
@@ -42,16 +42,16 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
 
 runMain(async (logger) => {
   if (existsSync(PATH_FILE_DELETE_CONFIG)) {
-    logger.padLog(`[clear] delete previous temp build file`)
+    logger.padLog('[clear] delete previous temp build file')
     execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore' })
   }
 
-  logger.padLog(`generate exportInfoMap & indexScriptMap`)
+  logger.padLog('generate exportInfoMap & indexScriptMap')
   const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], logger })
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
   const indexScriptMap = generateIndexScript({ sourceRouteMap })
 
-  logger.log(`output: SPEC.md`)
+  logger.log('output: SPEC.md')
   const initRouteList = fromRoot('source').split(sep)
   writeFileSync(fromRoot('SPEC.md'), [
     '# Specification',

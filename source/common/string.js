@@ -27,6 +27,12 @@ const joinKebabCase = (stringList) => stringList.join('-').toLowerCase()
 
 const capFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
+// https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+// https://lodash.com/docs#escapeRegExp
+const REGEXP_ESCAPE_REGEXP = /[\\^$.*+?()[\]{}|]/g
+const escapeRegExp = (string) => string.replace(REGEXP_ESCAPE_REGEXP, '\\$&')
+
 if (__DEV__) { // code to generate
   const ESCAPE_HTML_MAP = {}
   const UNESCAPE_HTML_MAP = {}
@@ -104,6 +110,8 @@ export {
   splitCamelCase, joinCamelCase,
   splitSnakeCase, joinSnakeCase,
   splitKebabCase, joinKebabCase,
+
+  escapeRegExp,
 
   escapeHTML, unescapeHTML,
   removeInvalidCharXML
