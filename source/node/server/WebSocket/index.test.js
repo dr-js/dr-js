@@ -38,7 +38,7 @@ describe('Node.Server.WebSocket', () => {
     await start()
 
     const webSocket = await new Promise((resolve, reject) => createWebSocketClient({
-      urlString: `ws://${serverHostname}:${serverPort}`,
+      url: `ws://${serverHostname}:${serverPort}`,
       option: { requestProtocolString: TEST_PROTOCOL_LIST.join(',') },
       onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
         webSocket.on(WEBSOCKET_EVENT.OPEN, () => resolve(webSocket))

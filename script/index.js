@@ -3,8 +3,8 @@ import { execSync } from 'child_process'
 
 import { getScriptFileListFromPathList } from '@dr-js/dev/module/node/file'
 import { initOutput, packOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output'
-import { processFileList, fileProcessorBabel, fileProcessorWebpack } from '@dr-js/dev/module/fileProcessor'
 import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
+import { processFileList, fileProcessorBabel, fileProcessorWebpack } from '@dr-js/dev/module/fileProcessor'
 import { runMain, argvFlag } from '@dr-js/dev/module/main'
 
 import { modifyDelete } from 'source/node/file/Modify'
@@ -16,7 +16,7 @@ const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
 const execShell = (command) => execSync(command, { cwd: fromRoot(), stdio: argvFlag('quiet') ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit' })
 
 const buildOutput = async ({ logger }) => {
-  logger.padLog('generate index.js & spec doc')
+  logger.padLog('generate spec & index.js')
   execShell('npm run script-generate-spec')
   logger.padLog('build library-webpack')
   execShell('npm run build-library-webpack')
@@ -40,7 +40,7 @@ const processOutput = async ({ logger }) => {
   sizeReduce += await minifyFileListWithTerser({ fileList: [ ...fileListBin, ...fileListLibrary ], option: getTerserOption(), rootPath: PATH_OUTPUT, logger })
   sizeReduce += await processFileList({ fileList: [ ...fileListBin, ...fileListModule, ...fileListLibraryNoBrowser ], processor: fileProcessorBabel, rootPath: PATH_OUTPUT, logger })
   sizeReduce += await processFileList({ fileList: [ fromOutput('library/Dr.browser.js') ], processor: fileProcessorWebpack, rootPath: PATH_OUTPUT, logger })
-  logger.padLog(`total size reduce: ${sizeReduce}B`)
+  logger.log(`total size reduce: ${sizeReduce}B`)
 }
 
 const clearOutput = async ({ logger }) => {

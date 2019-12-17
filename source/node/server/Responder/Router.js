@@ -60,7 +60,7 @@ const createResponderRouter = ({
 
   return routeResponder(store, store.setState({ method, url, route, paramMap }))
 }
-const createGetMethodUrl = (baseUrlObject) => ({ request: { method, url } }) => ({ method, url: new URL(url.replace(REGEXP_URL_REPLACE, '/'), baseUrlObject) })
+const createGetMethodUrl = (baseUrl) => ({ request: { method, url } }) => ({ method, url: new URL(url.replace(REGEXP_URL_REPLACE, '/'), baseUrl) })
 const REGEXP_URL_REPLACE = /\/\//g // NOTE: check for `new URL('//a/list/', new URL('http://0.0.0.0/'))`
 
 const getRouteParamAny = (store) => getRouteMapParamAny(store.getState())

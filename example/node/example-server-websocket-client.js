@@ -5,7 +5,7 @@ const BIG_STRING = '0123456789abcdef'.repeat(1024)
 const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
 createWebSocketClient({
-  urlString: 'ws://127.0.0.1:3000',
+  url: 'ws://127.0.0.1:3000',
   option: { requestProtocolString: [ 'json', 'a', 'b' ].join(',') },
   onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
     // return webSocket.doCloseSocket() // can just close here

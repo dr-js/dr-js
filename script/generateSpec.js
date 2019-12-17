@@ -3,8 +3,8 @@ import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
 
 import { collectSourceRouteMap } from '@dr-js/dev/module/node/export/parse'
-import { generateIndexScript, generateExportInfo } from '@dr-js/dev/module/node/export/generate'
-import { getMarkdownFileLink, renderMarkdownAutoAppendHeaderLink, renderMarkdownBlockQuote, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown'
+import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate'
+import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown'
 import { runMain } from '@dr-js/dev/module/main'
 
 import { formatUsage } from 'source-bin/option'
@@ -27,16 +27,13 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
     writeFileSync(path, data)
     tempFileList.push(path)
   }
-
   Object.entries(indexScriptMap).forEach(([ path, data ]) => writeTempFile(path, data))
-
   writeTempFile(fromRoot('source/Dr.browser.js'), [
     `import * as Env from 'source/env'`,
     `import * as Common from 'source/common'`,
     `import * as Browser from 'source/browser'`,
     'export { Env, Common, Browser }'
   ].join('\n'))
-
   writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))
 }
 
@@ -46,10 +43,9 @@ runMain(async (logger) => {
     execSync('npm run script-delete-temp-build-file', { cwd: fromRoot(), stdio: 'ignore' })
   }
 
-  logger.padLog('generate exportInfoMap & indexScriptMap')
+  logger.padLog('generate exportInfoMap')
   const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], logger })
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
-  const indexScriptMap = generateIndexScript({ sourceRouteMap })
 
   logger.log('output: SPEC.md')
   const initRouteList = fromRoot('source').split(sep)
@@ -71,5 +67,5 @@ runMain(async (logger) => {
   ].join('\n'))
 
   logger.log(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
-  generateTempFile({ indexScriptMap, logger })
+  generateTempFile({ indexScriptMap: generateIndexScript({ sourceRouteMap }), logger })
 }, 'generate-spec')

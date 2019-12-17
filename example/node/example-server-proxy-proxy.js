@@ -2,7 +2,7 @@ const { resolve } = require('path')
 const { createServer: createHttpServer } = require('http')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
-const { requestAsync } = require('../../output-gitignore/library/node/net')
+const { requestHttp } = require('../../output-gitignore/library/node/net')
 const { receiveBufferAsync } = require('../../output-gitignore/library/node/data/Buffer')
 const { createServerPack, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
@@ -25,7 +25,7 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 const responderServeStatic = createResponderServeStatic({})
 const responderProxy = async (store) => {
   const requestBuffer = await receiveBufferAsync(store.request)
-  const proxyResponse = await requestAsync(`http://${ProxyHostname}:${ProxyPort}/get-proxy`, null, requestBuffer)
+  const proxyResponse = await requestHttp(`http://${ProxyHostname}:${ProxyPort}/get-proxy`, null, requestBuffer).promise
   const responseBuffer = await receiveBufferAsync(proxyResponse)
   store.response.end(responseBuffer)
 }
@@ -85,11 +85,11 @@ start().then(() => {
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
   const requestBuffer = await receiveBufferAsync(originalRequest)
-  const proxyResponse = await requestAsync(
+  const proxyResponse = await requestHttp(
     `http://${ServerHostname}:${ServerPort}${originalRequest.url}`,
     { method: originalRequest.method, headers: originalRequest.headers },
     requestBuffer
-  )
+  ).promise
   const responseBuffer = await receiveBufferAsync(proxyResponse)
   Object.entries(proxyResponse.headers).forEach(([ name, value ]) => originalResponse.setHeader(name, value))
   originalResponse.statusCode = proxyResponse.statusCode

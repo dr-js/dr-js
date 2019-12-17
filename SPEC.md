@@ -130,7 +130,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`
+  - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -400,7 +400,7 @@
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
-    - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`
+    - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`, `requestHttp`
   - **Resource**
     - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 

@@ -5,17 +5,37 @@ import { createGunzip } from 'zlib'
 import { withRetryAsync } from 'source/common/function'
 import { receiveBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
 
+const requestHttp = (
+  url, // URL/String
+  option, // { method, headers, timeout, agent, ... }
+  body // optional, Buffer/String
+) => {
+  url = url instanceof URL ? url : new URL(url)
+  let request
+  const promise = new Promise((resolve, reject) => {
+    request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, resolve)
+    const endWithError = (error) => {
+      request.abort()
+      reject(error)
+    }
+    request.on('timeout', () => endWithError(new Error(`NETWORK_TIMEOUT`)))
+    request.on('error', endWithError)
+    request.end(body)
+  })
+  return { url, request, promise }
+}
+
 const toUrlObject = (url) => url instanceof URL ? url : new URL(url)
 
-const requestAsync = (
+const requestAsync = ( // TODO: DEPRECATE: use `requestHttp`
   url,
   option, // { method, headers, timeout, agent, ... }
-  body // Buffer/String
+  body // optional, Buffer/String
 ) => new Promise((resolve, reject) => {
   const urlObject = toUrlObject(url)
   const request = (urlObject.protocol === 'https:' ? httpsRequest : httpRequest)(urlObject, option, resolve)
   const endWithError = (error) => {
-    request.destroy()
+    request.abort()
     error.urlObject = urlObject
     error.option = option
     reject(error)
@@ -34,7 +54,7 @@ const ping = async (url, {
   maxRetry = 0
 } = {}) => withRetryAsync(
   async () => { // will result in error if timeout
-    const response = await requestAsync(url, { method, headers, timeout: wait }, body)
+    const response = await requestHttp(url, { method, headers, timeout: wait }, body).promise
     response.destroy() // skip response data
   },
   maxRetry,
@@ -58,7 +78,7 @@ const fetchLikeRequest = async (url, {
     timeout
   }
   __DEV__ && console.log('[fetch]', option)
-  const response = await requestAsync(url, option, body)
+  const response = await requestHttp(url, option, body).promise
   // __DEV__ && response.socket.on('close', () => console.log(`[fetch] socket closed`))
   const status = response.statusCode
   return {
@@ -132,7 +152,9 @@ const fetchWithJump = async (initialUrl, {
 }
 
 export {
-  requestAsync,
+  requestAsync, // TODO: DEPRECATE: use `requestHttp`
+
+  requestHttp,
   ping,
   fetchLikeRequest,
   fetchWithJump

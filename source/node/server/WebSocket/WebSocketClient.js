@@ -18,28 +18,30 @@ const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString
 }
 
 const createWebSocketClient = ({
-  urlString,
+  urlString, // TODO: DEPRECATE: pass `url`
+
+  url = new URL(urlString), // URL/String
   option: {
     key,
     headers,
     origin = '',
-    requestProtocolString = ''
+    requestProtocolString = '' // comma separated string like: `a,b,c-d-e`
   } = {},
   onError,
   onUpgradeResponse = DEFAULT_ON_UPGRADE_RESPONSE,
   frameLengthLimit
 }) => {
-  const urlObject = new URL(urlString)
-  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)) throw new Error(`invalid url protocol: ${urlObject.protocol}`)
-  if (!urlObject.host) throw new Error(`invalid url host: ${urlObject.host}`)
+  url = url instanceof URL ? url : new URL(url)
+  if (!VALID_WEBSOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`invalid url protocol: ${url.protocol}`)
+  if (!url.host) throw new Error(`invalid url host: ${url.host}`)
 
-  const isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(urlObject.protocol)
+  const isSecure = SECURE_WEBSOCKET_PROTOCOL_SET.has(url.protocol)
   const requestKey = key || getRequestKey()
   const responseKey = getRespondKey(requestKey)
 
-  urlObject.protocol = isSecure ? 'https:' : 'http:' // TODO: PATCH: node require `protocol` to match `agent.protocol`, so use 'http:/https:' for 'ws:/wss:' instead
+  url.protocol = isSecure ? 'https:' : 'http:' // TODO: PATCH: node require `protocol` to match `agent.protocol`, so use 'http:/https:' for 'ws:/wss:' instead
 
-  const request = (isSecure ? httpsGet : httpGet)(urlObject, {
+  const request = (isSecure ? httpsGet : httpGet)(url, {
     headers: {
       origin,
       'upgrade': 'websocket',
