@@ -95,7 +95,7 @@ const createFrameDecoder = (frameLengthLimit) => {
     switch (stage) {
       case DECODE_STAGE_INITIAL_OCTET:
         if ((mergedBuffer = tryShiftMergedBuffer(2))) {
-          const initialQuadlet = mergedBuffer.readUInt16BE(0, !__DEV__)
+          const initialQuadlet = mergedBuffer.readUInt16BE(0)
           const quadbitFIN = (initialQuadlet >>> 12) & 0b1000
           const quadbitOpcode = (initialQuadlet >>> 8) & 0b1111
           const initialLength = initialQuadlet & 0b01111111
@@ -120,7 +120,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         break
       case DECODE_STAGE_EXTEND_DATA_LENGTH_2:
         if ((mergedBuffer = tryShiftMergedBuffer(2))) {
-          decodedDataBufferLength = mergedBuffer.readUInt16BE(0, !__DEV__)
+          decodedDataBufferLength = mergedBuffer.readUInt16BE(0)
           if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
 
@@ -130,7 +130,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         break
       case DECODE_STAGE_EXTEND_DATA_LENGTH_8:
         if ((mergedBuffer = tryShiftMergedBuffer(8))) {
-          decodedDataBufferLength = mergedBuffer.readUInt32BE(0, !__DEV__) * 0x100000000 + mergedBuffer.readUInt32BE(4, !__DEV__)
+          decodedDataBufferLength = mergedBuffer.readUInt32BE(0) * 0x100000000 + mergedBuffer.readUInt32BE(4)
           if (decodedDataBufferLength > BUFFER_MAX_LENGTH) throw new Error('decodedDataBufferLength too big')
           if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER

@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
+import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify'
 import {
   // indentLine,
   // indentList,
@@ -7,6 +7,8 @@ import {
   splitCamelCase, joinCamelCase,
   // splitSnakeCase, joinSnakeCase,
   // splitKebabCase, joinKebabCase,
+
+  createMarkReplacer,
 
   escapeHTML, unescapeHTML
   // removeInvalidCharXML
@@ -55,5 +57,25 @@ describe('Common.String', () => {
     strictEqual(joinCamelCase([ 'my', 'Camel', 'Case', 'String' ]), 'myCamelCaseString')
     strictEqual(joinCamelCase([ 'my', 'Camel', 'Case', 'String' ], 0), 'MyCamelCaseString')
     strictEqual(joinCamelCase([ 'a1', 'XYZ', 'My', 'Camel', 'Case', 'P1', 'HTML', 'String', 'CSS' ]), 'a1XYZMyCamelCaseP1HTMLStringCSS')
+  })
+
+  it('createMarkReplacer()', () => {
+    doThrow(() => createMarkReplacer({ '!': 'invalid-key' }))
+    doThrow(() => createMarkReplacer({ 'invalid-value': null }))
+
+    const TEXT_REPLACE_FROM = 'replace: {a-b}, {c-d}'
+    const TEXT_REPLACE_TO = 'replace: A-B, C-D'
+    const TEXT_NOT_REPLACE = 'not replace: a-b, c-d, {e-f}, {a-}, {-}, {-d}, {a-b-c-d}, {y-z}'
+    const markReplacer = createMarkReplacer({
+      'a-b': 'A-B',
+      'c-d': 'C-D',
+      'y-z': undefined // allow undefined to skip replace
+    })
+    strictEqual(markReplacer(TEXT_REPLACE_FROM), TEXT_REPLACE_TO)
+    strictEqual(markReplacer(TEXT_NOT_REPLACE), TEXT_NOT_REPLACE)
+    strictEqual(
+      markReplacer([ TEXT_REPLACE_FROM, TEXT_NOT_REPLACE, TEXT_REPLACE_FROM, TEXT_NOT_REPLACE ].join(' AND ')),
+      [ TEXT_REPLACE_TO, TEXT_NOT_REPLACE, TEXT_REPLACE_TO, TEXT_NOT_REPLACE ].join(' AND ')
+    )
   })
 })

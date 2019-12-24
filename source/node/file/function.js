@@ -1,5 +1,6 @@
 import {
-  stat, open, rename, unlink, truncate,
+  stat, rename, unlink, truncate,
+  open, close, read, write, readlink, symlink,
   readFile, writeFile, appendFile, copyFile,
   mkdir, rmdir, readdir,
   createReadStream, createWriteStream,
@@ -9,11 +10,13 @@ import {
 import { promisify } from 'util'
 
 const [
-  statAsync, openAsync, renameAsync, unlinkAsync, truncateAsync,
+  statAsync, renameAsync, unlinkAsync, truncateAsync,
+  openAsync, closeAsync, readAsync, writeAsync, readlinkAsync, symlinkAsync,
   readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
   mkdirAsync, rmdirAsync, readdirAsync
 ] = [
-  stat, open, rename, unlink, truncate,
+  stat, rename, unlink, truncate,
+  open, close, read, write, readlink, symlink,
   readFile, writeFile, appendFile, copyFile,
   mkdir, rmdir, readdir
 ].map((fsFunc) => promisify(fsFunc))
@@ -30,7 +33,8 @@ const [
 export {
   createReadStream, createWriteStream,
 
-  statAsync, openAsync, renameAsync, unlinkAsync, truncateAsync,
+  statAsync, renameAsync, unlinkAsync, truncateAsync,
+  openAsync, closeAsync, readAsync, writeAsync, readlinkAsync, symlinkAsync,
   readFileAsync, writeFileAsync, appendFileAsync, copyFileAsync,
   mkdirAsync, rmdirAsync, readdirAsync,
 

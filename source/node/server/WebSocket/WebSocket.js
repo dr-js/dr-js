@@ -108,7 +108,7 @@ const createWebSocket = ({
   const onReceiveFrame = (frame) => { // { isFIN, dataType, dataBuffer, dataBufferLength }
     switch (frame.dataType) {
       case OPCODE_TYPE.CLOSE: {
-        const code = (frame.dataBufferLength >= 2 && frame.dataBuffer.readUInt16BE(0, !__DEV__)) || 1000
+        const code = (frame.dataBufferLength >= 2 && frame.dataBuffer.readUInt16BE(0)) || 1000
         const reason = (frame.dataBufferLength >= 3 && String(frame.dataBuffer.slice(2, frame.dataBufferLength))) || ''
         __DEV__ && console.log('[WebSocket] onReceiveFrame CLOSE', { code, reason })
         return close(code, reason)

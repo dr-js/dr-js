@@ -10,7 +10,7 @@ const packBufferPacket = (headerString, payloadBuffer = EMPTY_BUFFER) => Buffer.
 ])
 
 const parseBufferPacket = (bufferPacket) => {
-  const headerSize = bufferPacket.readUIntBE(0, HEADER_BYTE_SIZE, !__DEV__)
+  const headerSize = bufferPacket.readUIntBE(0, HEADER_BYTE_SIZE)
   const headerString = toString(toArrayBuffer(bufferPacket.slice(HEADER_BYTE_SIZE, HEADER_BYTE_SIZE + headerSize)))
   const payloadBuffer = bufferPacket.slice(HEADER_BYTE_SIZE + headerSize)
   return [ headerString, payloadBuffer ]

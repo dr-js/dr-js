@@ -47,10 +47,10 @@ const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, is
   if (isMask) maskLengthOctet |= 0b10000000
 
   frameSenderStore.encodedFrameHeaderBuffer = Buffer.allocUnsafe(2 + extendLengthOctetCount + maskOctetCount) // 2-14octets | 16-112bits
-  frameSenderStore.encodedFrameHeaderBuffer.writeUInt16BE((initialOctet << 8) | maskLengthOctet, 0, !__DEV__) // FIN_BIT/RSV/OPCODE/MASK_BIT/LENGTH [2octets]
-  extendLengthOctetCount === 2 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt16BE(length, 2, !__DEV__) // EXTEND LENGTH [2octets]
-  extendLengthOctetCount === 8 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt32BE(0, 2, !__DEV__) // EXTEND LENGTH [4 of 8octets] // NOTE: can't use in node with buffer.constants.MAX_LENGTH
-  extendLengthOctetCount === 8 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt32BE(length, 6, !__DEV__) // EXTEND LENGTH [4 of 8octets]
+  frameSenderStore.encodedFrameHeaderBuffer.writeUInt16BE((initialOctet << 8) | maskLengthOctet, 0) // FIN_BIT/RSV/OPCODE/MASK_BIT/LENGTH [2octets]
+  extendLengthOctetCount === 2 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt16BE(length, 2) // EXTEND LENGTH [2octets]
+  extendLengthOctetCount === 8 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt32BE(0, 2) // EXTEND LENGTH [4 of 8octets] // NOTE: can't use in node with buffer.constants.MAX_LENGTH
+  extendLengthOctetCount === 8 && frameSenderStore.encodedFrameHeaderBuffer.writeUInt32BE(length, 6) // EXTEND LENGTH [4 of 8octets]
   isMask && maskQuadletBuffer.copy(frameSenderStore.encodedFrameHeaderBuffer, 2 + extendLengthOctetCount) // MASK [4octets]
 
   frameSenderStore.encodedFrameDataBuffer = dataBuffer
@@ -60,7 +60,7 @@ const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, is
 const encodeCloseFrame = (frameSenderStore, code = 1000, reason = '', isMask) => {
   const stringLength = Buffer.byteLength(reason)
   const dataBuffer = Buffer.allocUnsafe(2 + stringLength)
-  dataBuffer.writeUInt16BE(code, 0, !__DEV__)
+  dataBuffer.writeUInt16BE(code, 0)
   dataBuffer.write(reason, 2, stringLength)
   // __DEV__ && console.log('encodeCloseFrame', { code, reason, stringLength })
   encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.CLOSE, dataBuffer, isMask)

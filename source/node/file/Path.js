@@ -2,6 +2,8 @@ import { Stats } from 'fs'
 import { resolve, dirname } from 'path'
 import { statAsync, renameAsync, unlinkAsync, copyFileAsync, mkdirAsync, rmdirAsync, visibleAsync } from './function'
 
+// TODO: no symlink support, currently will follow link to target File/Directory
+
 const STAT_ERROR = new Stats(
   -1, // dev
   -1, // mode

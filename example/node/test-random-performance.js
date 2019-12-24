@@ -3,7 +3,7 @@ const { createStepper } = require('../../output-gitignore/library/common/time')
 
 const logResult = (result) => {
   const size = result.length
-  const avg = result.reduce((o, b) => o + b.readUInt32BE(0, true) / size, 0)
+  const avg = result.reduce((o, b) => o + b.readUInt32BE(0) / size, 0)
   const delta = avg - Math.pow(2, 31)
   console.log(' - size', size, '\tavg', avg, '\tdelta', delta)
 }
@@ -15,8 +15,8 @@ const doTest = (loop) => {
     const result = []
     for (let i = 0; i < loop; i++) {
       const b = Buffer.allocUnsafe(4)
-      b.writeUInt16BE((Math.random() * 0x10000) << 0, 0, true)
-      b.writeUInt16BE((Math.random() * 0x10000) << 0, 0, true)
+      b.writeUInt16BE((Math.random() * 0x10000) << 0, 0)
+      b.writeUInt16BE((Math.random() * 0x10000) << 0, 0)
       result.push(b)
     }
     const timeDelta = stepper()

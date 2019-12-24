@@ -89,9 +89,9 @@ const GET_PROCESS_LIST_ASYNC_MAP = {
 // NOTE: not a fast command (linux: ~100ms, win32: ~500ms)
 const getProcessListAsync = () => {
   if (GET_PROCESS_LIST_ASYNC_MAP.INIT === false) INIT_GET_PROCESS_LIST_ASYNC_MAP()
-  const getProcessListAsync = GET_PROCESS_LIST_ASYNC_MAP[ process.platform ]
-  if (!getProcessListAsync) throw new Error(`unsupported platform: ${process.platform}`)
-  return getProcessListAsync()
+  const getAsync = GET_PROCESS_LIST_ASYNC_MAP[ process.platform ]
+  if (!getAsync) throw new Error(`unsupported platform: ${process.platform}`)
+  return getAsync()
 }
 
 const PROCESS_LIST_SORT_MAP = {

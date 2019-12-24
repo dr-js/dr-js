@@ -27,6 +27,21 @@ const joinKebabCase = (stringList) => stringList.join('-').toLowerCase()
 
 const capFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1)
 
+// pass in valueMap like { 'name': 'NAME' } and `the name is {name}` will be `the name is NAME`
+const createMarkReplacer = (valueMap = {}) => {
+  const REGEXP_KEY = /[\w-]+/
+  const markMap = {}
+  for (const [ key, value ] of Object.entries(valueMap)) {
+    if (!REGEXP_KEY.test(key)) throw new Error(`invalid key: ${key}`)
+    if (value === undefined) continue // allow undefined, but not other value
+    if (typeof (value) !== 'string') throw new Error(`invalid value: ${value} of key: ${key}`)
+    markMap[ `{${key}}` ] = value
+  }
+  const REGEXP_MARK = /{[\w-]+}/g
+  const replacerFunc = (mark) => markMap[ mark ] || mark
+  return (string) => string.replace(REGEXP_MARK, replacerFunc)
+}
+
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
 // https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
 // https://lodash.com/docs#escapeRegExp
@@ -110,6 +125,8 @@ export {
   splitCamelCase, joinCamelCase,
   splitSnakeCase, joinSnakeCase,
   splitKebabCase, joinKebabCase,
+
+  createMarkReplacer,
 
   escapeRegExp,
 
