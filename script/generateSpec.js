@@ -18,7 +18,7 @@ const [
   PATH_FILE_DELETE_CONFIG_RAW
 ] = process.argv
 
-const PATH_FILE_DELETE_CONFIG = resolve(process.cwd(), PATH_FILE_DELETE_CONFIG_RAW)
+const PATH_FILE_DELETE_CONFIG = resolve(PATH_FILE_DELETE_CONFIG_RAW)
 
 const generateTempFile = ({ indexScriptMap, logger }) => {
   const tempFileList = []

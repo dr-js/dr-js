@@ -37,21 +37,24 @@ const objectFindKey = (object, findEntryFunc) => {
   return entry && entry[ 0 ] // return String or undefined
 }
 
-const objectDeleteUndefined = (object) => {
+const objectFilter = (object, filterFunc) => {
   let result
   for (const [ key, value ] of Object.entries(object)) { // check if has new data
-    if (value !== undefined) continue
+    if (filterFunc(value, key, object)) continue
     if (result === undefined) result = { ...object }
     delete result[ key ]
   }
   return result || object
 }
 
-const objectFromEntries = (iterable) => {
+const objectFromEntries = (iterable) => { // TODO: NOTE: use `Object.fromEntries` when support to node@>=12.0.0 && chrome@>=73 && firefox@>=63 ?
   const result = {}
   for (const [ key, value ] of iterable) result[ key ] = value
   return result
 }
+
+const objectDeleteUndefined = (object) => objectFilter(object, filterUndefined) // TODO: deprecate, use `objectFilter`
+const filterUndefined = (value) => value !== undefined // TODO: deprecate, use `objectFilter`
 
 export {
   objectSet,
@@ -60,6 +63,8 @@ export {
   objectMap,
   objectPickKey,
   objectFindKey,
-  objectDeleteUndefined,
-  objectFromEntries
+  objectFilter,
+  objectFromEntries,
+
+  objectDeleteUndefined // TODO: deprecate, use `objectFilter`
 }

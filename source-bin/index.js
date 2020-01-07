@@ -95,7 +95,7 @@ const runMode = async (modeName, optionData) => {
       modulePathHack()
       const result = await evalScript(
         inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ],
-        inputFile || resolve(process.cwd(), '__SCRIPT_STRING__'),
+        inputFile || resolve('__SCRIPT_STRING__'),
         inputFile ? argumentList : argumentList.slice(1),
         optionData
       )

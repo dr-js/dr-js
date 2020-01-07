@@ -8,7 +8,7 @@ const modulePathHack = () => require('module')._resolveLookupPaths('modulePaths'
 
 const evalScript = ( // NOTE: use eval not Function to derive local
   evalScriptString, // inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ]
-  evalScriptPath, // inputFile || resolve(process.cwd(), '__SCRIPT_STRING__'),
+  evalScriptPath, // inputFile || resolve('__SCRIPT_STRING__'),
   evalArgv, // inputFile ? argumentList : argumentList.slice(1)
   evalOption // optionData
 ) => eval(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`)( // eslint-disable-line no-eval

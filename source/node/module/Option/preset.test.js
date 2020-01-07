@@ -1,12 +1,25 @@
+import { writeFileSync } from 'fs'
+import { resolve, dirname } from 'path'
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { objectSortKey } from 'source/common/mutable/Object'
+import { createDirectory } from 'source/node/file/Directory'
+import { modifyDelete } from 'source/node/file/Modify'
 import { createOptionParser } from './parser'
-import { Preset } from './preset'
+import {
+  Preset,
+  parseOptionMap,
+  createOptionGetter
+} from './preset'
 
-const { describe, it } = global
+const { describe, it, before, after } = global
 
-// console.log(Object.keys(Preset))
-// console.log(Preset.SinglePath)
+const TEST_ROOT = resolve(__dirname, './test-preset-gitignore/')
+
+before('prepare', () => createDirectory(TEST_ROOT))
+after('clear', () => modifyDelete(TEST_ROOT))
+
+// __DEV__ && console.log('Preset key list:', Object.keys(Preset))
+// __DEV__ && console.log(Preset)
 // console.log(Preset.AllPath)
 
 describe('Node.Module.Option.preset', () => {
@@ -161,6 +174,78 @@ describe('Node.Module.Option.preset', () => {
 
       it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
     })
+
+    describe('createOptionGetter().resolvePath', () => {
+      const optionData2 = {
+        formatList: [
+          Preset.Config,
+          { name: 'option-toggle', ...Preset.Toggle },
+          { name: 'option-string', optional: true, ...Preset.SingleString },
+          { name: 'option-path', optional: true, ...Preset.SinglePath }
+        ]
+      }
+      const { parseCLI, parseENV, parseCONFIG, processOptionMap } = createOptionParser(optionData2)
+
+      it('test CLI', async () => {
+        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+          parseCLI, parseENV, parseCONFIG, processOptionMap,
+          optionCLI: [
+            '--option-toggle',
+            '--option-string', 'ABC',
+            '--option-path', 'A/B/C/file'
+          ],
+          optionENV: {}
+        }))
+        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(getFirst('option-string'), 'ABC')
+        strictEqual(getFirst('option-path'), resolve(process.cwd(), 'A/B/C/file'))
+        strictEqual(resolvePath('non-option'), process.cwd())
+        strictEqual(resolvePath('option-toggle'), process.cwd())
+        strictEqual(resolvePath('option-string'), process.cwd())
+        strictEqual(resolvePath('option-path'), resolve(process.cwd(), 'A/B/C/'))
+      })
+      it('test ENV', async () => {
+        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+          parseCLI, parseENV, parseCONFIG, processOptionMap,
+          optionCLI: [ '--config', 'env' ],
+          optionENV: {
+            OPTION_TOGGLE: '[]',
+            OPTION_STRING: '[ "ABC" ]',
+            OPTION_PATH: '[ "A/B/C/file" ]'
+          }
+        }))
+        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(getFirst('option-string'), 'ABC')
+        strictEqual(getFirst('option-path'), resolve(process.cwd(), 'A/B/C/file'))
+        strictEqual(resolvePath('non-option'), process.cwd())
+        strictEqual(resolvePath('option-toggle'), process.cwd())
+        strictEqual(resolvePath('option-string'), process.cwd())
+        strictEqual(resolvePath('option-path'), resolve(process.cwd(), 'A/B/C/'))
+      })
+      it('test CONFIG', async () => {
+        const pathConfig = resolve(TEST_ROOT, 'test-config.json')
+        writeFileSync(pathConfig, JSON.stringify({
+          optionToggle: true,
+          optionString: 'not ABC',
+          optionPath: 'A/B/C/file'
+        }))
+        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+          parseCLI, parseENV, parseCONFIG, processOptionMap,
+          optionCLI: [
+            '--config', pathConfig,
+            '--option-string', 'ABC' // should overwrite config
+          ],
+          optionENV: {}
+        }))
+        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(getFirst('option-string'), 'ABC')
+        strictEqual(getFirst('option-path'), resolve(dirname(pathConfig), 'A/B/C/file'))
+        strictEqual(resolvePath('non-option'), process.cwd())
+        strictEqual(resolvePath('option-toggle'), dirname(pathConfig))
+        strictEqual(resolvePath('option-string'), process.cwd())
+        strictEqual(resolvePath('option-path'), resolve(dirname(pathConfig), 'A/B/C/'))
+      })
+    })
   })
 
   it('Preset.parseCompact()', () => {
@@ -170,48 +255,48 @@ describe('Node.Module.Option.preset', () => {
       `should match expect, compatFormat: "${compatFormat}"`
     )
 
-    testParseCompact('config', { name: 'config', aliasNameList: [] })
-    testParseCompact('config|', { name: 'config', aliasNameList: [] })
-    testParseCompact('config/|', { name: 'config', aliasNameList: [] })
-    testParseCompact('config//|', { name: 'config', aliasNameList: [] })
-    testParseCompact('config///|', { name: 'config', aliasNameList: [] })
-    testParseCompact('config////|', { name: 'config', aliasNameList: [] })
-    testParseCompact('config||', { name: 'config', aliasNameList: [], description: '|' })
-    testParseCompact('config//||', { name: 'config', aliasNameList: [], description: '|' })
-    testParseCompact('config////|a|b\nc', { name: 'config', aliasNameList: [], description: 'a|b\nc' })
+    testParseCompact('config', { name: 'config' })
+    testParseCompact('config|', { name: 'config' })
+    testParseCompact('config/|', { name: 'config' })
+    testParseCompact('config//|', { name: 'config' })
+    testParseCompact('config///|', { name: 'config' })
+    testParseCompact('config////|', { name: 'config' })
+    testParseCompact('config||', { name: 'config', description: '|' })
+    testParseCompact('config//||', { name: 'config', description: '|' })
+    testParseCompact('config////|a|b\nc', { name: 'config', description: 'a|b\nc' })
 
     testParseCompact('config,a,b,c', { name: 'config', aliasNameList: [ 'a', 'b', 'c' ], shortName: 'a' })
     testParseCompact('config,aa,b,c', { name: 'config', aliasNameList: [ 'aa', 'b', 'c' ], shortName: 'b' })
 
-    testParseCompact('config/SingleString', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompact('config/SS', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompact('config/SN', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompact('config/SI', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompact('config/SF', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', optional: false })
-    testParseCompact('config/SP', { name: 'config', aliasNameList: [], argumentCount: 1, description: '', isPath: true, optional: false })
+    testParseCompact('config/SingleString', { name: 'config', argumentCount: 1 })
+    testParseCompact('config/SS', { name: 'config', argumentCount: 1 })
+    testParseCompact('config/SN', { name: 'config', argumentCount: 1 })
+    testParseCompact('config/SI', { name: 'config', argumentCount: 1 })
+    testParseCompact('config/SF', { name: 'config', argumentCount: 1 })
+    testParseCompact('config/SP', { name: 'config', argumentCount: 1, isPath: true })
 
-    testParseCompact('config/AS', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompact('config/AN', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompact('config/AI', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompact('config/AF', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', optional: false })
-    testParseCompact('config/AP', { name: 'config', aliasNameList: [], argumentCount: '1-', description: '', isPath: true, optional: false })
+    testParseCompact('config/AS', { name: 'config', argumentCount: '1-' })
+    testParseCompact('config/AN', { name: 'config', argumentCount: '1-' })
+    testParseCompact('config/AI', { name: 'config', argumentCount: '1-' })
+    testParseCompact('config/AF', { name: 'config', argumentCount: '1-' })
+    testParseCompact('config/AP', { name: 'config', argumentCount: '1-', isPath: true })
 
-    testParseCompact('config/T', { name: 'config', aliasNameList: [], argumentCount: '0-', description: 'set to enable', optional: true })
-    testParseCompact('config/O', { name: 'config', aliasNameList: [], optional: true })
-    testParseCompact('config/P', { name: 'config', aliasNameList: [], isPath: true })
-    testParseCompact('config/O,P', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompact('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/T', { name: 'config', argumentCount: '0-', description: 'set to enable', optional: true })
+    testParseCompact('config/O', { name: 'config', optional: true })
+    testParseCompact('config/P', { name: 'config', isPath: true })
+    testParseCompact('config/O,P', { name: 'config', optional: true, isPath: true })
+    testParseCompact('config/P,O', { name: 'config', optional: true, isPath: true })
 
-    testParseCompact('config//0', { name: 'config', aliasNameList: [], argumentCount: '0' })
-    testParseCompact('config//0|', { name: 'config', aliasNameList: [], argumentCount: '0' })
-    testParseCompact('config//1-', { name: 'config', aliasNameList: [], argumentCount: '1-' })
-    testParseCompact('config//1-|', { name: 'config', aliasNameList: [], argumentCount: '1-' })
+    testParseCompact('config//0', { name: 'config', argumentCount: '0' })
+    testParseCompact('config//0|', { name: 'config', argumentCount: '0' })
+    testParseCompact('config//1-', { name: 'config', argumentCount: '1-' })
+    testParseCompact('config//1-|', { name: 'config', argumentCount: '1-' })
 
-    testParseCompact('config/Path,Optional', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompact('config/P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompact('config P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompact('config   /  P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
-    testParseCompact('config      P,O', { name: 'config', aliasNameList: [], optional: true, isPath: true })
+    testParseCompact('config/Path,Optional', { name: 'config', optional: true, isPath: true })
+    testParseCompact('config/P,O', { name: 'config', optional: true, isPath: true })
+    testParseCompact('config P,O', { name: 'config', optional: true, isPath: true })
+    testParseCompact('config   /  P,O', { name: 'config', optional: true, isPath: true })
+    testParseCompact('config      P,O', { name: 'config', optional: true, isPath: true })
 
     const EXPECT_FORMAT = {
       name: 'config',

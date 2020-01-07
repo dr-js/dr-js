@@ -6,7 +6,9 @@ import {
   objectMap,
   objectPickKey,
   objectFindKey,
-  objectDeleteUndefined
+  objectFilter,
+
+  objectDeleteUndefined // TODO: deprecate, use `objectFilter`
 } from './Object'
 
 const { describe, it } = global
@@ -71,7 +73,17 @@ describe('Common.Immutable.Object', () => {
     stringifyEqual(objectFindKey({}, () => true), undefined)
   })
 
-  it('should pass objectDeleteUndefined()', () => {
+  it('should pass objectFilter()', () => {
+    stringifyEqual(objectFilter(OBJECT_DATA, () => true), OBJECT_DATA)
+    stringifyEqual(objectFilter(OBJECT_DATA, (value) => value === 1), { a: 1 })
+    stringifyEqual(objectFilter(OBJECT_DATA, () => false), {})
+    stringifyEqual(objectFilter({}, () => true), {})
+    stringifyEqual(objectFilter({ c: undefined, d: undefined }, () => true), { c: undefined, d: undefined })
+    stringifyEqual(objectFilter({ c: undefined, d: undefined }, (value) => value !== undefined), {})
+    stringifyEqual(objectFilter({ ...OBJECT_DATA, c: undefined, d: undefined }, (value) => value !== undefined), OBJECT_DATA)
+  })
+
+  it('should pass objectDeleteUndefined()', () => { // TODO: deprecate, use `objectFilter`
     stringifyEqual(objectDeleteUndefined(OBJECT_DATA), OBJECT_DATA)
     stringifyEqual(objectDeleteUndefined({}), {})
     stringifyEqual(objectDeleteUndefined({ c: undefined, d: undefined }), {})

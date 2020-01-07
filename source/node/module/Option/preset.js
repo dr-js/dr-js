@@ -1,20 +1,17 @@
 import { resolve, dirname } from 'path'
 import { tryRequire } from 'source/env/tryRequire'
 import { splitCamelCase } from 'source/common/string'
-import { string, number, boolean, integer, basicFunction, arrayLength, oneOf } from 'source/common/verify'
-import { objectDeleteUndefined } from 'source/common/immutable/Object'
+import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify'
+import { objectFilter } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 import { createOptionParser } from './parser'
 
 const throwError = (message) => { throw new Error(message) }
+const filterFormatValue = (value) => value !== undefined && value !== ''
 
-const getPreset = (argumentCount, argumentListVerify = () => {}, argumentListNormalize = (v) => v, description = '', optional = false) => ({
-  argumentCount,
-  argumentListNormalize,
-  argumentListVerify,
-  description,
-  optional
-})
+const getPreset = (argumentCount, argumentListVerify, argumentListNormalize, description, optional) => objectFilter({
+  argumentCount, argumentListNormalize, argumentListVerify, description, optional
+}, filterFormatValue)
 
 const Preset = {
   Optional: { optional: true },
@@ -30,7 +27,9 @@ Object.assign(Preset, ...[
   [ 'Number', number, (argumentList) => argumentList.map(Number) ],
   [ 'Boolean', boolean, (argumentList) => argumentList.map(Boolean) ],
   [ 'Integer', integer, (argumentList) => argumentList.map(parseInt) ],
-  [ 'Function', basicFunction, undefined ] // TODO: should be from JS config only, always optional?
+  [ 'RegExp', regexp, undefined ], // TODO: limit to JS config, always optional?
+  [ 'Object', basicObject, undefined ], // TODO: limit to JS/JSON config, always optional?
+  [ 'Function', basicFunction, undefined ] // TODO: limit to JS config, always optional?
 ].map(([ typeName, verifyFunc, normalizeFunc ]) => {
   const verifySingle = (argumentList) => {
     arrayLength(argumentList, 1)
@@ -65,13 +64,13 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
       if (presetName && !Preset[ presetName ]) throwError(`invalid presetName: ${presetName}`)
       return Preset[ presetName ]
     }).filter(Boolean),
-    objectDeleteUndefined({
+    objectFilter({
       name: nameTagList[ 0 ],
       shortName: nameTagList.find((nameTag) => nameTag.length === 1),
-      aliasNameList: nameTagList.slice(1),
-      argumentCount: argumentCount || undefined,
-      description: descriptionList.join('|') || undefined
-    }),
+      aliasNameList: nameTagList.length > 1 ? nameTagList.slice(1) : undefined,
+      argumentCount: argumentCount,
+      description: descriptionList.join('|')
+    }, filterFormatValue),
     Array.isArray(extraOptionOrExtendFormatList)
       ? { extendFormatList: extraOptionOrExtendFormatList }
       : extraOptionOrExtendFormatList || {}
@@ -84,8 +83,8 @@ const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(
 
 // Preset: second batch, with function
 Object.assign(Preset, {
-  SinglePath: parseCompact('/SingleString,Path'), // TODO: not suitable for use in `extraOption`, the `name` will be reset to `''`
-  AllPath: parseCompact('/AllString,Path'), // TODO: not suitable for use in `extraOption`, the `name` will be reset to `''`
+  SinglePath: parseCompact('/SingleString,Path'),
+  AllPath: parseCompact('/AllString,Path'),
   Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env"\nfrom JS/JSON file: set to "path/to/config.js|json"'),
 
   pickOneOf,
@@ -109,24 +108,28 @@ const getOptionalFormatValue = (formatName, ...valueList) => (optionMap) => {
   return format && !valueList.includes(format.argumentList[ 0 ])
 }
 
-const parseOptionMap = async ({ parseCLI, parseENV, parseCONFIG, processOptionMap }) => {
-  const optionMapCLI = optionMapResolvePath(parseCLI(process.argv.slice(2)), process.cwd()) // TODO: NOTE: process.argv.slice(2) to drop [node executable] [script file], may not good for all situations
-  const config = optionMapCLI[ 'config' ] && optionMapCLI[ 'config' ].argumentList[ 0 ]
-  const optionMapExtend = !config ? null
-    : config === 'env' ? optionMapResolvePath(parseENV(process.env), process.cwd())
-      : optionMapResolvePath(
-        parseCONFIG(tryRequire(resolve(process.cwd(), config)) || throwError(`failed to load config: ${config}`)),
-        dirname(resolve(process.cwd(), config))
+const parseOptionMap = async ({
+  parseCLI, parseENV, parseCONFIG, processOptionMap,
+  optionCLI = process.argv.slice(2), // TODO: NOTE: process.argv.slice(2) to drop [node executable] [script file], may not good for all situations
+  optionENV = process.env
+}) => {
+  const optionMapCLI = optionMapResolvePathMutate(parseCLI(optionCLI))
+  const configString = optionMapCLI[ 'config' ] && optionMapCLI[ 'config' ].argumentList[ 0 ]
+  const optionMapExtra = !configString ? null
+    : configString === 'env' ? optionMapResolvePathMutate(parseENV(optionENV)) // TODO: NOTE: currently ENV is only parsed when CLI config is set to `env`, the good thing is it's easier to track
+      : optionMapResolvePathMutate(
+        parseCONFIG(tryRequire(resolve(configString)) || throwError(`failed to load config: ${configString}`)),
+        dirname(resolve(configString))
       )
   const optionMap = processOptionMap({
-    ...optionMapExtend, // allow overwrite by cli
+    ...optionMapExtra, // allow overwrite by CLI
     ...optionMapCLI
   })
   __DEV__ && console.log('[parseOptionMap] get:')
   __DEV__ && Object.keys(optionMap).forEach((name) => console.log(`  - [${name}] ${JSON.stringify(optionMap[ name ])}`))
   return optionMap
 }
-const optionMapResolvePath = (optionMap, pathRoot) => { // NOTE: will mutate argumentList in optionMap
+const optionMapResolvePathMutate = (optionMap, pathRoot = process.cwd()) => { // NOTE: will mutate argumentList in optionMap
   Object.values(optionMap).forEach(({ format: { isPath }, argumentList }) => isPath && argumentList.forEach((v, i) => (argumentList[ i ] = resolve(pathRoot, v))))
   return optionMap
 }
@@ -141,7 +144,15 @@ const createOptionGetter = (optionMap) => {
     return argumentList
   }
   const getFirst = (name) => get(name, 1)[ 0 ]
-  return { optionMap, tryGet, tryGetFirst, get, getFirst }
+  const resolvePath = (name, ...args) => {
+    const pathOptionValue = optionMap[ name ] && (
+      optionMap[ name ].format.isPath
+        ? optionMap[ name ].argumentList[ 0 ] // relative to the value
+        : optionMap[ name ].source === 'CONFIG' && optionMap[ 'config' ].argumentList[ 0 ] // relative to config file
+    )
+    return resolve(pathOptionValue ? dirname(pathOptionValue) : process.cwd(), ...args) // use the dirname of path typed option, or default to cwd
+  }
+  return { optionMap, tryGet, tryGetFirst, get, getFirst, resolvePath }
 }
 
 const prepareOption = (optionConfig) => {
