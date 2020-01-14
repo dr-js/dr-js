@@ -144,15 +144,15 @@ const createOptionGetter = (optionMap) => {
     return argumentList
   }
   const getFirst = (name) => get(name, 1)[ 0 ]
-  const resolvePath = (name, ...args) => {
-    const pathOptionValue = optionMap[ name ] && (
+  const pwd = (name) => { // resolve the `proper-cwd` for the option // TODO: needed? all path option already got resolved
+    const pathValue = optionMap[ name ] && (
       optionMap[ name ].format.isPath
-        ? optionMap[ name ].argumentList[ 0 ] // relative to the value
-        : optionMap[ name ].source === 'CONFIG' && optionMap[ 'config' ].argumentList[ 0 ] // relative to config file
+        ? optionMap[ name ].argumentList[ 0 ] // relative to the path type value
+        : optionMap[ name ].source === 'CONFIG' && optionMap[ 'config' ].argumentList[ 0 ] !== 'env' && optionMap[ 'config' ].argumentList[ 0 ] // relative to config file
     )
-    return resolve(pathOptionValue ? dirname(pathOptionValue) : process.cwd(), ...args) // use the dirname of path typed option, or default to cwd
+    return pathValue ? dirname(pathValue) : '' // use the dirname of path typed option, or ''
   }
-  return { optionMap, tryGet, tryGetFirst, get, getFirst, resolvePath }
+  return { optionMap, tryGet, tryGetFirst, get, getFirst, pwd }
 }
 
 const prepareOption = (optionConfig) => {

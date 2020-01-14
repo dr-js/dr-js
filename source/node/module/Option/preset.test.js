@@ -175,7 +175,7 @@ describe('Node.Module.Option.preset', () => {
       it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
     })
 
-    describe('createOptionGetter().resolvePath', () => {
+    describe('createOptionGetter().pwd', () => {
       const optionData2 = {
         formatList: [
           Preset.Config,
@@ -187,7 +187,7 @@ describe('Node.Module.Option.preset', () => {
       const { parseCLI, parseENV, parseCONFIG, processOptionMap } = createOptionParser(optionData2)
 
       it('test CLI', async () => {
-        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [
             '--option-toggle',
@@ -198,14 +198,14 @@ describe('Node.Module.Option.preset', () => {
         }))
         strictEqual(getFirst('option-toggle'), true)
         strictEqual(getFirst('option-string'), 'ABC')
-        strictEqual(getFirst('option-path'), resolve(process.cwd(), 'A/B/C/file'))
-        strictEqual(resolvePath('non-option'), process.cwd())
-        strictEqual(resolvePath('option-toggle'), process.cwd())
-        strictEqual(resolvePath('option-string'), process.cwd())
-        strictEqual(resolvePath('option-path'), resolve(process.cwd(), 'A/B/C/'))
+        strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
+        strictEqual(pwd('non-option'), '')
+        strictEqual(pwd('option-toggle'), '')
+        strictEqual(pwd('option-string'), '')
+        strictEqual(pwd('option-path'), resolve('A/B/C/'))
       })
       it('test ENV', async () => {
-        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [ '--config', 'env' ],
           optionENV: {
@@ -216,11 +216,11 @@ describe('Node.Module.Option.preset', () => {
         }))
         strictEqual(getFirst('option-toggle'), true)
         strictEqual(getFirst('option-string'), 'ABC')
-        strictEqual(getFirst('option-path'), resolve(process.cwd(), 'A/B/C/file'))
-        strictEqual(resolvePath('non-option'), process.cwd())
-        strictEqual(resolvePath('option-toggle'), process.cwd())
-        strictEqual(resolvePath('option-string'), process.cwd())
-        strictEqual(resolvePath('option-path'), resolve(process.cwd(), 'A/B/C/'))
+        strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
+        strictEqual(pwd('non-option'), '')
+        strictEqual(pwd('option-toggle'), '')
+        strictEqual(pwd('option-string'), '')
+        strictEqual(pwd('option-path'), resolve('A/B/C/'))
       })
       it('test CONFIG', async () => {
         const pathConfig = resolve(TEST_ROOT, 'test-config.json')
@@ -229,7 +229,7 @@ describe('Node.Module.Option.preset', () => {
           optionString: 'not ABC',
           optionPath: 'A/B/C/file'
         }))
-        const { getFirst, resolvePath } = createOptionGetter(await parseOptionMap({
+        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [
             '--config', pathConfig,
@@ -240,10 +240,10 @@ describe('Node.Module.Option.preset', () => {
         strictEqual(getFirst('option-toggle'), true)
         strictEqual(getFirst('option-string'), 'ABC')
         strictEqual(getFirst('option-path'), resolve(dirname(pathConfig), 'A/B/C/file'))
-        strictEqual(resolvePath('non-option'), process.cwd())
-        strictEqual(resolvePath('option-toggle'), dirname(pathConfig))
-        strictEqual(resolvePath('option-string'), process.cwd())
-        strictEqual(resolvePath('option-path'), resolve(dirname(pathConfig), 'A/B/C/'))
+        strictEqual(pwd('non-option'), '')
+        strictEqual(pwd('option-toggle'), dirname(pathConfig))
+        strictEqual(pwd('option-string'), '')
+        strictEqual(pwd('option-path'), resolve(dirname(pathConfig), 'A/B/C/'))
       })
     })
   })

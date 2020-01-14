@@ -16,7 +16,7 @@ const B64_CODE = []
   B64_CODE[ __DEV__ ? '_'.charCodeAt(0) : 95 ] = 63 // for URL-safe-Base64
 }
 
-const CHUNK_SIZE = 3 * 4 * 1024 // use chunk to compress array to string early, to save memory
+const CHUNK_SIZE = 3 * 4 * 1024 // use chunk to compress array to string early, to save memory // check: https://github.com/beatgammit/base64-js/pull/19
 const encodeU24Chunk = (u8List, index, indexMax) => {
   const stringList = []
   for (; index < indexMax; index += 3) {
