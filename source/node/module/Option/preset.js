@@ -85,7 +85,7 @@ const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(
 Object.assign(Preset, {
   SinglePath: parseCompact('/SingleString,Path'),
   AllPath: parseCompact('/AllString,Path'),
-  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env"\nfrom JS/JSON file: set to "path/to/config.js|json"'),
+  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env" to enable, not using be default\nfrom JS/JSON file: set to "path/to/file.config.js|json"'),
 
   pickOneOf,
   parseCompact,
@@ -137,18 +137,13 @@ const optionMapResolvePathMutate = (optionMap, pathRoot = process.cwd()) => { //
 const createOptionGetter = (optionMap) => {
   const tryGet = (name) => optionMap[ name ] && optionMap[ name ].argumentList
   const tryGetFirst = (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
-  const get = (name, argumentCount) => {
-    const argumentList = tryGet(name)
-    if (!argumentList) throwError(`expect option ${name}`)
-    if (argumentCount !== undefined && argumentList.length !== argumentCount) throwError(`expect option ${name} with ${argumentCount} value, get ${argumentList.length}`)
-    return argumentList
-  }
-  const getFirst = (name) => get(name, 1)[ 0 ]
+  const get = (name) => tryGet(name) || throwError(`expect option ${name}`)
+  const getFirst = (name) => get(name)[ 0 ]
   const pwd = (name) => { // resolve the `proper-cwd` for the option // TODO: needed? all path option already got resolved
     const pathValue = optionMap[ name ] && (
       optionMap[ name ].format.isPath
-        ? optionMap[ name ].argumentList[ 0 ] // relative to the path type value
-        : optionMap[ name ].source === 'CONFIG' && optionMap[ 'config' ].argumentList[ 0 ] !== 'env' && optionMap[ 'config' ].argumentList[ 0 ] // relative to config file
+        ? getFirst(name) // relative to the path type value
+        : optionMap[ name ].source === 'CONFIG' && getFirst('config') !== 'env' && getFirst('config') // relative to config file
     )
     return pathValue ? dirname(pathValue) : '' // use the dirname of path typed option, or ''
   }

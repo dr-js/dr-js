@@ -21,11 +21,13 @@ const bufferToReadableStream = (buffer) => {
 // TODO: not able to pause & resume the line-reading to run some async code
 const createReadlineFromStreamAsync = (readStream, onLineSync) => new Promise((resolve, reject) => {
   const readlineInterface = createInterface({ input: readStream, historySize: 0, crlfDelay: Infinity })
-  readlineInterface.on('error', (error) => { // TODO: this is not documented, don't know if this will be called or not
+  const onError = (error) => {
     __DEV__ && console.log(`[Readline] error`, error)
-    readlineInterface.close()
     reject(error)
-  })
+    readlineInterface.close()
+  }
+  readStream.on('error', onError) // the error will not be handled in readlineInterface
+  readlineInterface.on('error', onError) // TODO: this is not documented, don't know if this will be called or not
   readlineInterface.on('close', () => {
     __DEV__ && console.log(`[Readline] close`)
     resolve()
