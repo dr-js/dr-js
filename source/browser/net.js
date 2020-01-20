@@ -20,11 +20,10 @@ const fetchLikeRequest = (url, {
   request.ontimeout = () => reject(getError('NETWORK_TIMEOUT', -1))
   request.onreadystatechange = () => {
     const { readyState, status } = request
-    if (readyState !== 2) return // HEADERS_RECEIVED
-    if (status === 0) {
-      request.abort()
-      return reject(getError('HEADER_STATUS_ERROR', -1)) // can be timeout
-    }
+    if (
+      readyState !== 2 || // not HEADERS_RECEIVED
+      status === 0 // no success
+    ) return
     const responseHeaders = request.getAllResponseHeaders().split(REGEXP_HEADER_SEPARATOR).reduce((o, rawHeader) => {
       const [ key, ...valueList ] = rawHeader.split(':')
       if (valueList.length) o[ key.trim().toLowerCase() ] = valueList.join(':').trim()
@@ -48,27 +47,21 @@ const fetchLikeRequest = (url, {
 })
 
 const wrapPayload = (request, getError) => {
-  let isKeep
-  let isDropped
+  let payloadOutcome // KEEP|DROP
   setTimeout(() => {
-    if (isKeep) return
-    isDropped = true
+    if (payloadOutcome) return
+    payloadOutcome = 'DROP'
     request.abort() // drop response data
   })
-  const arrayBuffer = () => {
-    if (isKeep) throw getError('PAYLOAD_ALREADY_USED', -1) // not receive body twice
-    if (isDropped) throw getError('PAYLOAD_ALREADY_DROPPED', -1)
-    isKeep = true
-    return new Promise((resolve, reject) => {
-      request.onerror = () => reject(getError('PAYLOAD_ERROR', -1))
-      request.ontimeout = () => reject(getError('PAYLOAD_TIMEOUT', -1))
-      request.onreadystatechange = () => {
-        if (request.readyState !== 4) return // DONE
-        if (request.status === 0) return reject(getError('PAYLOAD_STATUS_ERROR', -1)) // can be timeout
-        resolve(request.response)
-      }
-    })
-  }
+  const arrayBuffer = () => new Promise((resolve, reject) => {
+    if (payloadOutcome) return reject(getError(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED', -1))
+    payloadOutcome = 'KEEP'
+    // use `onload` instead of `onreadystatechange` since `onreadystatechange` fires before `ontimeout`, thus masking the `reject` for timeout
+    // check: https://stackoverflow.com/questions/23940460/xmlhttprequest-timeout-case-onreadystatechange-executes-before-ontimeout/30054671#30054671
+    request.onload = () => resolve(request.response)
+    request.onerror = () => reject(getError('PAYLOAD_ERROR', -1))
+    request.ontimeout = () => reject(getError('PAYLOAD_TIMEOUT', -1))
+  })
   const blob = () => arrayBuffer().then(toBlob)
   const text = () => arrayBuffer().then(toText)
   const json = () => text().then(parseJSON)

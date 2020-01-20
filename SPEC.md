@@ -78,7 +78,7 @@
 + 📄 [source/common/immutable/Array.js](source/common/immutable/Array.js)
   - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindOrPush`, `arrayFindSet`, `arrayFindSetOrPush`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
 + 📄 [source/common/immutable/Object.js](source/common/immutable/Object.js)
-  - `objectDelete`, `objectDeleteUndefined`, `objectFilter`, `objectFindKey`, `objectFromEntries`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+  - `objectDelete`, `objectFilter`, `objectFindKey`, `objectFromEntries`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
 + 📄 [source/common/immutable/StateStore.js](source/common/immutable/StateStore.js)
   - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
 + 📄 [source/common/immutable/check.js](source/common/immutable/check.js)
@@ -130,7 +130,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
-  - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`, `requestHttp`
+  - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -272,7 +272,7 @@
     - **Array**
       - `arrayConcat`, `arrayDelete`, `arrayFindDelete`, `arrayFindMove`, `arrayFindOrPush`, `arrayFindSet`, `arrayFindSetOrPush`, `arrayInsert`, `arrayMatchDelete`, `arrayMatchMove`, `arrayMatchPush`, `arrayMove`, `arrayPop`, `arrayPush`, `arraySet`, `arrayShift`, `arraySplitChunk`, `arrayUnshift`
     - **Object**
-      - `objectDelete`, `objectDeleteUndefined`, `objectFilter`, `objectFindKey`, `objectFromEntries`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
+      - `objectDelete`, `objectFilter`, `objectFindKey`, `objectFromEntries`, `objectMap`, `objectMerge`, `objectPickKey`, `objectSet`
     - **StateStore**
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `transformCache`
@@ -400,7 +400,7 @@
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
-    - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestAsync`, `requestHttp`
+    - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
   - **Resource**
     - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 

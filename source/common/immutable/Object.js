@@ -53,9 +53,6 @@ const objectFromEntries = (iterable) => { // TODO: NOTE: use `Object.fromEntries
   return result
 }
 
-const objectDeleteUndefined = (object) => objectFilter(object, filterUndefined) // TODO: deprecate, use `objectFilter`
-const filterUndefined = (value) => value !== undefined // TODO: deprecate, use `objectFilter`
-
 export {
   objectSet,
   objectDelete,
@@ -64,7 +61,5 @@ export {
   objectPickKey,
   objectFindKey,
   objectFilter,
-  objectFromEntries,
-
-  objectDeleteUndefined // TODO: deprecate, use `objectFilter`
+  objectFromEntries
 }

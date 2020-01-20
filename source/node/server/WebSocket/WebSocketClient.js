@@ -18,9 +18,7 @@ const doUpgradeSocket = (webSocket, response, responseKey, requestProtocolString
 }
 
 const createWebSocketClient = ({
-  urlString, // TODO: DEPRECATE: pass `url`
-
-  url = new URL(urlString), // URL/String
+  url, // URL/String
   option: {
     key,
     headers,

@@ -21,7 +21,7 @@ const FILE_NOT_GZIP = resolve(__dirname, 'Stream.js') // plain test file
 const unexpectedResolve = () => { throw new Error('unexpected promise resolve') }
 const expectError = (content) => (error) => {
   if (String(error).includes(content)) info(`good, expected: ${error}`)
-  else throw error
+  else throw new Error(`unexpected: ${error.stack || error}`)
 }
 
 describe('Node.Data.Stream', () => {

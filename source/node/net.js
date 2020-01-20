@@ -2,6 +2,7 @@ import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
+import { clock } from 'source/common/time'
 import { withRetryAsync } from 'source/common/function'
 import { toArrayBuffer } from 'source/node/data/Buffer'
 import { setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
@@ -19,32 +20,12 @@ const requestHttp = (
       request.abort()
       reject(error)
     }
-    request.on('timeout', () => endWithError(new Error(`NETWORK_TIMEOUT`)))
+    request.on('timeout', () => endWithError(new Error('NETWORK_TIMEOUT')))
     request.on('error', endWithError)
     request.end(body)
   })
   return { url, request, promise }
 }
-
-const toUrlObject = (url) => url instanceof URL ? url : new URL(url)
-
-const requestAsync = ( // TODO: DEPRECATE: use `requestHttp`
-  url,
-  option, // { method, headers, timeout, agent, ... }
-  body // optional, Buffer/String
-) => new Promise((resolve, reject) => {
-  const urlObject = toUrlObject(url)
-  const request = (urlObject.protocol === 'https:' ? httpsRequest : httpRequest)(urlObject, option, resolve)
-  const endWithError = (error) => {
-    request.abort()
-    error.urlObject = urlObject
-    error.option = option
-    reject(error)
-  }
-  request.on('timeout', () => endWithError(new Error(`NETWORK_TIMEOUT`)))
-  request.on('error', endWithError)
-  request.end(body)
-})
 
 // ping with a status code of 500 is still a successful ping
 const ping = async (url, {
@@ -79,14 +60,15 @@ const fetchLikeRequest = async (url, {
     timeout
   }
   __DEV__ && console.log('[fetch]', option)
-  const response = await requestHttp(url, option, body).promise
-  // __DEV__ && response.socket.on('close', () => console.log(`[fetch] socket closed`))
+  const { request, promise } = requestHttp(url, option, body)
+  const timeStart = clock()
+  const response = await promise
   const status = response.statusCode
   return {
     status,
     ok: (status >= 200 && status < 300),
     headers: response.headers,
-    ...wrapResponse(response, timeout)
+    ...wrapPayload(request, response, timeout + timeStart - clock()) // cut off connection setup time
   }
 }
 
@@ -96,28 +78,27 @@ const fetchLikeRequest = async (url, {
 //   http: IncomingMessage not emitting 'end'
 //     - https://github.com/nodejs/node/issues/10344
 
-const wrapResponse = (response, timeout) => {
-  let isKeep
-  let isDropped
+const wrapPayload = (request, response, timeoutPayload) => {
+  let payloadOutcome // KEEP|DROP
   process.nextTick(() => {
-    if (isKeep) return
-    response.destroy() // drop response data
-    isDropped = true
+    if (payloadOutcome) return
     __DEV__ && console.log('[fetch] payload dropped')
+    payloadOutcome = 'DROP'
+    request.abort() // drop request
   })
-
   const stream = () => { // TODO: also use async?
-    if (isKeep) throw new Error('PAYLOAD_ALREADY_USED') // not receive body twice
-    if (isDropped) throw new Error('PAYLOAD_ALREADY_DROPPED')
+    if (payloadOutcome) throw new Error(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED')
     __DEV__ && console.log('[fetch] keep payload')
-    isKeep = true
-    const timeoutToken = timeout && setTimeout(() => {
-      // TODO: NOTE: IncomingMessage do not emit `error` event, even when destroy is called here, so manual emit error event
-      response.destroy() // TODO: NOTE: pass error here does nothing, too
-      response.emit('error', new Error('PAYLOAD_TIMEOUT'))
-      __DEV__ && console.log('[fetch] payload timeout', timeout)
-    }, timeout)
-    response.on('end', () => timeoutToken && clearTimeout(timeoutToken))
+    payloadOutcome = 'KEEP'
+    if (timeoutPayload > 0) {
+      const timeoutToken = setTimeout(() => {
+        __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
+        response.emit('error', new Error('PAYLOAD_TIMEOUT')) // TODO: NOTE: emit custom `error` event to signal stream stop
+        request.abort() // drop request
+      }, timeoutPayload)
+      // request.off('timeout', func) // TODO: NOTE: timeoutPayload should be faster than the underlying socket timeout
+      response.on('end', () => clearTimeout(timeoutToken))
+    }
     return response.headers[ 'content-encoding' ] === 'gzip'
       ? setupStreamPipe(response, createGunzip())
       : response
@@ -145,7 +126,7 @@ const fetchWithJump = async (initialUrl, {
     const response = await fetch(url, { ...option, headers: { ...option.headers, 'cookie': cookieList.join(';') } })
     if (response.status >= 300 && response.status <= 399 && response.headers[ 'location' ]) {
       jumpCount++
-      if (jumpCount > jumpMax) throw new Error(`JUMP_MAX_REACHED`)
+      if (jumpCount > jumpMax) throw new Error('JUMP_MAX_REACHED')
       url = new URL(response.headers[ 'location' ], url).href
       cookieList = [ ...cookieList, ...(response.headers[ 'set-cookie' ] || []).map((v) => v.split(';')[ 0 ]) ]
     } else return response
@@ -153,8 +134,6 @@ const fetchWithJump = async (initialUrl, {
 }
 
 export {
-  requestAsync, // TODO: DEPRECATE: use `requestHttp`
-
   requestHttp,
   ping,
   fetchLikeRequest,

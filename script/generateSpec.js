@@ -44,7 +44,7 @@ runMain(async (logger) => {
   }
 
   logger.padLog('generate exportInfoMap')
-  const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], logger })
+  const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], pathInfoFilter: ({ name }) => !name.endsWith('.test.js'), logger })
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
 
   logger.log('output: SPEC.md')
