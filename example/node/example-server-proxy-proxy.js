@@ -3,7 +3,7 @@ const { createServer: createHttpServer } = require('http')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
 const { requestHttp } = require('../../output-gitignore/library/node/net')
-const { receiveBufferAsync } = require('../../output-gitignore/library/node/data/Buffer')
+const { readableStreamToBufferAsync } = require('../../output-gitignore/library/node/data/Stream')
 const { createServerPack, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
@@ -24,9 +24,9 @@ const getParamFilePath = (store) => fromStaticRoot(decodeURI(getRouteParamAny(st
 
 const responderServeStatic = createResponderServeStatic({})
 const responderProxy = async (store) => {
-  const requestBuffer = await receiveBufferAsync(store.request)
+  const requestBuffer = await readableStreamToBufferAsync(store.request)
   const proxyResponse = await requestHttp(`http://${ProxyHostname}:${ProxyPort}/get-proxy`, null, requestBuffer).promise
-  const responseBuffer = await receiveBufferAsync(proxyResponse)
+  const responseBuffer = await readableStreamToBufferAsync(proxyResponse)
   store.response.end(responseBuffer)
 }
 
@@ -84,13 +84,13 @@ start().then(() => {
 
 createHttpServer(async (originalRequest, originalResponse) => {
   console.log(`[proxy] get: ${originalRequest.url}`)
-  const requestBuffer = await receiveBufferAsync(originalRequest)
+  const requestBuffer = await readableStreamToBufferAsync(originalRequest)
   const proxyResponse = await requestHttp(
     `http://${ServerHostname}:${ServerPort}${originalRequest.url}`,
     { method: originalRequest.method, headers: originalRequest.headers },
     requestBuffer
   ).promise
-  const responseBuffer = await receiveBufferAsync(proxyResponse)
+  const responseBuffer = await readableStreamToBufferAsync(proxyResponse)
   Object.entries(proxyResponse.headers).forEach(([ name, value ]) => originalResponse.setHeader(name, value))
   originalResponse.statusCode = proxyResponse.statusCode
   originalResponse.statusMessage = proxyResponse.statusMessage

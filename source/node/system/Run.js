@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from 'child_process'
 import { catchAsync } from 'source/common/error'
-import { receiveBufferAsync } from 'source/node/data/Buffer'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream'
 
 const getOption = (option, quiet) => ({
   stdio: quiet ? [ 'ignore', 'pipe', 'pipe' ] : 'inherit',
@@ -14,8 +14,8 @@ const getExitError = (error, exitData) => Object.assign(
 
 const run = ({ command, argList = [], option, quiet = false }) => {
   const subProcess = spawn(command, argList, getOption(option, quiet))
-  const stdoutPromise = quiet ? receiveBufferAsync(subProcess.stdout) : undefined
-  const stderrPromise = quiet ? receiveBufferAsync(subProcess.stderr) : undefined
+  const stdoutPromise = quiet ? readableStreamToBufferAsync(subProcess.stdout) : undefined
+  const stderrPromise = quiet ? readableStreamToBufferAsync(subProcess.stderr) : undefined
   const promise = new Promise((resolve, reject) => {
     subProcess.on('error', (error) => reject(getExitError(error, { command, argList, stdoutPromise, stderrPromise }))) // default error code
     subProcess.on('exit', (code, signal) => {

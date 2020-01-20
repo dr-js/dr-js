@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { receiveBufferAsync } from 'source/node/data/Buffer'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream'
 
 const getEntityTagByContentHash = (buffer) => {
   const length = buffer.length.toString(16)
@@ -12,7 +12,7 @@ const getEntityTagByContentHashAsync = async (buffer) => {
   const hash = createHash('sha1')
   hash.write(buffer)
   hash.end()
-  const hashBuffer = await receiveBufferAsync(hash)
+  const hashBuffer = await readableStreamToBufferAsync(hash)
   return `"${length}-${hashBuffer.toString('base64')}"`
 }
 

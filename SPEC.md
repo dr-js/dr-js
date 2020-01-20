@@ -134,13 +134,13 @@
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
+  - `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
   - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
+  - `bufferToReadableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/data/function.js](source/node/data/function.js)
   - `getRandomBufferAsync`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
@@ -331,13 +331,13 @@
 - **Node**
   - **Data**
     - **Buffer**
-      - `receiveBufferAsync`, `sendBufferAsync`, `toArrayBuffer`
+      - `toArrayBuffer`
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
     - **LogQueue**
       - `createLogQueue`
     - **Stream**
-      - `bufferToReadableStream`, `createReadlineFromStreamAsync`, `pipeStreamAsync`
+      - `bufferToReadableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
     - `getRandomBufferAsync`
   - **File**
     - **Directory**

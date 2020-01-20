@@ -12,7 +12,7 @@ import { indentList } from '@dr-js/core/module/common/string'
 import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
 
-import { pipeStreamAsync, bufferToReadableStream } from '@dr-js/core/module/node/data/Stream'
+import { setupStreamPipe, waitStreamStopAsync, bufferToReadableStream } from '@dr-js/core/module/node/data/Stream'
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
 import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
@@ -64,11 +64,14 @@ const runMode = async (modeName, optionData) => {
   const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
-    : pipeStreamAsync(process.stdout, bufferToReadableStream(buffer))
-  const outputStream = (stream) => pipeStreamAsync(
-    outputFile ? createWriteStream(outputFile) : process.stdout,
-    stream
-  )
+    : waitStreamStopAsync(setupStreamPipe(
+      bufferToReadableStream(buffer),
+      process.stdout
+    ))
+  const outputStream = (stream) => waitStreamStopAsync(setupStreamPipe(
+    stream,
+    outputFile ? createWriteStream(outputFile) : process.stdout
+  ))
 
   // for ipv6 should use host like: `[::]:80`
   const parseHost = (host, defaultHostname) => {
@@ -112,18 +115,18 @@ const runMode = async (modeName, optionData) => {
     case 'echo':
       return logAuto(argumentList)
     case 'cat': {
-      if (argumentList.length) for (const path of argumentList) await pipeStreamAsync(process.stdout, createReadStream(path))
-      else if (!process.stdin.isTTY) await pipeStreamAsync(process.stdout, process.stdin)
+      if (argumentList.length) for (const path of argumentList) await waitStreamStopAsync(setupStreamPipe(createReadStream(path), process.stdout))
+      else if (!process.stdin.isTTY) await waitStreamStopAsync(setupStreamPipe(process.stdin, process.stdout))
       return
     }
     case 'write':
     case 'append':
       if (process.stdin.isTTY) throw new Error('unsupported TTY stdin') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
-      return pipeStreamAsync(createWriteStream(argumentList[ 0 ], { flags }), process.stdin)
+      return waitStreamStopAsync(setupStreamPipe(process.stdin, createWriteStream(argumentList[ 0 ], { flags })))
     case 'merge': {
       const [ mergedFile, ...fileList ] = argumentList
-      for (const path of fileList) await pipeStreamAsync(createWriteStream(mergedFile, { flags: 'a' }), createReadStream(path))
+      for (const path of fileList) await waitStreamStopAsync(setupStreamPipe(createReadStream(path), createWriteStream(mergedFile, { flags: 'a' })))
       return
     }
 

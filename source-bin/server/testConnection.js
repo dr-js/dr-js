@@ -2,7 +2,7 @@ import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { arraySplitChunk } from '@dr-js/core/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
-import { receiveBufferAsync } from '@dr-js/core/module/node/data/Buffer'
+import { readableStreamToBufferAsync } from '@dr-js/core/module/node/data/Stream'
 import { createRequestListener, describeServerPack } from '@dr-js/core/module/node/server/Server'
 import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
@@ -56,7 +56,7 @@ const configure = ({ log }) => {
       const { url: { searchParams } } = store.getState()
       const isCompress = !searchParams.has('no-compress')
       return (isCompress ? responderSendBufferCompress : responderSendBuffer)(store, {
-        buffer: await receiveBufferAsync(store.request),
+        buffer: await readableStreamToBufferAsync(store.request),
         type: BASIC_EXTENSION_MAP[ getRouteParam(store, 'mime') ]
       })
     } ],

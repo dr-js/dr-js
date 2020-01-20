@@ -3,7 +3,8 @@ import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
 import { withRetryAsync } from 'source/common/function'
-import { receiveBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
+import { toArrayBuffer } from 'source/node/data/Buffer'
+import { setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
 
 const requestHttp = (
   url, // URL/String
@@ -112,16 +113,16 @@ const wrapResponse = (response, timeout) => {
     isKeep = true
     const timeoutToken = timeout && setTimeout(() => {
       // TODO: NOTE: IncomingMessage do not emit `error` event, even when destroy is called here, so manual emit error event
-      response.destroy()
+      response.destroy() // TODO: NOTE: pass error here does nothing, too
       response.emit('error', new Error('PAYLOAD_TIMEOUT'))
       __DEV__ && console.log('[fetch] payload timeout', timeout)
     }, timeout)
     response.on('end', () => timeoutToken && clearTimeout(timeoutToken))
     return response.headers[ 'content-encoding' ] === 'gzip'
-      ? response.pipe(createGunzip())
+      ? setupStreamPipe(response, createGunzip())
       : response
   }
-  const buffer = async () => receiveBufferAsync(stream()) // use async to keep error inside promise
+  const buffer = async () => readableStreamToBufferAsync(stream()) // use async to keep error inside promise
   const arrayBuffer = () => buffer().then(toArrayBuffer)
   const text = () => buffer().then(toText)
   const json = () => text().then(parseJSON)

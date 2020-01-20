@@ -1,8 +1,7 @@
 import { gzip, gzipSync, createGzip } from 'zlib'
 import { promisify } from 'util'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { sendBufferAsync } from 'source/node/data/Buffer'
-import { pipeStreamAsync } from 'source/node/data/Stream'
+import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from 'source/node/data/Stream'
 import { getEntityTagByContentHashAsync, getEntityTagByContentHash } from 'source/node/module/EntityTag'
 
 const gzipAsync = promisify(gzip)
@@ -28,11 +27,11 @@ const setResponseContentRange = (store, entityTag, type, length = '*', start, en
 
 const responderSendBuffer = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }) =>
   setResponseContent(store, entityTag, type, length) &&
-  length && sendBufferAsync(store.response, buffer)
+  length && writeBufferToStreamAsync(store.response, buffer)
 
 const responderSendBufferRange = (store, { buffer, entityTag, type = DEFAULT_MIME, length = buffer.length }, [ start, end ]) =>
   setResponseContentRange(store, entityTag, type, length, start, end) &&
-  length && sendBufferAsync(store.response, buffer.slice(start, end + 1))
+  length && writeBufferToStreamAsync(store.response, buffer.slice(start, end + 1))
 
 const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTag, type = DEFAULT_MIME, length = buffer.length }) => {
   if (store.request.aborted) return // Added in: v10.1.0
@@ -46,16 +45,16 @@ const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTa
       : { 'content-type': type, 'content-length': length }
     ))
     : store.response.writeHead(304, { 'content-type': type })
-  return shouldSendContent && length && sendBufferAsync(store.response, sendBuffer)
+  return shouldSendContent && length && writeBufferToStreamAsync(store.response, sendBuffer)
 }
 
 const responderSendStream = (store, { stream, entityTag, type = DEFAULT_MIME, length }) =>
   setResponseContent(store, entityTag, type, length) &&
-  pipeStreamAsync(store.response, stream)
+  waitStreamStopAsync(setupStreamPipe(stream, store.response))
 
 const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAULT_MIME, length }, [ start, end ]) =>
   setResponseContentRange(store, entityTag, type, length, start, end) &&
-  pipeStreamAsync(store.response, streamRange)
+  waitStreamStopAsync(setupStreamPipe(streamRange, store.response))
 
 const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
   if (store.request.aborted) return // Added in: v10.1.0
@@ -68,7 +67,12 @@ const responderSendStreamCompress = async (store, { stream, streamGzip, entityTa
       : { 'content-type': type, 'content-length': length }
     ))
     : store.response.writeHead(304, { 'content-type': type })
-  return shouldSendContent && length && pipeStreamAsync(store.response, shouldGzip ? (streamGzip || stream.pipe(createGzip())) : stream)
+  return shouldSendContent && length && waitStreamStopAsync(setupStreamPipe.apply(null, shouldGzip
+    ? streamGzip
+      ? [ streamGzip, store.response ]
+      : [ stream, createGzip(), store.response ]
+    : [ stream, store.response ]
+  ))
 }
 
 const responderSendJSON = (store, { object, entityTag }) => responderSendBufferCompress(store, {

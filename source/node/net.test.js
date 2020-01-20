@@ -2,7 +2,8 @@ import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
 import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
-import { receiveBufferAsync, sendBufferAsync, toArrayBuffer } from 'source/node/data/Buffer'
+import { toArrayBuffer } from 'source/node/data/Buffer'
+import { readableStreamToBufferAsync, writeBufferToStreamAsync } from 'source/node/data/Stream'
 import { getUnusedPort } from 'source/node/server/function'
 import { createServerPack, createRequestListener } from 'source/node/server/Server'
 import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common'
@@ -11,7 +12,7 @@ import { createRouteMap, createResponderRouter } from 'source/node/server/Respon
 import { setTimeoutAsync } from 'source/common/time'
 import { ping, fetchLikeRequest } from './net'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after, info = console.log } = global
 
 const BUFFER_SCRIPT = Buffer.from([
   `// Simple script file, used for js test`,
@@ -35,10 +36,11 @@ const withTestServer = (asyncTest) => async () => {
           } ],
           [ '/test-timeout-payload', 'GET', async (store) => {
             store.response.writeHead(200, { 'content-length': BUFFER_SCRIPT.length * 2 })
+            store.response.flushHeaders() // fast header but slow payload
             await setTimeoutAsync(40)
-            await sendBufferAsync(store.response, BUFFER_SCRIPT)
+            await writeBufferToStreamAsync(store.response, BUFFER_SCRIPT)
             await setTimeoutAsync(40)
-            await sendBufferAsync(store.response, BUFFER_SCRIPT)
+            await writeBufferToStreamAsync(store.response, BUFFER_SCRIPT)
             return responderEnd(store)
           } ],
           [ '/test-retry', 'GET', async (store) => {
@@ -65,19 +67,24 @@ after('clear', () => {
   unlinkSync(SOURCE_SCRIPT)
 })
 
+const expectError = (content) => (error) => {
+  if (String(error).includes(content)) info(`good, expected: ${error}`)
+  else throw error
+}
+
 describe('Node.Net', () => {
   it('fetchLikeRequest() option: timeout', withTestServer(async (baseUrl) => {
     await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 10 }).then(
       () => { throw new Error('should throw time out error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('NETWORK_TIMEOUT')
     )
     await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 50 }).then(
       () => { throw new Error('should throw time out error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('NETWORK_TIMEOUT')
     )
     await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 80 }).then(
-      () => `good, should pass`,
-      (error) => { throw new Error(`should not timeout: ${error}`) }
+      () => info(`good, should pass`),
+      expectError('NETWORK_TIMEOUT')
     )
     await fetchLikeRequest(`${baseUrl}/test-timeout-payload`, { timeout: 40 }).then(
       (response) => response.buffer(),
@@ -87,13 +94,13 @@ describe('Node.Net', () => {
         console.log(buffer.length, BUFFER_SCRIPT.length)
         throw new Error('should throw time out error')
       },
-      (error) => `good, expected Error: ${error}`
+      expectError('PAYLOAD_TIMEOUT')
     )
   }))
 
   it('fetchLikeRequest(): stream(), buffer(), arrayBuffer(), text(), json()', withTestServer(async (baseUrl) => {
     strictEqual(Buffer.compare(
-      await receiveBufferAsync((await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).stream()),
+      await readableStreamToBufferAsync((await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).stream()),
       Buffer.from('TEST BUFFER')
     ), 0)
     strictEqual(Buffer.compare(
@@ -129,7 +136,7 @@ describe('Node.Net', () => {
     await setTimeoutAsync(0)
     await response.buffer().then(
       () => { throw new Error('should throw data already dropped error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('PAYLOAD_ALREADY_DROPPED')
     )
   }))
 
@@ -142,20 +149,20 @@ describe('Node.Net', () => {
     await ping(`${baseUrl}/test-buffer`, { wait: 10 })
     await ping(`${baseUrl}/test-timeout`, { wait: 50, maxRetry: 2 }).then(
       () => { throw new Error('should throw ping timeout error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('NETWORK_TIMEOUT')
     )
   }))
 
   it('ping() retryCount', withTestServer(async (baseUrl) => { // total ping = 1 + retryCount
     await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 2 }).then(
       () => { throw new Error('should throw retry error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('socket hang up')
     )
     await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 0 }) // 4, pass
     await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 3 }) // 4, pass
     await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 2 }).then(
       () => { throw new Error('should throw retry error') },
-      (error) => `good, expected Error: ${error}`
+      expectError('socket hang up')
     )
     await ping(`${baseUrl}/test-retry`, { wait: 10, maxRetry: 0 }) // 4, pass
   }))
