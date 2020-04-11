@@ -59,7 +59,7 @@ const createResponderHostMapper = ({
   hostResponderMap, // { [host]: responder }
   responderDefault // for last fallback
 }) => (store) => {
-  const responder = hostResponderMap[ (store.request.headers.host || '').toLowerCase() ] || responderDefault
+  const responder = hostResponderMap[ (store.request.headers[ 'host' ] || '').toLowerCase() ] || responderDefault
   return responder && responder(store)
 }
 

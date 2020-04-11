@@ -30,7 +30,7 @@
 + 📄 [source/common/error.js](source/common/error.js)
   - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
-  - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
+  - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
@@ -317,7 +317,7 @@
   - **Error**
     - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
   - **Format**
-    - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`
+    - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**

@@ -44,7 +44,7 @@ const createResponderRouter = ({
 }) => (store) => {
   const { method, url } = getMethodUrl(store)
   const methodTag = METHOD_MAP[ method ]
-  if (methodTag === undefined) return // throw new Error(`invalid method [${method}] from: ${urlString}`)
+  if (methodTag === undefined) return // throw new Error(`invalid method [${method}] from: ${url.href}`)
 
   const routeDate = findRouteFromMap(routeMap, url.pathname)
   if (routeDate === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)

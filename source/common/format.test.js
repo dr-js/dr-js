@@ -1,5 +1,6 @@
 import { strictEqual } from 'source/common/verify'
 import {
+  typeNameOf,
   describe as describeValue,
   percent,
   mediaTime,
@@ -13,6 +14,44 @@ import {
 const { describe, it } = global
 
 describe('Common.Format', () => {
+  it('typeNameOf()', () => {
+    strictEqual(typeNameOf(), 'Undefined')
+    strictEqual(typeNameOf(undefined), 'Undefined')
+
+    strictEqual(typeNameOf(null), 'Null')
+
+    strictEqual(typeNameOf(false), 'Boolean')
+
+    strictEqual(typeNameOf(/^[\n]\w$/), 'RegExp')
+
+    strictEqual(typeNameOf(Symbol('123\n')), 'Symbol')
+
+    strictEqual(typeNameOf(new Set([ 1, 2 ])), 'Set')
+
+    strictEqual(typeNameOf(' '), 'String')
+    strictEqual(typeNameOf('\n'), 'String')
+    strictEqual(typeNameOf('!@#$ "abc" QWE'), 'String')
+
+    strictEqual(typeNameOf(0), 'Number')
+    strictEqual(typeNameOf(1e9), 'Number')
+    strictEqual(typeNameOf(NaN), 'Number')
+    strictEqual(typeNameOf(Infinity), 'Number')
+
+    strictEqual(typeNameOf(() => {}), 'Function')
+    strictEqual(typeNameOf(function () {}), 'Function')
+    strictEqual(typeNameOf(async () => {}), 'AsyncFunction')
+    strictEqual(typeNameOf(async function () {}), 'AsyncFunction')
+    strictEqual(typeNameOf(function * () {}), 'GeneratorFunction')
+    strictEqual(typeNameOf(async function * () {}), 'AsyncGeneratorFunction') // since nodejs@10
+
+    strictEqual(typeNameOf([]), 'Array')
+    strictEqual(typeNameOf([ {} ]), 'Array')
+    strictEqual(typeNameOf([ 0, 1, 2, 3, 4, 5 ]), 'Array')
+
+    strictEqual(typeNameOf({}), 'Object')
+    strictEqual(typeNameOf({ '': [], 1: 1, a: 'a', ' a a ': '' }), 'Object')
+  })
+
   it('describe()', () => {
     strictEqual(describeValue(), `<Undefined> undefined`)
     strictEqual(describeValue(undefined), `<Undefined> undefined`)
@@ -36,10 +75,12 @@ describe('Common.Format', () => {
     strictEqual(describeValue(NaN), `<Number> NaN`)
     strictEqual(describeValue(Infinity), `<Number> Infinity`)
 
-    strictEqual(describeValue(() => {}), `<Function> ()=>{...}`)
-    strictEqual(describeValue(function () {}), `<Function> ()=>{...}`)
-    strictEqual(describeValue(async () => {}), `<AsyncFunction> async()=>{...}`)
-    strictEqual(describeValue(async function () {}), `<AsyncFunction> async()=>{...}`)
+    strictEqual(describeValue(() => {}), `<Function> anonymous`)
+    strictEqual(describeValue(function () {}), `<Function> anonymous`)
+    strictEqual(describeValue(async () => {}), `<AsyncFunction> anonymous`)
+    strictEqual(describeValue(async function () {}), `<AsyncFunction> anonymous`)
+    strictEqual(describeValue(function * () {}), '<GeneratorFunction> anonymous')
+    strictEqual(describeValue(async function * () {}), '<AsyncGeneratorFunction> anonymous') // since nodejs@10
 
     strictEqual(describeValue([]), `<Array> [#0]`)
     strictEqual(describeValue([ {} ]), `<Array> [#1]`)

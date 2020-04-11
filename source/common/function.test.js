@@ -351,7 +351,7 @@ describe('Common.Function', () => {
       async () => { throw new Error('AAA') },
       10
     ).then(
-      () => new Error(`should reject with error`),
+      () => { throw new Error(`should reject with error`) },
       () => 'Good Error'
     )
 
@@ -359,12 +359,27 @@ describe('Common.Function', () => {
       () => setTimeoutAsync(20),
       10
     ).then(
-      () => new Error(`should reject with timeout`),
+      () => { throw new Error(`should reject with timeout`) },
       () => 'Good Error'
     )
   })
 
   it('withTimeoutPromise()', async () => {
+    const expectResult = {}
+    await withTimeoutPromise( // no timeout
+      Promise.resolve(expectResult),
+      20
+    ).then((result) => { if (result !== expectResult) throw new Error(`unexpected result: ${result}`) })
+
+    const expectError = new Error('expect error')
+    await withTimeoutPromise( // no timeout
+      Promise.reject(expectError),
+      20
+    ).then(
+      () => { throw new Error(`should reject with timeout`) },
+      (error) => { if (error !== expectError) throw new Error(`unexpected Error: ${error}`) }
+    )
+
     await withTimeoutPromise( // no timeout
       setTimeoutAsync(10),
       20
@@ -374,8 +389,16 @@ describe('Common.Function', () => {
       setTimeoutAsync(20),
       10
     ).then(
-      () => new Error(`should reject with timeout`),
-      () => 'Good Error'
+      () => { throw new Error(`should reject with timeout`) },
+      (error) => {
+        // __DEV__ && console.log(`error.stack: ${error.stack}`)
+        strictEqual(
+          String(error.stack).split('\n').length >= 6, // testing line count, check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/stack
+          true,
+          `error from "withTimeoutPromise()" should have longer stack trace, get: ${error.stack}`
+        )
+        return 'Good Error'
+      }
     )
   })
 
@@ -395,7 +418,7 @@ describe('Common.Function', () => {
     resolve('Bad Bad')
     reject(new Error('should not reject after reject'))
     await promise.then(
-      (value) => new Error(`should not resolve with value: ${value}`),
+      (value) => { throw new Error(`should not resolve with value: ${value}`) },
       (error) => strictEqual(error.message, 'Good Error')
     )
   })

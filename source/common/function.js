@@ -148,15 +148,19 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
 // const onResult = (result) => result
 
 // to prevent async hanging (un-resolving promise)
+// TODO: this only prevent a promise timeout blocking follow-up code for too long, but the timeout code is not canceled
 const withTimeoutAsync = (func, timeout) => withTimeoutPromise(func(), timeout)
 
-const withTimeoutPromise = (promise, timeout) => {
+const withTimeoutPromise = (
+  promise,
+  timeout // in msec
+) => {
   let timeoutToken = null
   return Promise.race([
     promise,
     new Promise((resolve, reject) => {
       timeoutToken = setTimeout(
-        () => reject(new Error(`timeout after: ${timeout}`)),
+        () => reject(DUMMY_ERROR),
         timeout
       )
     })
@@ -167,28 +171,24 @@ const withTimeoutPromise = (promise, timeout) => {
     },
     (error) => {
       clearTimeout(timeoutToken)
-      throw error
+      // check: https://stackoverflow.com/questions/46528508/how-can-i-see-the-full-stack-trace-of-error-in-settimeout-with-a-promise
+      // check: https://github.com/nodejs/help/issues/1904
+      throw (error !== DUMMY_ERROR) ? error : new Error(`timeout after: ${timeout}`) // for a better stack trace, and late add prevent stack trace performance issue
     }
   )
 }
+const DUMMY_ERROR = {}
 
 const createInsideOutPromise = () => {
   let promiseResolve, promiseReject
+  const promise = new Promise((resolve, reject) => {
+    promiseResolve = resolve
+    promiseReject = reject
+  })
   return {
-    promise: new Promise((resolve, reject) => {
-      promiseResolve = resolve
-      promiseReject = reject
-    }),
-    resolve: (value) => {
-      const resolve = promiseResolve
-      promiseResolve = promiseReject = undefined
-      resolve && resolve(value)
-    },
-    reject: (error) => {
-      const reject = promiseReject
-      promiseResolve = promiseReject = undefined
-      reject && reject(error)
-    }
+    promise,
+    resolve: promiseResolve,
+    reject: promiseReject
   }
 }
 

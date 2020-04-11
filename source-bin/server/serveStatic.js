@@ -1,7 +1,7 @@
 import { relative, dirname, join as joinPath } from 'path'
 
 import { compareStringWithNumber } from '@dr-js/core/module/common/compare'
-import { binary, time as formatTime } from '@dr-js/core/module/common/format'
+import { binary, time } from '@dr-js/core/module/common/format'
 import { escapeHTML } from '@dr-js/core/module/common/string'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
@@ -32,7 +32,7 @@ const configure = ({
     routeConfigList,
     isAddFavicon: !isSimpleServe,
     title: `ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`,
-    extraInfoList: [ `staticRoot: '${staticRoot}'`, `expireTime: ${formatTime(expireTime)}` ]
+    extraInfoList: [ `staticRoot: '${staticRoot}'`, `expireTime: ${time(expireTime)}` ]
   }
 }
 

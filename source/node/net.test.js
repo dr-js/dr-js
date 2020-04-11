@@ -1,10 +1,10 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
+import { setTimeoutAsync } from 'source/common/time'
 import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { toArrayBuffer } from 'source/node/data/Buffer'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { setTimeoutAsync } from 'source/common/time'
 import { ping, fetchLikeRequest } from './net'
 import { BUFFER_SCRIPT, withTestServer } from './net-test-server.test'
 

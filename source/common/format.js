@@ -1,15 +1,16 @@
-const escapeString = (string) => JSON.stringify(string).slice(1, -1)
+const typeNameOf = (value) => Object.prototype.toString.call(value).slice(8, -1) // [ object TypeName ] // Object/Array/RegExp/Null/AsyncFunction
+
 const describe = (value) => {
-  const valueType = Object.prototype.toString.call(value).slice(8, -1) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
+  const valueType = typeNameOf(value) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
   const valueString = valueType === 'String' ? JSON.stringify(value)
     : valueType === 'Object' ? `{${escapeString(Object.keys(value))}}`
       : valueType === 'Array' ? `[#${value.length}]`
-        : valueType === 'Function' ? `()=>{...}`
-          : valueType === 'AsyncFunction' ? `async()=>{...}`
-            : valueType === 'RegExp' ? String(value)
-              : escapeString(String(value))
+        : valueType === 'RegExp' ? String(value)
+          : valueType.endsWith('Function') ? value.name || 'anonymous'
+            : escapeString(String(value))
   return `<${valueType}> ${valueString}`
 }
+const escapeString = (string) => JSON.stringify(string).slice(1, -1)
 
 const percent = (value) => `${(value * 100).toFixed(2)}%`
 
@@ -23,7 +24,7 @@ const OVER_THRESHOLD = 0.75
 
 // https://en.wikipedia.org/wiki/Metric_prefix
 const DECIMAL_PICO_ = 0.000000000001 // ======= pico    p   10^−12
-const DECIMAL_NANO_ = 0.000000001// =========== nano    n   10^−9
+const DECIMAL_NANO_ = 0.000000001 // ========== nano    n   10^−9
 const DECIMAL_MICRO = 0.000001 // ============= micro   μ   10^−6
 const DECIMAL_MILLI = 0.001 // ================ milli   m   10^−3
 const DECIMAL_BASE_ = 1 // ==================== BASE    @   10^0
@@ -159,6 +160,7 @@ const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
 }
 
 export {
+  typeNameOf,
   describe,
   percent,
   mediaTime,

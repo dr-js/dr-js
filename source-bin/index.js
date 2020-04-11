@@ -12,7 +12,7 @@ import { indentList } from '@dr-js/core/module/common/string'
 import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
 
-import { setupStreamPipe, waitStreamStopAsync, bufferToReadableStream } from '@dr-js/core/module/node/data/Stream'
+import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from '@dr-js/core/module/node/data/Stream'
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
 import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
@@ -64,10 +64,7 @@ const runMode = async (modeName, optionData) => {
   const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
-    : waitStreamStopAsync(setupStreamPipe(
-      bufferToReadableStream(buffer),
-      process.stdout
-    ))
+    : writeBufferToStreamAsync(process.stdout, buffer)
   const outputStream = (stream) => waitStreamStopAsync(setupStreamPipe(
     stream,
     outputFile ? createWriteStream(outputFile) : process.stdout
@@ -132,7 +129,7 @@ const runMode = async (modeName, optionData) => {
 
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
-      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ], option: { shell: true } })
+      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ], option: { shell: true } }) // TODO: win32 quoting problem: https://github.com/sindresorhus/open#double-quotes-on-windows
     }
     case 'status':
       return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
