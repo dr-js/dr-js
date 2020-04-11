@@ -48,9 +48,9 @@ const createKeyTree = ({
       .replace(REGEXP_MIN_BRACKET_RIGHT, (match, $1, offset, string) => `"${'}]'.repeat($1.length)}${offset + match.length !== string.length ? `},{"${NAME_KEY}":"` : ''}`)
       .replace(REGEXP_MIN_BRACKET_LEFT, (match, offset) => `${offset !== 0 ? `","${NAME_SUB_LIST}":` : ''}[{"${NAME_KEY}":"`)
   )
-  const REGEXP_MIN_COMMA = new RegExp(`,`, 'g')
-  const REGEXP_MIN_BRACKET_LEFT = new RegExp(`\\[`, 'g')
-  const REGEXP_MIN_BRACKET_RIGHT = new RegExp(`(]+)`, 'g')
+  const REGEXP_MIN_COMMA = new RegExp(',', 'g')
+  const REGEXP_MIN_BRACKET_LEFT = new RegExp('\\[', 'g')
+  const REGEXP_MIN_BRACKET_RIGHT = new RegExp('(]+)', 'g')
 
   return { stringify, parse }
 }

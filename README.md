@@ -28,4 +28,4 @@ A collection of strange functions
 - 📁 [documentation/](documentation/)
   - a few random documentation
 - 📄 [SPEC.md](SPEC.md)
-  - list of all directly accessible codes, sort of an API lockfile
+  - list of all directly accessible codes, sort of API lockfile

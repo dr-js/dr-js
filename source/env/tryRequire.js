@@ -9,13 +9,13 @@
 // for require optional node package, not optional file, so do not use relative path
 const tryRequire = (name = '') => {
   try {
-    return eval(`require`)(name) // eslint-disable-line no-eval
+    return eval('require')(name) // eslint-disable-line no-eval
   } catch (error) { __DEV__ && console.log(`[tryRequire] failed for ${name}`, error) }
 }
 
 const tryRequireResolve = (name = '') => {
   try {
-    return eval(`require.resolve`)(name) // eslint-disable-line no-eval
+    return eval('require.resolve')(name) // eslint-disable-line no-eval
   } catch (error) { __DEV__ && console.log(`[tryRequireResolve] failed for ${name}`, error) }
 }
 

@@ -55,14 +55,14 @@ if (__DEV__) { // code to generate
   const ESCAPE_LIST = []
   const UNESCAPE_LIST = []
   const BASIC_HTML_ESCAPE_LIST = [
-    `" #34 quot`,
-    `& #38 amp`,
+    '" #34 quot',
+    '& #38 amp',
     // apos may not be usable in HTML4 Browser, check:
     //   https://stackoverflow.com/questions/9187946/escaping-inside-html-tag-attribute-value
     //   https://stackoverflow.com/questions/2083754/why-shouldnt-apos-be-used-to-escape-single-quotes
-    `' #39 apos`,
-    `< #60 lt`,
-    `> #62 gt`
+    '\' #39 apos',
+    '< #60 lt',
+    '> #62 gt'
   ]
   BASIC_HTML_ESCAPE_LIST.forEach((value) => {
     const [ char, decimal, named ] = value.split(' ')

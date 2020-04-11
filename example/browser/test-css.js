@@ -5,7 +5,7 @@ const HTML_TAG_NAME_LIST = 'a|abbr|address|area|article|aside|audio|b|base|bdi|b
 const HTML_VOID_TAG_NAME_LIST = 'area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr'.split('|')
 
 // copied from MDN tag sample
-window.addContent(``, `
+window.addContent('', `
 <select name="pets" id="pet-select">
   <option value="">--Please choose an option--</option>
   <option value="dog">Dog</option>

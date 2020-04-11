@@ -42,22 +42,22 @@ const createFileWatcher = ({
 
     if (!targetStat && targetPath === watcherPath) await setupWatch() // renamed, not the target any more
 
-    __DEV__ && !isPathChange && !targetStat && console.log(`emitThrottled dropped`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
+    __DEV__ && !isPathChange && !targetStat && console.log('emitThrottled dropped', isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
     if (!isPathChange && !targetStat) return
 
-    __DEV__ && console.log(`emitThrottled send`, isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
+    __DEV__ && console.log('emitThrottled send', isPathChange, Boolean(prevTargetStat), Boolean(targetStat))
     const changeState = { targetPath, isPathChange, targetStat }
     prevTargetStat = targetStat
     hub.send(changeState)
   }, wait)
 
   const onErrorEvent = async (...args) => {
-    __DEV__ && console.log(`[onErrorEvent]`, args)
+    __DEV__ && console.log('[onErrorEvent]', args)
     await setupWatch()
     onChangeEvent(CHANGE_PATH)
   }
   const onChangeEvent = (changeType, path) => {
-    __DEV__ && console.log(`[onChangeEvent]`, changeType, path)
+    __DEV__ && console.log('[onChangeEvent]', changeType, path)
     emitThrottled(changeType, path)
   }
 
@@ -75,7 +75,7 @@ const createFileWatcher = ({
 
     if (targetStat) {
       clearWatch()
-      __DEV__ && console.log(`[Watch] targetPath visible`, targetPath, targetStat.isDirectory())
+      __DEV__ && console.log('[Watch] targetPath visible', targetPath, targetStat.isDirectory())
 
       watcherPath = targetPath
       watcherPathStat = targetStat
@@ -90,7 +90,7 @@ const createFileWatcher = ({
         watcherUpper.addListener('change', onChangeEvent)
       }
     } else {
-      __DEV__ && console.log(`[Watch] targetPath invisible`)
+      __DEV__ && console.log('[Watch] targetPath invisible')
       const nearestPath = await nearestExistPath(targetPath)
       if (nearestPath === watcherPath) return // same nearest path
       clearWatch()

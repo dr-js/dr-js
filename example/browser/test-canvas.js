@@ -1,4 +1,4 @@
-window.addContent(``, `
+window.addContent('', `
 <div class="flex-column" style="overflow: auto; width: 100vw; align-items: center; font-family: monospace;">
   <div class="flex-row box">
     <div class="box">

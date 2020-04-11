@@ -15,7 +15,7 @@ const tryGetRandomArrayBuffer = () => {
       return arrayBuffer
     }
     if (getRandomArrayBuffer(32).byteLength === 32) return getRandomArrayBuffer
-  } catch (error) { __DEV__ && console.log(`[tryGetRandomArrayBuffer] browser`, error) }
+  } catch (error) { __DEV__ && console.log('[tryGetRandomArrayBuffer] browser', error) }
 
   try { // node
     const { randomFillSync } = tryRequire('crypto')
@@ -25,7 +25,7 @@ const tryGetRandomArrayBuffer = () => {
       return dataView.buffer
     }
     if (getRandomArrayBuffer(32).byteLength === 32) return getRandomArrayBuffer
-  } catch (error) { __DEV__ && console.log(`[tryGetRandomArrayBuffer] node`, error) }
+  } catch (error) { __DEV__ && console.log('[tryGetRandomArrayBuffer] node', error) }
 
   return (byteLength) => { // last fallback
     const dataView = new DataView(new ArrayBuffer(byteLength))

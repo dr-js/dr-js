@@ -31,7 +31,7 @@ const createMultiKeySwitch = ({ keyCount }) => {
       const unsetKeyList = fullKeyList.filter((key) => !setKeyList.includes(key))
       console.warn('[verifyFull] check', { fullKeyList, setKeyList })
       console.warn('[verifyFull] unsetKeyList', unsetKeyList)
-      throw new Error(`[verifyFull] not all possible key is set`)
+      throw new Error('[verifyFull] not all possible key is set')
     }
   }
 

@@ -1,8 +1,8 @@
 import { resolve, sep } from 'path'
-import { execSync } from 'child_process'
 import { writeFileSync, existsSync } from 'fs'
+import { execSync } from 'child_process'
 
-import { collectSourceRouteMap } from '@dr-js/dev/module/node/export/parse'
+import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset'
 import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate'
 import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown'
 import { runMain } from '@dr-js/dev/module/main'
@@ -29,9 +29,9 @@ const generateTempFile = ({ indexScriptMap, logger }) => {
   }
   Object.entries(indexScriptMap).forEach(([ path, data ]) => writeTempFile(path, data))
   writeTempFile(fromRoot('source/Dr.browser.js'), [
-    `import * as Env from 'source/env'`,
-    `import * as Common from 'source/common'`,
-    `import * as Browser from 'source/browser'`,
+    'import * as Env from "source/env"',
+    'import * as Common from "source/common"',
+    'import * as Browser from "source/browser"',
     'export { Env, Common, Browser }'
   ].join('\n'))
   writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))
@@ -44,11 +44,12 @@ runMain(async (logger) => {
   }
 
   logger.padLog('generate exportInfoMap')
-  const sourceRouteMap = await collectSourceRouteMap({ pathRootList: [ fromRoot('source') ], pathInfoFilter: ({ name }) => !name.endsWith('.test.js'), logger })
+  const sourceRouteMap = await collectSourceJsRouteMap({ pathRootList: [ fromRoot('source') ], logger })
   const exportInfoMap = generateExportInfo({ sourceRouteMap })
 
-  logger.log('output: SPEC.md')
+  logger.padLog('output: SPEC.md')
   const initRouteList = fromRoot('source').split(sep)
+
   writeFileSync(fromRoot('SPEC.md'), [
     '# Specification',
     '',
@@ -66,6 +67,6 @@ runMain(async (logger) => {
     ''
   ].join('\n'))
 
-  logger.log(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
+  logger.padLog(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
   generateTempFile({ indexScriptMap: generateIndexScript({ sourceRouteMap }), logger })
 }, 'generate-spec')

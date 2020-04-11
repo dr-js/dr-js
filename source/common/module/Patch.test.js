@@ -49,7 +49,7 @@ describe('source/V1/common/module/Patch', () => {
       '5': { key: '5', mtime: 0 }
     }
 
-    it(`hasObjectPatch`, () => {
+    it('hasObjectPatch', () => {
       deepStrictEqual(hasObjectPatch(objectA, objectA), false)
       deepStrictEqual(hasObjectPatch(objectB, objectB), false)
       deepStrictEqual(hasObjectPatch(objectC, objectC), false)
@@ -61,7 +61,7 @@ describe('source/V1/common/module/Patch', () => {
       deepStrictEqual(hasObjectPatch(objectC, objectB), true)
     })
 
-    it(`countObjectPatch`, () => {
+    it('countObjectPatch', () => {
       deepStrictEqual(countObjectPatch(objectA, objectA), 0)
       deepStrictEqual(countObjectPatch(objectB, objectB), 0)
       deepStrictEqual(countObjectPatch(objectC, objectC), 0)
@@ -142,7 +142,7 @@ describe('source/V1/common/module/Patch', () => {
       { key: '5', mtime: 0 }
     ]
 
-    it(`hasArrayWithKeyPatch`, () => {
+    it('hasArrayWithKeyPatch', () => {
       deepStrictEqual(hasArrayWithKeyPatch(arrayA, arrayA), false)
       deepStrictEqual(hasArrayWithKeyPatch(arrayB, arrayB), false)
       deepStrictEqual(hasArrayWithKeyPatch(arrayC, arrayC), false)
@@ -154,7 +154,7 @@ describe('source/V1/common/module/Patch', () => {
       deepStrictEqual(hasArrayWithKeyPatch(arrayC, arrayB), true)
     })
 
-    it(`countArrayWithKeyPatch`, () => {
+    it('countArrayWithKeyPatch', () => {
       deepStrictEqual(countArrayWithKeyPatch(arrayA, arrayA), 0)
       deepStrictEqual(countArrayWithKeyPatch(arrayB, arrayB), 0)
       deepStrictEqual(countArrayWithKeyPatch(arrayC, arrayC), 0)

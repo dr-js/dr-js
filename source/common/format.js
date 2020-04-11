@@ -36,7 +36,7 @@ const DECIMAL_PETA_ = 1000000000000000 // ===== peta    P   10^15
 const DECIMAL_EXA__ = 1000000000000000000 // == exa     E   10^18
 const decimal = (value) => {
   const abs = Math.abs(value) * OVER_THRESHOLD
-  return abs === 0 ? `0`
+  return abs === 0 ? '0'
     : abs < DECIMAL_NANO_ ? `${(value / DECIMAL_PICO_).toFixed(2)}pico`
       : abs < DECIMAL_MICRO ? `${(value / DECIMAL_NANO_).toFixed(2)}nano`
         : abs < DECIMAL_MILLI ? `${(value / DECIMAL_MICRO).toFixed(2)}micro`

@@ -29,16 +29,16 @@ describe('Common.Function', () => {
     const test = async () => {
       debouncedValue = null
       debouncedFunc('Not 1')
-      debouncedValue !== null && reject(new Error(`debouncedFunc should not be called yet`))
+      debouncedValue !== null && reject(new Error('debouncedFunc should not be called yet'))
       debouncedFunc('Not 2')
-      debouncedValue !== null && reject(new Error(`debouncedFunc should not be called yet`))
+      debouncedValue !== null && reject(new Error('debouncedFunc should not be called yet'))
       await setTimeoutAsync(10)
-      debouncedValue !== null && reject(new Error(`debouncedFunc should not be called yet`))
+      debouncedValue !== null && reject(new Error('debouncedFunc should not be called yet'))
       debouncedFunc('Not 3')
-      debouncedValue !== null && reject(new Error(`debouncedFunc should not be called yet`))
+      debouncedValue !== null && reject(new Error('debouncedFunc should not be called yet'))
       debouncedFunc('Good')
       await setTimeoutAsync(20)
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should get called in time`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should get called in time'))
     }
 
     await test() // 1st try
@@ -59,17 +59,17 @@ describe('Common.Function', () => {
     const test = async () => {
       debouncedValue = null
       debouncedFunc('Good')
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should get called in time`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should get called in time'))
       debouncedFunc('Not 1')
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should not be called during waiting'))
       debouncedFunc('Not 2')
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should not be called during waiting'))
       await setTimeoutAsync(10)
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should not be called during waiting'))
       debouncedFunc('Not 3')
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should not be called during waiting'))
       await setTimeoutAsync(20)
-      debouncedValue !== 'Good' && reject(new Error(`debouncedFunc should not be called during waiting`))
+      debouncedValue !== 'Good' && reject(new Error('debouncedFunc should not be called during waiting'))
     }
 
     await test() // 1st try
@@ -90,17 +90,17 @@ describe('Common.Function', () => {
     const test = async () => {
       throttledValue = null
       throttledFunc('Good')
-      throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
+      throttledValue !== null && reject(new Error('throttledFunc should not be called yet'))
       throttledFunc('Not 1')
-      throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
+      throttledValue !== null && reject(new Error('throttledFunc should not be called yet'))
       throttledFunc('Not 2')
-      throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
+      throttledValue !== null && reject(new Error('throttledFunc should not be called yet'))
       await setTimeoutAsync(10)
-      throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
+      throttledValue !== null && reject(new Error('throttledFunc should not be called yet'))
       throttledFunc('Not 3')
-      throttledValue !== null && reject(new Error(`throttledFunc should not be called yet`))
+      throttledValue !== null && reject(new Error('throttledFunc should not be called yet'))
       await setTimeoutAsync(20)
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should get called in time`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should get called in time'))
     }
 
     await test() // 1st try
@@ -121,17 +121,17 @@ describe('Common.Function', () => {
     const test = async () => {
       throttledValue = null
       throttledFunc('Good')
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should get called in time`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should get called in time'))
       throttledFunc('Not 1')
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should not be called during waiting'))
       throttledFunc('Not 2')
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should not be called during waiting'))
       await setTimeoutAsync(10)
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should not be called during waiting'))
       throttledFunc('Not 3')
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should not be called during waiting'))
       await setTimeoutAsync(20)
-      throttledValue !== 'Good' && reject(new Error(`throttledFunc should not be called during waiting`))
+      throttledValue !== 'Good' && reject(new Error('throttledFunc should not be called during waiting'))
     }
 
     await test() // 1st try
@@ -154,17 +154,17 @@ describe('Common.Function', () => {
 
     const test = async () => {
       testValue = null
-      getRunningPromise() && reject(new Error(`asyncFunc should not be running`))
+      getRunningPromise() && reject(new Error('asyncFunc should not be running'))
       trigger('Good')
-      !getRunningPromise() && reject(new Error(`asyncFunc should be running`))
-      testValue !== 'Good' && reject(new Error(`asyncFunc should get called in time`))
+      !getRunningPromise() && reject(new Error('asyncFunc should be running'))
+      testValue !== 'Good' && reject(new Error('asyncFunc should get called in time'))
       trigger('Not 1')
-      testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
+      testValue !== 'Good' && reject(new Error('asyncFunc should not be called during waiting'))
       trigger('Not 2')
-      testValue !== 'Good' && reject(new Error(`asyncFunc should not be called during waiting`))
-      !getRunningPromise() && reject(new Error(`asyncFunc should be running`))
+      testValue !== 'Good' && reject(new Error('asyncFunc should not be called during waiting'))
+      !getRunningPromise() && reject(new Error('asyncFunc should be running'))
       await setTimeoutAsync(20)
-      testValue !== 'DONE' && reject(new Error(`asyncFunc should not be called during waiting`))
+      testValue !== 'DONE' && reject(new Error('asyncFunc should not be called during waiting'))
     }
 
     await test() // 1st try
@@ -185,16 +185,16 @@ describe('Common.Function', () => {
     const test = async () => {
       delayedValue = null
       delayedFunc('Not 1')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Not 2')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       await setTimeoutAsync(10)
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Not 3')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Good')
       await setTimeoutAsync(20)
-      !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
+      !Array.isArray(delayedValue) && reject(new Error('delayedFunc should get called in time'))
       stringifyEqual(delayedValue, [ [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ], [ 'Good' ] ])
     }
 
@@ -216,17 +216,17 @@ describe('Common.Function', () => {
     const test = async () => {
       delayedValue = null
       delayedFunc('Good')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Not 1')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Not 2')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       await setTimeoutAsync(10)
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       delayedFunc('Not 3')
-      delayedValue !== null && reject(new Error(`delayedFunc should not be called yet`))
+      delayedValue !== null && reject(new Error('delayedFunc should not be called yet'))
       await setTimeoutAsync(20)
-      !Array.isArray(delayedValue) && reject(new Error(`delayedFunc should get called in time`))
+      !Array.isArray(delayedValue) && reject(new Error('delayedFunc should get called in time'))
       stringifyEqual(delayedValue, [ [ 'Good' ], [ 'Not 1' ], [ 'Not 2' ], [ 'Not 3' ] ])
     }
 
@@ -291,7 +291,7 @@ describe('Common.Function', () => {
 
     {
       const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 3 })
-      doThrow(() => withRetry(checkFunc, 3), `error expected when maxRetry is reached`)
+      doThrow(() => withRetry(checkFunc, 3), 'error expected when maxRetry is reached')
     }
   })
 
@@ -330,7 +330,7 @@ describe('Common.Function', () => {
     {
       const { checkFunc } = createCallCheck({ expectFail: 4, expectMaxRetry: 3 })
       await withRetryAsync(checkFunc, 3).then(
-        () => { throw new Error(`error expected when maxRetry is reached`) },
+        () => { throw new Error('error expected when maxRetry is reached') },
         (error) => `Expected Error: ${error}`
       )
     }
@@ -351,7 +351,7 @@ describe('Common.Function', () => {
       async () => { throw new Error('AAA') },
       10
     ).then(
-      () => { throw new Error(`should reject with error`) },
+      () => { throw new Error('should reject with error') },
       () => 'Good Error'
     )
 
@@ -359,7 +359,7 @@ describe('Common.Function', () => {
       () => setTimeoutAsync(20),
       10
     ).then(
-      () => { throw new Error(`should reject with timeout`) },
+      () => { throw new Error('should reject with timeout') },
       () => 'Good Error'
     )
   })
@@ -376,7 +376,7 @@ describe('Common.Function', () => {
       Promise.reject(expectError),
       20
     ).then(
-      () => { throw new Error(`should reject with timeout`) },
+      () => { throw new Error('should reject with timeout') },
       (error) => { if (error !== expectError) throw new Error(`unexpected Error: ${error}`) }
     )
 
@@ -389,7 +389,7 @@ describe('Common.Function', () => {
       setTimeoutAsync(20),
       10
     ).then(
-      () => { throw new Error(`should reject with timeout`) },
+      () => { throw new Error('should reject with timeout') },
       (error) => {
         // __DEV__ && console.log(`error.stack: ${error.stack}`)
         strictEqual(

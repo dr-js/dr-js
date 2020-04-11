@@ -8,9 +8,9 @@ import { responderSendBuffer, responderSendJSON } from 'source/node/server/Respo
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 
 const BUFFER_SCRIPT = Buffer.from([
-  `// Simple script file, used for js test`,
-  `const a = async (b = 0) => b + 1`,
-  `a().then(console.log)`
+  '// Simple script file, used for js test',
+  'const a = async (b = 0) => b + 1',
+  'a().then(console.log)'
 ].join('\n').repeat(1024)) // the buffer size should be large enough for browser to get HEADERS_RECEIVED
 
 const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {

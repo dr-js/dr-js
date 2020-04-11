@@ -117,10 +117,11 @@ const runMode = async (modeName, optionData) => {
       return
     }
     case 'write':
-    case 'append':
+    case 'append': {
       if (process.stdin.isTTY) throw new Error('unsupported TTY stdin') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
       return waitStreamStopAsync(setupStreamPipe(process.stdin, createWriteStream(argumentList[ 0 ], { flags })))
+    }
     case 'merge': {
       const [ mergedFile, ...fileList ] = argumentList
       for (const path of fileList) await waitStreamStopAsync(setupStreamPipe(createReadStream(path), createWriteStream(mergedFile, { flags: 'a' })))
@@ -159,7 +160,7 @@ const runMode = async (modeName, optionData) => {
       const contentLength = Number(response.headers[ 'content-length' ])
       log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
       await outputStream(response.stream())
-      return log(`\n[fetch] done`)
+      return log('\n[fetch] done')
     }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList

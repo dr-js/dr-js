@@ -25,12 +25,12 @@ const doUpgradeSocket = (webSocket, protocol, responseKey) => {
   webSocket.protocol = protocol
   webSocket.open()
   webSocket.socket.write([
-    `HTTP/1.1 101 Switching Protocols`,
-    `upgrade: websocket`,
-    `connection: upgrade`,
+    'HTTP/1.1 101 Switching Protocols',
+    'upgrade: websocket',
+    'connection: upgrade',
     `sec-websocket-accept: ${responseKey}`,
     protocol && `sec-websocket-protocol: ${protocol}`,
-    `\r\n`
+    '\r\n'
   ].filter(Boolean).join('\r\n'))
 }
 

@@ -14,17 +14,17 @@ createWebSocketClient({
     console.log('[ON_UPGRADE_REQUEST]', { origin, isSecure }, bodyHeadBuffer.length)
 
     webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
-      console.log(`>> OPEN`)
+      console.log('>> OPEN')
       webSocket.sendText('WebSocketClient open message: 123ABC!@#')
       setTimeout(async () => webSocket.sendText(BIG_STRING), 1000) // big string
       setTimeout(async () => webSocket.sendBuffer(BIG_BUFFER), 2000) // big buffer
       setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
     })
     webSocket.on(WEBSOCKET_EVENT.FRAME, ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME:`, dataType, dataBuffer.length, String(dataBuffer).slice(0, 20))
+      console.log(`>> FRAME: ${dataType} [${dataBuffer.length}]: ${String(dataBuffer).slice(0, 20)}`)
     })
     webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
-      console.log(`>> CLOSE`)
+      console.log('>> CLOSE')
     })
   },
   onError: (error) => {

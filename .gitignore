@@ -1,14 +1,23 @@
-# Logs
+# Platform quirk
+*~
+Thumbs.db
+.DS_Store
+
+# Log
+log
 logs
 *.log
+
+# Editor configuration
+.idea
+.vscode
 
 # Dependency directory
 node_modules
 
-# WebStorm configuration
-.idea
+# Output of `npm pack`
+/*.tgz
 
-# distribute file
+# Ignore folder of file with `-gitignore`
 **/*-gitignore/**
 **/*-gitignore*
-/*.tgz

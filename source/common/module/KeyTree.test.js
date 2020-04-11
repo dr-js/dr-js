@@ -17,10 +17,10 @@ describe('source/V1/common/module/KeyTree', () => {
   } = createKeyTreeEnhanced({ NAME_KEY, NAME_SUB_LIST })
 
   const TEST_JSON_0 = [ { [ NAME_KEY ]: 'key-0-0-0' } ]
-  const TEST_STRING_0 = `[key-0-0-0]`
+  const TEST_STRING_0 = '[key-0-0-0]'
 
   const TEST_JSON_1 = [ { [ NAME_KEY ]: 'key-0-0-0' }, { [ NAME_KEY ]: 'key-1-0-1' } ]
-  const TEST_STRING_1 = `[key-0-0-0,key-1-0-1]`
+  const TEST_STRING_1 = '[key-0-0-0,key-1-0-1]'
 
   const TEST_JSON_2 = [
     {
@@ -46,7 +46,7 @@ describe('source/V1/common/module/KeyTree', () => {
     },
     { [ NAME_KEY ]: 'key-0-3-9' }
   ]
-  const TEST_STRING_2 = `[key-0-0-0[key-1-0-1[key-2-0-2,key-2-1-3]key-1-1-4]key-0-1-5,key-0-2-6[key-1-0-7,key-1-1-8]key-0-3-9]`
+  const TEST_STRING_2 = '[key-0-0-0[key-1-0-1[key-2-0-2,key-2-1-3]key-1-1-4]key-0-1-5,key-0-2-6[key-1-0-7,key-1-1-8]key-0-3-9]'
 
   const TEST_JSON_3 = [
     {
@@ -62,7 +62,7 @@ describe('source/V1/common/module/KeyTree', () => {
       ]
     }
   ]
-  const TEST_STRING_3 = `[key-0-0-0[key-1-0-1[key-2-0-2,key-2-1-3]]]`
+  const TEST_STRING_3 = '[key-0-0-0[key-1-0-1[key-2-0-2,key-2-1-3]]]'
 
   it('stringify/parse', () => {
     strictEqual(stringify(TEST_JSON_0), TEST_STRING_0)

@@ -1,4 +1,4 @@
-window.addContent(``, `
+window.addContent('', `
 <div class="flex-row box" style="overflow: auto; width: 100vw; max-height: 480px; justify-content: center; font-family: monospace;">
   <div class="flex-column" style="width: 240px;">
     <input id="bench-input" type="file">

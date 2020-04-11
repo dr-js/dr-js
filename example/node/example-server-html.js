@@ -4,7 +4,7 @@ const { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } = require('../../output-git
 
 const createExampleServerHTMLResponder = () => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
-    `<title>Example Server</title>`,
+    '<title>Example Server</title>',
     COMMON_STYLE()
   ], [
     COMMON_SCRIPT({ onload: mainScriptInit })

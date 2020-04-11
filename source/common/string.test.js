@@ -19,8 +19,8 @@ const { describe, it } = global
 describe('Common.String', () => {
   it('escapeHTML/unescapeHTML()', () => {
     const testEscapeUnescapeHTML = (source, expectEscaped) => {
-      strictEqual(escapeHTML(source), expectEscaped, `escapeHTML()`)
-      strictEqual(unescapeHTML(expectEscaped), source, `unescapeHTML()`)
+      strictEqual(escapeHTML(source), expectEscaped, 'escapeHTML()')
+      strictEqual(unescapeHTML(expectEscaped), source, 'unescapeHTML()')
     }
 
     testEscapeUnescapeHTML('', '')

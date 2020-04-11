@@ -4,7 +4,7 @@ const { writeFileAsync } = require('../../output-gitignore/library/node/file/fun
 const { createDirectory } = require('../../output-gitignore/library/node/file/Directory')
 const { modifyDeleteForce } = require('../../output-gitignore/library/node/file/Modify')
 
-const TEMP_PATH = resolve(__dirname, `file-watcher-gitignore`)
+const TEMP_PATH = resolve(__dirname, 'file-watcher-gitignore')
 
 const main = async () => {
   const { setup, subscribe } = createFileWatcher({ persistent: true })

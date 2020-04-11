@@ -6,7 +6,7 @@ const tryClock = () => {
     const clock = () => performance.now()
     const time = clock()
     if (time <= clock()) return clock
-  } catch (error) { __DEV__ && console.log(`[tryClock] browser`, error) }
+  } catch (error) { __DEV__ && console.log('[tryClock] browser', error) }
 
   try { // node
     const { process } = global
@@ -16,7 +16,7 @@ const tryClock = () => {
     }
     const time = clock()
     if (time <= clock()) return clock
-  } catch (error) { __DEV__ && console.log(`[tryClock] node`, error) }
+  } catch (error) { __DEV__ && console.log('[tryClock] node', error) }
 
   return Date.now // last fallback
 }

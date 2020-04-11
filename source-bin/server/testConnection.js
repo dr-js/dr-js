@@ -40,7 +40,7 @@ const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 // TODO: support CORS for testing
 
 const configure = ({ log }) => {
-  const bufferData = prepareBufferData(Buffer.from(`TEST CONTENT`))
+  const bufferData = prepareBufferData(Buffer.from('TEST CONTENT'))
 
   const routeConfigList = [
     [ [ '/test-describe', '/test-describe/*' ], Object.keys(METHOD_MAP), async (store) => {

@@ -55,7 +55,7 @@ const webSocketSet = enableWebSocketServer({
       console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
     })
     webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME:`, dataType, dataBuffer.length, String(dataBuffer).slice(0, 20))
+      console.log(`>> FRAME: ${dataType} [${dataBuffer.length}]: ${String(dataBuffer).slice(0, 20)}`)
 
       if (dataType === OPCODE_TYPE.TEXT) {
         if (String(dataBuffer) === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')

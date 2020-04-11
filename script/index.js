@@ -1,13 +1,11 @@
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { getScriptFileListFromPathList } from '@dr-js/dev/module/node/file'
-import { initOutput, packOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output'
+import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset'
+import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output'
 import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
 import { processFileList, fileProcessorBabel, fileProcessorWebpack } from '@dr-js/dev/module/fileProcessor'
 import { runMain, argvFlag } from '@dr-js/dev/module/main'
-
-import { modifyDelete } from 'source/node/file/Modify'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
@@ -31,22 +29,16 @@ const buildOutput = async ({ logger }) => {
 }
 
 const processOutput = async ({ logger }) => {
-  const fileListBin = await getScriptFileListFromPathList([ 'bin' ], fromOutput)
-  const fileListModule = await getScriptFileListFromPathList([ 'module' ], fromOutput)
-  const fileListLibrary = await getScriptFileListFromPathList([ 'library' ], fromOutput)
+  const fileListBin = await getSourceJsFileListFromPathList([ 'bin' ], fromOutput)
+  const fileListModule = await getSourceJsFileListFromPathList([ 'module' ], fromOutput)
+  const fileListLibrary = await getSourceJsFileListFromPathList([ 'library' ], fromOutput)
   const fileListLibraryNoBrowser = fileListLibrary.filter((path) => !path.endsWith('Dr.browser.js'))
   let sizeReduce = 0
   sizeReduce += await minifyFileListWithTerser({ fileList: fileListModule, option: getTerserOption({ isReadable: true }), rootPath: PATH_OUTPUT, logger })
   sizeReduce += await minifyFileListWithTerser({ fileList: [ ...fileListBin, ...fileListLibrary ], option: getTerserOption(), rootPath: PATH_OUTPUT, logger })
   sizeReduce += await processFileList({ fileList: [ ...fileListBin, ...fileListModule, ...fileListLibraryNoBrowser ], processor: fileProcessorBabel, rootPath: PATH_OUTPUT, logger })
   sizeReduce += await processFileList({ fileList: [ fromOutput('library/Dr.browser.js') ], processor: fileProcessorWebpack, rootPath: PATH_OUTPUT, logger })
-  logger.log(`total size reduce: ${sizeReduce}B`)
-}
-
-const clearOutput = async ({ logger }) => {
-  logger.log('clear test')
-  const fileList = await getScriptFileListFromPathList([ '.' ], fromOutput, (path) => path.endsWith('.test.js'))
-  for (const filePath of fileList) await modifyDelete(filePath)
+  logger.padLog(`size reduce: ${sizeReduce}B`)
 }
 
 runMain(async (logger) => {
@@ -65,7 +57,7 @@ runMain(async (logger) => {
   isTest && execShell('npm run test-output-module')
   isTest && logger.padLog('test browser')
   isTest && execShell('npm run test-browser')
-  await clearOutput({ logger })
+  await clearOutput({ fromOutput, logger })
   await verifyOutputBin({ fromOutput, packageJSON, logger })
   isTest && await verifyGitStatusClean({ fromRoot, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })

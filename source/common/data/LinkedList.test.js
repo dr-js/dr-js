@@ -114,7 +114,7 @@ describe('Common.Data.LinkedList', () => {
       try {
         linkedList.forEach((node, index) => {
           if (node.prev !== prevNode || prevNode.next !== node) {
-            console.log('get node:', node.value, `node.prev:`, node.prev.value, `expect:`, prevNode.value)
+            console.log('get node:', node.value, 'node.prev:', node.prev.value, 'expect:', prevNode.value)
             throw new Error(`[${message}] broken prev link`)
           }
           nodeList.push(node)

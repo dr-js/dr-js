@@ -18,7 +18,7 @@ const TYPE_BUFFER_GROUP = '#BUFFER_GROUP'
 const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
 const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
-  __DEV__ && console.log(`>> FRAME:`, dataType, dataBuffer.length) // String(dataBuffer).slice(0, 20)
+  __DEV__ && console.log('>> FRAME:', dataType, dataBuffer.length) // String(dataBuffer).slice(0, 20)
   if (dataType !== OPCODE_TYPE.BINARY) return webSocket.close(1000, 'expect BINARY')
   const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
   __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
@@ -259,7 +259,7 @@ const mainScriptInit = () => {
     qS('#main').style.display = 'none'
     qS('#group-path').focus()
     qS('#button-toggle', 'Enter Group [Ctrl+d]')
-    document.title = `WebSocket Group`
+    document.title = 'WebSocket Group'
     STATE.websocket = null
     STATE.groupPath = null
     STATE.id = null
