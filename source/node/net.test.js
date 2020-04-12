@@ -6,7 +6,7 @@ import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { toArrayBuffer } from 'source/node/data/Buffer'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream'
 import { ping, fetchLikeRequest } from './net'
-import { BUFFER_SCRIPT, withTestServer } from './net-test-server.test'
+import { BUFFER_SCRIPT, withTestServer } from './testServer.test'
 
 const { describe, it, before, after, info = console.log } = global
 
