@@ -96,7 +96,18 @@ describe('Common.SanityTest.Promise', () => {
     })
   )
 
-  it('sync resolve order decide then callback order', () => {
+  it('pass non-function to then() result in nothing and cause no error', () => new Promise((resolve) => { resolve('RESULT') })
+    .then()
+    .then(undefined)
+    .then(1, false)
+    .then({}, [], () => {})
+    .then((result) => {
+      if (result !== 'RESULT') throw new Error('unexpected result')
+      info('expected result:', result)
+    })
+  )
+
+  it('sync resolve order decide the callback order', () => {
     const { tagList, tag, defineTag } = createTagList()
     defineTag('test')
 
@@ -134,6 +145,62 @@ describe('Common.SanityTest.Promise', () => {
         '[then-then|#0] resolve1',
         '[then-then|#1] resolve0',
         '[then-then-then|DEFINE] --------------------------------------------------------'
+      ])
+    })
+  })
+
+  it('later added then-then run before then-then-then', () => {
+    const { tagList, tag, defineTag } = createTagList()
+    defineTag('test')
+
+    const promise = Promise.resolve() // reference promise
+      .then(() => defineTag('then'))
+      .then(() => defineTag('then-then'))
+      .then(() => defineTag('then-then-then'))
+
+    const promiseT = Promise.resolve().then(() => tag('then', 'T'))
+    const promiseTT = promiseT.then(() => tag('then-then', 'TT'))
+    const promiseTTT = promiseTT.then(() => tag('then-then-then', 'TTT'))
+
+    const promiseTT0 = promiseT.then(() => tag('then-then', '0'))
+    const promiseTTT0 = promiseTT.then(() => tag('then-then-then', '0'))
+
+    const promiseTT1 = promiseT.then(() => tag('then-then', '1'))
+    const promiseTTT1 = promiseTT.then(() => tag('then-then-then', '1'))
+
+    const promiseTT2 = promiseT.then(() => tag('then-then', '2'))
+    const promiseTTT2 = promiseTT.then(() => tag('then-then-then', '2'))
+
+    const promiseEnd = Promise.resolve() // reference promise
+      .then(() => tag('then', 'end'))
+      .then(() => tag('then-then', 'end'))
+      .then(() => tag('then-then-then', 'end'))
+
+    return Promise.all([
+      promise,
+      promiseT,
+      promiseTT, promiseTT0, promiseTT1, promiseTT2,
+      promiseTTT, promiseTTT0, promiseTTT1, promiseTTT2,
+      promiseEnd
+    ]).then(() => {
+      info(tagList.join('\n'))
+      stringifyEqual(tagList, [
+        '[test|DEFINE] ------------------------------------------------------------------',
+        '[then|DEFINE] ------------------------------------------------------------------',
+        '[then|#0] T',
+        '[then|#1] end',
+        '[then-then|DEFINE] -------------------------------------------------------------',
+        '[then-then|#0] TT',
+        '[then-then|#1] 0',
+        '[then-then|#2] 1',
+        '[then-then|#3] 2',
+        '[then-then|#4] end',
+        '[then-then-then|DEFINE] --------------------------------------------------------',
+        '[then-then-then|#0] TTT',
+        '[then-then-then|#1] 0',
+        '[then-then-then|#2] 1',
+        '[then-then-then|#3] 2',
+        '[then-then-then|#4] end'
       ])
     })
   })

@@ -1,11 +1,10 @@
-import { strictEqual, deepStrictEqual } from 'assert'
-
+import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { getRandomId } from 'source/common/math/random'
 import { createKeyTreeEnhanced } from './KeyTree'
 
 const { describe, it } = global
 
-describe('source/V1/common/module/KeyTree', () => {
+describe('source/common/module/KeyTree', () => {
   const NAME_KEY = getRandomId('key').replace(/\W/g, '')
   const NAME_SUB_LIST = getRandomId('subList').replace(/\W/g, '')
 
@@ -66,24 +65,24 @@ describe('source/V1/common/module/KeyTree', () => {
 
   it('stringify/parse', () => {
     strictEqual(stringify(TEST_JSON_0), TEST_STRING_0)
-    deepStrictEqual(parse(TEST_STRING_0), TEST_JSON_0)
+    stringifyEqual(parse(TEST_STRING_0), TEST_JSON_0)
     strictEqual(stringify(parse(TEST_STRING_0)), TEST_STRING_0)
-    deepStrictEqual(parse(stringify(TEST_JSON_0)), TEST_JSON_0)
+    stringifyEqual(parse(stringify(TEST_JSON_0)), TEST_JSON_0)
 
     strictEqual(stringify(TEST_JSON_1), TEST_STRING_1)
-    deepStrictEqual(parse(TEST_STRING_1), TEST_JSON_1)
+    stringifyEqual(parse(TEST_STRING_1), TEST_JSON_1)
     strictEqual(stringify(parse(TEST_STRING_1)), TEST_STRING_1)
-    deepStrictEqual(parse(stringify(TEST_JSON_1)), TEST_JSON_1)
+    stringifyEqual(parse(stringify(TEST_JSON_1)), TEST_JSON_1)
 
     strictEqual(stringify(TEST_JSON_2), TEST_STRING_2)
-    deepStrictEqual(parse(TEST_STRING_2), TEST_JSON_2)
+    stringifyEqual(parse(TEST_STRING_2), TEST_JSON_2)
     strictEqual(stringify(parse(TEST_STRING_2)), TEST_STRING_2)
-    deepStrictEqual(parse(stringify(TEST_JSON_2)), TEST_JSON_2)
+    stringifyEqual(parse(stringify(TEST_JSON_2)), TEST_JSON_2)
 
     strictEqual(stringify(TEST_JSON_3), TEST_STRING_3)
-    deepStrictEqual(parse(TEST_STRING_3), TEST_JSON_3)
+    stringifyEqual(parse(TEST_STRING_3), TEST_JSON_3)
     strictEqual(stringify(parse(TEST_STRING_3)), TEST_STRING_3)
-    deepStrictEqual(parse(stringify(TEST_JSON_3)), TEST_JSON_3)
+    stringifyEqual(parse(stringify(TEST_JSON_3)), TEST_JSON_3)
   })
 
   it('createBuilder', () => {
@@ -101,11 +100,11 @@ describe('source/V1/common/module/KeyTree', () => {
     builder.add('9-9', 9, '9')
     builder.add('9', 9, 'root')
     const rootObject = builder.build()
-    deepStrictEqual(rootObject, EXPECTED_ROOT_OBJECT)
-    deepStrictEqual(parse(stringify(rootObject[ NAME_SUB_LIST ])), EXPECTED_ROOT_OBJECT[ NAME_SUB_LIST ])
+    stringifyEqual(rootObject, EXPECTED_ROOT_OBJECT)
+    stringifyEqual(parse(stringify(rootObject[ NAME_SUB_LIST ])), EXPECTED_ROOT_OBJECT[ NAME_SUB_LIST ])
 
-    deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
-    deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
+    stringifyEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
+    stringifyEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
   })
 
   const EXPECTED_ROOT_OBJECT = {
@@ -128,11 +127,11 @@ describe('source/V1/common/module/KeyTree', () => {
     builder.add('u-0-1', 0, 'u-0')
     builder.add('u-1', 0, 'unlinked-key-1')
     const rootObject = builder.build()
-    deepStrictEqual(rootObject, EXPECTED_ROOT_OBJECT)
-    deepStrictEqual(parse(stringify(rootObject[ NAME_SUB_LIST ])), EXPECTED_ROOT_OBJECT[ NAME_SUB_LIST ])
+    stringifyEqual(rootObject, EXPECTED_ROOT_OBJECT)
+    stringifyEqual(parse(stringify(rootObject[ NAME_SUB_LIST ])), EXPECTED_ROOT_OBJECT[ NAME_SUB_LIST ])
 
-    deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
-    deepStrictEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
+    stringifyEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
+    stringifyEqual(builder.build(), { [ NAME_KEY ]: 'root' }) // data should be reset after build
   })
 
   const EXPECTED_WALK_LIST = [
@@ -152,6 +151,6 @@ describe('source/V1/common/module/KeyTree', () => {
       resultList.push([ node[ NAME_KEY ], index, upperKey ])
     })
 
-    deepStrictEqual(resultList, EXPECTED_WALK_LIST)
+    stringifyEqual(resultList, EXPECTED_WALK_LIST)
   })
 })

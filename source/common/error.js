@@ -23,15 +23,19 @@ const catchAsync = async (func, ...args) => {
 }
 // const catchAsync = (func, ...args) => { // NOTE: reference async-less implementation
 //   try {
-//     return Promise.resolve(func(...args)).then(packResult, packError)
+//     const possiblePromise = func(...args)
+//     return catchPromise(possiblePromise)
 //   } catch (error) { return Promise.resolve(packError(error)) }
 // }
-// const packResult = (result) => ({ result, error: undefined })
-// const packError = (error) => ({ result: undefined, error: error || new Error() })
+
+const catchPromise = (promise) => promise.then(packResult, packError)
+const packResult = (result) => ({ result, error: undefined })
+const packError = (error) => ({ result: undefined, error: error || new Error() })
 
 export {
   rethrowError,
   tryCall,
   catchSync,
-  catchAsync
+  catchAsync,
+  catchPromise
 }

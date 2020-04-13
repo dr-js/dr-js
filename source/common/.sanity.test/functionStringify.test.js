@@ -86,7 +86,7 @@ const TEST_FUNC_LIST = [
 describe('Common.SanityTest.FunctionStringify', () => {
   it('FunctionStringify', async () => { // TODO: NOTE: this is not a test, but left here to show it's harder to pick out the content from `String(func)`
     info(TEST_FUNC_LIST.map((func) => [
-      `funcType: ${JSON.stringify(typeNameOf(func))}`, // Function|AsyncFunction|GeneratorFunction|AsyncGeneratorFunction
+      `funcType: ${JSON.stringify(typeNameOf(func))} / ${typeof (func)}`, // Function|AsyncFunction|GeneratorFunction|AsyncGeneratorFunction
       `funcName: ${JSON.stringify(func.name)}`,
       `funcText: ${JSON.stringify(String(func))}`
     ].join('\n')).join('\n\n'))

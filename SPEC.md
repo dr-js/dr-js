@@ -28,7 +28,7 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
+  - `catchAsync`, `catchPromise`, `catchSync`, `rethrowError`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -93,12 +93,14 @@
   - `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
   - `getSample`, `getSampleRange`, `getSampleRate`
-+ 📄 [source/common/module/AsyncTaskLane.js](source/common/module/AsyncTaskLane.js)
-  - `createAsyncTaskLane`, `selectMinLoadLane`
++ 📄 [source/common/module/AsyncFuncQueue.js](source/common/module/AsyncFuncQueue.js)
+  - `createAsyncFuncQueue`
++ 📄 [source/common/module/AsyncLane.js](source/common/module/AsyncLane.js)
+  - `createAsyncLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectMinLoadLane`
++ 📄 [source/common/module/AsyncTask.js](source/common/module/AsyncTask.js)
+  - `ASYNC_TASK_KEY_MAP`, `ASYNC_TASK_PHASE_MAP`, `getAsyncTaskPhase`, `resetAsyncTask`, `runAsyncTask`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
-  - `createAsyncTaskQueue`
-+ 📄 [source/common/module/AsyncTaskRunner.js](source/common/module/AsyncTaskRunner.js)
-  - `createAsyncTaskRunner`, `createAsyncTaskRunnerCluster`, `selectMinLoadRunner`
+  - `ASYNC_TASK_QUEUE_KEY_MAP`, `createAsyncTaskQueue`, `createFilterStaleAsyncTask`
 + 📄 [source/common/module/BlockChart.js](source/common/module/BlockChart.js)
   - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
@@ -279,12 +281,14 @@
   - **Math**
     - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
   - **Module**
-    - **AsyncTaskLane**
-      - `createAsyncTaskLane`, `selectMinLoadLane`
+    - **AsyncFuncQueue**
+      - `createAsyncFuncQueue`
+    - **AsyncLane**
+      - `createAsyncLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectMinLoadLane`
+    - **AsyncTask**
+      - `ASYNC_TASK_KEY_MAP`, `ASYNC_TASK_PHASE_MAP`, `getAsyncTaskPhase`, `resetAsyncTask`, `runAsyncTask`
     - **AsyncTaskQueue**
-      - `createAsyncTaskQueue`
-    - **AsyncTaskRunner**
-      - `createAsyncTaskRunner`, `createAsyncTaskRunnerCluster`, `selectMinLoadRunner`
+      - `ASYNC_TASK_QUEUE_KEY_MAP`, `createAsyncTaskQueue`, `createFilterStaleAsyncTask`
     - **BlockChart**
       - `getBlockBar`, `getBlockChart`
     - **Event**
@@ -315,7 +319,7 @@
   - **Compare**
     - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
-    - `catchAsync`, `catchSync`, `rethrowError`, `tryCall`
+    - `catchAsync`, `catchPromise`, `catchSync`, `rethrowError`, `tryCall`
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
