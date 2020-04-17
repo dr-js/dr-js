@@ -18,7 +18,7 @@ import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
 import { createServerPack } from '@dr-js/core/module/node/server/Server'
 import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
-import { getDefaultOpen } from '@dr-js/core/module/node/system/DefaultOpen'
+import { getDefaultOpenCommandList } from '@dr-js/core/module/node/system/DefaultOpen'
 import { runSync } from '@dr-js/core/module/node/system/Run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/core/module/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
@@ -130,7 +130,8 @@ const runMode = async (modeName, optionData) => {
 
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
-      return runSync({ command: getDefaultOpen(), argList: [ uri.includes('://') ? uri : normalize(uri) ], option: { shell: true } }) // TODO: win32 quoting problem: https://github.com/sindresorhus/open#double-quotes-on-windows
+      const [ command, ...prefixArgList ] = getDefaultOpenCommandList()
+      return runSync({ command, argList: [ ...prefixArgList, uri.includes('://') ? uri : normalize(uri) ] })
     }
     case 'status':
       return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())

@@ -198,11 +198,13 @@
 + 📄 [source/node/server/WebSocket/function.js](source/node/server/WebSocket/function.js)
   - `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
 + 📄 [source/node/system/DefaultOpen.js](source/node/system/DefaultOpen.js)
-  - `getDefaultOpen`
+  - `getDefaultOpenCommandList`
 + 📄 [source/node/system/ExitListener.js](source/node/system/ExitListener.js)
   - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
 + 📄 [source/node/system/Process.js](source/node/system/Process.js)
   - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
++ 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
+  - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
@@ -394,11 +396,13 @@
       - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**
     - **DefaultOpen**
-      - `getDefaultOpen`
+      - `getDefaultOpenCommandList`
     - **ExitListener**
       - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
     - **Process**
       - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
+    - **ResolveCommand**
+      - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
     - **Run**
       - `run`, `runSync`, `withCwd`
     - **Status**
