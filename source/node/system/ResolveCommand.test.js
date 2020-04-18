@@ -19,6 +19,8 @@ describe('Node.Module.ResolveCommand', () => {
   ]
 
   it('resolveCommandName()', () => {
+    // strictEqual(resolveCommandName(process.argv0), process.argv[ 0 ], 'should return same node path')
+
     for (const [ commandName, isExpectResult ] of COMMAND_NAME_LIST) {
       const result = resolveCommandName(commandName)
       info(`${JSON.stringify(commandName)} => ${JSON.stringify(result)}`)

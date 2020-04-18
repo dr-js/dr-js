@@ -93,13 +93,19 @@ const getAsyncTaskPhase = (asyncTask) => asyncTask[ OUTPUT ] ? DONE
 
 const runAsyncTask = (asyncTask) => { // re-run will overwrite existing `promise/query`
   if (__DEV__ && getAsyncTaskPhase(asyncTask) !== IDLE) throw new Error('should reset asyncTask to idle')
+
   const planResult = asyncTask[ PLAN ](asyncTask)
-  if (__DEV__ && !basicObject(planResult)) throw new Error('expect asyncTask[ PLAN ] return object')
-  Object.assign(asyncTask, asyncTask[ PLAN ](asyncTask)) // merge back and re-use same task object
+
+  if (__DEV__ && !basicObject(planResult)) throw new Error('expect asyncTask[ PLAN ] to return object')
+
+  if (planResult !== asyncTask) Object.assign(asyncTask, planResult) // merge back and re-use same task object
+
   __DEV__ && promiseAlike(asyncTask[ PLAN_PROMISE ])
   __DEV__ && basicFunction(asyncTask[ QUERY ])
-  asyncTask[ PROMISE ] = catchPromise(asyncTask[ PLAN_PROMISE ]) // record output, should never reject
-    .then((output) => (asyncTask[ OUTPUT ] = output))
+
+  asyncTask[ PROMISE ] = catchPromise(asyncTask[ PLAN_PROMISE ]) // should not reject
+    .then((output) => (asyncTask[ OUTPUT ] = output)) // record output as { result, error }
+
   return asyncTask[ PROMISE ]
 }
 

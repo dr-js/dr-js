@@ -125,7 +125,7 @@ const extendLaneValueMap = (asyncLane) => {
 
   const getStatus = (isVerbose) => {
     const status = asyncLane.getStatus()
-    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap ] })
+    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
     return status
   }
 

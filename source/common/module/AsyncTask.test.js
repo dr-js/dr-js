@@ -75,6 +75,17 @@ describe('source/common/module/AsyncTask', () => {
     stringifyEqual(output, { result: undefined, error: outputError })
   })
 
+  it('direct error', async () => {
+    const promise = runAsyncTask({
+      [ PLAN ]: () => ({
+        [ PLAN_PROMISE ]: Promise.reject(outputError),
+        [ QUERY ]: async (type) => {}
+      })
+    })
+    const output = await promise
+    stringifyEqual(output, { result: undefined, error: outputError })
+  })
+
   it('resetAsyncTask', async () => {
     const asyncTask = getAsyncTask()
     await runAsyncTask(asyncTask)

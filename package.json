@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.3.0-dev.6",
+  "version": "0.3.0-dev.7",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -17,19 +17,19 @@
     "script-pack-test": "node -r @babel/register ./script verbose pack test",
     "script-publish": "node -r @babel/register ./script pack publish",
     "script-publish-dev": "node -r @babel/register ./script pack publish-dev",
-    "script-generate-spec": "cross-env BABEL_ENV=use-source node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
-    "script-delete-temp-build-file": "cross-env BABEL_ENV=use-source node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
+    "script-generate-spec": "dr-dev --EE BABEL_ENV=use-source -E -- node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
+    "script-delete-temp-build-file": "dr-dev --EE BABEL_ENV=use-source -E -- node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
     "build-bin": "babel ./source-bin --out-dir ./output-gitignore/bin --copy-files",
-    "build-bin-dev": "cross-env BABEL_ENV=dev babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
+    "build-bin-dev": "dr-dev --EE BABEL_ENV=dev -E -- babel ./source-bin --out-dir ./output-gitignore/bin --copy-files --watch",
     "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/",
-    "build-library-babel-dev": "cross-env BABEL_ENV=dev npm run build-library-babel -- --watch",
+    "build-library-babel-dev": "dr-dev --EE BABEL_ENV=dev -E -- npm run build-library-babel -- --watch",
     "build-library-webpack": "node -r @babel/register ./script/webpack production profile",
     "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
-    "build-module": "cross-env BABEL_ENV=module babel ./source --out-dir ./output-gitignore/module",
+    "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-dev": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/node/system/ResolveCommand.test.js",
-    "test-sanity": "cross-env BABEL_ENV=dev dr-dev --TR @babel/register -T source/common/.sanity.test/promise.test.js",
+    "test-dev": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T source/common/module/AsyncTask.test.js",
+    "test-sanity": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T source/common/.sanity.test/promise.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
@@ -47,8 +47,8 @@
     "npm": ">=6.12"
   },
   "devDependencies": {
-    "@dr-js/dev": "0.3.0-dev.4",
-    "@dr-js/dev-web-puppeteer": "0.3.0-dev.4"
+    "@dr-js/dev": "0.3.0-dev.6",
+    "@dr-js/dev-web-puppeteer": "0.3.0-dev.6"
   },
   "sideEffects": false
 }

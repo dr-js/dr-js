@@ -26,6 +26,9 @@ jobs:
           echo "node: $(node -v)"
           echo "npm: $(npm -v)"
 
+      - name: Patch `libgbm1` for `puppeteer@3` # https://github.com/puppeteer/puppeteer/issues/5674
+        run: sudo apt-get install -y libgbm1
+
       - run: npm ci
 
       - run: npm test

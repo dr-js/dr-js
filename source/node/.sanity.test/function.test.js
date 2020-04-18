@@ -9,7 +9,7 @@ const PATH_TEMP = `${__dirname}/temp-gitignore`
 const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
   PATH_TEMP,
   async () => run({
-    command: process.argv0,
+    command: process.argv[ 0 ],
     argList: [
       '--expose-gc', // allow `global.gc()` call
       '--max-old-space-size=32', // limit max memory usage for faster OOM
