@@ -3,8 +3,7 @@ import { clock } from 'source/common/time'
 // TODO: add responderEndRandomErrorStatus?
 
 const responderEnd = (store) => {
-  // TODO: change to `writableEnded` since node@>=12.9, check: https://nodejs.org/dist/latest-v13.x/docs/api/deprecations.html#deprecations_dep0136_http_finished
-  if (store.response.finished) return // NOTE: normally this should be it, the request is handled and response ended
+  if (store.response.writableEnded) return // NOTE: normally this should be it, the request is handled and response ended
   const { error } = store.getState()
   !store.response.headersSent && store.response.writeHead(error ? 500 : 400)
   store.response.end() // force end the response to prevent pending

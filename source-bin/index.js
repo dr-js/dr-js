@@ -19,6 +19,7 @@ import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
 import { createServerPack } from '@dr-js/core/module/node/server/Server'
 import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
 import { getDefaultOpenCommandList } from '@dr-js/core/module/node/system/DefaultOpen'
+import { resolveCommandAsync } from '@dr-js/core/module/node/system/ResolveCommand'
 import { runSync } from '@dr-js/core/module/node/system/Run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/core/module/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
@@ -60,6 +61,7 @@ const runMode = async (modeName, optionData) => {
 
   const argumentList = tryGet(modeName) || []
   const isOutputJSON = Boolean(tryGet('json'))
+  const root = tryGetFirst('root') || process.cwd()
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
   const outputBuffer = (buffer) => outputFile
@@ -133,6 +135,12 @@ const runMode = async (modeName, optionData) => {
       const [ command, ...prefixArgList ] = getDefaultOpenCommandList()
       return runSync({ command, argList: [ ...prefixArgList, uri.includes('://') ? uri : normalize(uri) ] })
     }
+    case 'which': {
+      const commandNameOrPath = argumentList[ 0 ]
+      const resultCommand = await resolveCommandAsync(commandNameOrPath, root)
+      if (!resultCommand) throw new Error(`failed to resolve command: ${commandNameOrPath}`)
+      return logAuto(resultCommand)
+    }
     case 'status':
       return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
 
@@ -175,8 +183,7 @@ const runMode = async (modeName, optionData) => {
     case 'server-serve-static':
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
-      const staticRoot = tryGetFirst('root') || process.cwd()
-      return startServer(configureServerServeStatic, { isSimpleServe: modeName === 'server-serve-static-simple', expireTime: Number(expireTime), staticRoot })
+      return startServer(configureServerServeStatic, { isSimpleServe: modeName === 'server-serve-static-simple', expireTime: Number(expireTime), staticRoot: root })
     }
     case 'server-websocket-group':
       return startServer(configureServerWebSocketGroup)

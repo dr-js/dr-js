@@ -5,13 +5,19 @@ on: [ push ]
 jobs:
   build:
     strategy:
+      fail-fast: false # allow all test to run to the end
       matrix:
-        os: [ ubuntu-latest ] # [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version: [ 12.x, 13.x ]
+        os: [ ubuntu-latest, windows-latest ] # [ ubuntu-latest, windows-latest, macos-latest ]
+        node-version: [ 12.x, 13.x ] # TODO: delay test 14.x, wait for: https://github.com/puppeteer/puppeteer/issues/5719
 
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Reset Git config # fix win32 CI cause `something to commit` test error: https://github.com/actions/checkout/issues/135#issuecomment-602171132
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - name: Setup Git repo
         uses: actions/checkout@v2 # https://github.com/actions/checkout
 
@@ -27,7 +33,7 @@ jobs:
           echo "npm: $(npm -v)"
 
       - name: Patch `libgbm1` for `puppeteer@3` # https://github.com/puppeteer/puppeteer/issues/5674
-        run: sudo apt-get install -y libgbm1
+        run: node -e "process.exitCode = Number(os.platform() !== 'win32')" || sudo apt-get install -y libgbm1
 
       - run: npm ci
 

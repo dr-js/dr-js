@@ -33,7 +33,6 @@ describe('Browser.Net', () => {
       () => { throw new Error('should throw time out error') },
       expectError('NETWORK_TIMEOUT')
     )
-    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 80 }) // should pass
     await fetchLikeRequest(`${baseUrl}/test-timeout-payload`, { timeout: 80 }).then(
       (response) => response.arrayBuffer(),
       (error) => { throw new Error(`should not timeout: ${error}`) }
@@ -44,6 +43,7 @@ describe('Browser.Net', () => {
       },
       expectError('PAYLOAD_TIMEOUT')
     )
+    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 420 }) // should pass
   })
 
   it('fetchLikeRequest(): arrayBuffer(), text(), json()', async () => {

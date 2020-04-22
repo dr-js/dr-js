@@ -463,6 +463,8 @@
 >       basic system status: -J=isOutputJSON
 >   --open --o -o [OPTIONAL] [ARGUMENT=0-1]
 >       use system default app to open uri or path: $0=uriOrPath/cwd
+>   --which --w -w [OPTIONAL] [ARGUMENT=1]
+>       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >       fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
@@ -505,6 +507,7 @@
 >     export DR_JS_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1]"
@@ -539,6 +542,7 @@
 >     "modifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "status": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "fetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],

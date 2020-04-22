@@ -1,4 +1,5 @@
 import { networkInterfaces } from 'os'
+import { randomBytes } from 'crypto'
 import { createServer as createTCPServer } from 'net'
 import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
@@ -12,22 +13,29 @@ import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder/Common'
 
+const SESSION_CLIENT_TIMEOUT_SEC = 4 * 60 * 60 // in sec, 4hour
 const SESSION_CACHE_MAX = 4 * 1024
-const SESSION_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
+const SESSION_CACHE_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
+const SESSION_TICKET_ROTATE_TIME = 4 * 60 * 60 * 1000 // in msec, 4hour
+
 const applyServerSessionCache = (server) => { // TODO: consider move to `ticketKeys`: https://nodejs.org/dist/latest-v12.x/docs/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
   const sessionCacheMap = createCacheMap({ valueSizeSumMax: SESSION_CACHE_MAX, eventHub: null })
   server.on('newSession', (sessionId, sessionData, next) => {
-    __DEV__ && console.log('newSession', sessionId.toString('hex'))
-    sessionCacheMap.set(sessionId.toString('hex'), sessionData, 1, Date.now() + SESSION_EXPIRE_TIME)
+    __DEV__ && console.log('newSession', sessionId.toString('base64'))
+    sessionCacheMap.set(sessionId.toString('base64'), sessionData, 1, Date.now() + SESSION_CACHE_EXPIRE_TIME)
     next()
   })
   server.on('resumeSession', (sessionId, next) => {
-    __DEV__ && console.log('resumeSession', sessionId.toString('hex'))
-    next(null, sessionCacheMap.get(sessionId.toString('hex')) || null)
+    __DEV__ && console.log('resumeSession', sessionId.toString('base64'))
+    next(null, sessionCacheMap.get(sessionId.toString('base64')) || null)
   })
 }
 
-const createServerPack = ({ protocol, ...option }) => {
+const createServerPack = ({
+  protocol,
+  skipSessionPatch, // allow disable session patch (but session ticket without rotation will still work)
+  ...option
+}) => {
   if (![ 'tcp:', 'tls:', 'http:', 'https:' ].includes(protocol)) throw new Error(`invalid protocol: ${protocol}`)
   const isSecure = [ 'tls:', 'https:' ].includes(protocol)
   option = {
@@ -41,6 +49,9 @@ const createServerPack = ({ protocol, ...option }) => {
     // ca: 'BUFFER: CA.pem', // [optional]
     // SNICallback: (hostname, callback) => callback(null, secureContext), // [optional]
     // dhparam: 'BUFFER: DHPARAM.pem',  // [optional] Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
+    // sessionTimeout: SESSION_CLIENT_TIMEOUT_SEC, // [optional] in seconds, for both session cache and ticket
+    // ticketKeys: 'BUFFER to reuse, 48byte', // [optional] check: https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener // and: https://github.com/nodejs/node/issues/27167
+    ...(isSecure && !skipSessionPatch && { sessionTimeout: SESSION_CLIENT_TIMEOUT_SEC }),
     ...option
   }
   option.baseUrl = `${protocol}//${option.hostname}:${option.port}`
@@ -51,7 +62,7 @@ const createServerPack = ({ protocol, ...option }) => {
         : protocol === 'https:' ? createHttpsServer(option)
           : null
 
-  isSecure && applyServerSessionCache(server)
+  isSecure && !skipSessionPatch && applyServerSessionCache(server)
 
   const socketSet = new Set()
   server.on('connection', (socket) => {
@@ -63,6 +74,8 @@ const createServerPack = ({ protocol, ...option }) => {
     })
   })
 
+  let sessionTicketRotateToken
+
   return { // call this serverPack
     server,
     socketSet,
@@ -71,10 +84,19 @@ const createServerPack = ({ protocol, ...option }) => {
       server.on('error', reject)
       server.listen(option.port, option.hostname.replace(/[[\]]/g, ''), () => {
         server.off('error', reject)
+        if (isSecure && !skipSessionPatch) {
+          // https://blog.filippo.io/we-need-to-talk-about-session-tickets/
+          // https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/
+          const resetSessionTicketKey = () => server.setTicketKeys(randomBytes(48))
+          sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
+          sessionTicketRotateToken = setInterval(resetSessionTicketKey, SESSION_TICKET_ROTATE_TIME)
+          resetSessionTicketKey()
+        }
         resolve()
       })
     }),
     stop: async ({ isForce = false } = {}) => server.listening && new Promise((resolve) => {
+      sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
       server.close(() => resolve())
       if (isForce) { for (const socket of socketSet) socket.destroy() }
     })

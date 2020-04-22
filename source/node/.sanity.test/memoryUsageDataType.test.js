@@ -17,7 +17,7 @@ describe('Common.SanityTest.MemoryUsageDataType (very slow)', () => {
       [ 'string (dynamic)', '24±0.1', (index) => String(index) ],
 
       [ 'object (minimal)', '0±0.1', () => {} ],
-      [ 'object (dynamic)', '40±0.1', (index) => ({ index, some: 'value' }) ],
+      [ 'object (dynamic)', '40±0.1', (index) => ({ index, some: 'value' }) ]
     ]
   })))
 
@@ -33,11 +33,11 @@ describe('Common.SanityTest.MemoryUsageDataType (very slow)', () => {
       [ 'promise (Promise.resolve)', '0±0.1', () => Promise.resolve('value') ],
       [ 'promise (Promise.all with 1 value)', '64±0.1', () => Promise.all([ Promise.resolve(0) ]) ],
       [ 'promise (Promise.all with 2 value)', '72±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1) ]) ],
-      [ 'promise (Promise.all with 3 value)', '80±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1), Promise.resolve(2) ]) ],
+      [ 'promise (Promise.all with 3 value)', '80±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1), Promise.resolve(2) ]) ]
     ]
   })))
 
-  it('function', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig }) => runSubjectPredictionTestConfig({
+  it('function', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig, isNodejs14 = Number(process.versions.node.split('.')[ 0 ]) >= 14 }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4
     testDropRound: 3, // first 2-4 result may be less stable
@@ -59,21 +59,21 @@ describe('Common.SanityTest.MemoryUsageDataType (very slow)', () => {
         markMemory() // reference to outer func
         runSubjectPredictionTestConfig() // reference to outer func
       } ],
-      [ 'arrow function (closure with 1 object)', '144±0.1', (index) => {
+      [ 'arrow function (closure with 1 object)', isNodejs14 ? '128±0.1' : '144±0.1', (index) => {
         const objectA = { index }
         return () => { console.log('arrow function', objectA) }
       } ],
-      [ 'arrow function (closure with 1 arrow function)', '168±0.1', () => {
+      [ 'arrow function (closure with 1 arrow function)', isNodejs14 ? '152±0.1' : '168±0.1', () => {
         const funcA = (arg0, arg1) => { console.log('arrow function', arg0, arg1) }
         return () => { funcA('arrow function') }
       } ],
-      [ 'arrow function (closure with 3 value)', '296±0.1', () => {
+      [ 'arrow function (closure with 3 value)', isNodejs14 ? '280±0.1' : '296±0.1', () => {
         const funcA = (arg0, arg1) => { console.log('arrow function', arg0, arg1) }
         const funcB = (arg0, arg1) => { console.log('arrow function', arg0, arg1) }
         const funcC = (arg0, arg1) => { funcB('arrow function', funcA(arg0), arg1) }
         return () => { console.log('arrow function', funcC(funcA(funcB))) }
       } ],
-      [ 'arrow function (deeper closure with 3 value)', '296±0.1', () => {
+      [ 'arrow function (deeper closure with 3 value)', isNodejs14 ? '280±0.1' : '296±0.1', () => {
         const funcA = (arg0, arg1) => { console.log('arrow function', arg0, arg1) }
         const funcB = (arg0, arg1) => { console.log('arrow function', funcA(arg0, arg1)) }
         const funcC = (arg0, arg1) => { funcB('arrow function', arg0, arg1) }
