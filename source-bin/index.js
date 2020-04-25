@@ -7,10 +7,11 @@ import { start as startREPL } from 'repl'
 
 import { getEndianness } from '@dr-js/core/module/env/function'
 
-import { time, binary, prettyStringifyJSON } from '@dr-js/core/module/common/format'
+import { percent, time, binary, prettyStringifyJSON } from '@dr-js/core/module/common/format'
 import { indentList } from '@dr-js/core/module/common/string'
 import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
+import { throttle } from '@dr-js/core/module/common/function'
 
 import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from '@dr-js/core/module/node/data/Stream'
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
@@ -159,16 +160,19 @@ const runMode = async (modeName, optionData) => {
       let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
+      let isDone = false
       const response = await fetchWithJump(initialUrl, {
         headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` },
         timeout,
         jumpMax,
+        onProgressDownload: throttle((now, total) => isDone || log(`[fetch] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
         preFetch: (url, jumpCount, cookieList) => log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
       })
       if (!response.ok) throw new Error(`bad status: ${response.status}`)
       const contentLength = Number(response.headers[ 'content-length' ])
       log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
       await outputStream(response.stream())
+      isDone = true
       return log('\n[fetch] done')
     }
     case 'process-status': {

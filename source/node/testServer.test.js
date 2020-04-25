@@ -1,17 +1,20 @@
 import { setTimeoutAsync } from 'source/common/time'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { writeBufferToStreamAsync } from 'source/node/data/Stream'
+import { writeBufferToStreamAsync, readableStreamToBufferAsync } from 'source/node/data/Stream'
 import { getUnusedPort } from 'source/node/server/function'
 import { createServerPack, createRequestListener } from 'source/node/server/Server'
 import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 
-const BUFFER_SCRIPT = Buffer.from([
+const bufferList = []
+bufferList.length = 8 * 1024
+bufferList.fill(Buffer.from([
   '// Simple script file, used for js test',
   'const a = async (b = 0) => b + 1',
   'a().then(console.log)'
-].join('\n').repeat(1024)) // the buffer size should be large enough for browser to get HEADERS_RECEIVED
+].join('\n')))
+const BUFFER_SCRIPT = Buffer.concat(bufferList) // the buffer size should be large enough for browser to get HEADERS_RECEIVED
 
 const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
   const { server, start, stop, option: { baseUrl } } = createServerPack({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
@@ -25,6 +28,7 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
       createResponderRouter({
         routeMap: createRouteMap([
           testHTML && [ URL_TEST_HTML, 'GET', (store) => responderSendBuffer(store, { buffer: Buffer.from(testHTML), type: BASIC_EXTENSION_MAP.html }) ],
+
           [ '/test-buffer', 'GET', (store) => responderSendBuffer(store, { buffer: Buffer.from('TEST BUFFER') }) ],
           [ '/test-json', 'GET', (store) => responderSendJSON(store, { object: { testKey: 'testValue' } }) ],
           [ '/test-status-418', 'GET', async (store) => responderEndWithStatusCode(store, { statusCode: 418 }) ],
@@ -53,7 +57,14 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
             if ((retryCount % 4) !== 0) return store.response.destroy()
             return responderEndWithStatusCode(store, { statusCode: 200 })
           } ],
-          [ '/test-script', 'GET', async (store) => responderSendBuffer(store, { buffer: BUFFER_SCRIPT }) ]
+          [ '/test-script', 'GET', async (store) => responderSendBuffer(store, { buffer: BUFFER_SCRIPT }) ],
+
+          [ '/test-post', 'POST', async (store) => responderSendJSON(store, {
+            object: {
+              requestContentLength: store.request.headers[ 'content-length' ],
+              size: (await readableStreamToBufferAsync(store.request)).length
+            }
+          }) ]
         ].filter(Boolean)),
         baseUrl
       })

@@ -74,7 +74,7 @@ const renderItem = (
   hrefPrefix, hrefFragList,
   tag, name, size, mtimeMs, isDownload,
   // generated
-  HREF = `href="${hrefPrefix}/${encodeURIComponent(toPosixPath(joinPath(...hrefFragList)))}"`,
+  HREF = `href="${hrefPrefix}/${encodeURI(toPosixPath(joinPath(...hrefFragList))).replace(/[?#]/g, (string) => string === '?' ? '%3F' : '%23')}"`, // lazy encode URI to keep more common char alone: new URL ('https://0/;,:@&=+$/').pathname === '/;,:@&=+$/'
   NAME = escapeHTML(name)
 ) => `<a class="auto-height" ${HREF} ${isDownload ? `download="${NAME}"` : ''}>
 <object class="name">${isDownload ? `<a ${HREF} target="_blank">${tag}</a>` : tag}</object>

@@ -1,5 +1,6 @@
 import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
+import { percent } from 'source/common/format'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { fetchLikeRequest } from './net'
 
@@ -77,6 +78,28 @@ describe('Browser.Net', () => {
     await response.arrayBuffer().then(
       () => { throw new Error('should throw data already dropped error') },
       expectError('PAYLOAD_ALREADY_DROPPED')
+    )
+  })
+
+  const onProgress = (now, total) => info(`${percent(now / total)} ${now}/${total}`)
+
+  it('fetchLikeRequest() onProgress', async () => {
+    await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { onProgressDownload: onProgress })).arrayBuffer()
+    await (await fetchLikeRequest(`${baseUrl}/test-json`, { onProgressDownload: onProgress })).arrayBuffer()
+    await (await fetchLikeRequest(`${baseUrl}/test-script`, { onProgressDownload: onProgress })).arrayBuffer()
+  })
+
+  it('fetchLikeRequest() post', async () => {
+    const { Blob } = window
+
+    const blobPartList = []
+    blobPartList.length = 8 * 1024 // need to be big enough to see progress, like 128 * 1024
+    blobPartList.fill('[test-post-body]'.repeat(64))
+    const BODY_BLOB = new Blob(blobPartList)
+
+    stringifyEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: BODY_BLOB, onProgressUpload: onProgress })).json(),
+      { requestContentLength: String(BODY_BLOB.size), size: BODY_BLOB.size }
     )
   })
 })

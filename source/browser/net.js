@@ -8,11 +8,11 @@ const REGEXP_HEADER_SEPARATOR = /[\r\n]+/
 const fetchLikeRequest = (url, {
   method = 'GET',
   headers: requestHeaders,
-  body,
+  body, // String/ArrayBuffer/Blob
   timeout = 0, // in millisecond, 0 for no timeout, will result in error if timeout
   credentials,
-  onUploadProgress, // ({ lengthComputable, loaded, total }) => {}
-  onDownloadProgress
+  onProgressUpload, // (now, total) => {} // if can't decide total will be `Infinity`
+  onProgressDownload // (now, total) => {} // if can't decide total will be `Infinity`
 } = {}) => new Promise((resolve, reject) => {
   const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
   const request = new XMLHttpRequest()
@@ -36,8 +36,10 @@ const fetchLikeRequest = (url, {
       ...wrapPayload(request, getError)
     })
   }
-  if (onUploadProgress && request.upload) request.upload.onprogress = onUploadProgress
-  if (onDownloadProgress) request.onprogress = onDownloadProgress
+  // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/progress_event
+  // quirk: https://stackoverflow.com/questions/11127654/why-is-progressevent-lengthcomputable-false
+  if (onProgressUpload && request.upload) request.upload.onprogress = wrapOnProgress(onProgressUpload)
+  if (onProgressDownload) request.onprogress = wrapOnProgress(onProgressDownload)
   request.open(method, url)
   requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.responseType = 'arraybuffer'
@@ -70,5 +72,7 @@ const wrapPayload = (request, getError) => {
 const toBlob = (arrayBuffer) => new Blob([ arrayBuffer ])
 const toText = (arrayBuffer) => new TextDecoder().decode(arrayBuffer)
 const parseJSON = (text) => JSON.parse(text)
+
+const wrapOnProgress = (onProgress) => ({ lengthComputable, loaded, total }) => { onProgress(loaded, lengthComputable ? total : Infinity) }
 
 export { fetchLikeRequest }

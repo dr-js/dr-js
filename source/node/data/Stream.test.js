@@ -1,9 +1,10 @@
 import { resolve } from 'path'
 import { createGzip, createGunzip, gzipSync } from 'zlib'
-import { Writable } from 'stream'
+import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stream'
 import { strictEqual } from 'source/common/verify'
 import { createReadStream, createWriteStream } from 'source/node/file/function'
 import {
+  isReadableStream, isWritableStream,
   setupStreamPipe,
   waitStreamStopAsync,
   bufferToReadableStream,
@@ -24,7 +25,34 @@ const expectError = (content) => (error) => {
   else throw new Error(`unexpected: ${error.stack || error}`)
 }
 
+const muteStreamError = (stream) => {
+  stream.on('error', () => {})
+  return stream
+}
+
 describe('Node.Data.Stream', () => {
+  it('isReadableStream', () => {
+    strictEqual(isReadableStream(new Stream()), false)
+    strictEqual(isReadableStream(new Readable()), true)
+    strictEqual(isReadableStream(new Writable()), false)
+    strictEqual(isReadableStream(new Duplex()), true)
+    strictEqual(isReadableStream(new PassThrough()), true)
+    strictEqual(isReadableStream(new Transform()), true)
+    strictEqual(isReadableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))), true)
+    strictEqual(isReadableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))), false)
+  })
+
+  it('isWritableStream', () => {
+    strictEqual(isWritableStream(new Stream()), false)
+    strictEqual(isWritableStream(new Readable()), false)
+    strictEqual(isWritableStream(new Writable()), true)
+    strictEqual(isWritableStream(new Duplex()), true)
+    strictEqual(isWritableStream(new PassThrough()), true)
+    strictEqual(isWritableStream(new Transform()), true)
+    strictEqual(isWritableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))), false)
+    strictEqual(isWritableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))), true)
+  })
+
   it('createReadStream error', async () => waitStreamStopAsync(
     createReadStream(FILE_NOT_EXIST) // do not immediately throw Error
   ).then(unexpectedResolve, expectError('ENOENT')))

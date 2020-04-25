@@ -3,14 +3,15 @@ import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
 import { clock } from 'source/common/time'
+import { isString } from 'source/common/check'
 import { withRetryAsync } from 'source/common/function'
 import { toArrayBuffer } from 'source/node/data/Buffer'
-import { setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
 
 const requestHttp = (
   url, // URL/String
   option, // { method, headers, timeout, agent, ... }
-  body // optional, Buffer/String
+  body // optional, Buffer/String/ReadableStream
 ) => {
   url = url instanceof URL ? url : new URL(url)
   let request
@@ -22,7 +23,8 @@ const requestHttp = (
     }
     request.on('timeout', () => endWithError(new Error('NETWORK_TIMEOUT')))
     request.on('error', endWithError)
-    request.end(body)
+    if (isReadableStream(body)) setupStreamPipe(body, request)
+    else request.end(body)
   })
   return { url, request, promise }
 }
@@ -52,7 +54,10 @@ const fetchLikeRequest = async (url, {
   method = 'GET', // TODO: NOTE: in node, `GET|DELETE` method will implicitly skip body, add `content-length` to force send body
   headers: requestHeaders,
   body,
-  timeout = 10 * 1000 // in millisecond, 0 for no timeout, will result in error if timeout
+  bodyLength, // used as `total` for `onProgressUpload`, if not provided, and body is stream, the total will be set to `Infinity`
+  timeout = 10 * 1000, // in millisecond, 0 for no timeout, will result in error if timeout
+  onProgressUpload, // (now, total) => {} // if can't decide total will be `Infinity`
+  onProgressDownload // (now, total) => {} // if can't decide total will be `Infinity`
 } = {}) => {
   const option = {
     method,
@@ -62,13 +67,23 @@ const fetchLikeRequest = async (url, {
   __DEV__ && console.log('[fetch]', option)
   const { request, promise } = requestHttp(url, option, body)
   const timeStart = clock()
+  onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
+    bodyLength = bodyLength || (isReadableStream(body) ? Infinity
+      : isString(body) ? Buffer.byteLength(body)
+        : body.length)
+    const bytesWrittenStart = socket.bytesWritten // may contain HTTP header, so may be bigger than the bodyLength
+    const onProgress = () => { onProgressUpload(Math.min(socket.bytesWritten - bytesWrittenStart, bodyLength), bodyLength) }
+    socket.on('drain', onProgress)
+    const clearListener = () => socket.off('drain', onProgress)
+    promise.then(clearListener, clearListener)
+  })
   const response = await promise
   const status = response.statusCode
   return {
     status,
     ok: (status >= 200 && status < 300),
     headers: response.headers,
-    ...wrapPayload(request, response, timeout + timeStart - clock()) // cut off connection setup time
+    ...wrapPayload(request, response, timeout + timeStart - clock(), onProgressDownload) // cut off connection setup time
   }
 }
 
@@ -78,7 +93,7 @@ const fetchLikeRequest = async (url, {
 //   http: IncomingMessage not emitting 'end'
 //     - https://github.com/nodejs/node/issues/10344
 
-const wrapPayload = (request, response, timeoutPayload) => {
+const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
   let payloadOutcome // KEEP|DROP
   process.nextTick(() => {
     if (payloadOutcome) return
@@ -98,6 +113,18 @@ const wrapPayload = (request, response, timeoutPayload) => {
       }, timeoutPayload)
       // request.off('timeout', func) // TODO: NOTE: timeoutPayload should be faster than the underlying socket timeout
       response.on('end', () => clearTimeout(timeoutToken))
+    }
+    if (onProgressDownload) {
+      const payloadLength = Number(response.headers[ 'content-length' ]) || Infinity
+      let chunkLength = 0
+      const onProgress = (chunk) => {
+        chunkLength += chunk.length
+        onProgressDownload(chunkLength, payloadLength)
+      }
+      response.socket.on('data', onProgress)
+      const clearListener = () => response.socket.off('data', onProgress)
+      response.on('error', clearListener)
+      response.on('end', clearListener)
     }
     return response.headers[ 'content-encoding' ] === 'gzip'
       ? setupStreamPipe(response, createGunzip())

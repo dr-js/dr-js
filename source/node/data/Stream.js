@@ -1,6 +1,22 @@
 import { Readable } from 'stream'
 import { createInterface } from 'readline'
 
+import { isObjectAlike, isBasicFunction } from 'source/common/check'
+
+// edited from: https://github.com/sindresorhus/is-stream
+const isReadableStream = (stream) => (
+  isObjectAlike(stream) &&
+  stream.readable !== false &&
+  isBasicFunction(stream.pipe) &&
+  isBasicFunction(stream._read)
+)
+
+const isWritableStream = (stream) => (
+  isObjectAlike(stream) &&
+  stream.writable !== false &&
+  isBasicFunction(stream._write)
+)
+
 // TODO: NOTE: consider not directly use `stream.pipe()` for long-running code
 //   Stream is a "trickier" version of Promise for data, think of promise without a proper `then` method
 //   since the error handling is tricky, every stream in the pipe can and need to handle error and proper close
@@ -88,6 +104,7 @@ const readlineOfStreamAsync = (
 })
 
 export {
+  isReadableStream, isWritableStream,
   setupStreamPipe,
   waitStreamStopAsync,
   bufferToReadableStream,

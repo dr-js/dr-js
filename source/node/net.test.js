@@ -1,6 +1,7 @@
 import { resolve } from 'path'
-import { unlinkSync, writeFileSync } from 'fs'
+import { unlinkSync, writeFileSync, createReadStream } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
+import { percent } from 'source/common/format'
 import { stringifyEqual, strictEqual } from 'source/common/verify'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import { toArrayBuffer } from 'source/node/data/Buffer'
@@ -96,6 +97,36 @@ describe('Node.Net', () => {
     await response.buffer().then(
       () => { throw new Error('should throw data already dropped error') },
       expectError('PAYLOAD_ALREADY_DROPPED')
+    )
+  }))
+
+  const onProgress = (now, total) => info(`${percent(now / total)} ${now}/${total}`)
+
+  it('fetchLikeRequest() onProgress', withTestServer(async (baseUrl) => {
+    await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { onProgressDownload: onProgress })).buffer()
+    await (await fetchLikeRequest(`${baseUrl}/test-json`, { onProgressDownload: onProgress })).buffer()
+    await (await fetchLikeRequest(`${baseUrl}/test-script`, { onProgressDownload: onProgress })).buffer()
+  }))
+
+  it('fetchLikeRequest() post', withTestServer(async (baseUrl) => {
+    const BODY_STRING = '[test-post-body]'.repeat(64)
+    const BODY_BUFFER = Buffer.from(BODY_STRING)
+
+    stringifyEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: BODY_STRING, onProgressUpload: onProgress })).json(),
+      { requestContentLength: String(BODY_BUFFER.length), size: BODY_BUFFER.length }
+    )
+    stringifyEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: BODY_BUFFER, onProgressUpload: onProgress })).json(),
+      { requestContentLength: String(BODY_BUFFER.length), size: BODY_BUFFER.length }
+    )
+    stringifyEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: createReadStream(SOURCE_SCRIPT), onProgressUpload: onProgress })).json(),
+      { size: BUFFER_SCRIPT.length } // chunked, no content length
+    )
+    stringifyEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: createReadStream(SOURCE_SCRIPT), bodyLength: BUFFER_SCRIPT.length, onProgressUpload: onProgress })).json(),
+      { size: BUFFER_SCRIPT.length } // chunked, no content length
     )
   }))
 

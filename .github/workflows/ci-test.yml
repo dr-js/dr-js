@@ -32,8 +32,8 @@ jobs:
           echo "node: $(node -v)"
           echo "npm: $(npm -v)"
 
-      - name: Patch `libgbm1` for `puppeteer@3` # https://github.com/puppeteer/puppeteer/issues/5674
-        run: node -e "process.exitCode = Number(os.platform() !== 'win32')" || sudo apt-get install -y libgbm1
+      - name: Patch `libgbm1` for `puppeteer@3` on linux # https://github.com/puppeteer/puppeteer/issues/5674
+        run: node -e "process.exitCode = Number(os.platform() === 'linux')" || sudo apt-get install -y libgbm1
 
       - run: npm ci
 
