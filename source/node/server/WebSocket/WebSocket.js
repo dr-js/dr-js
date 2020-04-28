@@ -53,9 +53,6 @@ const createWebSocket = ({
     if (readyState === CLOSED) return
     __DEV__ && console.log('[WebSocket] doCloseSocket')
 
-    // TODO: HACK: socket.writable not in Official API, check:
-    //   https://github.com/nodejs/node/issues/21431
-    //   https://github.com/websockets/ws/blob/master/lib/websocket-server.js#L354
     readyState === CONNECTING && socket.writable && socket.write([
       'HTTP/1.1 400 Bad Request',
       'connection: close',

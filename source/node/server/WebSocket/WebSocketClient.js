@@ -52,13 +52,13 @@ const createWebSocketClient = ({
   })
 
   request.on('error', (error) => {
-    if (request.aborted) return
-    request.abort()
+    if (request.destroyed) return
+    request.destroy()
     onError(error)
   })
   request.on('response', (response) => {
     __DEV__ && console.log('[WebSocketClient] unexpected response', response)
-    request.abort()
+    request.destroy()
     onError(new Error('unexpected response'))
   })
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {

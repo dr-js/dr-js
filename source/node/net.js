@@ -18,7 +18,7 @@ const requestHttp = (
   const promise = new Promise((resolve, reject) => {
     request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, resolve)
     const endWithError = (error) => {
-      request.abort()
+      request.destroy()
       reject(error)
     }
     request.on('timeout', () => endWithError(new Error('NETWORK_TIMEOUT')))
@@ -99,7 +99,7 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
     if (payloadOutcome) return
     __DEV__ && console.log('[fetch] payload dropped')
     payloadOutcome = 'DROP'
-    request.abort() // drop request
+    request.destroy() // drop request
   })
   const stream = () => { // TODO: also use async?
     if (payloadOutcome) throw new Error(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED')
@@ -109,7 +109,7 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
       const timeoutToken = setTimeout(() => {
         __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
         response.emit('error', new Error('PAYLOAD_TIMEOUT')) // TODO: NOTE: emit custom `error` event to signal stream stop
-        request.abort() // drop request
+        request.destroy() // drop request
       }, timeoutPayload)
       // request.off('timeout', func) // TODO: NOTE: timeoutPayload should be faster than the underlying socket timeout
       response.on('end', () => clearTimeout(timeoutToken))

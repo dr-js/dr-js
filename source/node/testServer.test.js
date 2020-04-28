@@ -40,15 +40,15 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
             store.response.writeHead(200, { 'content-length': BUFFER_SCRIPT.length * 64 })
             store.response.flushHeaders() // fast header but slow payload // TODO: NOTE: not work for browser testing, not flushing header in time
             await setTimeoutAsync(40)
-            if (store.request.aborted) return
+            if (store.request.destroyed) return
             // TODO: flush more so the size is large enough for browser to get HEADERS_RECEIVED
             //   possible: https://stackoverflow.com/questions/26685554/xmlhttprequest-readystate-headers-received-waiting-for-entire-file-to-download
             await writeBufferToStreamAsync(store.response, BUFFER_SCRIPT)
             await setTimeoutAsync(50)
-            if (store.request.aborted) return
+            if (store.request.destroyed) return
             await writeBufferToStreamAsync(store.response, BUFFER_SCRIPT)
             await setTimeoutAsync(100)
-            if (store.request.aborted) return // should not reach here
+            if (store.request.destroyed) return // should not reach here
             await writeBufferToStreamAsync(store.response, BUFFER_SCRIPT)
             return responderEnd(store)
           } ],
