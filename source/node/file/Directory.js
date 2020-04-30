@@ -1,130 +1,117 @@
 import { join, dirname, basename } from 'path'
-import { readdirAsync, mkdirAsync } from './function'
+import { promises as fsAsync } from 'fs'
+import { createTreeBreadthFirstSearchAsync, createTreeBottomUpSearchAsync } from 'source/common/data/Tree'
 import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath } from './Path'
 
-const getDirectorySubInfoList = async (path, pathStat) => {
-  // __DEV__ && console.log('getDirectorySubInfoList', { path, pathStat: Boolean(pathStat) })
-  if (pathStat === undefined) pathStat = await getPathStat(path)
-  if (!pathStat.isDirectory()) throw new Error(`error pathType: ${getPathTypeFromStat(pathStat)} for ${path}`)
-  const subInfoList = []
-  for (const name of await readdirAsync(path)) {
-    const subPath = join(path, name)
-    const stat = await getPathStat(subPath)
-    const type = getPathTypeFromStat(stat)
-    subInfoList.push({ path: subPath, name, stat, type })
+const getPathTypeFromDirent = (dirent) => dirent.isSymbolicLink() ? PATH_TYPE.Symlink // need stat again to get the target type
+  : dirent.isDirectory() ? PATH_TYPE.Directory
+    : dirent.isFile() ? PATH_TYPE.File
+      : PATH_TYPE.Other
+
+const getDirInfoList = async (path) => {
+  const dirInfoList = []
+  for (const dirent of await fsAsync.readdir(path, { withFileTypes: true })) {
+    const type = getPathTypeFromDirent(dirent)
+    const { name } = dirent
+    dirInfoList.push({ type, name, path: join(path, name) })
   }
-  return subInfoList
+  return dirInfoList
 }
 
-const getDirectoryInfoTree = async (path, pathStat) => {
-  // __DEV__ && console.log('getDirectoryInfoTree', { path, pathStat: Boolean(pathStat) })
-  const subInfoListMap = {}
-  const queue = [ { path, stat: pathStat } ]
+const getDirInfoTree = async (path) => {
+  const dirInfoListMap = new Map()
+  const queue = [ path ]
   while (queue.length) {
-    const { path, stat } = queue.shift()
-    const subInfoList = await getDirectorySubInfoList(path, stat)
-    subInfoListMap[ path ] = subInfoList
-    subInfoList.forEach((subInfo) => subInfo.stat.isDirectory() && queue.push(subInfo))
+    const upperPath = queue.shift()
+    const dirInfoList = await getDirInfoList(upperPath)
+    dirInfoListMap.set(upperPath, dirInfoList)
+    dirInfoList.forEach(({ type, path }) => type === PATH_TYPE.Directory && queue.push(path))
   }
-  return { root: path, subInfoListMap }
+  return { root: path, dirInfoListMap } // TODO: NOTE: this is not technically a `tree` but a `tree-like`
 }
 
-const walkDirectoryInfoTree = async ({ root, subInfoListMap }, callback) => { // TODO: use createTreeBreadthFirstSearchAsync?
-  const queue = [ { path: root } ]
-  while (queue.length) {
-    const { path } = queue.shift()
-    for (const subInfo of subInfoListMap[ path ]) {
-      subInfo.stat.isDirectory() && queue.push(subInfo)
-      await callback(subInfo)
-    }
-  }
-}
+const getSubNodeListFunc = (dirInfo, dirInfoListMap) => dirInfoListMap.get(dirInfo.path)
+const dirInfoTreeBreadthFirstSearchAsync = createTreeBreadthFirstSearchAsync(getSubNodeListFunc)
+const dirInfoTreeBottomUpSearchAsync = createTreeBottomUpSearchAsync(getSubNodeListFunc)
 
-const walkDirectoryInfoTreeBottomUp = async ({ root, subInfoListMap }, callback) => { // TODO: use createTreeBottomUpSearchAsync?
-  const rootInfo = { path: root }
-  const stack = [ [ rootInfo, [ rootInfo ] ] ]
-  while (stack.length) {
-    const [ upperInfo, infoList ] = stack[ stack.length - 1 ]
-    if (infoList.length === 0) {
-      upperInfo !== rootInfo && await callback(upperInfo)
-      stack.pop()
-    } else {
-      const info = infoList.shift()
-      const subInfoList = []
-      for (const subInfo of subInfoListMap[ info.path ]) {
-        subInfo.stat.isDirectory()
-          ? subInfoList.push(subInfo)
-          : await callback(subInfo)
-      }
-      stack.push([ info, subInfoList ])
-    }
-  }
-}
+const walkDirInfoTreeAsync = async (
+  { root, dirInfoListMap },
+  callback // async (dirInfo) => true/false // return true to end search
+) => dirInfoTreeBreadthFirstSearchAsync({ path: root }, callback, dirInfoListMap)
+const walkDirInfoTreeBottomUpAsync = async (
+  { root, dirInfoListMap },
+  callback // async (dirInfo) => true/false // return true to end search
+) => dirInfoTreeBottomUpSearchAsync({ path: root }, callback, dirInfoListMap)
 
-const copyDirectoryInfoTree = async (infoTree, pathTo) => {
+const copyDirInfoTree = async (dirInfoTree, pathTo) => {
   await createDirectory(pathTo)
-  const pathToMap = { [ infoTree.root ]: pathTo }
-  return walkDirectoryInfoTree(infoTree, ({ path, name, stat }) => {
+  const pathToMap = new Map()
+  pathToMap.set(dirInfoTree.root, pathTo)
+  return walkDirInfoTreeAsync(dirInfoTree, async ({ name, path }) => {
     const upperPath = dirname(path)
-    const pathTo = join(pathToMap[ upperPath ], name)
-    pathToMap[ path ] = pathTo
-    return copyPath(path, pathTo, stat)
+    const pathTo = join(pathToMap.get(upperPath), name)
+    pathToMap.set(path, pathTo)
+    return copyPath(path, pathTo) // resolve to nothing
   })
 }
 
-const renameDirectoryInfoTree = async ({ root, subInfoListMap }, pathTo) => {
+const renameDirInfoTree = async ({ root, dirInfoListMap }, pathTo) => {
   await createDirectory(pathTo)
-  for (const { path, name, stat } of subInfoListMap[ root ]) await renamePath(path, join(pathTo, name), stat)
+  for (const { name, path } of dirInfoListMap.get(root)) await renamePath(path, join(pathTo, name))
 }
 
-const deleteDirectoryInfoTree = async (infoTree) => walkDirectoryInfoTreeBottomUp(
-  infoTree,
-  ({ path, stat }) => deletePath(path, stat)
+const deleteDirInfoTree = async (dirInfoListMap) => walkDirInfoTreeBottomUpAsync(
+  dirInfoListMap,
+  ({ path }) => deletePath(path) // resolve to nothing
 )
 
 const createDirectory = async (path, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(path)
-  if (pathStat.isDirectory()) return // directory exist, pass
-  if (pathStat !== STAT_ERROR) throw new Error(`path already taken by non-directory: ${path}`)
-  await createDirectory(dirname(path)) // check up
-  await mkdirAsync(path) // create directory
+  if (pathStat !== undefined) {
+    if (pathStat.isDirectory()) return // directory exist, pass
+    if (pathStat !== STAT_ERROR) throw new Error(`path already taken by non-directory: ${path}`)
+  }
+  await fsAsync.mkdir(path, { recursive: true }) // create directory
 }
 
-const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirectoryInfoTree(await getDirectoryInfoTree(pathFrom, pathStat), pathTo)
+const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirInfoTree(await getDirInfoTree(pathFrom, pathStat), pathTo)
 
 const deleteDirectory = async (path, pathStat) => {
-  await deleteDirectoryInfoTree(await getDirectoryInfoTree(path, pathStat))
+  await deleteDirInfoTree(await getDirInfoTree(path, pathStat))
   return deletePath(path, pathStat)
 }
 
 const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
   const fileList = []
-  const pathStat = await getPathStat(path)
+  const pathStat = await getPathStat(path) // resolve symlink
   const pathType = getPathTypeFromStat(pathStat)
   switch (pathType) {
     case PATH_TYPE.File:
-      fileCollector(fileList, { path, name: basename(path), stat: pathStat, type: pathType })
+      fileCollector(fileList, { type: pathType, name: basename(path), path })
       break
     case PATH_TYPE.Directory:
-      await walkDirectoryInfoTree(await getDirectoryInfoTree(path, pathStat), (info) => info.type === PATH_TYPE.File && fileCollector(fileList, info))
+      await walkDirInfoTreeAsync(
+        await getDirInfoTree(path, pathStat),
+        (dirInfo) => dirInfo.type === PATH_TYPE.File && fileCollector(fileList, dirInfo)
+      )
       break
     default:
       throw new Error(`invalid pathType: ${pathType} for ${path}`)
   }
   return fileList
 }
-const DEFAULT_FILE_COLLECTOR = (fileList, { path }) => fileList.push(path)
+const DEFAULT_FILE_COLLECTOR = (fileList, { path }) => { fileList.push(path) }
 
 export {
-  getDirectorySubInfoList,
-  getDirectoryInfoTree,
+  getPathTypeFromDirent,
+  getDirInfoList,
+  getDirInfoTree,
 
-  walkDirectoryInfoTree,
-  walkDirectoryInfoTreeBottomUp,
+  walkDirInfoTreeAsync,
+  walkDirInfoTreeBottomUpAsync,
 
-  copyDirectoryInfoTree,
-  renameDirectoryInfoTree,
-  deleteDirectoryInfoTree,
+  copyDirInfoTree,
+  renameDirInfoTree,
+  deleteDirInfoTree,
 
   createDirectory,
   copyDirectory,

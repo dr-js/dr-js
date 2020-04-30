@@ -1,7 +1,7 @@
 import { setTimeoutAsync } from 'source/common/time'
 import { autoEllipsis } from 'source/common/string'
 import { padTable } from 'source/common/format'
-import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTree } from 'source/common/data/Tree'
+import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTreeNode } from 'source/common/data/Tree'
 import { run } from './Run'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
@@ -206,9 +206,9 @@ const prettyStringifyProcessTree = (processRootInfo) => {
   const resultList = []
   const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
   addLine('', { pid: 'pid', command: 'command' })
-  prettyStringifyTree(
-    [ processRootInfo, -1, false ],
+  prettyStringifyTreeNode(
     ([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]),
+    [ processRootInfo, -1, false ],
     addLine
   )
   return resultList.join('\n')

@@ -1,8 +1,8 @@
 import { resolve } from 'path'
+import { promises as fsAsync } from 'fs'
 import { stringifyEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
 import { catchAsync } from 'source/common/error'
-import { writeFileAsync, renameAsync, mkdirAsync } from './function'
 import { createDirectory } from './Directory'
 import { modifyDelete } from './Modify'
 import { createFileWatcher } from './Watch'
@@ -19,8 +19,8 @@ const createWatcherTest = (tag, func) => async () => {
   const watcher = createFileWatcher({ wait: 10 })
 
   await createDirectory(fromTest('folder'))
-  await writeFileAsync(fromTest('file'), `${tag}|file`)
-  await writeFileAsync(fromTest('folder/folder-file'), `${tag}|folder-file`)
+  await fsAsync.writeFile(fromTest('file'), `${tag}|file`)
+  await fsAsync.writeFile(fromTest('folder/folder-file'), `${tag}|folder-file`)
 
   const { error } = await catchAsync(func, { fromTest, watcher })
   watcher.clear()
@@ -43,7 +43,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await writeFileAsync(targetPath, 'file|changed')
+      await fsAsync.writeFile(targetPath, 'file|changed')
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
     }))
@@ -58,13 +58,13 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await writeFileAsync(fromTest('folder/add-file'), 'file|added')
+      await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
 
       resultChangeState = null
-      await writeFileAsync(fromTest('folder/add-file'), 'file|added')
-      await renameAsync(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
+      await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
+      await fsAsync.rename(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
     }))
@@ -79,7 +79,8 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await renameAsync(fromTest('file'), fromTest('rename-file'))
+      await fsAsync.rename(fromTest('file'), fromTest('rename-file'))
+
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -94,7 +95,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await renameAsync(fromTest('folder'), fromTest('rename-folder'))
+      await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -144,7 +145,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await renameAsync(fromTest('file'), fromTest('file-folder'))
+      await fsAsync.rename(fromTest('file'), fromTest('file-folder'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -159,7 +160,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await renameAsync(fromTest('folder'), fromTest('rename-folder'))
+      await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
     }))
@@ -176,7 +177,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await writeFileAsync(targetPath, 'file|created')
+      await fsAsync.writeFile(targetPath, 'file|created')
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
@@ -193,7 +194,7 @@ describe('Node.File.Watch', () => {
       })
       await watcher.setup(targetPath)
 
-      await mkdirAsync(targetPath)
+      await fsAsync.mkdir(targetPath)
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
@@ -213,7 +214,7 @@ describe('Node.File.Watch', () => {
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 
       resultChangeState = null
-      await writeFileAsync(targetPath, 'file|recreated')
+      await fsAsync.writeFile(targetPath, 'file|recreated')
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))
@@ -233,7 +234,7 @@ describe('Node.File.Watch', () => {
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
 
       resultChangeState = null
-      await mkdirAsync(targetPath)
+      await fsAsync.mkdir(targetPath)
       await setTimeoutAsync(40)
       stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
     }))

@@ -5,8 +5,8 @@ import { binary, time } from '@dr-js/core/module/common/format'
 import { escapeHTML } from '@dr-js/core/module/common/string'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
-import { toPosixPath, createPathPrefixLock } from '@dr-js/core/module/node/file/Path'
-import { getDirectorySubInfoList } from '@dr-js/core/module/node/file/Directory'
+import { getPathStat, toPosixPath, createPathPrefixLock } from '@dr-js/core/module/node/file/Path'
+import { getDirInfoList } from '@dr-js/core/module/node/file/Directory'
 import { responderEndWithRedirect } from '@dr-js/core/module/node/server/Responder/Common'
 import { responderSendBufferCompress } from '@dr-js/core/module/node/server/Responder/Send'
 import { getRouteParamAny } from '@dr-js/core/module/node/server/Responder/Router'
@@ -41,8 +41,10 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
   const titleHTML = `/${escapeHTML(toPosixPath(relativeRoot))}`
   const directoryInfoList = []
   const fileInfoList = []
-  const subInfoList = await getDirectorySubInfoList(rootPath)
-  subInfoList.forEach((info) => info.stat.isDirectory() ? directoryInfoList.push(info) : fileInfoList.push(info))
+  for (const dirInfo of await getDirInfoList(rootPath)) {
+    dirInfo.stat = await getPathStat(dirInfo.path) // resolve symlink
+    dirInfo.stat.isDirectory() ? directoryInfoList.push(dirInfo) : fileInfoList.push(dirInfo)
+  }
   return responderSendBufferCompress(store, {
     type: BASIC_EXTENSION_MAP.html,
     buffer: Buffer.from(COMMON_LAYOUT([

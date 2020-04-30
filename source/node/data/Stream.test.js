@@ -1,8 +1,8 @@
 import { resolve } from 'path'
 import { createGzip, createGunzip, gzipSync } from 'zlib'
+import { createReadStream, createWriteStream } from 'fs'
 import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stream'
 import { strictEqual } from 'source/common/verify'
-import { createReadStream, createWriteStream } from 'source/node/file/function'
 import {
   isReadableStream, isWritableStream,
   setupStreamPipe,

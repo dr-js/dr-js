@@ -4,8 +4,8 @@ import { createDirectory } from './Directory'
 import {
   STAT_ERROR,
   PATH_TYPE,
-  getPathStat,
   getPathTypeFromStat,
+  getPathLstat,
   copyPath,
   renamePath,
   deletePath,
@@ -15,7 +15,7 @@ import {
 const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-file-gitignore/')
-const SOURCE_FILE = resolve(__dirname, './function.js')
+const SOURCE_FILE = resolve(__dirname, './Path.js')
 const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
 const SOURCE_DIRECTORY_TRIM = resolve(__dirname, '../module')
 
@@ -48,19 +48,19 @@ after('clear', async () => {
 })
 
 describe('Node.File.Path', () => {
-  it('getPathStat()', async () => {
-    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_FILE)), PATH_TYPE.File)
-    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY)), PATH_TYPE.Directory)
-    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY_TRIM)), PATH_TYPE.Directory)
-    strictEqual(await getPathStat(invalidPath), STAT_ERROR)
-    strictEqual(getPathTypeFromStat(await getPathStat(invalidPath)), PATH_TYPE.Error)
+  it('getPathLstat()', async () => {
+    strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_FILE)), PATH_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_DIRECTORY)), PATH_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_DIRECTORY_TRIM)), PATH_TYPE.Directory)
+    strictEqual(await getPathLstat(invalidPath), STAT_ERROR)
+    strictEqual(getPathTypeFromStat(await getPathLstat(invalidPath)), PATH_TYPE.Error)
   })
 
   it('copyPath()', async () => {
     await createDirectory(directoryPath2)
 
     await copyPath(SOURCE_FILE, filePath0)
-    strictEqual(getPathTypeFromStat(await getPathStat(filePath0)), PATH_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathLstat(filePath0)), PATH_TYPE.File)
 
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
@@ -72,8 +72,8 @@ describe('Node.File.Path', () => {
     await copyPath(directoryPath2, directoryPath3)
     await copyPath(directoryPath2, directoryPath3)
 
-    strictEqual(getPathTypeFromStat(await getPathStat(filePath1)), PATH_TYPE.File)
-    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath3)), PATH_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathLstat(filePath1)), PATH_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathLstat(directoryPath3)), PATH_TYPE.Directory)
   })
 
   it('renamePath()', async () => {
@@ -84,10 +84,10 @@ describe('Node.File.Path', () => {
     await renamePath(filePath1, filePath2)
     await renamePath(directoryPath3, directoryPath4)
 
-    strictEqual(await getPathStat(filePath1), STAT_ERROR)
-    strictEqual(await getPathStat(directoryPath3), STAT_ERROR)
-    strictEqual(getPathTypeFromStat(await getPathStat(filePath2)), PATH_TYPE.File)
-    strictEqual(getPathTypeFromStat(await getPathStat(directoryPath4)), PATH_TYPE.Directory)
+    strictEqual(await getPathLstat(filePath1), STAT_ERROR)
+    strictEqual(await getPathLstat(directoryPath3), STAT_ERROR)
+    strictEqual(getPathTypeFromStat(await getPathLstat(filePath2)), PATH_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathLstat(directoryPath4)), PATH_TYPE.Directory)
   })
 
   it('deletePath()', async () => {
@@ -100,7 +100,7 @@ describe('Node.File.Path', () => {
     await deletePath(directoryPath0)
     await deletePath(filePath0)
 
-    strictEqual(await getPathStat(filePath0), STAT_ERROR)
+    strictEqual(await getPathLstat(filePath0), STAT_ERROR)
   })
 
   it('createPathPrefixLock()', () => {

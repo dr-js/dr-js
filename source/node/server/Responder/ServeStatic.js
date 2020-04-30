@@ -1,6 +1,6 @@
+import { createReadStream, promises as fsAsync } from 'fs'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME'
-import { readFileAsync, createReadStream } from 'source/node/file/function'
 import { getPathStat } from 'source/node/file/Path'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
 import {
@@ -59,7 +59,7 @@ const createResponderServeStatic = ({
   }
 
   const serve = async (store, filePath, type, encoding, range) => {
-    const stat = await getPathStat(filePath)
+    const stat = await getPathStat(filePath) // resolve symlink
     if (!stat.isFile() || !stat.size) return false
     const length = stat.size
     const entityTag = getWeakEntityTagByStat(stat)
@@ -71,7 +71,7 @@ const createResponderServeStatic = ({
       __DEV__ && console.log(`[BAIL] CACHE: ${filePath}`)
       await responderSendStream(store, { stream: createReadStream(filePath), length, type, entityTag })
     } else { // right size, try cache
-      const bufferData = { buffer: await readFileAsync(filePath), length, type, entityTag }
+      const bufferData = { buffer: await fsAsync.readFile(filePath), length, type, entityTag }
       serveCacheMap.set(filePath, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePath}`)
       await responderSendBuffer(store, bufferData)

@@ -1,8 +1,7 @@
-import { Stats } from 'fs'
+import { Stats, promises as fsAsync } from 'fs'
 import { resolve, dirname } from 'path'
-import { statAsync, renameAsync, unlinkAsync, copyFileAsync, mkdirAsync, rmdirAsync, visibleAsync } from './function'
 
-// TODO: no symlink support, currently will follow link to target File/Directory
+// NOTE: default will not follow symlink, and some symlink may form a loop
 
 const STAT_ERROR = new Stats(
   -1, // dev
@@ -24,46 +23,43 @@ const STAT_ERROR = new Stats(
 const PATH_TYPE = {
   File: 'File',
   Directory: 'Directory',
+  Symlink: 'Symlink',
   Other: 'Other', // maybe device, socket or else
   Error: 'Error' // non exist
 }
 
+const getPathTypeFromStat = (stat) => stat.isSymbolicLink() ? PATH_TYPE.Symlink
+  : stat.isDirectory() ? PATH_TYPE.Directory
+    : stat.isFile() ? PATH_TYPE.File
+      : stat === STAT_ERROR ? PATH_TYPE.Error
+        : PATH_TYPE.Other
+
+const getPathLstat = (path) => fsAsync.lstat(path).catch(onStatError)
+const getPathStat = (path) => fsAsync.stat(path).catch(onStatError)
 const onStatError = (error) => {
   __DEV__ && console.log('[getPathStat] error', error)
   return STAT_ERROR
 }
 
-const getPathStat = (path) => statAsync(path).catch(onStatError)
-
-const getPathTypeFromStat = (stat) => stat.isDirectory() ? PATH_TYPE.Directory
-  : stat.isFile() ? PATH_TYPE.File
-    : stat !== STAT_ERROR ? PATH_TYPE.Other
-      : PATH_TYPE.Error
-
 // NOT recursive operation
 const copyPath = async (pathFrom, pathTo, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
-  if (pathStat.isDirectory() && (await getPathStat(pathTo)).isDirectory()) return __DEV__ && console.log('[copyPath] both directory exist, skipped')
-  return pathStat.isDirectory()
-    ? mkdirAsync(pathTo)
-    : copyFileAsync(pathFrom, pathTo)
+  if (pathStat === undefined) pathStat = await getPathLstat(pathFrom)
+  return pathStat.isSymbolicLink() ? fsAsync.symlink(await fsAsync.readlink(pathFrom), pathTo) // resolve to nothing
+    : pathStat.isDirectory() ? ((await getPathLstat(pathTo)).isDirectory() ? undefined : fsAsync.mkdir(pathTo)) // resolve to nothing
+      : fsAsync.copyFile(pathFrom, pathTo) // resolve to nothing
 }
 
-const renamePath = async (pathFrom, pathTo, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
-  if (pathStat === STAT_ERROR) throw new Error(`missing path from ${pathFrom}`)
-  return renameAsync(pathFrom, pathTo)
-}
+const renamePath = async (pathFrom, pathTo) => fsAsync.rename(pathFrom, pathTo) // resolve to nothing
 
 const deletePath = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathStat(path)
   return pathStat.isDirectory()
-    ? rmdirAsync(path)
-    : unlinkAsync(path)
+    ? fsAsync.rmdir(path) // resolve to nothing
+    : fsAsync.unlink(path) // resolve to nothing
 }
 
 const nearestExistPath = async (path) => { // TODO: NOTE: may be file or directory
-  while (path && !await visibleAsync(path)) path = dirname(path)
+  while (path && (Error === await fsAsync.access(path).catch(() => Error))) path = dirname(path)
   return path
 }
 
@@ -83,14 +79,14 @@ export {
   STAT_ERROR,
   PATH_TYPE,
 
-  getPathStat,
   getPathTypeFromStat,
+  getPathLstat, getPathStat,
 
   copyPath,
   renamePath,
   deletePath,
-  nearestExistPath,
 
+  nearestExistPath,
   toPosixPath,
   createPathPrefixLock
 }

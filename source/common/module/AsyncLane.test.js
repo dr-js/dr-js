@@ -84,7 +84,7 @@ describe('source/common/module/AsyncLane', () => {
     stringifyEqual(asyncFuncLane.getStatus(), [ 2, 2, 1, 1 ])
 
     await promise3 // should have finished first batch
-    console.log(asyncFuncLane.getStatus())
+    // console.log(asyncFuncLane.getStatus())
     stringifyEqual(asyncFuncLane.getStatus(), [ 1, 1, 0, 0 ])
     stringifyEqual(asyncFuncLane.getStatus(true), [
       { index: 0, length: 1 },

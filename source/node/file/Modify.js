@@ -1,11 +1,11 @@
 import { dirname } from 'path'
-import { getPathStat, copyPath, renamePath, deletePath } from './Path'
+import { getPathLstat, copyPath, renamePath, deletePath } from './Path'
 import { createDirectory, copyDirectory, deleteDirectory } from './Directory'
 
 const NULL_FUNC = () => {}
 
 const modifyCopy = async (pathFrom, pathTo, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(pathFrom)
+  if (pathStat === undefined) pathStat = await getPathLstat(pathFrom)
   if (pathStat.isDirectory()) return copyDirectory(pathFrom, pathTo, pathStat)
   await createDirectory(dirname(pathTo))
   return copyPath(pathFrom, pathTo, pathStat)
@@ -17,7 +17,7 @@ const modifyRename = async (pathFrom, pathTo, pathStat) => {
 }
 
 const modifyDelete = async (path, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (pathStat === undefined) pathStat = await getPathLstat(path)
   if (pathStat.isDirectory()) return deleteDirectory(path, pathStat)
   return deletePath(path, pathStat)
 }
