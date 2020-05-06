@@ -80,7 +80,10 @@ const deleteDirectory = async (path, pathStat) => {
   return deletePath(path, pathStat)
 }
 
-const getFileList = async (path, fileCollector = DEFAULT_FILE_COLLECTOR) => {
+const getFileList = async (
+  path,
+  fileCollector = DEFAULT_FILE_COLLECTOR // (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
+) => {
   const fileList = []
   const pathStat = await getPathStat(path) // resolve symlink
   const pathType = getPathTypeFromStat(pathStat)

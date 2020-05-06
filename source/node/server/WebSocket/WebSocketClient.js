@@ -1,5 +1,6 @@
 import { get as httpGet } from 'http'
 import { get as httpsGet } from 'https'
+import { catchSync } from 'source/common/error'
 import { WEBSOCKET_VERSION, getRequestKey, getRespondKey } from './function'
 import { createWebSocket } from './WebSocket'
 
@@ -71,7 +72,9 @@ const createWebSocketClient = ({
     __DEV__ && webSocket.isClosed() && console.log('[WebSocketClient] UpgradeResponse closed webSocket')
     if (webSocket.isClosed()) return
 
-    doUpgradeSocket(webSocket, response, responseKey, requestProtocolString)
+    const { error } = catchSync(doUpgradeSocket, webSocket, response, responseKey, requestProtocolString)
+    error && request.destroy()
+    error && onError(error)
   })
 }
 

@@ -1,3 +1,4 @@
+import { catchSync } from 'source/common/error'
 import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRespondKey } from './function'
 import { createWebSocket } from './WebSocket'
 
@@ -51,7 +52,7 @@ const enableWebSocketServer = ({
     if (webSocket.isClosed()) return
     if (!protocol) return webSocket.doCloseSocket(new Error('no selected protocol'))
 
-    doUpgradeSocket(webSocket, protocol, responseKey)
+    catchSync(doUpgradeSocket, webSocket, protocol, responseKey)
     __DEV__ && webSocket.isClosed() && console.log('[onUpgradeResponse] closed webSocket')
     if (webSocket.isClosed()) return
 

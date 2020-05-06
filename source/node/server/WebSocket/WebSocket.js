@@ -45,6 +45,7 @@ const createWebSocket = ({
   // should be public
   let readyState = CONNECTING // TODO: NOTE: browser WebSocket can directly read readyState
 
+  const isOpen = () => (readyState === OPEN && socket && socket.writable)
   const isClosed = () => (readyState === CLOSED || !socket || socket.destroyed)
 
   const doCloseSocket = (error) => {
@@ -220,7 +221,7 @@ const createWebSocket = ({
 
     getReadyState: () => readyState,
 
-    isClosed,
+    isOpen, isClosed,
     doCloseSocket,
     open,
     close,
