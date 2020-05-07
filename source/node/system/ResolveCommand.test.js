@@ -9,7 +9,7 @@ const { describe, it, info = console.log } = global
 describe('Node.Module.ResolveCommand', () => {
   const COMMAND_NAME_LIST = [
     // [ commandName, isExpectResult ]
-    [ process.platform === 'win32' ? 'ipconfig' : 'ifconfig', true ],
+    [ process.platform === 'win32' ? 'where' : 'which', true ],
     [ 'npm', true ],
     [ 'npx', true ],
     [ 'node', true ],

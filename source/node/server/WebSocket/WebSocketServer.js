@@ -38,12 +38,12 @@ const doUpgradeSocket = (webSocket, protocol, responseKey) => {
 const enableWebSocketServer = ({
   server,
   onUpgradeRequest = DEFAULT_ON_UPGRADE_REQUEST,
-  frameLengthLimit
+  frameLengthLimit, isMask = false, shouldPing = true // by default, server do not mask and do ping
 }) => {
   const webSocketSet = new Set()
 
   server.on('upgrade', async (request, socket, bodyHeadBuffer) => {
-    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: false, shouldPing: true })
+    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask, shouldPing })
     const { responseKey } = parseUpgradeRequest(webSocket, request)
     if (webSocket.isClosed()) return
 

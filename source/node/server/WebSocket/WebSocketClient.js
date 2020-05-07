@@ -28,7 +28,7 @@ const createWebSocketClient = ({
   } = {},
   onError,
   onUpgradeResponse = DEFAULT_ON_UPGRADE_RESPONSE,
-  frameLengthLimit
+  frameLengthLimit, isMask = true, shouldPing = false // by default, client do mask and do not ping
 }) => {
   url = url instanceof URL ? url : new URL(url)
   if (!VALID_WEBSOCKET_PROTOCOL_SET.has(url.protocol)) throw new Error(`invalid url protocol: ${url.protocol}`)
@@ -63,7 +63,7 @@ const createWebSocketClient = ({
     onError(new Error('unexpected response'))
   })
   request.on('upgrade', async (response, socket, bodyHeadBuffer) => {
-    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask: true })
+    const webSocket = createWebSocket({ socket, frameLengthLimit, isMask, shouldPing })
 
     webSocket.origin = origin
     webSocket.isSecure = isSecure

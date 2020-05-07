@@ -109,8 +109,8 @@ describe('Node.File.Path', () => {
       strictEqual(getPathFromRoot('a/b/c'), expectedPath)
       strictEqual(getPathFromRoot('./a/b/c'), expectedPath)
       strictEqual(getPathFromRoot('a/d/../b/c'), expectedPath)
-      doThrow(() => getPathFromRoot('..'), 'should throw Error for to much "../"')
-      doThrow(() => getPathFromRoot('a/../../b'), 'should throw Error for to much "../"')
+      doThrow(() => getPathFromRoot('..'), 'should throw Error for too much "../"')
+      doThrow(() => getPathFromRoot('a/../../b'), 'should throw Error for too much "../"')
     }
 
     const getPathFromRoot0 = createPathPrefixLock('/root/path/0/')

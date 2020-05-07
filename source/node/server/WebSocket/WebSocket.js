@@ -31,8 +31,8 @@ const CLOSED = 3 // The connection is closed or couldn't be opened.
 const createWebSocket = ({
   socket,
   frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT,
-  isMask = false,
-  shouldPing = false // for server
+  isMask = false, // default only for client to server, to prevent proxy mistaken binary data as http or other protocol
+  shouldPing = false // default for server to start active ping
 }) => {
   const eventEmitter = createEventEmitter()
   const frameSenderStore = createFrameSenderStore(frameLengthLimit)

@@ -58,7 +58,7 @@ const deletePath = async (path, pathStat) => {
     : fsAsync.unlink(path) // resolve to nothing
 }
 
-const nearestExistPath = async (path) => { // TODO: NOTE: may be file or directory
+const nearestExistPath = async (path) => { // TODO: NOTE: may be file instead of directory
   while (path && (Error === await fsAsync.access(path).catch(() => Error))) path = dirname(path)
   return path
 }
@@ -68,7 +68,7 @@ const REGEXP_PATH_SEP_WIN32 = /\\/g
 
 const createPathPrefixLock = (rootPath) => {
   rootPath = resolve(rootPath)
-  return (relativePath) => { // TODO: may silently drop path, should add fool-proof error/check
+  return (relativePath) => { // TODO: will silently drop path when used like `ppl('img', 'a.png')`, should add fool-proof error/check?
     const absolutePath = resolve(rootPath, relativePath)
     if (!absolutePath.startsWith(rootPath)) throw new Error(`invalid relativePath: ${relativePath}`)
     return absolutePath
