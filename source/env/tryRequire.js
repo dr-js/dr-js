@@ -1,4 +1,4 @@
-// TODO: NOTE:
+// NOTE:
 //   will cause webpack warning `Critical dependency: the request of a dependency is an expression`, but whatever
 //   put in separate folder here so webpack will not assume whole package is indirectly required
 //   - If the module source contains a require that cannot be statically analyzed, the context is the current directory.

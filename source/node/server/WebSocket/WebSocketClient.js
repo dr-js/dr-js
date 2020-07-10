@@ -38,7 +38,7 @@ const createWebSocketClient = ({
   const requestKey = key || getRequestKey()
   const responseKey = getRespondKey(requestKey)
 
-  url.protocol = isSecure ? 'https:' : 'http:' // TODO: PATCH: node require `protocol` to match `agent.protocol`, so use 'http:/https:' for 'ws:/wss:' instead
+  url.protocol = isSecure ? 'https:' : 'http:' // NOTE: node require `protocol` to match `agent.protocol`, so use 'http:/https:' for 'ws:/wss:' instead
 
   const request = (isSecure ? httpsGet : httpGet)(url, {
     headers: {

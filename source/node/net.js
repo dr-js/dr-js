@@ -108,10 +108,10 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
     if (timeoutPayload > 0) {
       const timeoutToken = setTimeout(() => {
         __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
-        response.emit('error', new Error('PAYLOAD_TIMEOUT')) // TODO: NOTE: emit custom `error` event to signal stream stop
+        response.emit('error', new Error('PAYLOAD_TIMEOUT')) // NOTE: emit custom `error` event to signal stream stop
         request.destroy() // drop request
       }, timeoutPayload)
-      // request.off('timeout', func) // TODO: NOTE: timeoutPayload should be faster than the underlying socket timeout
+      // request.off('timeout', func) // NOTE: timeoutPayload should be faster than the underlying socket timeout
       response.on('end', () => clearTimeout(timeoutToken))
     }
     if (onProgressDownload) {

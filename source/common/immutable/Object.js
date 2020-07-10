@@ -47,7 +47,7 @@ const objectFilter = (object, filterFunc) => {
   return result || object
 }
 
-const objectFromEntries = (iterable) => { // TODO: NOTE: use `Object.fromEntries` when support to node@>=12.0.0 && chrome@>=73 && firefox@>=63 ?
+const objectFromEntries = (iterable) => { // TODO: use `Object.fromEntries` when support to node@>=12.0.0 && chrome@>=73 && firefox@>=63 ?
   const result = {}
   for (const [ key, value ] of iterable) result[ key ] = value
   return result

@@ -105,6 +105,8 @@
   - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
   - `createEventEmitter`, `createEventTarget`, `createHub`
++ 📄 [source/common/module/Exot.js](source/common/module/Exot.js)
+  - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
   - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
 + 📄 [source/common/module/KeyTree.js](source/common/module/KeyTree.js)
@@ -293,6 +295,8 @@
       - `getBlockBar`, `getBlockChart`
     - **Event**
       - `createEventEmitter`, `createEventTarget`, `createHub`
+    - **Exot**
+      - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
     - **KeySelector**
       - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
     - **KeyTree**

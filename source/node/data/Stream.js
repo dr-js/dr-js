@@ -17,7 +17,7 @@ const isWritableStream = (stream) => (
   isBasicFunction(stream._write)
 )
 
-// TODO: NOTE: consider not directly use `stream.pipe()` for long-running code
+// NOTE: consider not directly use `stream.pipe()` for long-running code
 //   Stream is a "trickier" version of Promise for data, think of promise without a proper `then` method
 //   since the error handling is tricky, every stream in the pipe can and need to handle error and proper close
 //   check:
@@ -40,7 +40,7 @@ const isWritableStream = (stream) => (
 //     - has event listened (and default not cleared)
 //     - the stream should not be reused
 
-// TODO: consider `Stream.pipeline` since node@>=10?
+// TODO: consider `Stream.pipeline` since node@>=10? (though the implementation make much more assumption)
 const setupStreamPipe = (...streamList) => { // the last stream is not handled, but will get error from all previous stream, so the pipe can be properly stopped
   const lastStream = streamList[ streamList.length - 1 ]
   const passError = (error) => lastStream.emit('error', error)
@@ -52,7 +52,7 @@ const setupStreamPipe = (...streamList) => { // the last stream is not handled, 
   return lastStream
 }
 
-// TODO: consider `Stream.finished` since node@>=10?
+// TODO: consider `Stream.finished` since node@>=10? (though the implementation make much more assumption)
 const waitStreamStopAsync = (stream) => new Promise((resolve, reject) => { // the stream is handled
   stream.on('error', reject)
   stream.on('close', () => reject(new Error('unexpected stream close'))) // for close before end, should already resolved for normal close

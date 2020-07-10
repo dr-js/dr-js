@@ -7,7 +7,7 @@ const parseSemVer = (versionString) => {
   major = parseInt(major)
   minor = parseInt(minor)
   patch = parseInt(patch)
-  if (isNaN(major) || isNaN(minor) || isNaN(patch)) throw new Error(`invalid version: ${versionString}`) // TODO: remove func name in error (should use stack mostly)
+  if (isNaN(major) || isNaN(minor) || isNaN(patch)) throw new Error(`invalid version: ${versionString}`)
   return { major, minor, patch, label }
 }
 

@@ -6,7 +6,7 @@ const { describe, it } = global
 describe('Common.Time', () => {
   it('clock() should get msec precision', async () => {
     const timeStart = clock()
-    ' '.repeat(64).split('').forEach(() => clock()) // TODO: NOTE: too fast in browser?
+    ' '.repeat(64).split('').forEach(() => clock()) // NOTE: increase loop if too fast for V8
     const timeDiff = clock() - timeStart
     notStrictEqual(timeDiff, 0)
   })

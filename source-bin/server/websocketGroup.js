@@ -101,11 +101,12 @@ const upgradeRequestProtocol = (store) => {
 
 const FRAME_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
-const responderWebSocketGroupUpgrade = async (store) => { // TODO: NOTE: expect createResponderRouter
-  const { origin, protocolList, isSecure } = store.webSocket
-  __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
+const responderWebSocketGroupUpgrade = async (store) => {
+  const { url: { searchParams } } = store.getState() // TODO: depend on createResponderRouter
+  const { protocolList } = store.webSocket
+  // const { origin, protocolList, isSecure } = store.webSocket
+  // __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
   const groupPath = decodeURIComponent(getRouteParamAny(store) || '')
-  const { url: { searchParams } } = store.getState()
   const id = searchParams.get('id')
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
   if (!groupPath || !id || !protocol) return

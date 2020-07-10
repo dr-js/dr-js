@@ -58,7 +58,7 @@ const deletePath = async (path, pathStat) => {
     : fsAsync.unlink(path) // resolve to nothing
 }
 
-const nearestExistPath = async (path) => { // TODO: NOTE: may be file instead of directory
+const nearestExistPath = async (path) => { // NOTE: may be file instead of directory
   while (path && (Error === await fsAsync.access(path).catch(() => Error))) path = dirname(path)
   return path
 }

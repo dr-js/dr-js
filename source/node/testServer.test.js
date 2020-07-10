@@ -38,7 +38,7 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
           } ],
           [ '/test-timeout-payload', 'GET', async (store) => {
             store.response.writeHead(200, { 'content-length': BUFFER_SCRIPT.length * 64 })
-            store.response.flushHeaders() // fast header but slow payload // TODO: NOTE: not work for browser testing, not flushing header in time
+            store.response.flushHeaders() // fast header but slow payload // NOTE: not work for browser testing, not flushing header in time
             await setTimeoutAsync(40)
             if (store.request.destroyed) return
             // TODO: flush more so the size is large enough for browser to get HEADERS_RECEIVED

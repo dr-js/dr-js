@@ -1,8 +1,9 @@
 import { compareString } from 'source/common/compare'
 import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 
-// TODO: NOTE:
-//   keyTreeJSON:
+// NOTE:
+// - keyTreeJSON (source data):
+//   ```
 //     [
 //       { key: 'key',
 //          subList: [
@@ -18,7 +19,8 @@ import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
 //       { key: 'key' },
 //       { key: 'key' }
 //     ]
-//   keyTreeString (compact save format)
+//   ```
+// - keyTreeString (compact save format):
 //     `key[key[key,key]key]key,key`
 
 // TODO: HACK:

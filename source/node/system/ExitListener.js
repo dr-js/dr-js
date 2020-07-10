@@ -16,7 +16,7 @@ const EXIT_LISTENER_LIST = [
   ].map((event) => ({ event, listener: () => exitListenerAsync({ eventType: 'signal', signalEventType: event }) }))
 ]
 
-// TODO: NOTE: sort of global variable, may be wrap in a create func, but `process` is also global, not decided
+// TODO: sort of global variable, may be wrap in a create func, but `process` is also global, not decided
 const listenerSyncSet = new Set()
 const listenerAsyncSet = new Set()
 
@@ -25,7 +25,7 @@ const exitListenerAsync = async (event) => {
   unbindExitListener()
   for (const listenerAsync of Array.from(listenerAsyncSet)) await catchAsync(listenerAsync, event)
   exitListenerSync(event)
-  // TODO: NOTE: do not try prevent process exit, even if it can be done for some event
+  // NOTE: do not try prevent process exit, even if it can be done for some event
   process.exit(event.code || (event.error ? -1 : 0))
 }
 

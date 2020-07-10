@@ -6,7 +6,7 @@ import { resolve, dirname } from 'path'
 //   >   .../npm/node_modules/@dr-js/core/bin/function.js
 // and:
 //   `.../npm/node_modules/@dr-js/core/bin/function.js` + `../../../../` = `.../npm/node_modules/` // allow the this and related module to resolve
-// TODO: NOTE:
+// NOTE:
 //   currently for the `output-gitignore` code, output of `require('@dr-js/core/package').version` will be
 //   the version from `./node_modules/@dr-js/core/package.json`, since it's higher in the path,
 //   and the '../../../../' will result in an invalid path
@@ -25,7 +25,7 @@ const evalScript = ( // NOTE: use eval not Function to derive local
   require('module').createRequire(evalScriptPath)
 )
 
-export { // TODO: NOTE: only borrow script from here for test or for another bin/script, may cause bloat if webpack use both module/library
+export { // NOTE: only borrow script from here for test or for another bin/script, may cause bloat if webpack use both module/library
   modulePathHack,
   evalScript
 }

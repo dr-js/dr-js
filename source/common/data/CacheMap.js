@@ -48,7 +48,7 @@ const createCacheMap = ({
     clearEventHub,
     subscribe,
     unsubscribe,
-    clear: () => map.forEach(cacheDelete), // use cacheDelete for event send // TODO: NOTE: not calling clearEventHub, so listener is kept
+    clear: () => map.forEach(cacheDelete), // use cacheDelete for event send // NOTE: not clearEventHub, so listener will remain // TODO: change to clearMap since this do not clear ALL state?
     getSize: linkedList.getLength,
     getValueSizeSum: () => valueSizeSum,
     set: (key, value, size = 1, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {

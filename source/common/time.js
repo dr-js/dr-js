@@ -1,15 +1,15 @@
-import { global } from 'source/env/global'
+import { getGlobal } from 'source/env/global'
 
 const tryClock = () => {
   try { // browser
-    const { performance } = global
+    const { performance } = getGlobal()
     const clock = () => performance.now()
     const time = clock()
     if (time <= clock()) return clock
   } catch (error) { __DEV__ && console.log('[tryClock] browser', error) }
 
   try { // node
-    const { process } = global
+    const { process } = getGlobal()
     const clock = () => {
       const [ seconds, nanoseconds ] = process.hrtime()
       return seconds * 1000 + nanoseconds * 0.000001
@@ -35,8 +35,8 @@ const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, inte
 // }
 const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
 
-const [ requestFrameUpdate, cancelFrameUpdate ] = global.requestAnimationFrame
-  ? [ global.requestAnimationFrame, global.cancelAnimationFrame ]
+const [ requestFrameUpdate, cancelFrameUpdate ] = getGlobal().requestAnimationFrame
+  ? [ getGlobal().requestAnimationFrame, getGlobal().cancelAnimationFrame ]
   : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
 
 const createTimer = ({

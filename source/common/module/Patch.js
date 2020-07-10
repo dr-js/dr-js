@@ -1,7 +1,6 @@
-// TODO: NOTE:
-//   patch data should be:
-//     use immutable update
-//     have NAME_KEY, NAME_MODIFY_TIME
+// NOTE: patch data should:
+// - do immutable update
+// - have NAME_KEY, NAME_MODIFY_TIME
 
 const createPatchKit = ({
   NAME_KEY = 'key',
@@ -16,7 +15,7 @@ const createPatchKit = ({
     : data // normal new data
 }) => {
   const hasPatch = (
-    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // TODO: NOTE: will mutate this map, pass new map in every time, do not reuse
+    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // NOTE: will mutate this map, pass new map in every time, do not reuse
     prevDataList // [ { NAME_KEY, NAME_MODIFY_TIME } ]
   ) => {
     for (let index = 0, indexMax = prevDataList.length; index < indexMax; index++) {
@@ -31,7 +30,7 @@ const createPatchKit = ({
   }
 
   const countPatch = (
-    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // TODO: NOTE: will mutate this map, pass new map in every time, do not reuse
+    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // NOTE: will mutate this map, pass new map in every time, do not reuse
     prevDataList // [ { NAME_KEY, NAME_MODIFY_TIME } ]
   ) => {
     let count = 0
@@ -48,7 +47,7 @@ const createPatchKit = ({
   }
 
   const generatePatch = (
-    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // TODO: NOTE: will mutate this map, pass new map in every time, do not reuse
+    dataMap, // { NAME_KEY: { NAME_KEY, NAME_MODIFY_TIME } } // NOTE: will mutate this map, pass new map in every time, do not reuse
     prevDataList // [ { NAME_KEY, NAME_MODIFY_TIME } ]
   ) => {
     const deleteList = []

@@ -347,7 +347,7 @@ describe('Common.Function', () => {
       20
     )
 
-    await withTimeoutAsync( // with timeout // TODO: not able to catch normal function (will throw before await)
+    await withTimeoutAsync( // with timeout // NOTE: not designed to catch normal function (will throw before await)
       async () => { throw new Error('AAA') },
       10
     ).then(

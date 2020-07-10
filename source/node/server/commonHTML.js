@@ -36,7 +36,7 @@ body { ${bodyReset ? 'overflow: auto; display: flex; flex-flow: column; height: 
 
 body, input, textarea, select, button { color: var(--ct-fg-n); }
 body, input, textarea, select, option { background: var(--ct-bg-n); }
-p { color: var(--ct-fg-d); }
+p, li, td { color: var(--ct-fg-d); }
 a { color: var(--c-dr); }
 
 button, .button { text-decoration: none; cursor: pointer; margin: 4px; padding: 4px; min-width: 32px; border: 0; border-radius: 4px; background: var(--c-fill-l); box-shadow: inset 0 0 0 1px var(--c-fill-n); }

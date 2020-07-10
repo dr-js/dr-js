@@ -438,7 +438,7 @@ describe('Common.SanityTest.Promise', () => {
     }
 
     { // setTimeout
-      // TODO: NOTE: nodejs@11 changed timer to align with browser behavior, so the result for nodejs@<=10 may be different
+      // NOTE: nodejs@11 changed timer to align with browser behavior, so the result for nodejs@<=10 may be different
       //  - https://github.com/nodejs/node/issues/22257
       //  - https://github.com/nodejs/node/pull/22842
       const resolveThen0 = pushInsideOutPromiseResolve()
@@ -506,7 +506,7 @@ describe('Common.SanityTest.Promise', () => {
     }
 
     { // nextTick
-      // TODO: NOTE: do not rely on it's execute order against Promise, they will mix up
+      // NOTE: do not rely on it's execute order against Promise, they will mix up
       //  - https://stackoverflow.com/questions/50199376/nodejs-eventloop-execution-orderprocess-nexttick-and-promise
       //  - https://stackoverflow.com/questions/53138464/unexpected-behavior-mixing-process-nexttick-with-async-await-how-does-the-event
       const resolveThen0 = isNode ? pushInsideOutPromiseResolve() : () => {}

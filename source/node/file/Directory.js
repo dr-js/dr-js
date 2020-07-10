@@ -27,7 +27,7 @@ const getDirInfoTree = async (path) => {
     dirInfoListMap.set(upperPath, dirInfoList)
     dirInfoList.forEach(({ type, path }) => type === PATH_TYPE.Directory && queue.push(path))
   }
-  return { root: path, dirInfoListMap } // TODO: NOTE: this is not technically a `tree` but a `tree-like`
+  return { root: path, dirInfoListMap }
 }
 
 const getSubNodeListFunc = (dirInfo, dirInfoListMap) => dirInfoListMap.get(dirInfo.path)
@@ -85,7 +85,7 @@ const getFileList = async (
   fileCollector = DEFAULT_FILE_COLLECTOR // (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
 ) => {
   const fileList = []
-  const pathStat = await getPathStat(path) // resolve symlink
+  const pathStat = await getPathStat(path) // resolve symlink for the initial path
   const pathType = getPathTypeFromStat(pathStat)
   switch (pathType) {
     case PATH_TYPE.File:

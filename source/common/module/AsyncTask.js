@@ -17,6 +17,10 @@ const ASYNC_TASK_PHASE_MAP = {
   DONE
 }
 
+// NOTE:
+//   if for convenience the value is directly used in code
+//   better add verify code like `strictEqual(ASYNC_TASK_KEY_MAP.OUTPUT, 'output')`
+
 const PLAN = 'plan'
 const PROMISE = 'promise'
 const QUERY = 'query'
@@ -29,17 +33,13 @@ const ASYNC_TASK_KEY_MAP = {
   OUTPUT // done phase data
 }
 
-// TODO: NOTE:
-//   if for convenience the value is directly used in code
-//   better add verify code like `strictEqual(ASYNC_TASK_KEY_MAP.OUTPUT, 'output')`
-
 const KEY_RESET = {
   // [ PLAN ]: undefined, // keep idle phase data
   [ PLAN_PROMISE ]: undefined, [ QUERY ]: undefined, [ PROMISE ]: undefined, // drop run phase data
   [ OUTPUT ]: undefined // drop done phase data
 }
 
-// TODO: NOTE: what this try to solve:
+// NOTE: what this try to solve:
 //   it's convenient to using promise to hold a running `task`
 //   but there lack way to interact with code inside the running task
 //   for example:

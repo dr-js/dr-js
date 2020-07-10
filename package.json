@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.3.0",
+  "version": "0.3.1-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -28,7 +28,7 @@
     "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-dev": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T source/common/data/Tree.test.js",
+    "test-dev": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T source/common/module/Exot.test.js",
     "test-sanity": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T source/common/.sanity.test/promise.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
@@ -47,8 +47,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "0.3.0-dev.11",
-    "@dr-js/dev-web-puppeteer": "0.3.0-dev.11"
+    "@dr-js/dev": "0.3.0",
+    "@dr-js/dev-web-puppeteer": "0.3.0"
   },
   "sideEffects": false
 }
