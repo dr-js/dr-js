@@ -1,3 +1,6 @@
+// TODO: since this is all common js, move under common/module?
+
+// TODO: move to common/string?
 const filterJoin = (array) => array.filter(Boolean).join('\n')
 
 const COMMON_LAYOUT = (extraHeadList = [], extraBodyList = []) => `<!DOCTYPE html>
@@ -63,7 +66,7 @@ const COMMON_SCRIPT = (injectMap) => {
   ])
 }
 
-const COMMON_FUNC_MAP = () => ({ // common quick function
+const COMMON_FUNC_MAP = () => ({ // common quick function, intend to attach to window like: `Object.assign(window, COMMON_FUNC_MAP())`
   qS: querySelector,
   qSA: querySelectorAll,
   cE: createElement,
@@ -74,32 +77,49 @@ const COMMON_FUNC_MAP = () => ({ // common quick function
   tDR: tillDocumentReady
 })
 const querySelector = (selector, innerHTML = undefined) => {
-  const element = document.querySelector(selector)
+  const element = window.document.querySelector(selector)
   if (element && typeof (innerHTML) === 'string') element.innerHTML = innerHTML
   return element
 }
-const querySelectorAll = (selector) => [ ...document.querySelectorAll(selector) ]
+const querySelectorAll = (selector) => [ ...window.document.querySelectorAll(selector) ]
 const createElement = (tagName, attributeMap = {}, childElementList = []) => {
-  const element = Object.assign(document.createElement(tagName), attributeMap)
+  const element = Object.assign(window.document.createElement(tagName), attributeMap)
   childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
   return element
 }
 const appendChildList = (element, childElementList = []) => childElementList.forEach((childElement) => childElement && element.appendChild(childElement))
 const modifyElementClassName = (element, isAdd, ...args) => element.classList[ isAdd ? 'add' : 'remove' ](...args)
 const modifyElementAttribute = (element, isAdd, key, value = '') => element[ isAdd ? 'setAttribute' : 'removeAttribute' ](key, value)
-const isDocumentReady = () => document.readyState === 'complete'
+const isDocumentReady = () => window.document.readyState === 'complete'
 const tillDocumentReady = (func) => {
-  if (window.iDR()) return func()
+  const { iDR, document } = window
+  if (iDR()) return func()
   const onReady = () => {
-    if (!window.iDR()) return
+    if (!iDR()) return
     document.removeEventListener('readystatechange', onReady)
     func()
   }
   document.addEventListener('readystatechange', onReady)
 }
 
+const styleTagMerge = (styleTagStringList) => { // merge <style> ... </style> to single tag, only this format is supported
+  const CSSStringList = styleTagStringList.map((styleTagString) => {
+    if (styleTagString.startsWith('<style>') && styleTagString.endsWith('</style>')) return styleTagString.slice('<style>'.length, 0 - '</style>'.length)
+    else throw new Error(`invalid styleTagString: ${styleTagString}`)
+  })
+  return `<style>\n${CSSStringList.join('\n')}\n</style>`
+}
+
+// TODO: this is fast hack, may broke some complex CSS, can compress CSS in <style> ... </style>
+// check: https://gist.github.com/clipperhouse/1201239
+const simpleCompactCSS = (CSSString) => CSSString
+  .replace(/\s*([,{}();:>])\s*/g, '$1') // remove white-space around common marker, but leave link-break as-is
+  .replace(/;}/g, '}') // reduce tail semicolon
+
 export {
   COMMON_LAYOUT,
   COMMON_STYLE,
-  COMMON_SCRIPT, COMMON_FUNC_MAP
+  COMMON_SCRIPT, COMMON_FUNC_MAP,
+  styleTagMerge,
+  simpleCompactCSS
 }

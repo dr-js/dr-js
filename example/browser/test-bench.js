@@ -17,6 +17,7 @@ window.addContent('', `
 </div>
 `, () => {
   const {
+    document,
     qS,
     Dr: {
       Common: { Format: { binary }, String: { autoEllipsis } },

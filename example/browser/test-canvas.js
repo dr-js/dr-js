@@ -14,6 +14,7 @@ window.addContent('', `
 </div>
 `, () => {
   const {
+    document,
     qS, log, updateLoop,
     Dr: {
       Browser: {

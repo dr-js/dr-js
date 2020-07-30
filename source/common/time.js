@@ -35,6 +35,13 @@ const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, inte
 // }
 const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
 
+const setAwaitAsync = async (awaitCount = 0) => { // better use it as a relative delay method, passing 0 will still cause a baseline await/then
+  while (awaitCount > 0) {
+    await null
+    awaitCount--
+  }
+}
+
 const [ requestFrameUpdate, cancelFrameUpdate ] = getGlobal().requestAnimationFrame
   ? [ getGlobal().requestAnimationFrame, getGlobal().cancelAnimationFrame ]
   : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
@@ -80,7 +87,7 @@ export {
   CLOCK_TO_SECOND,
   clock,
   getTimestamp,
-  setTimeoutAsync,
+  setTimeoutAsync, setAwaitAsync,
   requestFrameUpdate,
   cancelFrameUpdate,
   createTimer,

@@ -36,7 +36,7 @@
 + 📄 [source/common/string.js](source/common/string.js)
   - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
@@ -49,10 +49,14 @@
   - `createCache`, `createCacheMap`
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
++ 📄 [source/common/data/Iter.js](source/common/data/Iter.js)
+  - `unwrap`, `wrapAsync`, `wrapSync`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
   - `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
   - `createListMap`
++ 📄 [source/common/data/MapMap.js](source/common/data/MapMap.js)
+  - `createMapMap`, `getInvertMapMap`
 + 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
   - `createSaveQueue`
 + 📄 [source/common/data/SetMap.js](source/common/data/SetMap.js)
@@ -105,7 +109,7 @@
   - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
   - `createEventEmitter`, `createEventTarget`, `createHub`
-+ 📄 [source/common/module/Exot.js](source/common/module/Exot.js)
++ 📄 [source/common/module/ExotDev.js](source/common/module/ExotDev.js)
   - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
   - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
@@ -119,10 +123,14 @@
   - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
++ 📄 [source/common/module/RunletDev.js](source/common/module/RunletDev.js)
+  - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
++ 📄 [source/common/module/TupleHasherDev.js](source/common/module/TupleHasherDev.js)
+  - `createTupleHasher`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
   - `createUpdateLoop`, `createUpdater`
 + 📄 [source/common/mutable/Object.js](source/common/mutable/Object.js)
@@ -159,6 +167,8 @@
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
++ 📄 [source/node/module/RunletDev.js](source/node/module/RunletDev.js)
+  - `createReadableStreamInputChip`, `createWritableStreamOutputChip`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
@@ -170,7 +180,7 @@
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServerPack`, `describeServerPack`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
-  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
+  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
@@ -245,10 +255,14 @@
       - `createCache`, `createCacheMap`
     - **DataUri**
       - `decode`, `encode`
+    - **Iter**
+      - `unwrap`, `wrapAsync`, `wrapSync`
     - **LinkedList**
       - `createDoublyLinkedList`, `createNode`
     - **ListMap**
       - `createListMap`
+    - **MapMap**
+      - `createMapMap`, `getInvertMapMap`
     - **SaveQueue**
       - `createSaveQueue`
     - **SetMap**
@@ -295,7 +309,7 @@
       - `getBlockBar`, `getBlockChart`
     - **Event**
       - `createEventEmitter`, `createEventTarget`, `createHub`
-    - **Exot**
+    - **ExotDev**
       - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
     - **KeySelector**
       - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
@@ -309,10 +323,14 @@
       - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
+    - **RunletDev**
+      - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
       - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+    - **TupleHasherDev**
+      - `createTupleHasher`
     - **UpdateLoop**
       - `createUpdateLoop`, `createUpdater`
   - **Mutable**
@@ -331,7 +349,7 @@
   - **String**
     - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setTimeoutAsync`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`
   - **Verify**
     - `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
@@ -363,6 +381,8 @@
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
+    - **RunletDev**
+      - `createReadableStreamInputChip`, `createWritableStreamOutputChip`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
@@ -392,7 +412,7 @@
     - **Server**
       - `createRequestListener`, `createServerPack`, `describeServerPack`
     - **CommonHTML**
-      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`
+      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
       - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**

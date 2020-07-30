@@ -1,5 +1,7 @@
 import { isCompactArrayShallowEqual } from 'source/common/immutable/check'
 
+const { localStorage } = window
+
 const KEY_LIST_KEY = '@@KEY_LIST'
 
 // sync
@@ -8,9 +10,9 @@ const KEY_LIST_KEY = '@@KEY_LIST'
 
 const createSyncStateStorage = ({
   keyPrefix = 'STATE', // for multi storage setup
-  setItem = (key, value) => window.localStorage.setItem(`${keyPrefix}|${key}`, JSON.stringify(value)),
-  getItem = (key) => JSON.parse(window.localStorage.getItem(`${keyPrefix}|${key}`)),
-  removeItem = (key) => window.localStorage.removeItem(`${keyPrefix}|${key}`)
+  setItem = (key, value) => localStorage.setItem(`${keyPrefix}|${key}`, JSON.stringify(value)),
+  getItem = (key) => JSON.parse(localStorage.getItem(`${keyPrefix}|${key}`)),
+  removeItem = (key) => localStorage.removeItem(`${keyPrefix}|${key}`)
 }) => {
   let persistState = {}
   let persistKeyList = []

@@ -196,7 +196,7 @@ const mainHTML = `
 
 const mainScriptInit = () => {
   const {
-    alert, getSelection, location, Blob, WebSocket,
+    document, alert, getSelection, location, Blob, WebSocket,
     qS, cE,
     TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE,
     FRAME_LENGTH_LIMIT,

@@ -1,9 +1,11 @@
 import { getRandomId } from 'source/common/math/random'
 import { isObjectContain } from 'source/common/check'
 
+const { document } = window
+
 // TODO: for single key, not support key sequence
 const createKeyCommandHub = ({
-  eventSource = window.document,
+  eventSource = document,
   isSkipPreventDefault = false // normally preventDefault won't hurt
 }) => {
   const keyCommandMap = new Map()

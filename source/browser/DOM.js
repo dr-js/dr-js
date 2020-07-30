@@ -1,3 +1,5 @@
+const { requestAnimationFrame, document } = window
+
 const throttleByAnimationFrame = (func) => {
   let callArgs = null
   const frameFunc = () => {
@@ -6,13 +8,13 @@ const throttleByAnimationFrame = (func) => {
     func.apply(null, currentCallArgs)
   }
   return (...args) => {
-    !callArgs && window.requestAnimationFrame(frameFunc)
+    !callArgs && requestAnimationFrame(frameFunc)
     callArgs = args
   }
 }
 
 // TODO: use modern https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/items (wait Safari, or not?)
-const applyReceiveFileListListener = (eventSource = window.document, onFileList) => {
+const applyReceiveFileListListener = (eventSource = document, onFileList) => {
   const muteEvent = (event) => {
     event.stopPropagation()
     event.preventDefault()

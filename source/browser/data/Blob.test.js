@@ -9,6 +9,7 @@ import {
 } from './Blob'
 
 const { describe, it } = global
+const { btoa } = window
 
 const TEST_TEXT = '123 abc !@#'
 const TEST_TYPE = 'text/test'
@@ -25,7 +26,7 @@ describe('Browser.Data.Blob', () => {
   it('parseBlobAsDataURL()', async () => {
     strictEqual(
       await parseBlobAsDataURL(TEST_BLOB),
-      `data:${TEST_TYPE};base64,${window.btoa('123 abc !@#')}`
+      `data:${TEST_TYPE};base64,${btoa('123 abc !@#')}`
     )
   })
 

@@ -1,6 +1,8 @@
 // special store, state is href string
 
-const createHistoryStateStore = (state = window.location.href) => {
+const { location, history } = window
+
+const createHistoryStateStore = (state = location.href) => {
   const getState = () => {
     if (listenerSet.size === 0) throw new Error('should subscribe before getState')
     return state
@@ -10,12 +12,12 @@ const createHistoryStateStore = (state = window.location.href) => {
     if (nextState === state) return state
     const prevState = state
     state = nextState
-    shouldPushState !== 'skip' && window.history.pushState(null, '', state)
+    shouldPushState !== 'skip' && history.pushState(null, '', state)
     listenerSet.forEach((listener) => listener(state, prevState))
     return state
   }
-  const listenerPopState = () => { setState(window.location.href, 'skip') }
-  const listenerHashChange = () => { setState(window.location.href) }
+  const listenerPopState = () => { setState(location.href, 'skip') }
+  const listenerHashChange = () => { setState(location.href) }
   const listenerSet = new Set()
   const subscribe = (listener) => {
     listenerSet.add(listener)

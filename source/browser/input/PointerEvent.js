@@ -2,6 +2,8 @@ import { clock } from 'source/common/time'
 import { getDist } from 'source/common/geometry/D2/Vector'
 import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/BoundingRect'
 
+const { document, getComputedStyle, TouchEvent } = window
+
 const POINTER_EVENT_TYPE = {
   START: 'START',
   MOVE: 'MOVE',
@@ -18,9 +20,9 @@ const applyPointerEventListener = ({
   isCancelOnOutOfBound = true, // send out of bound as cancel
   isUseTouchEvent = true // TODO: when touch trigger browser scroll, pointer will be cancelled, so to still get a drag, both Pointer & Touch will be listened
 }) => {
-  !window.getComputedStyle(element).touchAction && console.warn('[applyPointerEventListener] should set CSS "touch-action" to "none" to prevent browser defaults')
+  !getComputedStyle(element).touchAction && console.warn('[applyPointerEventListener] should set CSS "touch-action" to "none" to prevent browser defaults')
 
-  const eventSource = isGlobal ? window.document : element
+  const eventSource = isGlobal ? document : element
   isCancelOnOutOfBound = isCancel && isCancelOnOutOfBound
 
   // TODO: add custom function to record start state
@@ -51,12 +53,12 @@ const applyPointerEventListener = ({
 
   const getEventPointClient = (event) => ({ x: event.clientX, y: event.clientY })
   const getEventPointTouch = (event) => {
-    if (!(event instanceof window.TouchEvent)) return { x: event.clientX, y: event.clientY }
+    if (!(event instanceof TouchEvent)) return { x: event.clientX, y: event.clientY }
     return event.touches.length
       ? { x: event.touches[ 0 ].clientX, y: event.touches[ 0 ].clientY }
       : { x: event.changedTouches[ 0 ].clientX, y: event.changedTouches[ 0 ].clientY }
   }
-  const getEventPoint = (!isUseTouchEvent || !window.TouchEvent)
+  const getEventPoint = (!isUseTouchEvent || !TouchEvent)
     ? getEventPointClient
     : getEventPointTouch
 
@@ -81,9 +83,9 @@ const applyPointerEventListener = ({
     return prevState
   }
 
-  const checkShouldPass = (!isUseTouchEvent || !window.TouchEvent)
+  const checkShouldPass = (!isUseTouchEvent || !TouchEvent)
     ? (event) => !event.isPrimary
-    : (event) => (event instanceof window.TouchEvent)
+    : (event) => (event instanceof TouchEvent)
       ? (
         (event.type === 'touchend' || event.type === 'touchcancel')
           ? event.touches.length !== 0

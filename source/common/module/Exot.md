@@ -1,15 +1,14 @@
 # Exot, Error handling, and Bugs
 
 
-#### separate Error and Bug
+## Error and Bug
 
 Error is a special kind of event:
   it's message bubble up the call stack,
   the `catch` setup listener to receive and maybe resolve the problem (often by retry),
   if the top call stack is reached, program should exit (by crash).
 
-Error
-  should be well-defined, classified, can be enumerated easily,
+Error should be well-defined, classified, can be enumerated easily,
   and better be all taken care of before the code ships.
 For well written code,
   unexpected Error should not exist,
@@ -29,7 +28,7 @@ To avoid confusion:
     a perfect imaginary Bug-free codebase can still use Error and Error handling for some logic.
 
 
-#### Error handling
+## Error handling
 
 Not all code require Error handling.
   For low level function with controlled input, limited scope and no callout to external IO,
@@ -51,7 +50,7 @@ Thing get really mixed up when you need to work with multiple long-running IO:
   it's a lot more code to properly close all long-running IO for an Error event handling.
 
 
-#### Exot pattern
+## Exot pattern
 
 To use these long existing external IO (or simply leak-able resource) with less code and simpler logic,
   we define a pattern to wrap those as **Exot**,
@@ -121,7 +120,7 @@ Here's a list for the kind of Error to expect during the Exot lifecycle:
   - `reject`: Bug (undefined state)
 
 
-#### Exot design choice
+## Exot design choice
 
 The Exot pattern is for wrapping a sizable or complex enough external-IO control code,
   and make using these code safer and easier.
@@ -143,20 +142,21 @@ Some other design choice:
     also both expect the clear up func never throw.
 
 
-#### Exot support function
+## Exot support function
 
 Some ideas allow managing Exot easier:
 - createExotGroup `(exotList) => Exot`:
   - combine many Exot as a whole, and `down` all on ExotError
   - [optional] allow dynamic add and remove Exot
-  - [optional] allow restart each Exot on Error
+  - [optional] allow restarting each Exot on Error
 - withExotScopeAsync `async (exotList, async (upExotList) => {}) => {}`:
   - wait for all Exot `up`, run the `AsyncFunction`,
       and `down` all Exot on `resolve`,
       or `down` all Exot and re-throw error on `reject`
 
 
-#### reference
+## reference
 
+- the original file in Repo: [github:dr-js/dr-js#source/common/module/Exot.md](https://github.com/dr-js/dr-js/blob/master/source/common/module/Exot.md)
 - https://stackoverflow.com/questions/2845183/how-to-handle-failure-to-release-a-resource-which-is-contained-in-a-smart-pointe
 - https://stackoverflow.com/questions/341971/what-is-the-execute-around-idiom

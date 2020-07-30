@@ -2,6 +2,9 @@ import { getGlobal } from 'source/env/global'
 import { setTimeoutAsync } from 'source/common/time'
 import { getRandomId } from 'source/common/math/random'
 
+// TODO: still under testing, pattern not stable
+// Exot is short for "Exot-ic", a pattern for wrapping external IO or Resource that require manual `up` and `down`.
+
 const createExotError = (exotId, message) => { // error with exotId
   const exotError = new Error(message)
   exotError.exotId = exotId

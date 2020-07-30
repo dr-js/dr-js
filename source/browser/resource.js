@@ -1,6 +1,6 @@
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 
-const { fetch, navigator, caches, URL, Blob, Request, Response } = window
+const { document, fetch, navigator, caches, URL, Blob, Request, Response } = window
 
 const createElement = (tagName, attributeMap = {}) => Object.assign(document.createElement(tagName), attributeMap)
 

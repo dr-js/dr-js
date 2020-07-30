@@ -14,7 +14,7 @@ const createExampleServerHTMLResponder = () => {
 
 const mainScriptInit = () => {
   const {
-    location, WebSocket,
+    document, location, WebSocket,
     qS, cE, aCL
   } = window
 
