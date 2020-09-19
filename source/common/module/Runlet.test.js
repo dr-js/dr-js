@@ -12,7 +12,7 @@ import {
   createCountPool, KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO, TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE, createLogicalCountPool,
   ChipSyncBasic, createArrayInputChip, createArrayOutputChip, createAsyncIteratorInputChip, createAsyncIteratorOutputChip, createENDRegulatorChip,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-} from './RunletDev'
+} from './Runlet'
 
 const { describe, it, info = console.log } = global
 

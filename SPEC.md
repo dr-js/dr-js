@@ -21,8 +21,8 @@
   - `ENHANCED_POINTER_EVENT_TYPE`, `POINTER_EVENT_TYPE`, `applyEnhancedPointerEventListener`, `applyPointerEventListener`
 + 📄 [source/browser/module/HistoryStateStore.js](source/browser/module/HistoryStateStore.js)
   - `createHistoryStateStore`
-+ 📄 [source/browser/module/StateStorage.js](source/browser/module/StateStorage.js)
-  - `createSyncStateStorage`
++ 📄 [source/browser/module/LocalStorageStateStore.js](source/browser/module/LocalStorageStateStore.js)
+  - `createLocalStorageStateStore`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -109,7 +109,7 @@
   - `getBlockBar`, `getBlockChart`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
   - `createEventEmitter`, `createEventTarget`, `createHub`
-+ 📄 [source/common/module/ExotDev.js](source/common/module/ExotDev.js)
++ 📄 [source/common/module/Exot.js](source/common/module/Exot.js)
   - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
 + 📄 [source/common/module/KeySelector.js](source/common/module/KeySelector.js)
   - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
@@ -123,7 +123,7 @@
   - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
-+ 📄 [source/common/module/RunletDev.js](source/common/module/RunletDev.js)
++ 📄 [source/common/module/Runlet.js](source/common/module/Runlet.js)
   - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
@@ -146,15 +146,11 @@
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `toArrayBuffer`
+  - `getRandomBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
-+ 📄 [source/node/data/LogQueue.js](source/node/data/LogQueue.js)
-  - `createLogQueue`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `bufferToReadableStream`, `isReadableStream`, `isWritableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
-+ 📄 [source/node/data/function.js](source/node/data/function.js)
-  - `getRandomBufferAsync`
+  - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -162,13 +158,11 @@
 + 📄 [source/node/file/Path.js](source/node/file/Path.js)
   - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
-  - `createFileWatcher`
+  - `createFileWatcherExot`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
   - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLogger`, `createSimpleLogger`
-+ 📄 [source/node/module/RunletDev.js](source/node/module/RunletDev.js)
-  - `createReadableStreamInputChip`, `createWritableStreamOutputChip`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
@@ -178,7 +172,7 @@
 + 📄 [source/node/server/Proxy.js](source/node/server/Proxy.js)
   - `createTCPProxyListener`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
-  - `createRequestListener`, `createServerPack`, `describeServerPack`
+  - `createRequestListener`, `createServerExot`, `describeServerOption`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
@@ -235,8 +229,8 @@
   - **Module**
     - **HistoryStateStore**
       - `createHistoryStateStore`
-    - **StateStorage**
-      - `createSyncStateStorage`
+    - **LocalStorageStateStore**
+      - `createLocalStorageStateStore`
   - **DOM**
     - `applyReceiveFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
   - **Net**
@@ -309,7 +303,7 @@
       - `getBlockBar`, `getBlockChart`
     - **Event**
       - `createEventEmitter`, `createEventTarget`, `createHub`
-    - **ExotDev**
+    - **Exot**
       - `createExotError`, `createExotGroup`, `createSampleExot`, `findExotMapValue`, `mapExotMapValue`, `toExotMap`
     - **KeySelector**
       - `concatKeyFrag`, `createMultiKeySwitch`, `reduceKeySelector`
@@ -323,7 +317,7 @@
       - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
-    - **RunletDev**
+    - **Runlet**
       - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
@@ -357,14 +351,11 @@
 - **Node**
   - **Data**
     - **Buffer**
-      - `toArrayBuffer`
+      - `getRandomBufferAsync`, `toArrayBuffer`
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
-    - **LogQueue**
-      - `createLogQueue`
     - **Stream**
-      - `bufferToReadableStream`, `isReadableStream`, `isWritableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
-    - `getRandomBufferAsync`
+      - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
   - **File**
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
@@ -373,7 +364,7 @@
     - **Path**
       - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
     - **Watch**
-      - `createFileWatcher`
+      - `createFileWatcherExot`
   - **Module**
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
@@ -381,8 +372,6 @@
       - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
     - **Logger**
       - `createLogger`, `createSimpleLogger`
-    - **RunletDev**
-      - `createReadableStreamInputChip`, `createWritableStreamOutputChip`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
@@ -410,7 +399,7 @@
     - **Proxy**
       - `createTCPProxyListener`
     - **Server**
-      - `createRequestListener`, `createServerPack`, `describeServerPack`
+      - `createRequestListener`, `createServerExot`, `describeServerOption`
     - **CommonHTML**
       - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**

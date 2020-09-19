@@ -121,7 +121,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const configure = ({ serverPack }) => {
+const configure = ({ serverExot }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -144,7 +144,7 @@ const configure = ({ serverPack }) => {
     [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ]
   ]
 
-  const { server, option: { baseUrl } } = serverPack
+  const { server, option: { baseUrl } } = serverExot
   enableWebSocketServer({
     server,
     onUpgradeRequest: createUpdateRequestListener({

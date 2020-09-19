@@ -20,7 +20,7 @@ const createSampleExot = ({
   let _onExotError
   let _isUp = false
 
-  const up = async (
+  const up = async ( // NOTE: can also be sync, outer func better use await for both
     // ## pattern (the ONLY option, so Exot config can't suddenly change, and make pattern simple)
     onExotError // (error) => {} // mostly for ACK error outside of Exot function call, non-expert outside code should handle by `down` the Exot
   ) => {
@@ -32,7 +32,7 @@ const createSampleExot = ({
     _isUp = true // late set (call up again during up should be a bug, a check here is optional, but not required)
   }
 
-  const down = async () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing)
+  const down = async () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing) // NOTE: can also be sync, outer func better use await for both
     if (!_isUp) return // skip
     _onExotError = undefined
     _isUp = false // early set (since this should not throw)

@@ -22,13 +22,12 @@ import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 ```
 
-check the function: `createServerPack()`, basically:
+check the function: `createServerExot()`, basically:
 ```js
-const createServerPack = (option) => ({ // option check `DEFAULT_HTTPS_OPTION` and `DEFAULT_HTTP_OPTION`
+const createServerExot = (option) => ({ // option check `DEFAULT_HTTPS_OPTION` and `DEFAULT_HTTP_OPTION`
+  id, up, down, isUp, // common Exot
   server, // from createHttpServer or createHttpsServer
-  option,
-  start: async () => {},
-  stop: async () => {}
+  option
 })
 ```
 

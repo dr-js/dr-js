@@ -1,6 +1,6 @@
 import { strictEqual } from 'source/common/verify'
 import { getUnusedPort, autoTestServerPort } from './function'
-import { createServerPack } from './Server'
+import { createServerExot } from './Server'
 
 const { describe, it } = global
 
@@ -29,23 +29,23 @@ describe('Node.Server.function', () => {
   it('getUnusedPort() check', async () => {
     const port = await getUnusedPort()
 
-    const { start, stop } = createServerPack({ protocol: 'http:', hostname: '0.0.0.0', port })
-    await start()
+    const { up, down } = createServerExot({ protocol: 'http:', hostname: '0.0.0.0', port })
+    await up()
 
     await getUnusedPort(port, '0.0.0.0').then(
       () => { throw new Error('should throw port token error') },
       (error) => `good, expected Error: ${error}`
     )
 
-    await stop()
+    await down()
   })
 
   it('autoTestServerPort() check', async () => {
     const occupyPort = async () => {
       const port = await getUnusedPort()
-      const { start, stop } = createServerPack({ protocol: 'http:', hostname: '0.0.0.0', port })
-      await start()
-      return { port, stop }
+      const { up, down } = createServerExot({ protocol: 'http:', hostname: '0.0.0.0', port })
+      await up()
+      return { port, down }
     }
 
     const occupyPortServerList = [
@@ -61,7 +61,7 @@ describe('Node.Server.function', () => {
       expectPort
     ], '0.0.0.0')
 
-    await Promise.all(occupyPortServerList.map(({ stop }) => stop()))
+    await Promise.all(occupyPortServerList.map(({ down }) => down()))
 
     strictEqual(resultPort, expectPort, 'should pick detected unused port')
   })

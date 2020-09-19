@@ -3,13 +3,13 @@ import { arraySplitChunk } from '@dr-js/core/module/common/immutable/Array'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
 import { readableStreamToBufferAsync } from '@dr-js/core/module/node/data/Stream'
-import { createRequestListener, describeServerPack } from '@dr-js/core/module/node/server/Server'
+import { createRequestListener, describeServerExot } from '@dr-js/core/module/node/server/Server'
 import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
 import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
 
 const commonStartServer = async ({
-  serverPack: { server, option, start },
+  serverExot: { up, server, option },
   log,
   routeConfigList, isAddFavicon,
   title, extraInfoList
@@ -31,8 +31,8 @@ const commonStartServer = async ({
       responderLogEnd(store)
     }
   }))
-  await start()
-  log(describeServerPack(option, title, extraInfoList))
+  await up()
+  log(describeServerExot(option, title, extraInfoList))
 }
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]

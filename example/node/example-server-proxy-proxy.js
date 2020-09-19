@@ -4,7 +4,7 @@ const { createServer: createHttpServer } = require('http')
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
 const { requestHttp } = require('../../output-gitignore/library/node/net')
 const { readableStreamToBufferAsync } = require('../../output-gitignore/library/node/data/Stream')
-const { createServerPack, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
+const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
@@ -30,7 +30,7 @@ const responderProxy = async (store) => {
   store.response.end(responseBuffer)
 }
 
-const { server, start, option } = createServerPack({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
+const { up, server, option } = createServerExot({ protocol: 'http:', hostname: ServerHostname, port: ServerPort })
 server.on('request', createRequestListener({
   responderList: [
     (store) => { console.log(`[server] get: ${store.request.url}`) },
@@ -78,7 +78,7 @@ const webSocketSet = enableWebSocketServer({
   }
 })
 
-start().then(() => {
+up().then(() => {
   console.log(`Server running at: 'http://${ServerHostname}:${ServerPort}'`)
 })
 

@@ -2,7 +2,7 @@ import { setTimeoutAsync } from 'source/common/time'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 import { writeBufferToStreamAsync, readableStreamToBufferAsync } from 'source/node/data/Stream'
 import { getUnusedPort } from 'source/node/server/function'
-import { createServerPack, createRequestListener } from 'source/node/server/Server'
+import { createServerExot, createRequestListener } from 'source/node/server/Server'
 import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
@@ -17,7 +17,7 @@ bufferList.fill(Buffer.from([
 const BUFFER_SCRIPT = Buffer.concat(bufferList) // the buffer size should be large enough for browser to get HEADERS_RECEIVED
 
 const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
-  const { server, start, stop, option: { baseUrl } } = createServerPack({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
+  const { up, down, server, option: { baseUrl } } = createServerExot({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
   let retryCount = 0
 
   const URL_TEST_HTML = '/test-html'
@@ -70,9 +70,9 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
       })
     ]
   }))
-  await start()
+  await up()
   await asyncTest(baseUrl, testHTML ? `${baseUrl}${URL_TEST_HTML}` : '')
-  await stop()
+  await down()
 }
 
 export { BUFFER_SCRIPT, withTestServer }

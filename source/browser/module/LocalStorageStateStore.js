@@ -2,14 +2,12 @@ import { isCompactArrayShallowEqual } from 'source/common/immutable/check'
 
 const { localStorage } = window
 
-const KEY_LIST_KEY = '@@KEY_LIST'
+// sync save and load
+// "immutable" state, default persist through JSON, so complex Object will be recreated, but when using single storage from start to end, the state can be considered immutable
+// operate at the sub-state 1 level deeper, so to get good performance, the state structure may need some design or twist
 
-// sync
-// immutable state
-// split state save 1 level deeper (diff, may be faster)
-
-const createSyncStateStorage = ({
-  keyPrefix = 'STATE', // for multi storage setup
+const createLocalStorageStateStore = ({
+  keyPrefix = 'STATE', keyListKey = '@@KEY_LIST', // for multi storage setup
   setItem = (key, value) => localStorage.setItem(`${keyPrefix}|${key}`, JSON.stringify(value)),
   getItem = (key) => JSON.parse(localStorage.getItem(`${keyPrefix}|${key}`)),
   removeItem = (key) => localStorage.removeItem(`${keyPrefix}|${key}`)
@@ -17,16 +15,7 @@ const createSyncStateStorage = ({
   let persistState = {}
   let persistKeyList = []
 
-  const reset = (initialPersistState) => {
-    persistState = {}
-    save(initialPersistState)
-    return persistState
-  }
-  const init = (initialState) => reset({
-    ...initialState,
-    ...load()
-  })
-  const save = (state) => {
+  const save = (state) => { // set the whole state, so maybe debounce a bit
     // __DEV__ && console.log('[save] state:', state)
     const keyList = Object.keys(state)
     for (const key of keyList) {
@@ -39,14 +28,14 @@ const createSyncStateStorage = ({
     }
     if (!isCompactArrayShallowEqual(keyList, persistKeyList)) {
       __DEV__ && console.log('[save] save keyList:', keyList)
-      setItem(KEY_LIST_KEY, keyList)
+      setItem(keyListKey, keyList)
     }
     persistState = state
     persistKeyList = keyList
   }
-  const load = () => {
+  const load = () => { // get the whole state, so maybe load once on start
     try {
-      const loadKeyList = getItem(KEY_LIST_KEY) || []
+      const loadKeyList = getItem(keyListKey) || []
       persistState = loadKeyList.reduce((o, key) => {
         o[ key ] = getItem(key)
         return o
@@ -58,11 +47,9 @@ const createSyncStateStorage = ({
   }
 
   return {
-    reset, // will return result state
-    init, // will return result state
     save,
     load
   }
 }
 
-export { createSyncStateStorage }
+export { createLocalStorageStateStore }

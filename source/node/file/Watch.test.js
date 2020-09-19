@@ -5,7 +5,7 @@ import { setTimeoutAsync } from 'source/common/time'
 import { catchAsync } from 'source/common/error'
 import { createDirectory } from './Directory'
 import { modifyDelete } from './Modify'
-import { createFileWatcher } from './Watch'
+import { createFileWatcherExot } from './Watch'
 
 const { describe, it, after, info = console.log } = global
 
@@ -14,16 +14,18 @@ const TEST_ROOT = resolve(__dirname, './test-watch-gitignore/')
 // TODO: Strange timer mix-up, throttle not working & 2nd fs change event not fired till timer is called
 // TODO: try change code to `setTimeoutAsync(1000)` and `createFileWatcher({ wait: 500 })` to see the event being blocked & delayed
 
-const createWatcherTest = (tag, func) => async () => {
+const createWatcherTest = (tag, path, func) => async () => {
   const fromTest = (...args) => resolve(TEST_ROOT, tag, ...args)
-  const watcher = createFileWatcher({ wait: 10 })
+
+  path = fromTest(path)
+  const watcherExot = createFileWatcherExot({ path, wait: 10 })
 
   await createDirectory(fromTest('folder'))
   await fsAsync.writeFile(fromTest('file'), `${tag}|file`)
   await fsAsync.writeFile(fromTest('folder/folder-file'), `${tag}|folder-file`)
 
-  const { error } = await catchAsync(func, { fromTest, watcher })
-  watcher.clear()
+  const { error } = await catchAsync(func, { fromTest, path, watcherExot })
+  await watcherExot.down() // actually sync
   if (error) throw error
 }
 
@@ -33,210 +35,198 @@ after('clear', async () => {
 
 describe('Node.File.Watch', () => {
   describe('createFileWatcher()', () => {
-    it('file content change', createWatcherTest('file-content', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file content change', createWatcherTest('file-content', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
-      await fsAsync.writeFile(targetPath, 'file|changed')
+      await fsAsync.writeFile(path, 'file|changed')
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
     }))
 
-    it('directory content change', createWatcherTest('directory-content', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory content change', createWatcherTest('directory-content', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
 
-      resultChangeState = null
+      resultChangeState = undefined
       await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
       await fsAsync.rename(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
     }))
 
-    it('file name change', createWatcherTest('file-name', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file name change', createWatcherTest('file-name', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await fsAsync.rename(fromTest('file'), fromTest('rename-file'))
 
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('directory name change', createWatcherTest('directory-name', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory name change', createWatcherTest('directory-name', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('file delete change', createWatcherTest('file-delete', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file delete change', createWatcherTest('file-delete', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await modifyDelete(fromTest('file'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('directory delete change', createWatcherTest('directory-delete', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory delete change', createWatcherTest('directory-delete', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await modifyDelete(fromTest('folder/folder-file'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: false, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
 
-      resultChangeState = null
+      resultChangeState = undefined
       await modifyDelete(fromTest('folder'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('file rename change (not upper node)', createWatcherTest('file-rename', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file rename change (not upper node)', createWatcherTest('file-rename', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await fsAsync.rename(fromTest('file'), fromTest('file-folder'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('directory rename change (not upper node)', createWatcherTest('directory-rename', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory rename change (not upper node)', createWatcherTest('directory-rename', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
       await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
-    it('file watch pre path create', createWatcherTest('file-watch-pre-create', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file watch pre path create', createWatcherTest('file-watch-pre-create', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      await modifyDelete(targetPath)
+      await modifyDelete(path)
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
-      await fsAsync.writeFile(targetPath, 'file|created')
+      await fsAsync.writeFile(path, 'file|created')
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
-    it('directory watch pre path create', createWatcherTest('directory-watch-pre-create', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory watch pre path create', createWatcherTest('directory-watch-pre-create', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      await modifyDelete(targetPath)
+      await modifyDelete(path)
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
-      await fsAsync.mkdir(targetPath)
+      await fsAsync.mkdir(path)
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
-    it('file watch delete and recreate', createWatcherTest('file-watch-delete-create', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('file')
-      let resultChangeState = null
+    it('file watch delete and recreate', createWatcherTest('file-watch-delete-create', './file', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
-      await modifyDelete(targetPath)
+      await modifyDelete(path)
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
 
-      resultChangeState = null
-      await fsAsync.writeFile(targetPath, 'file|recreated')
+      resultChangeState = undefined
+      await fsAsync.writeFile(path, 'file|recreated')
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
-    it('directory watch delete and recreate', createWatcherTest('directory-watch-delete-create', async ({ fromTest, watcher }) => {
-      const targetPath = fromTest('folder')
-      let resultChangeState = null
+    it('directory watch delete and recreate', createWatcherTest('directory-watch-delete-create', './folder/', async ({ fromTest, path, watcherExot }) => {
+      let resultChangeState
 
-      watcher.subscribe(({ targetPath, isPathChange, targetStat }) => {
+      watcherExot.subscribe(({ path, stat, hasChange }) => {
         resultChangeState && info('[WARN] unexpected extra emit')
-        resultChangeState = { targetPath, isPathChange, hasTargetStat: Boolean(targetStat) }
+        resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
-      await watcher.setup(targetPath)
+      await watcherExot.up()
 
-      await modifyDelete(targetPath)
+      await modifyDelete(path)
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: false })
+      stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
 
-      resultChangeState = null
-      await fsAsync.mkdir(targetPath)
+      resultChangeState = undefined
+      await fsAsync.mkdir(path)
       await setTimeoutAsync(40)
-      stringifyEqual(resultChangeState, { targetPath, isPathChange: true, hasTargetStat: true })
+      stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
   })
 })

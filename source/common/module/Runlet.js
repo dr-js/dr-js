@@ -51,7 +51,7 @@ const clearPack = (pack) => { // prepare pack for reuse/pass-down // NOTE: only 
   pack[ 2 ] = undefined // clear promise
   return pack
 }
-const describePack = (pack) => pack ? `${pack[ 0 ]}|${String(pack[ 1 ] || '-')}|${pack[ 2 ] ? 'RUN' : 'IDLE'}` : ''
+const describePack = (pack) => pack ? `${pack[ 0 ] && JSON.stringify(String(pack[ 0 ]).slice(0, 16))}|${String(pack[ 1 ] || '-')}|${pack[ 2 ] ? 'RUN' : 'IDLE'}` : ''
 
 // Runlet:
 //   Only do bare minimum work, no extra check,

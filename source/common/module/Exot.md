@@ -65,12 +65,12 @@ const createExot = ({
   // other option to config this Exot
 }) => ({
   id,
-  up: async (
+  up: async ( // NOTE: can also be sync, outer func better use await for both
     // use to notify the ExotError during or outside of function call,
     // if this happen, non-expert outside code should just `down` this Exot and restart to get a safe state
     onExotError = (error) => { 'report up and maybe restart'; down() }
   ) => {},
-  down: async () => {}, // should not throw and clear external IO (unless Bugged)
+  down: async () => {}, // should not throw and clear external IO (unless Bugged) // NOTE: can also be sync, outer func better use await for both
   isUp: () => false, // should be set to `true` on the last line of `up`, and to `false` the first line of `down`
   // other func for sync/async data exchange (IO), error from here should be input/result checking related (or doc it clearly)
   // - async func should continue on success, drop on ExotError, throw on input Error (Bug)
@@ -157,6 +157,5 @@ Some ideas allow managing Exot easier:
 
 ## reference
 
-- the original file in Repo: [github:dr-js/dr-js#source/common/module/Exot.md](https://github.com/dr-js/dr-js/blob/master/source/common/module/Exot.md)
 - https://stackoverflow.com/questions/2845183/how-to-handle-failure-to-release-a-resource-which-is-contained-in-a-smart-pointe
 - https://stackoverflow.com/questions/341971/what-is-the-execute-around-idiom

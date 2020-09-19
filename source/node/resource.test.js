@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
 import { getUnusedPort } from 'source/node/server/function'
-import { createServerPack, createRequestListener } from 'source/node/server/Server'
+import { createServerExot, createRequestListener } from 'source/node/server/Server'
 import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import {
@@ -20,7 +20,7 @@ const SOURCE_JSON = resolve(__dirname, '../../package.json')
 const SOURCE_SCRIPT = resolve(__dirname, './test-resource-script-gitignore.js')
 
 const withTestServer = (asyncTest) => async () => {
-  const { server, start, stop, option: { baseUrl } } = createServerPack({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
+  const { up, down, server, option: { baseUrl } } = createServerExot({ protocol: 'http:', hostname: '127.0.0.1', port: await getUnusedPort() })
   server.on('request', createRequestListener({
     responderList: [
       createResponderRouter({
@@ -32,9 +32,9 @@ const withTestServer = (asyncTest) => async () => {
       })
     ]
   }))
-  await start()
+  await up()
   await asyncTest(baseUrl)
-  await stop()
+  await down()
 }
 
 before('prepare', () => {

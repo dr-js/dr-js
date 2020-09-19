@@ -31,9 +31,12 @@ const applyServerSessionCache = (server) => { // TODO: consider move to `ticketK
   })
 }
 
-const createServerPack = ({
+// NOTE: server should be Exot, and some feature can also be Exot managed as ExotGroup alone with serverExot, this make the life cycle simpler and the server close step more reasonable
+const createServerExot = ({
+  id = 'server',
   protocol,
   skipSessionPatch, // allow disable session patch (but session ticket without rotation will still work)
+  isForceClose = false, // default wait for connection end
   ...option
 }) => {
   if (![ 'tcp:', 'tls:', 'http:', 'https:' ].includes(protocol)) throw new Error(`invalid protocol: ${protocol}`)
@@ -76,11 +79,9 @@ const createServerPack = ({
 
   let sessionTicketRotateToken
 
-  return { // call this serverPack
-    server,
-    socketSet,
-    option,
-    start: async () => !server.listening && new Promise((resolve, reject) => {
+  return {
+    id,
+    up: async () => !server.listening && new Promise((resolve, reject) => {
       server.on('error', reject)
       server.listen(option.port, option.hostname.replace(/[[\]]/g, ''), () => {
         server.off('error', reject)
@@ -95,11 +96,16 @@ const createServerPack = ({
         resolve()
       })
     }),
-    stop: async ({ isForce = false } = {}) => server.listening && new Promise((resolve) => {
+    down: async () => server.listening && new Promise((resolve) => {
       sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
       server.close(() => resolve())
-      if (isForce) { for (const socket of socketSet) socket.destroy() }
-    })
+      if (isForceClose) for (const socket of socketSet) socket.destroy()
+    }),
+    isUp: () => server.listening,
+    server,
+    option,
+    socketSet,
+    setIsForceClose: (nextIsForceClose) => { isForceClose = nextIsForceClose }
   }
 }
 
@@ -124,9 +130,9 @@ const createRequestListener = ({
   await responderEnd(stateStore)
 }
 
-const describeServerPack = (
+const describeServerOption = (
   { baseUrl, protocol, hostname, port },
-  title,
+  title = 'server',
   extraList = []
 ) => indentList(`[${title}]`, [
   ...extraList,
@@ -145,8 +151,8 @@ const describeServerPack = (
 ].filter(Boolean))
 
 export {
-  createServerPack,
+  createServerExot,
   createRequestListener,
 
-  describeServerPack
+  describeServerOption
 }

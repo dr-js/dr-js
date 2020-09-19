@@ -1,6 +1,6 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { getUnusedPort } from 'source/node/server/function'
-import { createServerPack } from 'source/node/server/Server'
+import { createServerExot } from 'source/node/server/Server'
 import { OPCODE_TYPE, WEBSOCKET_EVENT } from './function'
 import { enableWebSocketServer } from './WebSocketServer'
 import { createWebSocketClient } from './WebSocketClient'
@@ -16,7 +16,7 @@ describe('Node.Server.WebSocket', () => {
     const serverHostname = '127.0.0.1'
     const serverPort = await getUnusedPort()
 
-    const { server, start, stop } = createServerPack({ protocol: 'http:', hostname: serverHostname, port: serverPort })
+    const { up, down, server } = createServerExot({ protocol: 'http:', hostname: serverHostname, port: serverPort })
     const webSocketSet = enableWebSocketServer({
       server,
       onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
@@ -35,7 +35,7 @@ describe('Node.Server.WebSocket', () => {
       }
     })
 
-    await start()
+    await up()
 
     const webSocket = await new Promise((resolve, reject) => createWebSocketClient({
       url: `ws://${serverHostname}:${serverPort}`,
@@ -76,6 +76,6 @@ describe('Node.Server.WebSocket', () => {
       setTimeout(reject, 500)
     })
 
-    await stop()
+    await down()
   })
 })

@@ -17,7 +17,7 @@ import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from '
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
 import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
-import { createServerPack } from '@dr-js/core/module/node/server/Server'
+import { createServerExot } from '@dr-js/core/module/node/server/Server'
 import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
 import { getDefaultOpenCommandList } from '@dr-js/core/module/node/system/DefaultOpen'
 import { resolveCommandAsync } from '@dr-js/core/module/node/system/ResolveCommand'
@@ -80,17 +80,17 @@ const runMode = async (modeName, optionData) => {
     const hostname = hostnameList.join(':') || defaultHostname
     return { hostname, port }
   }
-  const getServerPack = async (protocol = 'http:') => {
+  const quickServerExot = async (protocol = 'http:') => {
     const { hostname, port } = parseHost(tryGetFirst('host') || '', '0.0.0.0')
-    return createServerPack({
+    return createServerExot({
       protocol,
       hostname,
       port: port || await autoTestServerPort([ 80, 8080, 8888, 8800, 8000 ], hostname) // for more stable port
     })
   }
   const startServer = async (configureFunc, option) => {
-    const serverPack = await getServerPack()
-    return commonStartServer({ serverPack, log, ...configureFunc({ serverPack, log, ...option }) })
+    const serverExot = await quickServerExot()
+    return commonStartServer({ serverExot, log, ...configureFunc({ serverExot, log, ...option }) })
   }
 
   switch (modeName) {
@@ -209,9 +209,9 @@ const runMode = async (modeName, optionData) => {
         targetOptionList = [ { hostname: 'custom-hostname', port: 'custom-port' } ]
         getTargetOption = argumentList[ 0 ]
       }
-      const { server, option, start } = await getServerPack('tcp:')
+      const { up, server, option } = await quickServerExot('tcp:')
       server.on('connection', createTCPProxyListener({ getTargetOption }))
-      await start()
+      await up()
       return log(indentList('[TCPProxy]', [
         `pid: ${process.pid}`,
         `at: ${option.hostname}:${option.port}`,

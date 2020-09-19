@@ -1,7 +1,7 @@
 import { strictEqual, doThrow, doThrowAsync } from 'source/common/verify'
 import { createInsideOutPromise } from 'source/common/function'
 
-import { createSampleExot } from './ExotDev'
+import { createSampleExot } from './Exot'
 
 const { describe, it, info = console.log } = global
 
