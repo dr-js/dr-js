@@ -2,7 +2,7 @@ import { dirname } from 'path'
 import { getPathLstat, copyPath, renamePath, deletePath } from './Path'
 import { createDirectory, copyDirectory, deleteDirectory } from './Directory'
 
-const NULL_FUNC = () => {}
+const EMPTY_FUNC = () => {}
 
 const modifyCopy = async (pathFrom, pathTo, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathLstat(pathFrom)
@@ -22,7 +22,7 @@ const modifyDelete = async (path, pathStat) => {
   return deletePath(path, pathStat)
 }
 
-const modifyDeleteForce = async (path, pathStat) => modifyDelete(path, pathStat).catch(NULL_FUNC)
+const modifyDeleteForce = async (path, pathStat) => modifyDelete(path, pathStat).catch(EMPTY_FUNC)
 
 export {
   modifyCopy,

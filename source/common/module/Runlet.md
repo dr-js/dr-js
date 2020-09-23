@@ -430,14 +430,14 @@ Or just introduce more Runlets like sub-Runlet, or inter-Runlet,
 
 Assume the Runlet code is perfectly error-free (which may not be true, yet),
   then all error should occur in Pend or Chip.
-When the first error occurs, it will be packed and passed to all Chip in sync mode,
-  then the Runlet will be set to detached mode.
+When the first error occurs, the Runlet will be set to detached mode,
+  then the error will be passed to all Chip with current running pack in a sync for loop.
 Most Chip process can just ignore and return,
   but the Output Chip should notify outer code,
   and Chip with external IO may need to start the release process.
 And there's an extra `onError` Runlet option,
   to receive the second or more error generated after detach,
-  but most code should just stop and be still.
+  but most Runlet code should just stop and be still, causing no further errors.
 
 
 ## Random design thoughts

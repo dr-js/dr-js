@@ -38,11 +38,7 @@ runMain(async (logger) => {
 
   const testTag = `DR_BROWSER_TEST[${new Date().toISOString()}]`
   const testAsync = withTestServer(
-    async (baseUrl, testUrl) => testWithPuppeteer({
-      testUrl,
-      testTag,
-      logger
-    }),
+    async ({ testUrl }) => testWithPuppeteer({ testUrl, testTag, logger }),
     async () => wrapTestScriptStringToHTML({
       testScriptString: String(readFileSync(PATH_TEST_BROWSER_JS)),
       testTag

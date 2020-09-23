@@ -4,7 +4,7 @@ import { strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
 import { createDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
-import { createSimpleLogger, createLogger } from './Logger'
+import { createSimpleLoggerExot, createLoggerExot } from './Logger'
 
 const { describe, it, before, after } = global
 
@@ -14,9 +14,10 @@ before('prepare', () => createDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.Logger', () => {
-  it('createSimpleLogger()', async () => {
+  it('createSimpleLoggerExot()', async () => {
     const pathOutputFile = resolve(TEST_ROOT, 'simple-logger')
-    const { add, save, end } = createSimpleLogger({ pathOutputFile, queueLengthThreshold: 4 })
+    const { up, down, add, save } = createSimpleLoggerExot({ pathOutputFile, queueLengthThreshold: 4 })
+    up()
     let size, prevSize
 
     add('1')
@@ -44,7 +45,7 @@ describe('Node.Module.Logger', () => {
     prevSize = size
 
     add('7')
-    end()
+    down()
     await setTimeoutAsync(10)
     size = statSync(pathOutputFile).size
     // console.log('7', size)
@@ -53,11 +54,11 @@ describe('Node.Module.Logger', () => {
     strictEqual(readFileSync(pathOutputFile, { encoding: 'utf8' }), '1\n2\n3\n4\n5\n6\n7\n')
   })
 
-  it('createLogger()', async () => {
+  it('createLoggerExot()', async () => {
     let logFileIndex = 0
     const pathLogDirectory = resolve(TEST_ROOT, 'logger')
     const getCurrentLogPath = () => resolve(pathLogDirectory, `${logFileIndex}.log`)
-    const { add, save, split, end } = await createLogger({
+    const { up, down, add, save, split } = createLoggerExot({
       pathLogDirectory,
       getLogFileName: () => {
         logFileIndex += 1
@@ -66,6 +67,7 @@ describe('Node.Module.Logger', () => {
       queueLengthThreshold: 4,
       splitInterval: 100
     })
+    await up()
     let size, prevSize
 
     add('1', 1)
@@ -112,7 +114,7 @@ describe('Node.Module.Logger', () => {
 
     add('10')
     add('11')
-    end()
+    down()
     await setTimeoutAsync(20)
     size = statSync(getCurrentLogPath()).size
     // console.log('11', size)

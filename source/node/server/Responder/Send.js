@@ -1,7 +1,7 @@
 import { gzip, gzipSync, createGzip } from 'zlib'
 import { promisify } from 'util'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from 'source/node/data/Stream'
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
 import { getEntityTagByContentHashAsync, getEntityTagByContentHash } from 'source/node/module/EntityTag'
 
 const gzipAsync = promisify(gzip)
@@ -50,11 +50,11 @@ const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTa
 
 const responderSendStream = (store, { stream, entityTag, type = DEFAULT_MIME, length }) =>
   setResponseContent(store, entityTag, type, length) &&
-  waitStreamStopAsync(setupStreamPipe(stream, store.response))
+  quickRunletFromStream(stream, store.response)
 
 const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAULT_MIME, length }, [ start, end ]) =>
   setResponseContentRange(store, entityTag, type, length, start, end) &&
-  waitStreamStopAsync(setupStreamPipe(streamRange, store.response))
+  quickRunletFromStream(streamRange, store.response)
 
 const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
   if (store.request.destroyed) return
@@ -67,12 +67,12 @@ const responderSendStreamCompress = async (store, { stream, streamGzip, entityTa
       : { 'content-type': type, 'content-length': length }
     ))
     : store.response.writeHead(304, { 'content-type': type })
-  return shouldSendContent && length && waitStreamStopAsync(setupStreamPipe.apply(null, shouldGzip
+  return shouldSendContent && length && quickRunletFromStream.apply(null, shouldGzip
     ? streamGzip
       ? [ streamGzip, store.response ]
       : [ stream, createGzip(), store.response ]
     : [ stream, store.response ]
-  ))
+  )
 }
 
 const responderSendJSON = (store, { object, entityTag }) => responderSendBufferCompress(store, {

@@ -3,7 +3,7 @@ import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
 import { clock } from 'source/common/time'
-import { isString } from 'source/common/check'
+import { isString, isArrayBuffer } from 'source/common/check'
 import { withRetryAsync } from 'source/common/function'
 import { toArrayBuffer } from 'source/node/data/Buffer'
 import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
@@ -11,7 +11,7 @@ import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from '
 const requestHttp = (
   url, // URL/String
   option, // { method, headers, timeout, agent, ... }
-  body // optional, Buffer/String/ReadableStream
+  body // optional, Buffer/String/ReadableStream/ArrayBuffer
 ) => {
   url = url instanceof URL ? url : new URL(url)
   let request
@@ -24,7 +24,8 @@ const requestHttp = (
     request.on('timeout', () => endWithError(new Error('NETWORK_TIMEOUT')))
     request.on('error', endWithError)
     if (isReadableStream(body)) setupStreamPipe(body, request)
-    else request.end(body)
+    else if (isArrayBuffer(body)) request.end(Buffer.from(body))
+    else request.end(body) // Buffer/String
   })
   return { url, request, promise }
 }
@@ -69,8 +70,9 @@ const fetchLikeRequest = async (url, {
   const timeStart = clock()
   onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
     bodyLength = bodyLength || (isReadableStream(body) ? Infinity
-      : isString(body) ? Buffer.byteLength(body)
-        : body.length)
+      : isArrayBuffer(body) ? body.byteLength
+        : isString(body) ? Buffer.byteLength(body)
+          : body.length)
     const bytesWrittenStart = socket.bytesWritten // may contain HTTP header, so may be bigger than the bodyLength
     const onProgress = () => { onProgressUpload(Math.min(socket.bytesWritten - bytesWrittenStart, bodyLength), bodyLength) }
     socket.on('drain', onProgress)

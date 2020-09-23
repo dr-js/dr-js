@@ -133,17 +133,17 @@ const createRunlet = ({
   }
 
   const onChipRejectUnbind = (
-    chip, // NEED BIND
+    chipErrored, // NEED BIND
     error
   ) => {
     if (isValid === false) return onError(error) // not the first error, or error after manual detach
     isValid = false // mark all chip detached
-    const packEND = createPack(undefined, END)
-    for (const chip of chipMap.values()) { // send END + error to each chip
+    for (const chip of chipMap.values()) { // send runningPack + error to each chip
       if (endChipKeySet.has(chip.key)) continue
       endChipKeySet.add(chip.key)
-      if (!chip.sync) chip.process(packEND, chip.state, error).catch(onError) // NOTE: the error handle code in process should be sync (at the top of the async code, and before all await), and it's ok for most Chip to just return
-      else { try { chip.process(packEND, chip.state, error) } catch (error) { onError(error) } }
+      const pack = (chip === chipErrored) ? undefined : runningChipMap.get(chip.key)
+      if (!chip.sync) chip.process(pack, chip.state, error).catch(onError) // NOTE: the error handle code in process should be sync (at the top of the async code, and before all await), and it's ok for most Chip to just return
+      else { try { chip.process(pack, chip.state, error) } catch (error) { onError(error) } } // to close after current running process, just use code like `pack && pack[ 2 ].then(...)`
     }
   }
 

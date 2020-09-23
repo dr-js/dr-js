@@ -5,6 +5,7 @@ const isBoolean = (value) => typeof (value) === 'boolean'
 const isNumber = (value) => typeof (value) === 'number'
 const isInteger = Number.isInteger
 const isRegExp = (value) => value instanceof RegExp
+const isArrayBuffer = (value) => value instanceof ArrayBuffer
 
 const isObjectAlike = (value) => { // can have key/value: object/array/function
   const type = typeof (value)
@@ -56,6 +57,7 @@ export {
   isNumber,
   isInteger,
   isRegExp,
+  isArrayBuffer,
   isObjectAlike,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,

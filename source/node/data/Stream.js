@@ -6,7 +6,9 @@ import { createInsideOutPromise } from 'source/common/function'
 import {
   END, SKIP, REDO,
   createPack,
-  KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT
+  createRunlet,
+  createCountPool, KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO,
+  toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet'
 
 // edited from: https://github.com/sindresorhus/is-stream
@@ -110,32 +112,36 @@ const readlineOfStreamAsync = (
 })
 
 const createReadableStreamInputChip = ({
-  readableStream, readSize, // default to 16K or 16, check: https://nodejs.org/api/stream.html#stream_new_stream_readable_options
+  stream, readSize, // default to 16K or 16, check: https://nodejs.org/api/stream.html#stream_new_stream_readable_options
   key = 'chip:input:stream-readable', ...extra
 }) => {
   const state = {
     error: undefined,
     isEnd: false, isReadable: false, eventIOP: undefined
   }
-  const onError = (error) => { state.error = error }
+  const onError = (error) => {
+    state.error = error
+    if (state.eventIOP !== undefined) state.eventIOP.reject(error)
+  }
   const onEnd = () => {
-    if (state.eventIOP !== undefined) state.eventIOP.resolve()
     state.isEnd = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
   }
   const onReadable = () => {
-    if (state.eventIOP !== undefined) state.eventIOP.resolve()
     state.isReadable = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
   }
-  readableStream.on('error', onError)
-  readableStream.on('end', onEnd)
-  readableStream.on('readable', onReadable)
+  stream.on('error', onError)
+  stream.on('end', onEnd)
+  stream.on('readable', onReadable)
   const allOff = () => {
-    readableStream.off('error', onError)
-    readableStream.off('end', onEnd)
-    readableStream.off('readable', onReadable)
+    stream.off('error', onError)
+    stream.off('end', onEnd)
+    stream.off('readable', onReadable)
   }
   return {
     ...extra, key, prevPoolKey: KEY_POOL_IO, prevPendKey: KEY_PEND_INPUT,
+    stream, // for manual `stream.destroyed || stream.destroy()` on error or detach
     state,
     process: async (pack, state, error) => {
       if (error) return allOff()
@@ -154,7 +160,7 @@ const createReadableStreamInputChip = ({
         state.isReadable = false
         const chunkList = []
         let chunk
-        while ((chunk = readableStream.read(readSize)) !== null) chunkList.push(chunk)
+        while ((chunk = stream.read(readSize)) !== null) chunkList.push(chunk)
         pack[ 0 ] = chunkList.length === 1 ? chunkList[ 0 ] : Buffer.concat(chunkList)
         pack[ 1 ] = undefined
       }
@@ -164,27 +170,42 @@ const createReadableStreamInputChip = ({
 }
 
 const createWritableStreamOutputChip = ({
-  writableStream,
+  stream,
   IOP = createInsideOutPromise(),
   key = 'chip:output:stream-writable', ...extra
 }) => {
   const state = {
     error: undefined,
-    isDrain: true, eventIOP: undefined
+    isFinish: false, isDrain: true, eventIOP: undefined
   }
-  const onError = (error) => { state.error = error }
-  const onDrain = () => {
+  const onError = (error) => {
+    state.error = error
+    if (state.eventIOP !== undefined) state.eventIOP.reject(error)
+  }
+  const onFinish = () => {
+    state.isFinish = true
     if (state.eventIOP !== undefined) state.eventIOP.resolve()
-    state.isDrain = true
   }
-  writableStream.on('error', onError)
-  writableStream.on('drain', onDrain)
+  const onDrain = () => {
+    state.isDrain = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
+  }
+  stream.on('error', onError)
+  stream.on('finish', onFinish)
+  stream.on('drain', onDrain)
   const allOff = () => {
-    writableStream.off('error', onError)
-    writableStream.off('drain', onDrain)
+    stream.off('error', onError)
+    stream.off('finish', onFinish)
+    stream.off('drain', onDrain)
+  }
+  const waitIOP = async () => {
+    state.eventIOP = createInsideOutPromise()
+    await state.eventIOP.promise
+    state.eventIOP = undefined
   }
   return {
     ...extra, key, nextPoolKey: KEY_POOL_IO, nextPendKey: KEY_PEND_OUTPUT,
+    stream, // for manual `stream.destroyed || stream.destroy()` on error or detach
     state,
     process: async (pack, state, error) => {
       if (error) {
@@ -193,16 +214,15 @@ const createWritableStreamOutputChip = ({
       } else if (state.error !== undefined) throw state.error
 
       if (pack[ 1 ] === END) {
-        await new Promise((resolve) => writableStream.end(resolve))
+        stream.end()
+        console.log('[DEBUG] start')
+        while (state.isFinish === false) await waitIOP() // need to wait for write flush
+        console.log('[DEBUG] end')
         allOff()
         IOP.resolve()
       } else {
-        if (state.isDrain === false) { // need to wait for write
-          state.eventIOP = createInsideOutPromise()
-          await state.eventIOP.promise
-          state.eventIOP = undefined
-        }
-        state.isDrain = writableStream.write(pack[ 0 ])
+        if (state.isDrain === false) await waitIOP() // need to wait for write
+        state.isDrain = stream.write(pack[ 0 ])
         pack[ 0 ] = undefined
         pack[ 1 ] = SKIP
       }
@@ -213,7 +233,7 @@ const createWritableStreamOutputChip = ({
 }
 
 const createTransformStreamChip = ({
-  transformStream, readSize,
+  stream, readSize,
   key = 'chip:stream-transform', ...extra
 }) => {
   const state = {
@@ -221,31 +241,35 @@ const createTransformStreamChip = ({
     isDrain: true, isWriteEnd: false,
     isEnd: false, isReadable: false, eventIOP: undefined
   }
-  const onError = (error) => { state.error = error }
+  const onError = (error) => {
+    state.error = error
+    if (state.eventIOP !== undefined) state.eventIOP.reject(error)
+  }
   const onDrain = () => {
-    if (state.eventIOP !== undefined) state.eventIOP.resolve()
     state.isDrain = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
   }
   const onEnd = () => {
-    if (state.eventIOP !== undefined) state.eventIOP.resolve()
     state.isEnd = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
   }
   const onReadable = () => {
-    if (state.eventIOP !== undefined) state.eventIOP.resolve()
     state.isReadable = true
+    if (state.eventIOP !== undefined) state.eventIOP.resolve()
   }
-  transformStream.on('error', onError)
-  transformStream.on('drain', onDrain)
-  transformStream.on('end', onEnd)
-  transformStream.on('readable', onReadable)
+  stream.on('error', onError)
+  stream.on('drain', onDrain)
+  stream.on('end', onEnd)
+  stream.on('readable', onReadable)
   const allOff = () => {
-    transformStream.off('error', onError)
-    transformStream.off('drain', onDrain)
-    transformStream.off('end', onEnd)
-    transformStream.off('readable', onReadable)
+    stream.off('error', onError)
+    stream.off('drain', onDrain)
+    stream.off('end', onEnd)
+    stream.off('readable', onReadable)
   }
   return {
     ...extra, key,
+    stream, // for manual `stream.destroyed || stream.destroy()` on error or detach
     state,
     process: async (pack, state, error) => {
       if (error) return allOff()
@@ -254,7 +278,7 @@ const createTransformStreamChip = ({
       //   then read as much while waiting for drain
       if (pack[ 1 ] === END && state.isWriteEnd === false) { // END
         state.isWriteEnd = true
-        transformStream.end() // no more write
+        stream.end() // no more write // NOTE: no write flush await here since still need to read all remain data
       }
       if ((state.isWriteEnd === true || state.isDrain === false) && state.isEnd === false && state.isReadable === false) { // need to wait for write/read
         if (state.eventIOP === undefined) state.eventIOP = createInsideOutPromise()
@@ -263,7 +287,7 @@ const createTransformStreamChip = ({
       }
       let needWriteREDO = true
       if (pack[ 1 ] !== END && state.isDrain === true) { // write
-        state.isDrain = transformStream.write(pack[ 0 ])
+        state.isDrain = stream.write(pack[ 0 ])
         needWriteREDO = false
       }
       if (state.isReadable === false && state.isEnd === true) { // check isEnd and isReadable so no value is missed
@@ -274,7 +298,7 @@ const createTransformStreamChip = ({
         state.isReadable = false
         const chunkList = []
         let chunk
-        while ((chunk = transformStream.read(readSize)) !== null) chunkList.push(chunk)
+        while ((chunk = stream.read(readSize)) !== null) chunkList.push(chunk)
         const value = chunkList.length === 1 ? chunkList[ 0 ] : Buffer.concat(chunkList)
         if (needWriteREDO === true) pack = createPack(value, REDO)
         else {
@@ -291,6 +315,27 @@ const createTransformStreamChip = ({
   }
 }
 
+// NOTE: designed to replace `waitStreamStopAsync(setupStreamPipe(...streamList))`
+const quickRunletFromStream = (...streamList) => { // should be `readable-transform-...-transform-writable`
+  if (streamList.length < 2) throw new Error('need at least 2 stream in streamList')
+  const readableStream = streamList.shift()
+  const writableStream = streamList.pop()
+  const poolMap = toPoolMap([
+    PoolIO,
+    createCountPool({ sizeLimit: 8 })
+  ])
+  const chipMap = toChipMap(toLinearChipList([
+    createReadableStreamInputChip({ stream: readableStream }),
+    ...streamList.map((stream, index) => createTransformStreamChip({ stream, key: `chip:transform-${index}` })),
+    createWritableStreamOutputChip({ key: 'out', stream: writableStream })
+  ]))
+  const { attach, trigger, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
+  attach()
+  trigger()
+  __DEV__ && console.log(describe().join('\n'))
+  return chipMap.get('out').promise
+}
+
 export {
   isReadableStream, isWritableStream,
   setupStreamPipe,
@@ -303,5 +348,6 @@ export {
   // Runlet
   createReadableStreamInputChip,
   createWritableStreamOutputChip,
-  createTransformStreamChip
+  createTransformStreamChip,
+  quickRunletFromStream
 }

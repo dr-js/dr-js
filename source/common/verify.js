@@ -4,6 +4,7 @@ import {
   isNumber,
   isInteger,
   isRegExp,
+  isArrayBuffer,
   isObjectAlike,
   isBasicObject, isObjectKey, isObjectContain,
   isBasicArray, isArrayLength,
@@ -26,6 +27,7 @@ const boolean = createVerify('Boolean', isBoolean)
 const number = createVerify('Number', isNumber)
 const integer = createVerify('Integer', isInteger)
 const regexp = createVerify('RegExp', isRegExp)
+const arrayBuffer = createVerify('ArrayBuffer', isArrayBuffer)
 
 const objectAlike = createVerify('ObjectAlike', isObjectAlike)
 
@@ -63,6 +65,7 @@ export {
   number,
   integer,
   regexp,
+  arrayBuffer,
   objectAlike,
   basicObject, objectKey, objectContain,
   basicArray, arrayLength,

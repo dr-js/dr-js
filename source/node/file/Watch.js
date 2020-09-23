@@ -17,7 +17,7 @@ import { nearestExistPath } from './Path'
 
 const CHANGE_PATH = 'rename' // const CHANGE_CONTENT = 'change'
 
-const getUndefined = () => {}
+const EMPTY_FUNC = () => {}
 
 const createFileWatcherExot = ({
   path,
@@ -39,7 +39,7 @@ const createFileWatcherExot = ({
   const emitThrottled = throttle(async () => {
     // path change: create/delete(also for rename since this watches single node)
     // content change: path-change/file-content/directory-file-list
-    const stat = await fsAsync.lstat(path).catch(getUndefined)
+    const stat = await fsAsync.lstat(path).catch(EMPTY_FUNC)
     const hasChange = Boolean(prevStat) !== Boolean(stat)
 
     if (stat === undefined) {
@@ -75,7 +75,7 @@ const createFileWatcherExot = ({
   }
 
   const setupWatch = async () => {
-    const stat = await fsAsync.lstat(path).catch(getUndefined)
+    const stat = await fsAsync.lstat(path).catch(EMPTY_FUNC)
 
     if (stat) {
       clearWatch()
@@ -90,7 +90,7 @@ const createFileWatcherExot = ({
       // TODO: directly watch directory will miss rename, upper will receive content change, but upper will not receive add/delete change
       if (stat.isDirectory()) {
         watcherUpper = watch(dirname(path))
-        watcherUpper.addListener('error', getUndefined) // not care this error
+        watcherUpper.addListener('error', EMPTY_FUNC) // not care this error
         watcherUpper.addListener('change', onChangeEvent)
       }
     } else {

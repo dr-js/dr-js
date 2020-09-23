@@ -1,12 +1,12 @@
 import { catchAsync } from 'source/common/error'
 
-const NULL_FUNC = () => {}
+const EMPTY_FUNC = () => {}
 
 const createSaveQueue = ({
   onError,
   doSave,
-  beforeSave = NULL_FUNC,
-  afterSave = NULL_FUNC
+  beforeSave = EMPTY_FUNC,
+  afterSave = EMPTY_FUNC
 }) => {
   let dataQueue = []
   let isSaving = false

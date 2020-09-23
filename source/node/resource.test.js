@@ -33,7 +33,7 @@ const withTestServer = (asyncTest) => async () => {
     ]
   }))
   await up()
-  await asyncTest(baseUrl)
+  await asyncTest({ baseUrl })
   await down()
 }
 
@@ -46,13 +46,13 @@ after('clear', () => {
 })
 
 describe('Node.Resource', () => {
-  it('loadRemoteScript()', withTestServer(async (baseUrl) => {
+  it('loadRemoteScript()', withTestServer(async ({ baseUrl }) => {
     await loadRemoteScript(`${baseUrl}/test-script`)
   }))
   it('loadLocalScript()', async () => {
     await loadLocalScript(SOURCE_SCRIPT)
   })
-  it('loadScript()', withTestServer(async (baseUrl) => {
+  it('loadScript()', withTestServer(async ({ baseUrl }) => {
     await loadScript(SOURCE_SCRIPT)
     await loadScript(`${baseUrl}/test-script`)
   }))
@@ -60,10 +60,10 @@ describe('Node.Resource', () => {
   it('loadLocalJSON()', async () => {
     await loadLocalJSON(SOURCE_JSON)
   })
-  it('loadRemoteJSON()', withTestServer(async (baseUrl) => {
+  it('loadRemoteJSON()', withTestServer(async ({ baseUrl }) => {
     await loadRemoteJSON(`${baseUrl}/test-json`)
   }))
-  it('loadJSON()', withTestServer(async (baseUrl) => {
+  it('loadJSON()', withTestServer(async ({ baseUrl }) => {
     await loadJSON(SOURCE_JSON)
     await loadJSON(`${baseUrl}/test-json`)
   }))

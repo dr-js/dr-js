@@ -13,7 +13,7 @@ import { setTimeoutAsync } from '@dr-js/core/module/common/time'
 import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
 import { throttle } from '@dr-js/core/module/common/function'
 
-import { setupStreamPipe, waitStreamStopAsync, writeBufferToStreamAsync } from '@dr-js/core/module/node/data/Stream'
+import { writeBufferToStreamAsync, quickRunletFromStream } from '@dr-js/core/module/node/data/Stream'
 import { createDirectory } from '@dr-js/core/module/node/file/Directory'
 import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
 import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
@@ -68,10 +68,10 @@ const runMode = async (modeName, optionData) => {
   const outputBuffer = (buffer) => outputFile
     ? writeFileSync(outputFile, buffer)
     : writeBufferToStreamAsync(process.stdout, buffer)
-  const outputStream = (stream) => waitStreamStopAsync(setupStreamPipe(
+  const outputStream = (stream) => quickRunletFromStream(
     stream,
     outputFile ? createWriteStream(outputFile) : process.stdout
-  ))
+  )
 
   // for ipv6 should use host like: `[::]:80`
   const parseHost = (host, defaultHostname) => {
@@ -115,19 +115,19 @@ const runMode = async (modeName, optionData) => {
     case 'echo':
       return logAuto(argumentList)
     case 'cat': {
-      if (argumentList.length) for (const path of argumentList) await waitStreamStopAsync(setupStreamPipe(createReadStream(path), process.stdout))
-      else if (!process.stdin.isTTY) await waitStreamStopAsync(setupStreamPipe(process.stdin, process.stdout))
+      if (argumentList.length) for (const path of argumentList) await quickRunletFromStream(createReadStream(path), process.stdout)
+      else if (!process.stdin.isTTY) await quickRunletFromStream(process.stdin, process.stdout)
       return
     }
     case 'write':
     case 'append': {
       if (process.stdin.isTTY) throw new Error('unsupported TTY stdin') // teletypewriter(TTY)
       const flags = modeName === 'write' ? 'w' : 'a'
-      return waitStreamStopAsync(setupStreamPipe(process.stdin, createWriteStream(argumentList[ 0 ], { flags })))
+      return quickRunletFromStream(process.stdin, createWriteStream(argumentList[ 0 ], { flags }))
     }
     case 'merge': {
       const [ mergedFile, ...fileList ] = argumentList
-      for (const path of fileList) await waitStreamStopAsync(setupStreamPipe(createReadStream(path), createWriteStream(mergedFile, { flags: 'a' })))
+      for (const path of fileList) await quickRunletFromStream(createReadStream(path), createWriteStream(mergedFile, { flags: 'a' }))
       return
     }
 

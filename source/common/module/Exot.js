@@ -1,5 +1,4 @@
-import { getGlobal } from 'source/env/global'
-import { setTimeoutAsync } from 'source/common/time'
+import { isString, isObjectAlike, isBasicFunction } from 'source/common/check'
 import { getRandomId } from 'source/common/math/random'
 
 // TODO: still under testing, pattern not stable
@@ -11,84 +10,42 @@ const createExotError = (exotId, message) => { // error with exotId
   return exotError
 }
 
-const createSampleExot = ({
-  // ## pattern
-  id = getRandomId('SAMPLE-EXOT-'), // unique string id, or specific name like "server-HTTP"
+const createDummyExot = ({ // most Exot create func should be just sync, and move async things to up()
   // ## other option to config this Exot
-  sampleConfig = {}
-}) => {
-  let _onExotError
-  let _isUp = false
+  idPrefix = 'DUMMY-EXOT-',
+  // ## pattern
+  id = getRandomId(idPrefix) // unique string id, or specific name like "server-HTTP"
+} = {}) => {
+  let isActive = false
 
-  const up = async ( // NOTE: can also be sync, outer func better use await for both
+  const up = ( // NOTE: can also be sync, outer func better use await for both
     // ## pattern (the ONLY option, so Exot config can't suddenly change, and make pattern simple)
-    onExotError // (error) => {} // mostly for ACK error outside of Exot function call, non-expert outside code should handle by `down` the Exot
+    onExotError // (error) => {} // can be OPTIONAL, mostly for ACK error outside of Exot function call, non-expert outside code should handle by `down` the Exot
   ) => {
-    if (_isUp) throw new Error('already up')
-    if (!onExotError) throw new Error('expect onExotError to receive ExotError notice')
-    await setTimeoutAsync(10) // pretend WORKING
-    getGlobal()[ id ] = { id, sampleConfig }
-    _onExotError = onExotError
-    _isUp = true // late set (call up again during up should be a bug, a check here is optional, but not required)
+    if (isActive) throw new Error('already up')
+    if (!onExotError) throw new Error('expect onExotError to receive ExotError notice') // add assert if no OPTIONAL
+    // { do work }
+    isActive = true // late set (call up again during up should be a bug, a check here is optional, but not required)
   }
 
-  const down = async () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing) // NOTE: can also be sync, outer func better use await for both
-    if (!_isUp) return // skip
-    _onExotError = undefined
-    _isUp = false // early set (since this should not throw)
-    await setTimeoutAsync(10) // pretend WORKING
-    delete getGlobal()[ id ]
+  const down = () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing) // NOTE: can also be sync, outer func better use await for both
+    if (!isActive) return // skip
+    isActive = false // early set (since this should not throw)
+    // { do work }
   }
 
   // NOTE: not extend state to `up.../up/down.../down` to keep the pattern simple, and when lifecycle code is separated and in one place, prevent double calling is easier
-  const isUp = () => _isUp // should return `true` on the last line of `up`, and `false` the first line of `down`
-
-  // - async func should resolve on success, never-resolve on ExotError, reject on input Error (Bug):
-  //   when Error caused Exot `down` during an in-flight async func, the callback is expected to be dropped if the result can not be generated
-  const sampleAsync = async (input) => {
-    if (!'pass|late-check-error|exot-error'.split('|').includes(input)) throw new Error(`invalid input ${input}`) // check input, no catch Error
-    let result
-    try {
-      result = await setTimeoutAsync(0).then(() => input === 'exot-error'
-        ? Promise.reject(createExotError(id, `ExotError: ${input}`)) // do Exot ASYNC operation and catch error
-        : 'Job done'
-      )
-    } catch (error) { // do Exot operation and catch error
-      if (!error.exotId) throw error // report non-ExotError
-      // if there'll be left-over error listener after Exot `down`, add a guard to mute the error
-      // but if by design no listener should leak, don't bother and mask the bug
-      _onExotError && _onExotError(error) // report ExotError through onExotError
-      return new Promise(() => {}) // make this operation never resolve
-    }
-    if (!result || input === 'late-check-error') throw new Error(`invalid result: ${result}, input: ${input}`) // check result, no catch Error (report operation timeout, wrong password, ...)
-    return result
-  }
-
-  // - sync func just report all Error, since it can not prevent the later code to run,
-  //   the Error can be thrown, or returned as `{ error, result }`,
-  //   generally sync func will be harder to deal with for the mixed error
-  const sampleSync = (input) => {
-    if (!'pass|late-check-error|exot-error'.split('|').includes(input)) throw new Error(`invalid input ${input}`) // check input, no catch Error
-    let result
-    { // eslint-disable-line no-lone-blocks
-      if (input === 'exot-error') throw createExotError(id, `ExotError: ${input}`) // do Exot SYNC operation and NOT catch error (but normally a ExotError will not be sync)
-      result = 'Job done'
-    }
-    if (!result || input === 'late-check-error') throw new Error(`invalid result: ${result}, input: ${input}`) // check result, no catch Error
-    return result
-  }
+  const isUp = () => isActive // should return `true` on the last line of `up`, and `false` the first line of `down`
 
   return {
     // ## pattern
-    id, up, down, isUp,
-    // ## other func for sync/async data exchange (IO)
-    sampleAsync, sampleSync
+    id, up, down, isUp
   }
 }
 
 const createExotGroup = ({
   id,
-  onExotError,
+  getOnExotError, onExotError,
   exotList = [], exotMap = toExotMap(exotList),
   isBatch = false
 }) => {
@@ -104,45 +61,55 @@ const createExotGroup = ({
       throw error
     })
   }
-  const up = isBatch ? upBatch : upEach
 
-  const downEach = async () => { for (const exot of exotMap.values()) await exot.down() }
-  const downBatch = async () => { await Promise.all(mapExotMapValue(exotMap, (exot) => exot.down())) }
-  const down = isBatch ? downBatch : downEach
+  // down in reverse order
+  const downEach = async () => { for (const exot of Array.from(exotMap.values()).reverse()) await exot.down() }
+  const downBatch = async () => { await Promise.all(Array.from(exotMap.values()).reverse().map((exot) => exot.down())) }
 
-  const onExotErrorGroup = onExotError || down
-
-  const isUp = () => findExotMapValue(exotMap, (exot) => exot.isUp())
-  const find = (exotId) => exotMap.get(exotId)
   const getSize = () => exotMap.size
 
-  const attach = (exot) => { exotMap.set(exot.id, exot) }
-  const detach = (exotId) => {
-    const exot = find(exotId)
+  const set = (exot) => { exotMap.set(exot.id, exot) }
+  const get = (exotId) => exotMap.get(exotId)
+  const deleteKeyword = (exotId) => {
+    const exot = get(exotId)
     exot !== undefined && exotMap.delete(exotId)
     return exot
   }
 
   const load = async (exot) => {
-    attach(exot)
+    set(exot)
     await exot.up(onExotError)
   }
   const drop = async (exotId) => {
-    const exot = detach(exotId)
+    const exot = deleteKeyword(exotId)
     exot && await exot.down()
     return exot
   }
 
-  return {
-    id,
-    up, upEach, upBatch,
-    down, downEach, downBatch,
-    isUp,
-    find, getSize,
-    attach, detach, // TODO: inner API?
-    load, drop
+  const up = isBatch ? upBatch : upEach
+  const down = isBatch ? downBatch : downEach
+  const isUp = () => findExotMapValue(exotMap, (exot) => exot.isUp()) // check if all Exot is up
+
+  const exotGroup = {
+    id, up, down, isUp,
+    upEach, upBatch,
+    downEach, downBatch,
+    getSize, set, get, delete: deleteKeyword, // for preparing the group
+    load, drop // for hot swap when the group is up
   }
+
+  const onExotErrorGroup = onExotError ||
+    (getOnExotError && getOnExotError(exotGroup)) ||
+    down // default to down all Exot
+
+  return exotGroup
 }
+
+const isExot = (value) => isObjectAlike(value) &&
+  isString(value.id) &&
+  isBasicFunction(value.up) &&
+  isBasicFunction(value.down) &&
+  isBasicFunction(value.isUp)
 
 const toExotMap = (...exotList) => {
   const exotMap = new Map()
@@ -165,8 +132,9 @@ const findExotMapValue = (exotMap, func) => {
 
 export {
   createExotError,
-  createSampleExot,
+  createDummyExot,
   createExotGroup,
 
+  isExot,
   toExotMap, mapExotMapValue, findExotMapValue
 }

@@ -60,13 +60,13 @@ Exot is short for "Exot-ic",
   a pattern for wrapping external IO or Resource that require manual `up` and `down`.
 
 ```js
-const createExot = ({
+const createExot = ({ // most Exot create func should be just sync, and move async things to up()
   id = getRandomId() // unique string id, or specific name for singleton like "server-HTTP"
   // other option to config this Exot
 }) => ({
   id,
   up: async ( // NOTE: can also be sync, outer func better use await for both
-    // use to notify the ExotError during or outside of function call,
+    // can be OPTIONAL, use to notify the ExotError during or outside of function call,
     // if this happen, non-expert outside code should just `down` this Exot and restart to get a safe state
     onExotError = (error) => { 'report up and maybe restart'; down() }
   ) => {},

@@ -25,7 +25,8 @@ import {
 
   createReadableStreamInputChip,
   createWritableStreamOutputChip,
-  createTransformStreamChip
+  createTransformStreamChip,
+  quickRunletFromStream
 } from './Stream'
 
 const { describe, it, before, after, info = console.log } = global
@@ -183,10 +184,10 @@ describe('Node.Data.Stream', () => {
         createCountPool({ key: poolKey, sizeLimit: samplePoolSizeLimit })
       ])
       const chipMap = toChipMap(toLinearChipList([
-        createReadableStreamInputChip({ readableStream: createReadStream(TEST_INPUT) }),
-        createTransformStreamChip({ transformStream: createGzip() }),
+        createReadableStreamInputChip({ stream: createReadStream(TEST_INPUT) }),
+        createTransformStreamChip({ stream: createGzip() }),
         { ...ChipSyncBasic, key: undefined }, // add an extra sync pass through to increase difficulty
-        createWritableStreamOutputChip({ key: 'out', writableStream: createWriteStream(TEST_OUTPUT) })
+        createWritableStreamOutputChip({ key: 'out', stream: createWriteStream(TEST_OUTPUT) })
       ], { poolKey }))
 
       const { attach, trigger, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
@@ -211,8 +212,48 @@ describe('Node.Data.Stream', () => {
       info(`done: ${time(stepper())}`)
     }
 
-    const refBuffer = await fsAsync.readFile(TEST_OUTPUT + '-REF')
-    __DEV__ && info(`refBuffer size: ${binary(refBuffer.length)}B`)
-    strictEqual(refBuffer.compare(await fsAsync.readFile(TEST_OUTPUT)), 0)
+    const outputBuffer = await fsAsync.readFile(TEST_OUTPUT)
+    __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
+    strictEqual(outputBuffer.compare(await fsAsync.readFile(TEST_OUTPUT + '-REF')), 0)
   })
+
+  it('quickRunletFromStream', async () => {
+    info('Runlet with stream speed')
+    const stepper = createStepper()
+    const result = await quickRunletFromStream(
+      createReadStream(TEST_INPUT),
+      createGzip(),
+      createGzip(),
+      createWriteStream(TEST_OUTPUT + '-QUICK')
+    )
+    info(`done: ${time(stepper())}`)
+    __DEV__ && console.log(result)
+
+    const outputBuffer = await fsAsync.readFile(TEST_OUTPUT + '-QUICK')
+    __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
+
+    stepper()
+    const refBuffer = gzipSync(gzipSync(await fsAsync.readFile(TEST_INPUT)))
+    info(`prepare refBuffer done: ${time(stepper())}`)
+    strictEqual(outputBuffer.compare(refBuffer), 0)
+  })
+
+  it('quickRunletFromStream error 0', async () => quickRunletFromStream(
+    createReadStream(FILE_NOT_EXIST), // error here
+    createGunzip() // error here, but should not fire
+  ).then(unexpectedResolve, expectError('ENOENT')))
+
+  it('quickRunletFromStream error 1', async () => quickRunletFromStream(
+    createReadStream(FILE_NOT_GZIP),
+    createGunzip() // error here
+  ).then(unexpectedResolve, expectError('incorrect header check')))
+
+  it('quickRunletFromStream error 2', async () => quickRunletFromStream(
+    createReadStream(FILE_NOT_GZIP),
+    createGzip(), createGunzip(),
+    createGzip(), createGzip(), createGunzip(), createGunzip(),
+    createGunzip(), // error here
+    createGzip(), createGunzip(),
+    createGzip(), createGzip(), createGunzip(), createGunzip()
+  ).then(unexpectedResolve, expectError('incorrect header check')))
 })

@@ -4,93 +4,93 @@ import { createSafeWriteStream } from './SafeWrite'
 
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 
-const createLogQueue = ({
-  outputStream, // this expect to be `source/node/module/SafeWrite.js` or similar implementation
-  queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD
+const createSimpleLoggerExot = ({
+  id = 'exot:logger-simple',
+  queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD,
+  ...safeWriteStreamOption
 }) => {
-  const logQueue = [] // buffered log
+  let logQueue
+  let safeWriteStream
 
-  const pullLog = () => {
-    logQueue.push('') // for an extra '\n'
-    const string = logQueue.join('\n')
-    logQueue.length = 0
-    return string
+  const up = (onExotError) => {
+    logQueue = [] // buffered log
+    safeWriteStream = createSafeWriteStream({ onError: onExotError, ...safeWriteStreamOption })
   }
+  const down = () => {
+    if (isUp() === false) return
+    save()
+    safeWriteStream.end()
+    logQueue = safeWriteStream = undefined
+  }
+  const isUp = () => safeWriteStream !== undefined
 
-  const add = (logString) => { // will trigger save on threshold
-    __DEV__ && console.log('[LogQueue] log', logString)
+  const add = (logString) => { // allow single string only, will trigger save on threshold
     logQueue.push(logString)
     logQueue.length > queueLengthThreshold && save()
   }
-
   const save = () => {
     if (logQueue.length === 0) return
-    __DEV__ && console.log('[LogQueue] save')
-    outputStream.write(pullLog())
+    logQueue.push('') // for an extra '\n'
+    safeWriteStream.write(logQueue.join('\n'))
+    logQueue.length = 0
   }
 
-  const end = () => {
-    __DEV__ && console.log('[LogQueue] end')
-    logQueue.length !== 0 && outputStream.write(pullLog())
-    outputStream.end()
+  return {
+    id, up, down, isUp,
+    add, save
   }
-
-  return { add, save, end }
 }
 
-const createSimpleLogger = ({ queueLengthThreshold, ...extraOption }) => createLogQueue({
-  outputStream: createSafeWriteStream(extraOption),
-  queueLengthThreshold
-})
-
 const SAVE_INTERVAL = 30 * 1000 // in ms, 30sec
-const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 24day
+const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 1day
 
-const createLogger = async ({
+// support multiple string `add()`
+// added timer for save & file split
+const createLoggerExot = ({
+  id = 'exot:logger',
   pathLogDirectory,
   getLogFileName = () => `${(new Date().toISOString()).replace(/\W/g, '-')}.log`,
   saveInterval = SAVE_INTERVAL,
   splitInterval = SPLIT_INTERVAL,
-  ...extraOption
+  ...simpleLoggerOption
 }) => {
   let logger
   let saveToken
   let splitToken
 
-  const reset = () => {
-    end()
-    const pathOutputFile = resolve(pathLogDirectory, getLogFileName())
-    logger = createSimpleLogger({ ...extraOption, pathOutputFile })
-    saveToken = saveInterval && setInterval(save, saveInterval)
-    splitToken = splitInterval && setTimeout(split, splitInterval)
+  const up = async (onExotError) => {
+    await createDirectory(pathLogDirectory)
+    upSync(onExotError)
   }
-
-  const add = (...args) => {
-    // __DEV__ && logger && console.log('[Logger] add')
-    logger && logger.add(args.join(' '))
+  const upSync = (onExotError) => {
+    logger = createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
+    logger.up(onExotError)
+    saveToken = saveInterval ? setInterval(save, saveInterval) : undefined
+    splitToken = splitInterval ? setTimeout(split, splitInterval) : undefined
   }
-  const save = () => {
-    __DEV__ && logger && console.log('[Logger] save')
-    logger && logger.save()
-  }
-  const split = () => {
-    __DEV__ && logger && console.log('[Logger] split')
-    logger && reset()
-  }
-  const end = () => {
-    __DEV__ && logger && console.log('[Logger] end')
-    logger && logger.end()
-    saveToken && clearInterval(saveToken)
-    splitToken && clearTimeout(splitToken)
+  const down = () => {
+    if (isUp() === false) return
+    logger.down()
+    saveToken !== undefined && clearInterval(saveToken)
+    splitToken !== undefined && clearTimeout(splitToken)
     logger = undefined
     saveToken = undefined
     splitToken = undefined
   }
+  const isUp = () => logger !== undefined
 
-  await createDirectory(pathLogDirectory)
-  reset()
+  const add = (...args) => { logger !== undefined && logger.add(args.join(' ')) }
+  const save = () => { logger !== undefined && logger.save() }
+  const split = () => {
+    if (logger === undefined) return
+    down()
+    upSync()
+  }
 
-  return { add, save, split, end }
+  return {
+    id, up, down, isUp,
+    add, save, split
+  }
 }
 
-export { createSimpleLogger, createLogger }
+export { createSimpleLoggerExot, createLoggerExot }

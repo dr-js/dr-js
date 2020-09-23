@@ -71,7 +71,7 @@ const withTestServer = (asyncTest, generateTestHTMLAsync) => async () => {
     ]
   }))
   await up()
-  await asyncTest(baseUrl, testHTML ? `${baseUrl}${URL_TEST_HTML}` : '')
+  await asyncTest({ baseUrl, testUrl: testHTML ? `${baseUrl}${URL_TEST_HTML}` : '' })
   await down()
 }
 
