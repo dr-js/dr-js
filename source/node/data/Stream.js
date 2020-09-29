@@ -215,9 +215,7 @@ const createWritableStreamOutputChip = ({
 
       if (pack[ 1 ] === END) {
         stream.end()
-        console.log('[DEBUG] start')
         while (state.isFinish === false) await waitIOP() // need to wait for write flush
-        console.log('[DEBUG] end')
         allOff()
         IOP.resolve()
       } else {

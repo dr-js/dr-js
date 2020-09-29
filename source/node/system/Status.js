@@ -20,7 +20,7 @@ const describeSystemProcessor = (processorList = getSystemProcessor()) => proces
   .map(({ model, speed, times }) => `[${model}] speed:${speed}MHz ${Object.entries(times).map(([ k, v ]) => `${k}:${time(v)}`).join(' ')}`)
   .join('\n')
 
-const getSystemMemory = () => ({
+const getSystemMemory = () => ({ // this will not include swap, and free means fully unused, so cached memory is not counted
   total: totalmem(),
   free: freemem()
 })
