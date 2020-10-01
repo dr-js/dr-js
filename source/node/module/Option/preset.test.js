@@ -2,9 +2,10 @@ import { writeFileSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { objectSortKey } from 'source/common/mutable/Object'
-import { createDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
 import { createOptionParser } from './parser'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
+
 import {
   Preset,
   parseOptionMap,
@@ -15,7 +16,7 @@ const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-preset-gitignore/')
 
-before('prepare', () => createDirectory(TEST_ROOT))
+before('prepare', () => resetDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
 // __DEV__ && console.log('Preset key list:', Object.keys(Preset))

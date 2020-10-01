@@ -35,9 +35,18 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
+const once = (func) => {
+  let isCalled = false
+  return (...args) => {
+    if (isCalled === true) return
+    isCalled = true
+    return func.apply(null, args)
+  }
+}
+
 // drop calls during async function running, good to make a trigger for async func
 // WARN: lossyFunc will drop return result from func
-const lossyAsync = (func, onError = rethrowError) => {
+const lossyAsync = (asyncFunc, onError = rethrowError) => {
   let runningPromise
   const onResolve = () => { runningPromise = undefined }
   const onReject = (error) => {
@@ -48,7 +57,7 @@ const lossyAsync = (func, onError = rethrowError) => {
     trigger: (...args) => {
       if (runningPromise) return
       try {
-        const result = func.apply(null, args)
+        const result = asyncFunc.apply(null, args)
         if (isPromiseAlike(result)) runningPromise = result.then(onResolve, onReject)
         else onResolve()
       } catch (error) { onReject(error) }
@@ -195,6 +204,7 @@ const createInsideOutPromise = () => {
 export {
   debounce,
   throttle,
+  once,
   lossyAsync,
   withDelayArgvQueue,
   withRepeat,

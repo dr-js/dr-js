@@ -117,6 +117,9 @@ const unescapeHTML = (string) => string && string.replace(REGEXP_UNESCAPE_HTML, 
 const REGEXP_INVALID_CHAR_XML = /[^\x09\x0A\x0D\x20-\xFF\x85\xA0-\uD7FF\uE000-\uFDCF\uFDE0-\uFFFD]/gm // eslint-disable-line no-control-regex
 const removeInvalidCharXML = (string) => string.replace(REGEXP_INVALID_CHAR_XML, '')
 
+// for path mostly, lazy encode URI to keep more common char as-is: new URL ('https://0/;,:@&=+$/').pathname === '/;,:@&=+$/'
+const lazyEncodeURI = (string) => encodeURI(string).replace(/[?#]/g, (string) => string === '?' ? '%3F' : '%23')
+
 export {
   indentLine,
   indentList,
@@ -131,5 +134,7 @@ export {
   escapeRegExp,
 
   escapeHTML, unescapeHTML,
-  removeInvalidCharXML
+  removeInvalidCharXML,
+
+  lazyEncodeURI
 }

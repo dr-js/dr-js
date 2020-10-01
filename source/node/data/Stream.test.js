@@ -11,8 +11,8 @@ import {
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet'
-import { createDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   isReadableStream, isWritableStream,
@@ -52,7 +52,7 @@ const TEST_INPUT = resolve(TEST_ROOT, './input')
 const TEST_OUTPUT = resolve(TEST_ROOT, './output')
 
 before('prepare', async () => {
-  await createDirectory(TEST_ROOT)
+  await resetDirectory(TEST_ROOT)
   const sourceBuffer = await fsAsync.readFile(TEST_SOURCE)
   let loopCount = 2 ** 12 // will produce about 15MiB file
   while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_INPUT, sourceBuffer)

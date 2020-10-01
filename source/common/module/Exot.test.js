@@ -4,7 +4,7 @@ import { setTimeoutAsync } from 'source/common/time'
 import { getRandomId } from 'source/common/math/random'
 import { getGlobal } from 'source/env/global'
 
-import { createExotError, createDummyExot, isExot } from './Exot'
+import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot'
 
 const { describe, it, info = console.log } = global
 
@@ -15,6 +15,7 @@ describe('source/common/module/Exot', () => {
     strictEqual(isExot({}), false)
     strictEqual(isExot(createDummyExot()), true)
     strictEqual(isExot(createSampleExot({ sampleConfig: { key: 'sample' } })), true)
+    strictEqual(isExot(createExotGroup()), true)
   })
 
   it('createSampleExot() basic', async () => {
@@ -129,6 +130,8 @@ describe('source/common/module/Exot', () => {
     info(`[after down (again)] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
     strictEqual(Boolean(global[ id ]), false)
   })
+
+  // TODO: it('createExotGroup()', async () => {})
 })
 
 const createSampleExot = ({ // most Exot create func should be just sync, and move async things to up()

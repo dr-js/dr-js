@@ -1,19 +1,19 @@
 import { resolve } from 'path'
 import { promises as fsAsync } from 'fs'
+import { strictEqual } from 'source/common/verify'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { createDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
 import { getUnusedPort } from 'source/node/server/function'
 import { createServerExot, createRequestListener } from 'source/node/server/Server'
 import { responderEndWithStatusCode } from 'source/node/server/Responder/Common'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import { fetchLikeRequest } from 'source/node/net'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   createOnFileChunkUpload,
   uploadFileByChunk
 } from './FileChunkUpload'
-import { strictEqual } from '../../common/verify'
 
 const { describe, it, before, after, info = console.log } = global
 
@@ -50,7 +50,7 @@ const withTestServer = (asyncTest) => async () => {
 }
 
 before('prepare', async () => {
-  await createDirectory(TEST_ROOT)
+  await resetDirectory(TEST_ROOT)
   const sourceBuffer = await fsAsync.readFile(TEST_SOURCE)
   let loopCount = 2 ** 9 // will produce about 3MiB file
   while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_FILE, sourceBuffer)

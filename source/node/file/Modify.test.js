@@ -1,7 +1,8 @@
 import { strictEqual } from 'source/common/verify'
 import { resolve } from 'path'
 import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
-import { createDirectory } from './Directory'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
+
 import {
   modifyCopy,
   modifyRename,
@@ -22,7 +23,7 @@ const directoryPath0 = resolve(TEST_ROOT, 'directory0/')
 const directoryPath1 = resolve(TEST_ROOT, 'directory1/')
 
 before('prepare', async () => {
-  await createDirectory(TEST_ROOT)
+  await resetDirectory(TEST_ROOT)
   await modifyCopy(SOURCE_FILE, filePath2)
 })
 

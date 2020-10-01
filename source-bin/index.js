@@ -26,7 +26,7 @@ import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/
 import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
 import { fetchWithJump } from '@dr-js/core/module/node/net'
 
-import { commonStartServer, configure as configureServerTestConnection } from './server/testConnection'
+import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection'
 import { configure as configureServerServeStatic } from './server/serveStatic'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup'
 
@@ -90,7 +90,8 @@ const runMode = async (modeName, optionData) => {
   }
   const startServer = async (configureFunc, option) => {
     const serverExot = await quickServerExot()
-    return commonStartServer({ serverExot, log, ...configureFunc({ serverExot, log, ...option }) })
+    commonServerDown(serverExot)
+    return commonServerUp({ serverExot, log, ...configureFunc({ serverExot, log, ...option }) })
   }
 
   switch (modeName) {
@@ -106,7 +107,7 @@ const runMode = async (modeName, optionData) => {
     }
     case 'repl':
       modulePathHack()
-      return startREPL({ useGlobal: true })
+      return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
 
     case 'wait': {
       const waitTime = argumentList[ 0 ] || 2 * 1000
@@ -193,7 +194,7 @@ const runMode = async (modeName, optionData) => {
       return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
       return startServer(configureServerTestConnection)
-    case 'server-tcp-proxy': {
+    case 'server-tcp-proxy': { // TODO: move to separate file?
       let targetOptionList
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
@@ -209,12 +210,13 @@ const runMode = async (modeName, optionData) => {
         targetOptionList = [ { hostname: 'custom-hostname', port: 'custom-port' } ]
         getTargetOption = argumentList[ 0 ]
       }
-      const { up, server, option } = await quickServerExot('tcp:')
-      server.on('connection', createTCPProxyListener({ getTargetOption }))
-      await up()
+      const serverExot = await quickServerExot('tcp:')
+      serverExot.server.on('connection', createTCPProxyListener({ getTargetOption }))
+      await serverExot.up()
+      commonServerDown(serverExot)
       return log(indentList('[TCPProxy]', [
         `pid: ${process.pid}`,
-        `at: ${option.hostname}:${option.port}`,
+        `at: ${serverExot.option.hostname}:${serverExot.option.port}`,
         ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)
       ]))
     }

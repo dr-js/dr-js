@@ -7,8 +7,9 @@ import { createRequestListener, describeServerOption } from '@dr-js/core/module/
 import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
 import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
+import { addExitListenerSync, addExitListenerAsync } from '@dr-js/core/module/node/system/ExitListener'
 
-const commonStartServer = async ({
+const commonServerUp = async ({
   serverExot: { up, server, option },
   log,
   routeConfigList, isAddFavicon,
@@ -33,6 +34,10 @@ const commonStartServer = async ({
   }))
   await up()
   log(describeServerOption(option, title, extraInfoList))
+}
+const commonServerDown = (serverExot) => {
+  addExitListenerAsync(serverExot.down)
+  addExitListenerSync(serverExot.down)
 }
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
@@ -93,4 +98,7 @@ const configure = ({ log }) => {
   }
 }
 
-export { commonStartServer, configure }
+export {
+  commonServerUp, commonServerDown,
+  configure
+}

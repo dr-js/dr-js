@@ -2,15 +2,16 @@ import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify'
 import { readFileSync } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
-import { createDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
+
 import { createSafeWriteStream } from './SafeWrite'
 
 const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-safe-write-gitignore/')
 
-before('prepare', () => createDirectory(TEST_ROOT))
+before('prepare', () => resetDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.SafeWrite', () => {

@@ -44,11 +44,14 @@ const createDummyExot = ({ // most Exot create func should be just sync, and mov
 }
 
 const createExotGroup = ({
-  id,
+  // ## other option to config this Exot
+  idPrefix = 'EXOT-GROUP-',
+  // ## pattern
+  id = getRandomId(idPrefix), // unique string id, or specific name like "server-HTTP"
   getOnExotError, onExotError,
   exotList = [], exotMap = toExotMap(exotList),
   isBatch = false
-}) => {
+} = {}) => {
   const upEach = async (onExotError = onExotErrorGroup) => {
     try { for (const exot of exotMap.values()) await exot.up(onExotError) } catch (error) {
       await onExotError()
@@ -62,7 +65,7 @@ const createExotGroup = ({
     })
   }
 
-  // down in reverse order
+  // down in reverse order, so exot dependency do not tangle
   const downEach = async () => { for (const exot of Array.from(exotMap.values()).reverse()) await exot.down() }
   const downBatch = async () => { await Promise.all(Array.from(exotMap.values()).reverse().map((exot) => exot.down())) }
 
@@ -76,7 +79,7 @@ const createExotGroup = ({
     return exot
   }
 
-  const load = async (exot) => {
+  const load = async (exot, onExotError = onExotErrorGroup) => {
     set(exot)
     await exot.up(onExotError)
   }
@@ -91,6 +94,7 @@ const createExotGroup = ({
   const isUp = () => findExotMapValue(exotMap, (exot) => exot.isUp()) // check if all Exot is up
 
   const exotGroup = {
+    // exotMap, // TODO: expose this for shorter code and more direct access?
     id, up, down, isUp,
     upEach, upBatch,
     downEach, downBatch,

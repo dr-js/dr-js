@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 import { strictEqual, doThrow } from 'source/common/verify'
-import { createDirectory } from './Directory'
+import { resetDirectory } from '@dr-js/dev/module/node/file'
+
 import {
   STAT_ERROR,
   PATH_TYPE,
@@ -36,7 +37,7 @@ const directoryPath5 = resolve(TEST_ROOT, 'a/b/')
 const directoryPath6 = resolve(TEST_ROOT, 'a/')
 
 before('prepare', async () => {
-  await createDirectory(TEST_ROOT)
+  await resetDirectory(TEST_ROOT)
 })
 
 after('clear', async () => {
@@ -57,7 +58,7 @@ describe('Node.File.Path', () => {
   })
 
   it('copyPath()', async () => {
-    await createDirectory(directoryPath2)
+    await resetDirectory(directoryPath2)
 
     await copyPath(SOURCE_FILE, filePath0)
     strictEqual(getPathTypeFromStat(await getPathLstat(filePath0)), PATH_TYPE.File)

@@ -2,7 +2,7 @@ import { relative, dirname, join as joinPath } from 'path'
 
 import { compareStringWithNumber } from '@dr-js/core/module/common/compare'
 import { binary, time } from '@dr-js/core/module/common/format'
-import { escapeHTML } from '@dr-js/core/module/common/string'
+import { escapeHTML, lazyEncodeURI } from '@dr-js/core/module/common/string'
 import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
 
 import { getPathStat, toPosixPath, createPathPrefixLock } from '@dr-js/core/module/node/file/Path'
@@ -76,7 +76,7 @@ const renderItem = (
   hrefPrefix, hrefFragList,
   tag, name, size, mtimeMs, isDownload,
   // generated
-  HREF = `href="${hrefPrefix}/${encodeURI(toPosixPath(joinPath(...hrefFragList))).replace(/[?#]/g, (string) => string === '?' ? '%3F' : '%23')}"`, // lazy encode URI to keep more common char alone: new URL ('https://0/;,:@&=+$/').pathname === '/;,:@&=+$/'
+  HREF = `href="${hrefPrefix}/${lazyEncodeURI(toPosixPath(joinPath(...hrefFragList)))}"`,
   NAME = escapeHTML(name)
 ) => `<a class="auto-height" ${HREF} ${isDownload ? `download="${NAME}"` : ''}>
 <object class="name">${isDownload ? `<a ${HREF} target="_blank">${tag}</a>` : tag}</object>
