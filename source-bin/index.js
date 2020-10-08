@@ -158,16 +158,17 @@ const runMode = async (modeName, optionData) => {
       return
 
     case 'fetch': {
-      let [ initialUrl, jumpMax = 4, timeout = 0 ] = argumentList
+      let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
+      const body = inputFile ? readFileSync(inputFile) : null
       let isDone = false
       const response = await fetchWithJump(initialUrl, {
-        headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` },
-        timeout,
-        jumpMax,
-        onProgressDownload: throttle((now, total) => isDone || log(`[fetch] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
-        preFetch: (url, jumpCount, cookieList) => log(`[fetch] url: ${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
+        method, timeout, jumpMax, body,
+        headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, // patch for
+        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
+        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
+        preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
       })
       if (!response.ok) throw new Error(`bad status: ${response.status}`)
       const contentLength = Number(response.headers[ 'content-length' ])

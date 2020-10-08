@@ -68,7 +68,7 @@ const fetchLikeRequest = async (url, {
   __DEV__ && console.log('[fetch]', option)
   const { request, promise } = requestHttp(url, option, body)
   const timeStart = clock()
-  onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
+  body && onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
     bodyLength = bodyLength || (isReadableStream(body) ? Infinity
       : isArrayBuffer(body) ? body.byteLength
         : isString(body) ? Buffer.byteLength(body)

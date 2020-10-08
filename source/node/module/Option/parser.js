@@ -161,8 +161,8 @@ const getParseCLI = (parseArgvList) => (argvList, optionMap = {}) => parseArgvLi
 
 const getParseENV = (nameMapENV) => (envObject, optionMap = {}) => {
   nameMapENV.forEach((format, nameENV) => {
-    let value = envObject[ nameENV ]
-    if (!value) return
+    let value = envObject[ nameENV ] // Object of string
+    if (value === undefined) return
     try { value = JSON.parse(value) } catch (error) { __DEV__ && console.log(`[parseENV] not JSON string ${value}`, error) }
     optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'ENV' }
   })
@@ -171,8 +171,8 @@ const getParseENV = (nameMapENV) => (envObject, optionMap = {}) => {
 
 const getParseCONFIG = (nameMapCONFIG) => (object, optionMap = {}) => {
   nameMapCONFIG.forEach((format, nameCONFIG) => {
-    const value = object[ nameCONFIG ]
-    if (value) optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'CONFIG' }
+    const value = object[ nameCONFIG ] // JSON or js Object
+    if (value !== undefined) optionMap[ format.name ] = { format, argumentList: Array.isArray(value) ? value : [ value ], source: 'CONFIG' }
   })
   return optionMap
 }

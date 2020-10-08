@@ -483,8 +483,8 @@
 >       use system default app to open uri or path: $0=uriOrPath/cwd
 >   --which --w -w [OPTIONAL] [ARGUMENT=1]
 >       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
->       fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
+>       fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
 >       show system process status: -J=isOutputJSON, $0=outputMode/"pid--"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
@@ -526,7 +526,7 @@
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
@@ -561,7 +561,7 @@
 >     "status": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "fetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
+>     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],

@@ -49,21 +49,11 @@ const createExotGroup = ({
   // ## pattern
   id = getRandomId(idPrefix), // unique string id, or specific name like "server-HTTP"
   getOnExotError, onExotError,
-  exotList = [], exotMap = toExotMap(exotList),
+  exotList = [], exotMap = toExotMap(...exotList),
   isBatch = false
 } = {}) => {
-  const upEach = async (onExotError = onExotErrorGroup) => {
-    try { for (const exot of exotMap.values()) await exot.up(onExotError) } catch (error) {
-      await onExotError()
-      throw error
-    }
-  }
-  const upBatch = async (onExotError = onExotErrorGroup) => {
-    await Promise.all(mapExotMapValue(exotMap, (exot) => exot.up(onExotError))).catch(async (error) => {
-      await onExotError()
-      throw error
-    })
-  }
+  const upEach = async (onExotError = onExotErrorGroup) => { for (const exot of exotMap.values()) await exot.up(onExotError) }
+  const upBatch = async (onExotError = onExotErrorGroup) => { await Promise.all(mapExotMapValue(exotMap, (exot) => exot.up(onExotError))) }
 
   // down in reverse order, so exot dependency do not tangle
   const downEach = async () => { for (const exot of Array.from(exotMap.values()).reverse()) await exot.down() }
@@ -71,7 +61,10 @@ const createExotGroup = ({
 
   const getSize = () => exotMap.size
 
-  const set = (exot) => { exotMap.set(exot.id, exot) }
+  const set = (exot) => {
+    if (!isExot(exot)) throw new Error(`invalid exot: ${exot}`)
+    exotMap.set(exot.id, exot)
+  }
   const get = (exotId) => exotMap.get(exotId)
   const deleteKeyword = (exotId) => {
     const exot = get(exotId)
@@ -94,12 +87,12 @@ const createExotGroup = ({
   const isUp = () => findExotMapValue(exotMap, (exot) => exot.isUp()) // check if all Exot is up
 
   const exotGroup = {
-    // exotMap, // TODO: expose this for shorter code and more direct access?
     id, up, down, isUp,
     upEach, upBatch,
     downEach, downBatch,
     getSize, set, get, delete: deleteKeyword, // for preparing the group
-    load, drop // for hot swap when the group is up
+    load, drop, // for hot swap when the group is up
+    exotMap // NOTE: expose this for looping and more direct access
   }
 
   const onExotErrorGroup = onExotError ||

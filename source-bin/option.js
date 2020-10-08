@@ -33,7 +33,7 @@ const MODE_FORMAT_LIST = parseList(
   'status,s/T|basic system status: -J=isOutputJSON',
   'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
   'which,w//1|resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath',
-  'fetch,f//1-3|fetch "GET" uri: -O=outputFile/stdout, $@=initialUrl,jumpMax/4,timeout/0',
+  'fetch,f//1-4|fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
