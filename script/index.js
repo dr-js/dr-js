@@ -57,6 +57,8 @@ runMain(async (logger) => {
   isTest && execShell('npm run test-output-module')
   isTest && logger.padLog('test browser')
   isTest && execShell('npm run test-browser')
+  isTest && logger.padLog('test bin')
+  isTest && execShell('npm run test-bin')
   await clearOutput({ fromOutput, logger })
   await verifyOutputBin({ fromOutput, packageJSON, logger })
   isTest && await verifyGitStatusClean({ fromRoot, logger })

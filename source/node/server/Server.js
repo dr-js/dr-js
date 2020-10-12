@@ -5,13 +5,14 @@ import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
-// TODO: add http2?
-
 import { clock } from 'source/common/time'
+import { isNumber } from 'source/common/check'
 import { indentList } from 'source/common/string'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
 import { responderEnd } from './Responder/Common'
+
+// TODO: add HTTP2 or just skip to HTTP3?
 
 const SESSION_CLIENT_TIMEOUT_SEC = 4 * 60 * 60 // in sec, 4hour
 const SESSION_CACHE_MAX = 4 * 1024
@@ -31,12 +32,14 @@ const applyServerSessionCache = (server) => { // TODO: consider move to `ticketK
   })
 }
 
-// NOTE: server should be Exot, and some feature can also be Exot managed as ExotGroup alone with serverExot, this make the life cycle simpler and the server close step more reasonable
+// NOTE: server is packed as Exot, and some feature can also have Exot,
+//   then managed as ExotGroup alone with serverExot,
+//   this make the life cycle simpler and the server close step more reasonable
 const createServerExot = ({
   id = 'server',
   protocol,
-  skipSessionPatch, // allow disable session patch (but session ticket without rotation will still work)
-  isForceClose = false, // default wait for connection end
+  skipSessionPatch = false, // allow disable the session ticket rotation patch (check below comment)
+  forceCloseTimeout = 8 * 1000, // default wait 8sec max for on-going connection to end, set to Infinity to wait on
   ...option
 }) => {
   if (![ 'tcp:', 'tls:', 'http:', 'https:' ].includes(protocol)) throw new Error(`invalid protocol: ${protocol}`)
@@ -86,6 +89,8 @@ const createServerExot = ({
       server.listen(option.port, option.hostname.replace(/[[\]]/g, ''), () => {
         server.off('error', reject)
         if (isSecure && !skipSessionPatch) {
+          // ## session ticket rotation patch
+          // session ticket without rotation will still work, but is less safe
           // https://blog.filippo.io/we-need-to-talk-about-session-tickets/
           // https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/
           const resetSessionTicketKey = () => server.setTicketKeys(randomBytes(48))
@@ -96,16 +101,18 @@ const createServerExot = ({
         resolve()
       })
     }),
-    down: async () => server.listening && new Promise((resolve) => {
+    down: async () => server.listening && new Promise((resolve, reject) => {
       sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
-      server.close(() => resolve())
-      if (isForceClose) for (const socket of socketSet) socket.destroy()
+      const forceCloseToken = isNumber(forceCloseTimeout) && forceCloseTimeout !== Infinity && setTimeout(() => { for (const socket of socketSet) socket.destroy() }, forceCloseTimeout)
+      server.close(() => {
+        forceCloseToken && clearTimeout(forceCloseToken)
+        resolve()
+      })
     }),
     isUp: () => server.listening,
     server,
     option,
-    socketSet,
-    setIsForceClose: (nextIsForceClose) => { isForceClose = nextIsForceClose }
+    socketSet
   }
 }
 
@@ -116,14 +123,14 @@ const createRequestListener = ({
   responderList = [],
   responderError = DEFAULT_RESPONDER_ERROR,
   responderEnd = DEFAULT_RESPONDER_END
-}) => async (request, response) => {
+}) => async (request, response) => { // for listen the server `request` event: https://nodejs.org/api/http.html#http_event_request
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
   const stateStore = createStateStoreLite({
-    time: clock(), // in msec, relative
-    error: null // from failed responder
+    time: clock(), // in msec, relative to process start
+    error: null // populated by failed responder
   })
-  stateStore.request = request // http.IncomingMessage
-  stateStore.response = response // http.ServerResponse
+  stateStore.request = request // http.IncomingMessage: https://nodejs.org/api/http.html#http_class_http_incomingmessage
+  stateStore.response = response // http.ServerResponse: https://nodejs.org/api/http.html#http_class_http_serverresponse
   try {
     for (const responder of responderList) await responder(stateStore)
   } catch (error) { await responderError(stateStore, error) }

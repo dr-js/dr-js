@@ -25,7 +25,11 @@ A collection of strange functions
   - bin source code, in output package will be `@dr-js/core/bin`
 - 📁 [example/](example/)
   - some example (unsorted tests)
-- 📁 [documentation/](documentation/)
-  - a few random documentation
 - 📄 [SPEC.md](SPEC.md)
   - list of all directly accessible codes, sort of API lockfile
+
+Most of the code should be self explainable by the naming,
+  though there are some truly weird ones.
+And there's a few document files scattered in the source,
+  along with many comments & TODOs,
+  feel free to find & read them.

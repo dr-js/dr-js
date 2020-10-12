@@ -3,20 +3,20 @@
 
 ## Bin mode: `eval`
 
-run script string or load script file, with `require('@dr-js/core')` available
+Run `scriptString` or load `scriptFile`, with `require('@dr-js/core')` available in context.
 
 NOTE: (of the weirdness, may get changed later)
-- `evalArgv` is array of input arguments (without the script string, if used)
-- `evalCwd` is the directory if the script file, or cwd if with script string
-- `require()` starts from `@dr-js/core/bin/index`,
+- `evalArgv` is the Array with the input arguments (exclude the `scriptString`, if exist)
+- `evalCwd` is the directory if with `scriptFile`, or cwd if with `scriptString`
+- relative `require()` starts from `@dr-js/core/bin/index`,
    so `require('@dr-js/core/library/common/format')` or `require('../library/common/format')` both works
 - the `require()` in files outside of the start file,
    should not call `require('@dr-js/core')`,
    because `module.paths` has changed, and reverse lookup will not find the right `node_modules`
 
-basic usage syntax:
+The basic usage syntax:
 
-- eval script string
+- eval `scriptString`
   > ```shell script
   > dr-js\
   >   -e "return require('@dr-js/core/library/common/format').describe(evalArgv)"\
@@ -34,7 +34,7 @@ basic usage syntax:
   >   -e "return console.log(evalArgv), 123" arg0 arg1
   > ```
 
-some helpful quick composed shell scripts:
+And some helpful quick composed shell scripts:
 
 - format JSON
   > for cut up super-long JSON, or fold super-deep ones
