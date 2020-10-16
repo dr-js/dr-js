@@ -14,6 +14,7 @@ import { createResponderServeStatic } from '@dr-js/core/module/node/server/Respo
 import { COMMON_LAYOUT, COMMON_STYLE } from '@dr-js/core/module/node/server/commonHTML'
 
 const configure = ({
+  routePrefix,
   isSimpleServe,
   expireTime, // in msec
   staticRoot
@@ -24,8 +25,8 @@ const configure = ({
 
   const routeConfigList = [
     [ isSimpleServe ? '/*' : '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
-    !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), staticRoot) ],
-    !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/list/' }) ]
+    !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), routePrefix, staticRoot) ],
+    !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}/list/` }) ]
   ]
 
   return {
@@ -36,7 +37,7 @@ const configure = ({
   }
 }
 
-const responderFilePathList = async (store, rootPath, staticRoot) => {
+const responderFilePathList = async (store, rootPath, routePrefix, staticRoot) => {
   const relativeRoot = relative(staticRoot, rootPath)
   const titleHTML = `/${escapeHTML(toPosixPath(relativeRoot))}`
   const directoryInfoList = []
@@ -53,9 +54,9 @@ const responderFilePathList = async (store, rootPath, staticRoot) => {
       mainStyle
     ], [
       `<b class="auto-height">${titleHTML}</b>`,
-      relativeRoot && renderItem('/list', [ dirname(relativeRoot) ], '🔙', '..'),
-      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem('/list', [ relativeRoot, name ], '📁', `${name}/`, 0, mtimeMs)),
-      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem('/file', [ relativeRoot, name ], '📄', name, size, mtimeMs, true))
+      relativeRoot && renderItem(routePrefix, '/list', [ dirname(relativeRoot) ], '🔙', '..'),
+      ...directoryInfoList.sort(compareInfo).map(({ name, stat: { mtimeMs } }) => renderItem(routePrefix, '/list', [ relativeRoot, name ], '📁', `${name}/`, 0, mtimeMs)),
+      ...fileInfoList.sort(compareInfo).map(({ name, stat: { size, mtimeMs } }) => renderItem(routePrefix, '/file', [ relativeRoot, name ], '📄', name, size, mtimeMs, true))
     ]))
   })
 }
@@ -73,10 +74,10 @@ p.size { flex: 1; }
 
 const compareInfo = ({ name: a }, { name: b }) => compareStringWithNumber(a, b)
 const renderItem = (
-  hrefPrefix, hrefFragList,
+  routePrefix, hrefPrefix, hrefFragList,
   tag, name, size, mtimeMs, isDownload,
   // generated
-  HREF = `href="${hrefPrefix}/${lazyEncodeURI(toPosixPath(joinPath(...hrefFragList)))}"`,
+  HREF = `href="${routePrefix}${hrefPrefix}/${lazyEncodeURI(toPosixPath(joinPath(...hrefFragList)))}"`,
   NAME = escapeHTML(name)
 ) => `<a class="auto-height" ${HREF} ${isDownload ? `download="${NAME}"` : ''}>
 <object class="name">${isDownload ? `<a ${HREF} target="_blank">${tag}</a>` : tag}</object>

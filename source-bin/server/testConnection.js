@@ -10,10 +10,9 @@ import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, creat
 import { addExitListenerSync, addExitListenerAsync } from '@dr-js/core/module/node/system/ExitListener'
 
 const commonServerUp = async ({
-  serverExot: { up, server, option },
-  log,
+  serverExot: { up, server, option }, log, routePrefix,
   routeConfigList, isAddFavicon,
-  title, extraInfoList
+  title, extraInfoList = []
 }) => {
   const responderLogEnd = createResponderLogEnd({ log })
   server.on('request', createRequestListener({
@@ -22,8 +21,8 @@ const commonServerUp = async ({
       createResponderRouter({
         routeMap: createRouteMap([
           ...routeConfigList,
-          isAddFavicon && [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
-        ].filter(Boolean)),
+          !routePrefix && isAddFavicon && [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
+        ].filter(Boolean), routePrefix),
         baseUrl: option.baseUrl
       })
     ],
@@ -33,6 +32,7 @@ const commonServerUp = async ({
     }
   }))
   await up()
+  routePrefix && extraInfoList.unshift(`routePrefix: '${routePrefix}'`)
   log(describeServerOption(option, title, extraInfoList))
 }
 const commonServerDown = (serverExot) => {
@@ -44,7 +44,7 @@ const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
 // TODO: support CORS for testing
 
-const configure = ({ log }) => {
+const configure = ({ log, routePrefix }) => {
   const bufferData = prepareBufferData(Buffer.from('TEST CONTENT'))
 
   const routeConfigList = [
@@ -88,7 +88,7 @@ const configure = ({ log }) => {
           : store.response.destroy()
       }
     })() ],
-    [ '/', 'GET', createResponderRouteListHTML({ getRouteMap: () => createRouteMap(routeConfigList) }) ]
+    [ [ '/', '' ], 'GET', createResponderRouteListHTML({ getRouteMap: () => createRouteMap(routeConfigList, routePrefix) }) ]
   ]
 
   return {

@@ -10,6 +10,7 @@ const COMMON_FORMAT_LIST = parseList(
   'version,v/T|show version',
   'json,J/T|output JSON, if supported',
   'host,H/SS|common option: $0=hostname:port (hostname default to 0.0.0.0)',
+  'route-prefix,RP/SS|common option: $0=routePrefix (default to "", set like "/prefix")',
   'root,R/SP|common option: $0=path/cwd',
   'input-file,I/SP|common option',
   'output-file,O/SP|common option'

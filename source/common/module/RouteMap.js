@@ -38,15 +38,18 @@ const findRouteFromMap = (routeNode, route) => {
   return { routeNode, paramValueList }
 }
 
-const appendRouteMap = (routeMap = {}, route = '/', data) => {
-  if (Array.isArray(route)) return route.reduce((o, v) => appendRouteMap(routeMap, v, data), routeMap)
+// TODO: test 'routePrefix'
+const appendRouteMap = (routeMap = {}, routeInput = '/', data, routePrefix = '') => {
+  if (Array.isArray(routeInput)) return routeInput.reduce((o, v) => appendRouteMap(routeMap, v, data, routePrefix), routeMap) // auto unroll if route is Array
+  const route = routePrefix ? `${routePrefix}${routeInput}` : routeInput
   const { routeNode, paramNameList } = parseRouteToMap(routeMap, route)
   if (routeNode[ ROUTE_DATA ]) throw new Error(`duplicate route: ${route}`)
   routeNode[ ROUTE_DATA ] = { route, paramNameList, data }
   return routeMap
 }
 
-const createRouteMap = (configList) => configList.reduce((o, [ route, data ]) => appendRouteMap(o, route, data), {})
+// TODO: test 'routePrefix'
+const createRouteMap = (configList, routePrefix) => configList.reduce((o, [ route, data ]) => appendRouteMap(o, route, data, routePrefix), {})
 
 const parseRouteUrl = (routeMap, url) => {
   const routeData = findRouteFromMap(routeMap, url)

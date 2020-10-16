@@ -14,7 +14,7 @@ const TEST_ROOT = resolve(__dirname, './test-safe-write-gitignore/')
 before('prepare', () => resetDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
-describe('Node.Module.SafeWrite', () => {
+describe('Node.Module.SafeWrite', () => { // TODO: flaky test
   it('createSafeWriteStream() sync write', () => {
     const pathOutputFile = resolve(TEST_ROOT, 'log0')
     const { write, end } = createSafeWriteStream({ pathOutputFile })

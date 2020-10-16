@@ -28,6 +28,8 @@ const OPEN = 1 // The connection is open and ready to communicate.
 const CLOSING = 2 // The connection is in the process of closing.
 const CLOSED = 3 // The connection is closed or couldn't be opened.
 
+// TODO: redo with Runlet
+
 const createWebSocket = ({
   socket,
   frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT,

@@ -4,7 +4,7 @@ import { catchPromise } from 'source/common/error'
 // ## AsyncTask ##
 //   a data structure to allow saving resource heavy code to run later
 //   hold all of the idle/run/done phase data
-//   contain a promise te represent the running code
+//   contain a promise to represent the running code
 //   and async query func to allow external code interact with code inside the promise
 
 const IDLE = 'idle'
@@ -18,7 +18,7 @@ const ASYNC_TASK_PHASE_MAP = {
 }
 
 // NOTE:
-//   if for convenience the value is directly used in code
+//   if for convenience, the value is directly used in code
 //   better add verify code like `strictEqual(ASYNC_TASK_KEY_MAP.OUTPUT, 'output')`
 
 const PLAN = 'plan'

@@ -23,9 +23,11 @@ const METHOD_MAP = {
   TRACE: '/TRACE'
 }
 
-const appendRouteMap = (routeMap, route = '/', method = 'GET', routeResponder) => {
-  if (Array.isArray(route)) return route.reduce((o, v) => appendRouteMap(routeMap, v, method, routeResponder), routeMap)
-  if (Array.isArray(method)) return method.reduce((o, v) => appendRouteMap(routeMap, route, v, routeResponder), routeMap)
+// TODO: test 'routePrefix'
+const appendRouteMap = (routeMap, routeInput = '/', method = 'GET', routeResponder, routePrefix = '') => {
+  if (Array.isArray(routeInput)) return routeInput.reduce((o, v) => appendRouteMap(routeMap, v, method, routeResponder, routePrefix), routeMap)
+  if (Array.isArray(method)) return method.reduce((o, v) => appendRouteMap(routeMap, routeInput, v, routeResponder, routePrefix), routeMap)
+  const route = routePrefix ? `${routePrefix}${routeInput}` : routeInput
   const { routeNode, paramNameList } = parseRouteToMap(routeMap, route)
   const methodTag = METHOD_MAP[ method ]
   if (!methodTag) throw new Error(`invalid method [${method}] for: ${route}`)
@@ -35,7 +37,8 @@ const appendRouteMap = (routeMap, route = '/', method = 'GET', routeResponder) =
   return routeMap
 }
 
-const createRouteMap = (configList) => configList.reduce((o, [ route, method, routeResponder ]) => appendRouteMap(o, route, method, routeResponder), {})
+// TODO: test 'routePrefix'
+const createRouteMap = (configList, routePrefix) => configList.reduce((o, [ route, method, routeResponder ]) => appendRouteMap(o, route, method, routeResponder, routePrefix), {})
 
 const createResponderRouter = ({
   routeMap,

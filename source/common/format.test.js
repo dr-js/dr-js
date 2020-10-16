@@ -82,9 +82,9 @@ describe('Common.Format', () => {
     strictEqual(describeValue(function * () {}), '<GeneratorFunction> anonymous')
     strictEqual(describeValue(async function * () {}), '<AsyncGeneratorFunction> anonymous') // since nodejs@10
 
-    strictEqual(describeValue([]), '<Array> [#0]')
-    strictEqual(describeValue([ {} ]), '<Array> [#1]')
-    strictEqual(describeValue([ 0, 1, 2, 3, 4, 5 ]), '<Array> [#6]')
+    strictEqual(describeValue([]), '<Array> []')
+    strictEqual(describeValue([ {} ]), '<Array> [<Object> {}]')
+    strictEqual(describeValue([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]), '<Array> [#10]')
 
     strictEqual(describeValue({}), '<Object> {}')
     strictEqual(describeValue({ '': [], 1: 1, a: 'a', ' a a ': '' }), '<Object> {"1","","a"," a a "}')

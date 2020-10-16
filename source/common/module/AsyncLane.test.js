@@ -4,9 +4,10 @@ import { ASYNC_TASK_KEY_MAP, runAsyncTask } from './AsyncTask'
 import { createAsyncFuncQueue } from './AsyncFuncQueue'
 import {
   createAsyncLane,
-  extendAutoSelectLane, selectMinLoadLane
+  extendAutoSelectLane, selectMinLoadLane,
   // extendLaneValueList,
   // extendLaneValueMap
+  extendAutoSelectByTagLane, selectByTagOrMinLoadLane
 } from './AsyncLane'
 
 const { describe, it } = global
@@ -182,6 +183,40 @@ describe('source/common/module/AsyncLane', () => {
       { index: 1, length: 2 },
       { index: 2, length: 1 },
       { index: 3, length: 1 }
+    ])
+
+    await Promise.all([ promise0, promise1, promise2, promise3, promise4, promise5 ]) // make linter happy
+  })
+
+  it('extendAutoSelectByTagLane + selectByTagOrMinLoadLane', async () => {
+    const asyncFuncAutoSelectByTagLane = extendAutoSelectByTagLane(
+      createAsyncLane({
+        laneSize: 4,
+        createAsyncQueue: createAsyncFuncQueue
+      }),
+      selectByTagOrMinLoadLane
+    )
+
+    const asyncTask0 = getAsyncTask()
+    const asyncTask1 = getAsyncTask()
+    const asyncTask2 = getAsyncTask()
+    const asyncTask3 = getAsyncTask()
+    const asyncTask4 = getAsyncTask()
+    const asyncTask5 = getAsyncTask()
+
+    const promise0 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask0), 0)
+    const promise1 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask1), 1)
+    const promise2 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask2), 2)
+    const promise3 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask3), 3)
+    const promise4 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask4), 2)
+    const promise5 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask5), 9)
+
+    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(), [ 2, 1, 2, 1 ])
+    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(true), [
+      { index: 0, length: 2, tagList: [ 9, 0 ] },
+      { index: 1, length: 1, tagList: [ 1 ] },
+      { index: 2, length: 2, tagList: [ 2, 2 ] },
+      { index: 3, length: 1, tagList: [ 3 ] }
     ])
 
     await Promise.all([ promise0, promise1, promise2, promise3, promise4, promise5 ]) // make linter happy

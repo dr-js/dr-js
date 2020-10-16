@@ -4,7 +4,7 @@ const describe = (value) => {
   const valueType = typeNameOf(value) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
   const valueString = valueType === 'String' ? JSON.stringify(value)
     : valueType === 'Object' ? `{${escapeString(Object.keys(value))}}`
-      : valueType === 'Array' ? `[#${value.length}]`
+      : valueType === 'Array' ? (value.length <= 8 ? `[${value.map(describe).join(', ')}]` : `[#${value.length}]`)
         : valueType === 'RegExp' ? String(value)
           : valueType.endsWith('Function') ? value.name || 'anonymous'
             : escapeString(String(value))

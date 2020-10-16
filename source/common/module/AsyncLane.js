@@ -83,7 +83,7 @@ const extendLaneValueList = (asyncLane) => {
   }
 
   const getStatus = (isVerbose) => {
-    const status = asyncLane.getStatus()
+    const status = asyncLane.getStatus(isVerbose)
     isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList })
     return status
   }
@@ -124,7 +124,7 @@ const extendLaneValueMap = (asyncLane) => {
   }
 
   const getStatus = (isVerbose) => {
-    const status = asyncLane.getStatus()
+    const status = asyncLane.getStatus(isVerbose)
     isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
     return status
   }
@@ -158,11 +158,56 @@ const extendLaneValueMap = (asyncLane) => {
   }
 }
 
+// ## custom extend ##
+//   commonly used to load balance while keep same kind(tag) of work queue up in the same lane,
+//   to avoid retry blocking and better change to hit cache
+const extendAutoSelectByTagLane = (
+  asyncLane,
+  selectByTagLane = selectByTagOrMinLoadLane // (laneList, value, tag) => lane
+) => {
+  const { laneList } = asyncLane
+
+  // patch data to [ { index, asyncQueue, tagList } ]
+  laneList.forEach((lane) => { lane.tagList = [] }) // newer first, length may be longer due to lazy trim, when some long running func get pushed at the same time
+
+  const reset = () => {
+    asyncLane.reset()
+    laneList.forEach(({ tagList }) => { tagList.length = 0 })
+  }
+
+  const getStatus = (isVerbose) => {
+    const status = asyncLane.getStatus(isVerbose)
+    isVerbose && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList })
+    return status
+  }
+
+  const push = (value, laneIndex, tag) => {
+    const valuePromise = asyncLane.push(value, laneIndex)
+    const { asyncQueue, tagList } = laneList[ laneIndex ]
+    tagList.unshift(tag)
+    tagList.length = asyncQueue.getLength() // lazy stale value drop, happen on new value push
+    return valuePromise
+  }
+
+  return {
+    ...asyncLane, reset, getStatus, push,
+    pushAutoTag: (value, tag) => push(value, selectByTagLane(laneList, value, tag).index, tag) // new
+  }
+}
+
+const selectByTagOrMinLoadLane = (laneList, value, tag) => (
+  laneList.find((lane) => lane.tagList.includes(tag)) || // try put to lane with same tag
+  selectMinLoadLane(laneList) // try min-load
+)
+
 export {
   createAsyncLane,
 
   // sample extend func, also compose-able, not for top performance
   extendAutoSelectLane, selectMinLoadLane,
   extendLaneValueList,
-  extendLaneValueMap
+  extendLaneValueMap,
+
+  // custom extend
+  extendAutoSelectByTagLane, selectByTagOrMinLoadLane
 }

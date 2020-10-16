@@ -102,7 +102,7 @@
 + 📄 [source/common/module/AsyncFuncQueue.js](source/common/module/AsyncFuncQueue.js)
   - `createAsyncFuncQueue`
 + 📄 [source/common/module/AsyncLane.js](source/common/module/AsyncLane.js)
-  - `createAsyncLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectMinLoadLane`
+  - `createAsyncLane`, `extendAutoSelectByTagLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectByTagOrMinLoadLane`, `selectMinLoadLane`
 + 📄 [source/common/module/AsyncTask.js](source/common/module/AsyncTask.js)
   - `ASYNC_TASK_KEY_MAP`, `ASYNC_TASK_PHASE_MAP`, `getAsyncTaskPhase`, `resetAsyncTask`, `runAsyncTask`
 + 📄 [source/common/module/AsyncTaskQueue.js](source/common/module/AsyncTaskQueue.js)
@@ -300,7 +300,7 @@
     - **AsyncFuncQueue**
       - `createAsyncFuncQueue`
     - **AsyncLane**
-      - `createAsyncLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectMinLoadLane`
+      - `createAsyncLane`, `extendAutoSelectByTagLane`, `extendAutoSelectLane`, `extendLaneValueList`, `extendLaneValueMap`, `selectByTagOrMinLoadLane`, `selectMinLoadLane`
     - **AsyncTask**
       - `ASYNC_TASK_KEY_MAP`, `ASYNC_TASK_PHASE_MAP`, `getAsyncTaskPhase`, `resetAsyncTask`, `runAsyncTask`
     - **AsyncTaskQueue**
@@ -447,6 +447,8 @@
 >       output JSON, if supported
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=hostname:port (hostname default to 0.0.0.0)
+>   --route-prefix --RP [OPTIONAL] [ARGUMENT=1]
+>       common option: $0=routePrefix (default to "", set like "/prefix")
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=path/cwd
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
@@ -508,6 +510,7 @@
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -543,6 +546,7 @@
 >     "version": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "json": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],

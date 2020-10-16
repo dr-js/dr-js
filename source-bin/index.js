@@ -90,8 +90,9 @@ const runMode = async (modeName, optionData) => {
   }
   const startServer = async (configureFunc, option) => {
     const serverExot = await quickServerExot()
+    const routePrefix = tryGetFirst('route-prefix') || ''
     commonServerDown(serverExot)
-    return commonServerUp({ serverExot, log, ...configureFunc({ serverExot, log, ...option }) })
+    return commonServerUp({ serverExot, log, routePrefix, ...configureFunc({ serverExot, log, routePrefix, ...option }) })
   }
 
   switch (modeName) {

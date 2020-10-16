@@ -121,7 +121,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const configure = ({ serverExot }) => {
+const configure = ({ serverExot, routePrefix }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -134,14 +134,15 @@ const configure = ({ serverExot }) => {
       TYPE_BUFFER_GROUP,
       TYPE_BUFFER_SINGLE,
       FRAME_LENGTH_LIMIT,
+      ROUTE_PREFIX: routePrefix,
       onload: mainScriptInit
     }),
     DR_BROWSER_SCRIPT_TAG()
   ])), BASIC_EXTENSION_MAP.html)
 
   const routeConfigList = [
-    [ '/', 'GET', (store) => responderSendBufferCompress(store, bufferData) ],
-    [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: '/' }) ]
+    [ [ '/', '' ], 'GET', (store) => responderSendBufferCompress(store, bufferData) ],
+    [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}/` }) ]
   ]
 
   const { server, option: { baseUrl } } = serverExot
@@ -149,7 +150,7 @@ const configure = ({ serverExot }) => {
     server,
     onUpgradeRequest: createUpdateRequestListener({
       responderList: [ createResponderRouter({
-        routeMap: createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ]),
+        routeMap: createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ], routePrefix),
         baseUrl
       }) ]
     }),
@@ -200,6 +201,7 @@ const mainScriptInit = () => {
     qS, cE,
     TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE,
     FRAME_LENGTH_LIMIT,
+    ROUTE_PREFIX,
     Dr: {
       Common: {
         Time: { setTimeoutAsync },
@@ -247,7 +249,7 @@ const mainScriptInit = () => {
 
   const getWebSocketGroupUrl = (groupPath, id) => {
     const { protocol, host } = location
-    return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}/websocket-group/${encodeURIComponent(groupPath)}?id=${encodeURIComponent(id)}`
+    return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}${ROUTE_PREFIX}/websocket-group/${encodeURIComponent(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
   const STATE = {

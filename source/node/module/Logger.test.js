@@ -15,7 +15,7 @@ before('prepare', () => resetDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.Logger', () => {
-  it('createSimpleLoggerExot()', async () => {
+  it('createSimpleLoggerExot()', async () => { // TODO: flaky test
     const pathOutputFile = resolve(TEST_ROOT, 'simple-logger')
     const { up, down, add, save } = createSimpleLoggerExot({ pathOutputFile, queueLengthThreshold: 4 })
     up()
