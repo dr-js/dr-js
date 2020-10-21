@@ -196,7 +196,7 @@ const extendAutoSelectByTagLane = (
 }
 
 const selectByTagOrMinLoadLane = (laneList, value, tag) => (
-  laneList.find((lane) => lane.tagList.includes(tag)) || // try put to lane with same tag
+  (tag && laneList.find((lane) => lane.tagList.includes(tag))) || // try put to lane with same tag, if tag is not falsy
   selectMinLoadLane(laneList) // try min-load
 )
 

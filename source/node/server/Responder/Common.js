@@ -27,7 +27,11 @@ const DEFAULT_DESCRIBE_REQUEST = ({
   url, method, headers: { host }, socket: { remoteAddress, remotePort }
 }) => `[${method}] ${host || ''}${url} (${remoteAddress}:${remotePort})`
 
-const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
+const createResponderLog = ({
+  loggerExot,
+  log = loggerExot && loggerExot.add,
+  describeRequest = DEFAULT_DESCRIBE_REQUEST
+}) => (store) => {
   const userAgentString = store.request.headers[ 'user-agent' ] || 'none'
   log(
     describeRequest(store.request),
@@ -35,7 +39,11 @@ const createResponderLog = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST })
   )
 }
 
-const createResponderLogEnd = ({ log, describeRequest = DEFAULT_DESCRIBE_REQUEST }) => (store) => {
+const createResponderLogEnd = ({
+  loggerExot,
+  log = loggerExot && loggerExot.add,
+  describeRequest = DEFAULT_DESCRIBE_REQUEST
+}) => (store) => {
   const { statusCode } = store.response
   const { time, error } = store.getState()
   const timeString = `${Math.round(clock() - time)}ms`

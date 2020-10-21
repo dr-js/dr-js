@@ -203,12 +203,18 @@ describe('source/common/module/AsyncLane', () => {
     const asyncTask3 = getAsyncTask()
     const asyncTask4 = getAsyncTask()
     const asyncTask5 = getAsyncTask()
+    const asyncTask6 = getAsyncTask()
+    const asyncTask7 = getAsyncTask()
 
     const promise0 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask0), 0)
     const promise1 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask1), 1)
     const promise2 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask2), 2)
     const promise3 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask3), 3)
+
+    // match, should fill by match tag
     const promise4 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask4), 2)
+
+    // non-match, should fill by min-load
     const promise5 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask5), 9)
 
     stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(), [ 2, 1, 2, 1 ])
@@ -219,6 +225,18 @@ describe('source/common/module/AsyncLane', () => {
       { index: 3, length: 1, tagList: [ 3 ] }
     ])
 
-    await Promise.all([ promise0, promise1, promise2, promise3, promise4, promise5 ]) // make linter happy
+    // falsy-tag, should fill by min-load
+    const promise6 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask6))
+    const promise7 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask7), '')
+
+    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(), [ 2, 2, 2, 2 ])
+    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(true), [
+      { index: 0, length: 2, tagList: [ 9, 0 ] },
+      { index: 1, length: 2, tagList: [ undefined, 1 ] },
+      { index: 2, length: 2, tagList: [ 2, 2 ] },
+      { index: 3, length: 2, tagList: [ '', 3 ] }
+    ])
+
+    await Promise.all([ promise0, promise1, promise2, promise3, promise4, promise5, promise6, promise7 ]) // make linter happy
   })
 })

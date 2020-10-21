@@ -54,7 +54,7 @@ const createLoggerExot = ({
   splitInterval = SPLIT_INTERVAL,
   ...simpleLoggerOption
 }) => {
-  let logger
+  let loggerExot
   let saveToken
   let splitToken
 
@@ -63,26 +63,26 @@ const createLoggerExot = ({
     upSync(onExotError)
   }
   const upSync = (onExotError) => {
-    logger = createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
-    logger.up(onExotError)
+    loggerExot = createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
+    loggerExot.up(onExotError)
     saveToken = saveInterval ? setInterval(save, saveInterval) : undefined
     splitToken = splitInterval ? setTimeout(split, splitInterval) : undefined
   }
   const down = () => {
     if (isUp() === false) return
-    logger.down()
+    loggerExot.down()
     saveToken !== undefined && clearInterval(saveToken)
     splitToken !== undefined && clearTimeout(splitToken)
-    logger = undefined
+    loggerExot = undefined
     saveToken = undefined
     splitToken = undefined
   }
-  const isUp = () => logger !== undefined
+  const isUp = () => loggerExot !== undefined
 
-  const add = (...args) => { logger !== undefined && logger.add(args.join(' ')) }
-  const save = () => { logger !== undefined && logger.save() }
+  const add = (...args) => { loggerExot !== undefined && loggerExot.add(args.join(' ')) }
+  const save = () => { loggerExot !== undefined && loggerExot.save() }
   const split = () => {
-    if (logger === undefined) return
+    if (loggerExot === undefined) return
     down()
     upSync()
   }

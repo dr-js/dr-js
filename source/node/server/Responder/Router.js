@@ -42,7 +42,8 @@ const createRouteMap = (configList, routePrefix) => configList.reduce((o, [ rout
 
 const createResponderRouter = ({
   routeMap,
-  baseUrl = '', // NOTE: normally just rest spread the server option here
+  serverExot,
+  baseUrl = serverExot ? serverExot.option.baseUrl : '',
   getMethodUrl = createGetMethodUrl(new URL(baseUrl))
 }) => (store) => {
   const { method, url } = getMethodUrl(store)
