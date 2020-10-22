@@ -13,7 +13,7 @@ const SCRIPT_STRING = `
 const { describe } = require('@dr-js/core/library/common/format')
 const { describeSystemPlatform } = require('@dr-js/core/library/node/system/Status')
 
-console.log(\`[process.argv] \${describe(process.argv)}\`)
+console.log(\`[process.argv.length] \${process.argv.length}\`)
 
 // NOTE: patched variable
 console.log(\`[evalArgv] \${evalArgv}\`) 
@@ -40,7 +40,7 @@ runMain(async (logger) => {
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
-      '[process.argv] <Array> [#8]',
+      '[process.argv.length] 8',
       '[evalArgv] 1,2,3 4',
       '[evalOption] <Object> {"optionMap","tryGet","tryGetFirst","get","getFirst","pwd"}',
       `[__filename] <String> ${JSON.stringify(fromRoot('script/testBin/scriptFile.js'))}`,
@@ -67,7 +67,7 @@ runMain(async (logger) => {
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
-      '[process.argv] <Array> [#7]',
+      '[process.argv.length] 7',
       '[evalArgv] 1,2,3 4',
       '[evalOption] <Object> {"optionMap","tryGet","tryGetFirst","get","getFirst","pwd"}',
       `[__filename] <String> ${JSON.stringify(fromRoot('__SCRIPT_STRING__'))}`,

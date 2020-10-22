@@ -21,7 +21,7 @@ describe('Common.SanityTest.MemoryUsageDataType (very slow)', () => {
     ]
   })))
 
-  it('promise', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig }) => runSubjectPredictionTestConfig({
+  it('promise', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig, isNodejs15 = Number(process.versions.node.split('.')[ 0 ]) >= 15 }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4
     testDropRound: 3, // first 2-4 result may be less stable
@@ -31,9 +31,9 @@ describe('Common.SanityTest.MemoryUsageDataType (very slow)', () => {
       [ 'promise (basic)', '0±0.1', () => new Promise((resolve) => resolve('value')) ],
       [ 'promise (then)', '0±0.1', (index) => new Promise((resolve) => { resolve(index) }).then((value) => value) ],
       [ 'promise (Promise.resolve)', '0±0.1', () => Promise.resolve('value') ],
-      [ 'promise (Promise.all with 1 value)', '64±0.1', () => Promise.all([ Promise.resolve(0) ]) ],
-      [ 'promise (Promise.all with 2 value)', '72±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1) ]) ],
-      [ 'promise (Promise.all with 3 value)', '80±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1), Promise.resolve(2) ]) ]
+      [ 'promise (Promise.all with 1 value)', isNodejs15 ? '56±0.1' : '64±0.1', () => Promise.all([ Promise.resolve(0) ]) ],
+      [ 'promise (Promise.all with 2 value)', isNodejs15 ? '64±0.1' : '72±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1) ]) ],
+      [ 'promise (Promise.all with 3 value)', isNodejs15 ? '72±0.1' : '80±0.1', () => Promise.all([ Promise.resolve(0), Promise.resolve(1), Promise.resolve(2) ]) ]
     ]
   })))
 

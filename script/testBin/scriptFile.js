@@ -2,7 +2,7 @@ const { describe, binary } = require('@dr-js/core/library/common/format')
 
 const { main } = require('./scriptFileSub')
 
-console.log(`[process.argv] ${describe(process.argv)}`)
+console.log(`[process.argv.length] ${process.argv.length}`)
 
 // NOTE: patched variable
 console.log(`[evalArgv] ${evalArgv}`) // eslint-disable-line no-undef

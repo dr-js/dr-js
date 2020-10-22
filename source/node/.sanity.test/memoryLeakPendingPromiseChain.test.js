@@ -85,10 +85,7 @@ describe('Common.SanityTest.MemoryLeakPendingPromiseChain (slow)', () => {
     let loop = 0
     while (loop++ !== 128) {
       await markMemory()
-      promiseTail = appendPromiseAdder(promiseTail, 64 * 1024).then((result) => {
-        console.log({ result })
-        return result
-      })
+      promiseTail = appendPromiseAdder(promiseTail, 64 * 1024)
       await setTimeoutAsync(10)
     }
     console.log({ promiseHead, promiseTail })
@@ -100,10 +97,6 @@ describe('Common.SanityTest.MemoryLeakPendingPromiseChain (slow)', () => {
     while (loop++ !== 128) {
       await markMemory()
       promiseTail = appendPromiseAdder(promiseTail, 64 * 1024)
-      promiseTail = promiseTail.then((result) => {
-        console.log({ result })
-        return result
-      })
       await setTimeoutAsync(10)
     }
     console.log({ promiseTail })

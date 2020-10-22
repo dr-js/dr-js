@@ -67,7 +67,7 @@ describe('Node.Module.FileChunkUpload', () => {
       fileBuffer,
       key,
       chunkSizeMax: 8 * 1024,
-      onProgress: (uploadedSize, totalSize) => info(` ${uploadedSize}/${totalSize}`),
+      onProgress: (uploadedSize, totalSize) => __DEV__ && info(` ${uploadedSize}/${totalSize}`),
       uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: chainArrayBufferPacket })
         .catch((error) => {
           const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, size: ${chunkByteLength}`
@@ -85,7 +85,7 @@ describe('Node.Module.FileChunkUpload', () => {
       filePath: TEST_FILE,
       key,
       chunkSizeMax: 8 * 1024,
-      onProgress: (uploadedSize, totalSize) => info(` ${uploadedSize}/${totalSize}`),
+      onProgress: (uploadedSize, totalSize) => __DEV__ && info(` ${uploadedSize}/${totalSize}`),
       uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: chainArrayBufferPacket })
         .catch((error) => {
           const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, size: ${chunkByteLength}`

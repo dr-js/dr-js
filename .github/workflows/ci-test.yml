@@ -8,7 +8,7 @@ jobs:
       fail-fast: false # allow all test to run to the end
       matrix:
         os: [ ubuntu-latest, windows-latest ] # [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version: [ 12.x, 14.x ]
+        node-version: [ 12.x, 14.x, 15.x ]
 
     runs-on: ${{ matrix.os }}
 
@@ -37,4 +37,4 @@ jobs:
 
       - run: npm ci
 
-      - run: npm test || npm test || npm test # retry more time since some net/fs test is still flaky
+      - run: npm test || npm test # retry more time since some net/fs test is still flaky

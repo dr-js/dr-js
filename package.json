@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.0-dev.7",
+  "version": "0.4.0-dev.8",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -29,9 +29,9 @@
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
     "test-T": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T",
-    "test-dev": "npm run test-T -- source/common/module/AsyncLane.test.js",
+    "test-dev": "npm run test-T -- source/common/module/TimedLookup.test.js",
     "test-runlet": "npm run test-T -- source/common/module/Runlet.test.js",
-    "test-sanity": "npm run test-T -- source/common/.sanity.test/promise.test.js",
+    "test-sanity": "npm run test-T -- source/node/.sanity.test/memoryLeakPendingPromiseChain.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
@@ -49,8 +49,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "0.4.0-dev.4",
-    "@dr-js/dev-web-puppeteer": "0.4.0-dev.4"
+    "@dr-js/dev": "0.4.0-dev.6",
+    "@dr-js/dev-web-puppeteer": "0.4.0-dev.6"
   },
   "sideEffects": false
 }

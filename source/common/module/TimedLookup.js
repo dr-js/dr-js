@@ -4,21 +4,21 @@ import { swapObfuscateString } from 'source/common/data/function'
 import { packArrayBufferPacket, parseArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
 
 const CHECK_CODE_SEP = '-'
-const CHAR_CODE_1 = '1'.charCodeAt(0)
+
+const __DEV__ = false
 
 const calcCode = (size, tokenSize, dataView, seed = 0) => {
   seed = Math.floor(seed)
-  const seedBinaryString = seed.toString(2)
+  const seedBinaryCharList = seed.toString(2).padStart(tokenSize, '0').split('') // the seed need to be big enough, or there'll be very few loops and output like `00000***`
   const valueMax = Math.pow(16, tokenSize)
-  let index = seed % size
-  let value = dataView.getUint8(index) // 0 to 255, 8bit
-  __DEV__ && console.log('calcCode', { seed, seedBinaryString, index, value })
-  for (let seedIndex = 0, seedIndexMax = seedBinaryString.length; seedIndex < seedIndexMax; seedIndex++) {
-    if (seedBinaryString.charCodeAt(seedIndex) === CHAR_CODE_1) index = (index + dataView.getUint8((index + 1) % size)) % size
-    else value = value * 16 // shift 4bit
-
-    value = (value + dataView.getUint8(index)) % valueMax
-    __DEV__ && console.log('calcCode step', { dataViewData: dataView.getUint8(index), index, seedIndex, value })
+  let dataViewIndex = seed % size
+  let value = dataView.getUint8(dataViewIndex) // 0 to 255, 8bit
+  __DEV__ && console.log('calcCode', { seed, seedBinaryCharList, dataViewIndex, value })
+  for (let seedIndex = seedBinaryCharList.length - 1; seedIndex >= 0; seedIndex--) { // loop in reverse so the last digit change the whole hash
+    const stepMode = seedBinaryCharList[ seedIndex ] === '1'
+    dataViewIndex = (dataViewIndex + (stepMode ? 1 : dataView.getUint8((dataViewIndex + 1) % size))) % size
+    value = ((stepMode ? value : value * 16) + dataView.getUint8(dataViewIndex)) % valueMax
+    __DEV__ && console.log('calcCode step', { dataViewData: dataView.getUint8(dataViewIndex), dataViewIndex, seedIndex, value })
   }
   __DEV__ && console.log('calcCode', { value })
   return (value % Math.pow(2, 4 * tokenSize)).toString(16).padStart(tokenSize, '0')

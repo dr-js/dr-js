@@ -5,7 +5,7 @@ import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
 import {
   verifyOption,
   generateLookupData,
-  generateCheckCode,
+  generateCheckCode, parseCheckCode,
   verifyCheckCode,
   packDataArrayBuffer,
   parseDataArrayBuffer
@@ -59,8 +59,14 @@ describe('Common.Module.TimedLookup', () => {
     const timestamp = getTimestamp()
     strictEqual(generateCheckCode(defaultLookupData, 0), generateCheckCode(defaultLookupData, 0))
     strictEqual(generateCheckCode(defaultLookupData, timestamp), generateCheckCode(defaultLookupData, timestamp))
+
     notStrictEqual(generateCheckCode(defaultLookupData, 0), generateCheckCode(defaultLookupData, 1))
-    notStrictEqual(generateCheckCode(defaultLookupData, 0), generateCheckCode(generateLookupData(defaultOption), 0))
+    strictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, 1))[ 2 ])
+    strictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.timeGap - 1))[ 2 ])
+    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.timeGap))[ 2 ])
+
+    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(generateLookupData(defaultOption), 0))[ 2 ], 'should generate random one')
+    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ], 'should not loop with time')
   })
 
   it('verifyCheckCode()', () => {

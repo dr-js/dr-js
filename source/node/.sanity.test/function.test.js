@@ -27,7 +27,9 @@ const createTestFunc = (expectExitCode = 0, ...funcList) => async () => {
   const { code, signal, stdoutPromise, stderrPromise } = await runFuncWithExposeGC(...funcList)
   !__DEV__ && info(`STDOUT:\n${await stdoutPromise}\n\nSTDERR:\n${await stderrPromise}`)
   info(`test done, exit code: ${code}, signal: ${signal}`)
-  strictEqual(code, expectExitCode)
+  if (code === expectExitCode) return
+  info(`STDOUT:\n${await stdoutPromise}\n\nSTDERR:\n${await stderrPromise}`)
+  throw new Error(`exitCode: ${code}, expectExitCode: ${expectExitCode}`)
 }
 
 const commonFunc = (triggerGC) => {
