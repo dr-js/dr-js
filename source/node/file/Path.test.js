@@ -10,6 +10,7 @@ import {
   copyPath,
   renamePath,
   deletePath,
+  existPath, nearestExistPath,
   createPathPrefixLock
 } from './Path'
 
@@ -102,6 +103,25 @@ describe('Node.File.Path', () => {
     await deletePath(filePath0)
 
     strictEqual(await getPathLstat(filePath0), STAT_ERROR)
+  })
+
+  it('existPath()', async () => {
+    strictEqual(await existPath(TEST_ROOT), true)
+    strictEqual(await existPath(__dirname), true)
+    strictEqual(await existPath(__filename), true)
+
+    strictEqual(await existPath(invalidPath), false)
+    strictEqual(await existPath(resolve(__filename, 'not-exist')), false)
+    strictEqual(await existPath(resolve(TEST_ROOT, '11/22/33/44/55')), false)
+  })
+
+  it('nearestExistPath()', async () => {
+    strictEqual(await nearestExistPath(TEST_ROOT), TEST_ROOT)
+    strictEqual(await nearestExistPath(__dirname), __dirname)
+    strictEqual(await nearestExistPath(__filename), __filename)
+
+    strictEqual(await nearestExistPath(resolve(__filename, 'not-exist')), __filename)
+    strictEqual(await nearestExistPath(resolve(TEST_ROOT, '11/22/33/44/55')), TEST_ROOT)
   })
 
   it('createPathPrefixLock()', () => {

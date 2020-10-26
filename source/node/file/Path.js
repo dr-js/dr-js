@@ -58,8 +58,12 @@ const deletePath = async (path, pathStat) => {
     : fsAsync.unlink(path) // resolve to nothing
 }
 
-const nearestExistPath = async (path) => { // NOTE: may be file instead of directory
-  while (path && (Error === await fsAsync.access(path).catch(() => Error))) path = dirname(path)
+const existPath = async (path) => ErrorNotExist !== await fsAsync.access(path).catch(existFail) // this checks `fs.constants.F_OK`
+const existFail = () => ErrorNotExist
+const ErrorNotExist = new Error()
+
+const nearestExistPath = async (path) => { // use absolute path // NOTE: may be file instead of directory
+  while (path && !await existPath(path)) path = dirname(path)
   return path
 }
 
@@ -86,7 +90,7 @@ export {
   renamePath,
   deletePath,
 
-  nearestExistPath,
+  existPath, nearestExistPath,
   toPosixPath,
   createPathPrefixLock
 }
