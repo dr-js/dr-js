@@ -4,23 +4,25 @@ import { createSafeWriteStream } from './SafeWrite'
 
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 
+// support `add()` before `up()`
 const createSimpleLoggerExot = ({
   id = 'exot:logger-simple',
   queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD,
   ...safeWriteStreamOption
 }) => {
-  let logQueue
+  const logQueue = [] // buffered log
   let safeWriteStream
 
   const up = (onExotError) => {
-    logQueue = [] // buffered log
+    if (isUp() === true) throw new Error('already up')
     safeWriteStream = createSafeWriteStream({ onError: onExotError, ...safeWriteStreamOption })
   }
   const down = () => {
     if (isUp() === false) return
     save()
+    // logQueue = [] // save should flush all pending logs
     safeWriteStream.end()
-    logQueue = safeWriteStream = undefined
+    safeWriteStream = undefined
   }
   const isUp = () => safeWriteStream !== undefined
 
@@ -29,7 +31,7 @@ const createSimpleLoggerExot = ({
     logQueue.length > queueLengthThreshold && save()
   }
   const save = () => {
-    if (logQueue.length === 0) return
+    if (isUp() === false || logQueue.length === 0) return
     logQueue.push('') // for an extra '\n'
     safeWriteStream.write(logQueue.join('\n'))
     logQueue.length = 0
@@ -44,6 +46,7 @@ const createSimpleLoggerExot = ({
 const SAVE_INTERVAL = 30 * 1000 // in ms, 30sec
 const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 1day
 
+// support `add()` before `up()`
 // support multiple string `add()`
 // added timer for save & file split
 const createLoggerExot = ({
@@ -54,35 +57,38 @@ const createLoggerExot = ({
   splitInterval = SPLIT_INTERVAL,
   ...simpleLoggerOption
 }) => {
-  let loggerExot
+  const createLoggerExot = () => createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
+
+  let loggerExot = createLoggerExot()
   let saveToken
   let splitToken
 
-  const up = async (onExotError) => {
-    await createDirectory(pathLogDirectory)
-    upSync(onExotError)
-  }
   const upSync = (onExotError) => {
-    loggerExot = createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
     loggerExot.up(onExotError)
     saveToken = saveInterval ? setInterval(save, saveInterval) : undefined
     splitToken = splitInterval ? setTimeout(split, splitInterval) : undefined
+  }
+
+  const up = async (onExotError) => {
+    if (isUp() === true) throw new Error('already up')
+    await createDirectory(pathLogDirectory)
+    upSync(onExotError)
   }
   const down = () => {
     if (isUp() === false) return
     loggerExot.down()
     saveToken !== undefined && clearInterval(saveToken)
     splitToken !== undefined && clearTimeout(splitToken)
-    loggerExot = undefined
+    loggerExot = createLoggerExot()
     saveToken = undefined
     splitToken = undefined
   }
-  const isUp = () => loggerExot !== undefined
+  const isUp = () => loggerExot.isUp()
 
-  const add = (...args) => { loggerExot !== undefined && loggerExot.add(args.join(' ')) }
-  const save = () => { loggerExot !== undefined && loggerExot.save() }
+  const add = (...args) => { loggerExot.add(args.join(' ')) }
+  const save = () => { loggerExot.save() }
   const split = () => {
-    if (loggerExot === undefined) return
+    if (isUp() === false) return
     down()
     upSync()
   }

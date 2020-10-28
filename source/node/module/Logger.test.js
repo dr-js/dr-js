@@ -1,7 +1,8 @@
 import { resolve } from 'path'
-import { readFileSync, statSync } from 'fs'
+import { readFileSync } from 'fs'
 import { strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
+import { existPath } from 'source/node/file/Path'
 import { modifyDelete } from 'source/node/file/Modify'
 import { resetDirectory } from '@dr-js/dev/module/node/file'
 
@@ -18,41 +19,33 @@ describe('Node.Module.Logger', () => {
   it('createSimpleLoggerExot()', async () => { // TODO: flaky test
     const pathOutputFile = resolve(TEST_ROOT, 'simple-logger')
     const { up, down, add, save } = createSimpleLoggerExot({ pathOutputFile, queueLengthThreshold: 4 })
-    up()
-    let size, prevSize
 
+    // support `add()` before `up()`
     add('1')
     add('2')
+    strictEqual(await existPath(pathOutputFile), false, 'should hold log in buffer')
+
+    up()
+    strictEqual(await existPath(pathOutputFile), true, 'should create log file but not write')
+
     add('3')
     add('4')
     await setTimeoutAsync(10)
-    size = statSync(pathOutputFile).size
-    // console.log('4', size)
-    strictEqual(size, 0)
+    strictEqual(String(readFileSync(pathOutputFile)), '', 'should not write yet `<= queueLengthThreshold`')
 
     add('5')
     await setTimeoutAsync(10)
-    size = statSync(pathOutputFile).size
-    // console.log('5', size)
-    strictEqual(size > 0, true)
-    prevSize = size
+    strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n', 'should write to file `> queueLengthThreshold`')
 
     add('6')
     save()
     await setTimeoutAsync(10)
-    size = statSync(pathOutputFile).size
-    // console.log('6', size)
-    strictEqual(size > prevSize, true)
-    prevSize = size
+    strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n6\n', 'should write to file on manual `save`')
 
     add('7')
     down()
     await setTimeoutAsync(10)
-    size = statSync(pathOutputFile).size
-    // console.log('7', size)
-    strictEqual(size > prevSize, true)
-
-    strictEqual(readFileSync(pathOutputFile, { encoding: 'utf8' }), '1\n2\n3\n4\n5\n6\n7\n')
+    strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n6\n7\n', 'should write to file on `down`')
   })
 
   it('createLoggerExot()', async () => {
@@ -68,61 +61,47 @@ describe('Node.Module.Logger', () => {
       queueLengthThreshold: 4,
       splitInterval: 100
     })
-    await up()
-    let size, prevSize
 
+    // support `add()` before `up()`
     add('1', 1)
     add('2')
+    strictEqual(await existPath(getCurrentLogPath()), false, 'should hold log in buffer')
+
+    await up()
+    strictEqual(await existPath(getCurrentLogPath()), true, 'should create log file but not write')
+
     add('3')
     add('4')
     await setTimeoutAsync(20)
-    size = statSync(getCurrentLogPath()).size
-    // console.log('4', size)
-    strictEqual(size, 0, 'check 0')
+    strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should not write yet `<= queueLengthThreshold`')
 
     add('5')
     await setTimeoutAsync(20)
-    size = statSync(getCurrentLogPath()).size
-    // console.log('5', statSync(getCurrentLogPath()))
-    strictEqual(size > 0, true, 'check 1')
-    prevSize = size
+    strictEqual(String(readFileSync(getCurrentLogPath())), '1 1\n2\n3\n4\n5\n', 'should write to file `> queueLengthThreshold`')
 
     add('6')
     save()
     await setTimeoutAsync(20)
-    size = statSync(getCurrentLogPath()).size
-    // console.log('6', size)
-    strictEqual(size > prevSize, true, 'check 2')
-    prevSize = size
+    strictEqual(String(readFileSync(getCurrentLogPath())), '1 1\n2\n3\n4\n5\n6\n', 'should write to file on manual `save`')
 
     add('7 should manual split')
     split() // new file, reset split timer
     await setTimeoutAsync(20)
-    strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 3')
-    size = statSync(getCurrentLogPath()).size
-    // console.log('7', size)
-    strictEqual(size, 0, 'check 4')
-    prevSize = size
+    strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n', 'should write to file on manual `split`')
+    strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should change to new file on manual `split`')
 
     add('8', [ 'A' ])
     add('9', { k: 'v' }, 'should auto split')
     await setTimeoutAsync(90) // 20 + 90ms since last split, so auto split should run
-    strictEqual(statSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`)).size > prevSize, true, 'check 5')
-    size = statSync(getCurrentLogPath()).size
-    // console.log('9', size)
-    strictEqual(size, 0, 'check 6')
-    prevSize = size
+    strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '8 A\n9 [object Object] should auto split\n', 'should write to file on auto `split`')
+    strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should change to new file on auto `split`')
 
     add('10')
     add('11')
     down()
     await setTimeoutAsync(20)
-    size = statSync(getCurrentLogPath()).size
-    // console.log('11', size)
-    strictEqual(size > prevSize, true, 'check 7')
-
-    strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`), { encoding: 'utf8' }), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')
-    strictEqual(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`), { encoding: 'utf8' }), `8 A\n9 ${{}} should auto split\n`)
-    strictEqual(readFileSync(getCurrentLogPath(), { encoding: 'utf8' }), '10\n11\n')
+    strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '10\n11\n', 'should write to file on `down`')
+    strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`))), '8 A\n9 [object Object] should auto split\n')
+    strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 3}.log`))), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')
   })
 })
