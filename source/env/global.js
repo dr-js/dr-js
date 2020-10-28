@@ -22,10 +22,7 @@ const getEnvironment = () => {
   return environmentCache
 }
 
-const GLOBAL = getGlobal() // TODO: DEPRECATE: unnecessary side effect
-
 export {
   getGlobal,
-  getEnvironment,
-  GLOBAL as global // TODO: DEPRECATE: unnecessary side effect
+  getEnvironment
 }

@@ -140,7 +140,7 @@
 + 📄 [source/env/function.js](source/env/function.js)
   - `assert`, `getEndianness`
 + 📄 [source/env/global.js](source/env/global.js)
-  - `getEnvironment`, `getGlobal`, `global`
+  - `getEnvironment`, `getGlobal`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
@@ -353,7 +353,7 @@
   - **Verify**
     - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `global`, `tryRequire`, `tryRequireResolve`
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `tryRequire`, `tryRequireResolve`
 - **Node**
   - **Data**
     - **Buffer**

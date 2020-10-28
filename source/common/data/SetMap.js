@@ -1,11 +1,6 @@
 const createSetMap = () => {
   const map = new Map()
 
-  const forEachOfSet = (mapKey, callback) => {
-    const set = map.get(mapKey)
-    set && set.forEach(callback) // setKey, set
-  }
-
   return {
     clear: () => { map.clear() },
     delete: (mapKey, setKey) => {
@@ -29,9 +24,10 @@ const createSetMap = () => {
     },
     forEach: (callback) => { map.forEach((set, mapKey) => set.forEach((setKey) => callback(setKey, mapKey))) },
     forEachSet: (callback) => { map.forEach(callback) }, // set, mapKey
-    forEachOfSet,
-
-    forEachMap: forEachOfSet // TODO: deprecate
+    forEachOfSet: (mapKey, callback) => {
+      const set = map.get(mapKey)
+      set && set.forEach(callback) // setKey, set
+    }
   }
 }
 
