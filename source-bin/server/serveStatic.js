@@ -33,7 +33,7 @@ const configure = ({
     routeConfigList,
     isAddFavicon: !isSimpleServe,
     title: `ServerServeStatic|${isSimpleServe ? 'no-list' : 'with-list'}`,
-    extraInfoList: [ `staticRoot: '${staticRoot}'`, `expireTime: ${time(expireTime)}` ]
+    extraInfo: { staticRoot, expireTime: time(expireTime) }
   }
 }
 

@@ -1,16 +1,17 @@
 const typeNameOf = (value) => Object.prototype.toString.call(value).slice(8, -1) // [ object TypeName ] // Object/Array/RegExp/Null/AsyncFunction
 
+const escapeString = (string) => JSON.stringify(string).slice(1, -1)
+const quickStringify = (valueType, value) => valueType === 'String' ? JSON.stringify(value)
+  : valueType === 'Object' ? `{${escapeString(Object.keys(value))}}`
+    : valueType === 'Array' ? (value.length <= 8 ? `[${value.map(describe).join(', ')}]` : `[#${value.length}]`)
+      : valueType === 'RegExp' ? String(value)
+        : valueType.endsWith('Function') ? value.name || 'anonymous'
+          : escapeString(String(value))
+
 const describe = (value) => {
   const valueType = typeNameOf(value) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
-  const valueString = valueType === 'String' ? JSON.stringify(value)
-    : valueType === 'Object' ? `{${escapeString(Object.keys(value))}}`
-      : valueType === 'Array' ? (value.length <= 8 ? `[${value.map(describe).join(', ')}]` : `[#${value.length}]`)
-        : valueType === 'RegExp' ? String(value)
-          : valueType.endsWith('Function') ? value.name || 'anonymous'
-            : escapeString(String(value))
-  return `<${valueType}> ${valueString}`
+  return `<${valueType}> ${quickStringify(valueType, value)}`
 }
-const escapeString = (string) => JSON.stringify(string).slice(1, -1)
 
 const percent = (value) => `${(value * 100).toFixed(2)}%`
 
@@ -159,6 +160,53 @@ const prettyStringifyJSON = (value, unfoldLevel = 2, pad = '  ') => {
   return resultList.join('')
 }
 
+const prettyStringifyConfigObject = (value, pad = '  ', padStringInitial = '') => { // output similar to YAML // pad need to be at least 2 space
+  if (typeof pad !== 'string' || pad.length < 2) throw new Error(`invalid pad: ${String(pad)}`)
+
+  const TAG_OBJECT = ': '
+  const TAG_ARRAY = '- '
+
+  const isLastResultTag = (resultList) => {
+    const value = resultList[ resultList.length - 1 ]
+    return value === TAG_OBJECT || value === TAG_ARRAY
+  }
+
+  const stringifySwitch = (resultList, value, padString) => {
+    __DEV__ && console.log(' - - Switch', JSON.stringify({ padString }))
+    const valueType = typeNameOf(value) // [ object ValueType ] // Object/Array/RegExp/Null/AsyncFunction
+    if (valueType === 'Array') return stringifyArray(resultList, value, padString)
+    if (valueType === 'Object') return stringifyObject(resultList, value, padString)
+    resultList.push(valueType.endsWith('Function') ? valueType : quickStringify(valueType, value), '\n')
+  }
+  const stringifyObject = (resultList, object, padString) => {
+    const keyList = Object.keys(object)
+    __DEV__ && console.log(' - - Object', JSON.stringify({ padString, keyListLength: keyList.length }))
+    if (keyList.length === 0) return resultList.push('{}', '\n')
+    isLastResultTag(resultList) && resultList.push('\n')
+    for (let index = 0, indexMax = keyList.length; index < indexMax; index++) {
+      const key = keyList[ index ]
+      const value = object[ key ]
+      resultList.push(padString, escapeString(key), TAG_OBJECT) // placeholder
+      stringifySwitch(resultList, value, `${padString}${pad}`)
+    }
+  }
+  const stringifyArray = (resultList, array, padString) => {
+    __DEV__ && console.log(' - - Array', JSON.stringify({ padString, arrayLength: array.length }))
+    if (array.length === 0) return resultList.push('[]', '\n')
+    isLastResultTag(resultList) && resultList.push('\n')
+    for (let index = 0, indexMax = array.length; index < indexMax; index++) {
+      const value = array[ index ]
+      resultList.push(padString, TAG_ARRAY)
+      stringifySwitch(resultList, value, `${padString}${pad}`)
+    }
+  }
+
+  const resultList = []
+  stringifySwitch(resultList, value, padStringInitial)
+  resultList.length-- // drop the last '\n'
+  return resultList.join('')
+}
+
 export {
   typeNameOf,
   describe,
@@ -168,5 +216,5 @@ export {
   time,
   binary,
   padTable,
-  prettyStringifyJSON
+  prettyStringifyJSON, prettyStringifyConfigObject
 }

@@ -6,10 +6,11 @@ import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
 import { clock } from 'source/common/time'
-import { isNumber } from 'source/common/check'
-import { indentList } from 'source/common/string'
+import { isNumber, isBasicArray, isBasicObject } from 'source/common/check'
+import { prettyStringifyConfigObject } from 'source/common/format'
 import { createCacheMap } from 'source/common/data/CacheMap'
 import { createStateStoreLite } from 'source/common/immutable/StateStore'
+import { objectFromEntries } from 'source/common/immutable/Object'
 import { responderEnd } from './Responder/Common'
 
 // TODO: add HTTP2 or just skip to HTTP3?
@@ -140,22 +141,23 @@ const createRequestListener = ({
 const describeServerOption = (
   { baseUrl, protocol, hostname, port },
   title = 'server',
-  extraList = []
-) => indentList(`[${title}]`, [
-  ...extraList,
-  `pid: '${process.pid}'`,
-  `baseUrl: '${baseUrl}'`,
-  ...(
-    (hostname && hostname !== '0.0.0.0' && hostname !== '[::]')
-      ? []
-      : Object.entries(networkInterfaces())
-        .reduce((o, [ interfaceName, interfaceList ]) => {
-          interfaceList.forEach(({ address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
-          return o
-        }, [])
-        .map(([ address, interfaceName ]) => `localUrl: '${protocol}//${address}:${port}' [${interfaceName}]`)
+  extraOption // can be Array or Object
+) => `[${title}]\n${prettyStringifyConfigObject({
+  pid: process.pid,
+  baseUrl,
+  ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? {} : objectFromEntries(
+    Object.entries(networkInterfaces())
+      .reduce((o, [ interfaceName, interfaceList ]) => {
+        interfaceList.forEach(({ address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
+        return o
+      }, [])
+      .map(([ address, interfaceName ]) => [ `localUrl[${interfaceName}]`, `${protocol}//${address}:${port}` ])
+  )),
+  ...((isBasicArray(extraOption) && extraOption.length) ? { extraOption }
+      : isBasicObject(extraOption) ? extraOption
+        : {}
   )
-].filter(Boolean))
+}, '  ', '  ')}`
 
 export {
   createServerExot,

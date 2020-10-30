@@ -63,6 +63,7 @@ const createExotGroup = ({
 
   const set = (exot) => {
     if (!isExot(exot)) throw new Error(`invalid exot: ${exot}`)
+    if (exotMap.has(exot.id)) throw new Error(`duplicate exot id: ${exot.id}`)
     exotMap.set(exot.id, exot)
   }
   const get = (exotId) => exotMap.get(exotId)

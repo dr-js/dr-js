@@ -12,7 +12,7 @@ import { addExitListenerSync, addExitListenerAsync } from '@dr-js/core/module/no
 const commonServerUp = async ({
   serverExot: { up, server, option }, log, routePrefix,
   routeConfigList, isAddFavicon,
-  title, extraInfoList = []
+  title, extraInfo = {}
 }) => {
   const responderLogEnd = createResponderLogEnd({ log })
   server.on('request', createRequestListener({
@@ -32,8 +32,8 @@ const commonServerUp = async ({
     }
   }))
   await up()
-  routePrefix && extraInfoList.unshift(`routePrefix: '${routePrefix}'`)
-  log(describeServerOption(option, title, extraInfoList))
+  routePrefix && Object.assign(extraInfo, { routePrefix })
+  log(describeServerOption(option, title, extraInfo))
 }
 const commonServerDown = (serverExot) => {
   addExitListenerAsync(serverExot.down)

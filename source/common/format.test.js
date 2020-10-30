@@ -8,7 +8,7 @@ import {
   time,
   binary,
   padTable,
-  prettyStringifyJSON
+  prettyStringifyJSON, prettyStringifyConfigObject
 } from './format'
 
 const { describe, it } = global
@@ -317,6 +317,142 @@ describe('Common.Format', () => {
       'null,',
       '[null,null,"some-value",null]',
       ']'
+    ])
+  })
+
+  it('prettyStringifyConfigObject()', () => {
+    const testPrettyStringifyConfigObject = (value, pad, outputLineList = []) => {
+      __DEV__ && console.log(prettyStringifyConfigObject(value, pad))
+      return strictEqual(prettyStringifyConfigObject(value, pad), outputLineList.join('\n'))
+    }
+
+    testPrettyStringifyConfigObject(undefined, undefined, [ 'undefined' ])
+    testPrettyStringifyConfigObject(null, undefined, [ 'null' ])
+    testPrettyStringifyConfigObject(NaN, undefined, [ 'NaN' ])
+    testPrettyStringifyConfigObject(Infinity, undefined, [ 'Infinity' ])
+    testPrettyStringifyConfigObject(-Infinity, undefined, [ '-Infinity' ])
+
+    testPrettyStringifyConfigObject(() => {}, undefined, [ 'Function' ])
+    testPrettyStringifyConfigObject(Object.assign(() => {}, { toJSON: () => 'some-value' }), undefined, [ 'Function' ])
+    testPrettyStringifyConfigObject(Symbol(''), undefined, [ 'Symbol()' ])
+
+    testPrettyStringifyConfigObject({}, undefined, [ '{}' ])
+    testPrettyStringifyConfigObject([], undefined, [ '[]' ])
+
+    testPrettyStringifyConfigObject({ a: undefined, b: () => {} }, undefined, [
+      'a: undefined',
+      'b: Function'
+    ])
+
+    testPrettyStringifyConfigObject(Object.assign([ Object.assign([], { length: 2 }) ], { length: 2 }), undefined, [
+      '- ',
+      '  - undefined',
+      '  - undefined',
+      '- undefined'
+    ])
+
+    const COMPLEX_OBJECT = {
+      a: undefined,
+      b: () => {},
+      c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
+      d: Symbol(''),
+      e: {},
+      f: [],
+      _: {
+        _a: undefined,
+        _b: () => {},
+        _c: Object.assign(() => {}, { toJSON: () => 'some-value' }),
+        _d: Symbol(''),
+        _e: {},
+        _f: []
+      },
+      $: [
+        undefined,
+        () => {},
+        Object.assign(() => {}, { toJSON: () => 'some-value' }),
+        Symbol(''),
+        {},
+        []
+      ]
+    }
+    testPrettyStringifyConfigObject(COMPLEX_OBJECT, undefined, [
+      'a: undefined',
+      'b: Function',
+      'c: Function',
+      'd: Symbol()',
+      'e: {}',
+      'f: []',
+      '_: ',
+      '  _a: undefined',
+      '  _b: Function',
+      '  _c: Function',
+      '  _d: Symbol()',
+      '  _e: {}',
+      '  _f: []',
+      '$: ',
+      '  - undefined',
+      '  - Function',
+      '  - Function',
+      '  - Symbol()',
+      '  - {}',
+      '  - []'
+    ])
+    testPrettyStringifyConfigObject(COMPLEX_OBJECT, '   ', [
+      'a: undefined',
+      'b: Function',
+      'c: Function',
+      'd: Symbol()',
+      'e: {}',
+      'f: []',
+      '_: ',
+      '   _a: undefined',
+      '   _b: Function',
+      '   _c: Function',
+      '   _d: Symbol()',
+      '   _e: {}',
+      '   _f: []',
+      '$: ',
+      '   - undefined',
+      '   - Function',
+      '   - Function',
+      '   - Symbol()',
+      '   - {}',
+      '   - []'
+    ])
+
+    const COMPLEX_ARRAY = [
+      undefined,
+      () => {},
+      Object.assign(() => {}, { toJSON: () => 'some-value' }),
+      Symbol(''),
+      [
+        undefined,
+        () => {},
+        Object.assign(() => {}, { toJSON: () => 'some-value' }),
+        Symbol('')
+      ]
+    ]
+    testPrettyStringifyConfigObject(COMPLEX_ARRAY, undefined, [
+      '- undefined',
+      '- Function',
+      '- Function',
+      '- Symbol()',
+      '- ',
+      '  - undefined',
+      '  - Function',
+      '  - Function',
+      '  - Symbol()'
+    ])
+    testPrettyStringifyConfigObject(COMPLEX_ARRAY, '     ', [
+      '- undefined',
+      '- Function',
+      '- Function',
+      '- Symbol()',
+      '- ',
+      '     - undefined',
+      '     - Function',
+      '     - Function',
+      '     - Symbol()'
     ])
   })
 })
