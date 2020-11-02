@@ -8,7 +8,7 @@ import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source
 //   formatList: [ {
 //     name: 'option-name',                                                   // kebab-case (separate words with '-')
 //     shortName: 'n',                                                        // optional, default '', single char [A-Za-z] CLI name alias, leading with `-`
-//     aliasNameList: [ 'o-n' ],                                              // optional, default [], multi-char CLI name alias, leading with `--`
+//     aliasNameList: [ 'o-n' ],                                              // optional, default [], multi-char name alias, leading with `--`
 //     optional: false || (optionMap, optionFormatSet, format) => Boolean,    // optional, default false, can set checkOptional function, checkOptional should return false for non-optional
 //     argumentCount: '0-3',                                                  // optional, default 0, can be 0, 1, 2, ... or '0-', '1-6' for range
 //     argumentListNormalize: (argumentList) => argumentList,                 // optional, default (argumentList) => argumentList, can map each value in argumentList
@@ -22,11 +22,11 @@ import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source
 // }
 
 const FORMAT_DEFAULT = {
-  name: '',
-  nameENV: '', // auto append
-  nameCONFIG: '', // auto append
-  shortName: '', // CLI only
-  aliasNameList: [], // CLI only
+  name: '', // CLI name, like: 'option-name-a'
+  nameENV: '', // auto append, like: 'OPTION_NAME_A'
+  nameCONFIG: '', // auto append, like: 'optionNameA'
+  shortName: '', // CLI only, like 'a'
+  aliasNameList: [], // for CLI, also for ENV and CONFIG with multi-char name
   optional: false, // false || (optionMap, optionFormatSet, format) => true
   argumentCount: '0', // can be number
   argumentLengthMin: 0, // auto append
@@ -47,9 +47,6 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
 
   const parseFormat = (format, index, upperFormat) => {
     const { name, shortName, aliasNameList, argumentCount } = format
-    format.nameENV = joinSnakeCase(splitKebabCase(prefixENV ? `${prefixENV}-${name}` : name))
-    format.nameCONFIG = joinCamelCase(splitKebabCase(prefixCONFIG ? `${prefixCONFIG}-${name}` : name))
-
     format.optional = parseOptional(format.optional, upperFormat)
 
     const [ , argumentLengthMinString, argumentLengthSep, argumentLengthMaxString ] = REGEXP_FORMAT_ARGUMENT_COUNT.exec(String(argumentCount))
@@ -67,8 +64,17 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
       duplicateAliasName && throwFormatError(`duplicate aliasName '${duplicateAliasName}'`, format, index, upperFormat)
       aliasNameList.forEach((aliasName) => nameMapCLI.set(aliasName, format))
     }
-    nameMapENV.set(format.nameENV, format)
-    nameMapCONFIG.set(format.nameCONFIG, format)
+
+    for (const aliasName of [ name, ...aliasNameList ].filter((v) => v.length > 1).reverse()) {
+      const nameENV = joinSnakeCase(splitKebabCase(prefixENV ? `${prefixENV}-${aliasName}` : aliasName))
+      const nameCONFIG = joinCamelCase(splitKebabCase(prefixCONFIG ? `${prefixCONFIG}-${aliasName}` : aliasName))
+      nameMapENV.has(nameENV) && throwFormatError(`duplicate nameENV '${nameENV}'`, format, index, upperFormat)
+      nameMapCONFIG.has(nameCONFIG) && throwFormatError(`duplicate nameCONFIG '${nameCONFIG}'`, format, index, upperFormat)
+      nameMapENV.set(nameENV, format)
+      nameMapCONFIG.set(nameCONFIG, format)
+      aliasName === name && Object.assign(format, { nameENV, nameCONFIG })
+    }
+
     if (!format.optional) nonOptionalFormatSet.add(format)
     else if (format.optional !== OPTIONAL_TRUE) optionalFormatCheckSet.add({ format, checkOptional: format.optional })
 

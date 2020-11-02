@@ -95,7 +95,7 @@ describe('Node.Module.Option.Parser', () => {
     const optionMap = parseENV({
       PREFIX_ENV_OPTION_NAME_A: '[]',
       PREFIX_ENV_OPTION_NAME_B: '[ "1" ]',
-      PREFIX_ENV_OPTION_NAME_C: '[ 1, "2.2" ]',
+      PREFIX_ENV_ONC0: '[ 1, "2.2" ]',
       PREFIX_ENV_OPTION_NAME_AA: '[]',
       PREFIX_ENV_OPTION_NAME_BB: '"1"',
       PREFIX_ENV_OPTION_NAME_CC: '[ 1, "2.2", 3.3, "4.4" ]'
@@ -109,7 +109,7 @@ describe('Node.Module.Option.Parser', () => {
     const optionMap = parseCONFIG({
       prefixCONFIGOptionNameA: [],
       prefixCONFIGOptionNameB: [ 1 ],
-      prefixCONFIGOptionNameC: [ 1, '2.2' ],
+      prefixCONFIGOnc1: [ 1, '2.2' ],
       prefixCONFIGOptionNameAa: [],
       prefixCONFIGOptionNameBb: [ 1 ],
       prefixCONFIGOptionNameCc: [ 1, '2.2', 3.3, '4.4' ]
