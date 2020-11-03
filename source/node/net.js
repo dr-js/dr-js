@@ -58,12 +58,14 @@ const fetchLikeRequest = async (url, {
   bodyLength, // used as `total` for `onProgressUpload`, if not provided, and body is stream, the total will be set to `Infinity`
   timeout = 10 * 1000, // in millisecond, 0 for no timeout, will result in error if timeout
   onProgressUpload, // (now, total) => {} // if can't decide total will be `Infinity`
-  onProgressDownload // (now, total) => {} // if can't decide total will be `Infinity`
+  onProgressDownload, // (now, total) => {} // if can't decide total will be `Infinity`
+  ...extra
 } = {}) => {
   const option = {
     method,
     headers: { 'accept-encoding': 'gzip', ...requestHeaders },
-    timeout
+    timeout,
+    ...extra
   }
   __DEV__ && console.log('[fetch]', option)
   const { request, promise } = requestHttp(url, option, body)
@@ -123,8 +125,9 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
         chunkLength += chunk.length
         onProgressDownload(chunkLength, payloadLength)
       }
-      response.socket.on('data', onProgress)
-      const clearListener = () => response.socket.off('data', onProgress)
+      const { socket } = response // need to hold this since per doc: After `response.end()`, the property is nulled.
+      socket.on('data', onProgress)
+      const clearListener = () => socket.off('data', onProgress)
       response.on('error', clearListener)
       response.on('end', clearListener)
     }
