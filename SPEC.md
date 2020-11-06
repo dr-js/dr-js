@@ -38,7 +38,7 @@
 + 📄 [source/common/string.js](source/common/string.js)
   - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
@@ -214,7 +214,7 @@
 + 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
   - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
-  - `run`, `runSync`, `withCwd`
+  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
   - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
@@ -349,7 +349,7 @@
   - **String**
     - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
   - **Verify**
     - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `integer`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
@@ -422,7 +422,7 @@
     - **ResolveCommand**
       - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
     - **Run**
-      - `run`, `runSync`, `withCwd`
+      - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
@@ -435,8 +435,8 @@
 > ```
 > CLI Usage:
 >   --config --c -c [OPTIONAL] [ARGUMENT=1]
->       from ENV: set to "env" to enable, not using be default
->       from JS/JSON file: set to "path/to/file.config.js|json"
+>       from ENV: set to "env" to enable, default not use
+>       from JS/JSON: set to "path/to/config.js|json"
 >   --help --h -h [OPTIONAL] [ARGUMENT=0+]
 >       show full help
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0+]

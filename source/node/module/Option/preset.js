@@ -85,7 +85,7 @@ const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(
 Object.assign(Preset, {
   SinglePath: parseCompact('/SingleString,Path'),
   AllPath: parseCompact('/AllString,Path'),
-  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env" to enable, not using be default\nfrom JS/JSON file: set to "path/to/file.config.js|json"'),
+  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env" to enable, default not use\nfrom JS/JSON: set to "path/to/config.js|json"'),
 
   pickOneOf,
   parseCompact,

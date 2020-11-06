@@ -1,4 +1,5 @@
 import { resolve } from 'path'
+import { setWeakTimeout, setWeakInterval } from 'source/common/time'
 import { createDirectory } from 'source/node/file/Directory'
 import { createSafeWriteStream } from './SafeWrite'
 
@@ -65,8 +66,8 @@ const createLoggerExot = ({
 
   const upSync = (onExotError) => {
     loggerExot.up(onExotError)
-    saveToken = saveInterval ? setInterval(save, saveInterval) : undefined
-    splitToken = splitInterval ? setTimeout(split, splitInterval) : undefined
+    saveToken = saveInterval ? setWeakInterval(save, saveInterval) : undefined
+    splitToken = splitInterval ? setWeakTimeout(split, splitInterval) : undefined // will reset on split, so timeout is enough
   }
 
   const up = async (onExotError) => {

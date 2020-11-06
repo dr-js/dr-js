@@ -1,3 +1,4 @@
+import { setWeakTimeout } from 'source/common/time'
 import { createEventEmitter } from 'source/common/module/Event'
 import { FRAME_CONFIG, OPCODE_TYPE, WEBSOCKET_EVENT } from './function'
 import {
@@ -149,7 +150,7 @@ const createWebSocket = ({
     if (readyState !== OPEN && readyState !== CLOSING) throw new Error(`error readyState = ${readyState}`)
     __DEV__ && console.log('[WebSocket][close] send close frame', { code, reason })
     readyState = CLOSING
-    closeTimeoutToken = setTimeout(doCloseSocket, WEBSOCKET_CLOSE_TIMEOUT)
+    closeTimeoutToken = setWeakTimeout(doCloseSocket, WEBSOCKET_CLOSE_TIMEOUT)
     encodeCloseFrame(frameSenderStore, code, reason, isMask)
     if (code === 1000) sendEncodedFrame(frameSenderStore, socket).catch(doCloseSocket)
     else sendEncodedFrame(frameSenderStore, socket).then(doCloseSocket, doCloseSocket) // close faster on error
@@ -174,13 +175,13 @@ const createWebSocket = ({
 
   const setNextPing = () => {
     pingTimeoutToken && clearTimeout(pingTimeoutToken)
-    pingTimeoutToken = setTimeout(sendPing, WEBSOCKET_PING_PONG_TIMEOUT)
+    pingTimeoutToken = setWeakTimeout(sendPing, WEBSOCKET_PING_PONG_TIMEOUT)
     __DEV__ && console.log('setNextPing')
   }
 
   const setNextPong = () => {
     pongTimeoutToken && clearTimeout(pongTimeoutToken)
-    pongTimeoutToken = setTimeout(() => close(1006, 'pong timeout'), WEBSOCKET_PING_PONG_TIMEOUT)
+    pongTimeoutToken = setWeakTimeout(() => close(1006, 'pong timeout'), WEBSOCKET_PING_PONG_TIMEOUT)
     __DEV__ && console.log('setNextPong')
   }
 

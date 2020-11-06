@@ -2,7 +2,7 @@ import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
-import { clock } from 'source/common/time'
+import { clock, setWeakTimeout } from 'source/common/time'
 import { isString, isArrayBuffer } from 'source/common/check'
 import { withRetryAsync } from 'source/common/function'
 import { toArrayBuffer } from 'source/node/data/Buffer'
@@ -110,7 +110,7 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
     __DEV__ && console.log('[fetch] keep payload')
     payloadOutcome = 'KEEP'
     if (timeoutPayload > 0) {
-      const timeoutToken = setTimeout(() => {
+      const timeoutToken = setWeakTimeout(() => {
         __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
         response.emit('error', new Error('PAYLOAD_TIMEOUT')) // NOTE: emit custom `error` event to signal stream stop
         request.destroy() // drop request

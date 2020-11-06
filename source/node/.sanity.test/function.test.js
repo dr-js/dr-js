@@ -1,5 +1,4 @@
 import { withTempDirectory } from '@dr-js/dev/module/node/file'
-import { strictEqual } from 'source/common/verify'
 import { run } from 'source/node/system/Run'
 
 const { info = console.log } = global
@@ -19,7 +18,7 @@ const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
       maxBuffer: 8 * 1024 * 1024,
       cwd: PATH_TEMP // generate OOM report under temp path
     },
-    quiet: __DEV__ ? false : true
+    quiet: !__DEV__
   }).promise.catch((error) => error)
 )
 
@@ -149,7 +148,7 @@ const commonFunc = (triggerGC) => {
         process.exit(1)
       })
     }
-    console.log(`[main] done`)
+    console.log('[main] done')
   }
   return {
     setTimeoutAsync,

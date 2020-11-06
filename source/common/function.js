@@ -1,4 +1,4 @@
-import { clock, setTimeoutAsync } from 'source/common/time'
+import { clock, setWeakTimeout, setTimeoutAsync } from 'source/common/time'
 import { rethrowError } from 'source/common/error'
 import { isPromiseAlike } from 'source/common/check'
 
@@ -13,7 +13,7 @@ const debounce = (func, wait = 250, isLeadingEdge = false) => {
   return (...args) => {
     const isCallNow = isLeadingEdge && (timeoutToken === null)
     clearTimeout(timeoutToken)
-    timeoutToken = setTimeout(() => {
+    timeoutToken = setWeakTimeout(() => {
       timeoutToken = null
       !isLeadingEdge && func.apply(null, args)
     }, wait)
@@ -27,7 +27,7 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   return (...args) => {
     if (timeoutToken) return // inactive
     const isCallNow = isLeadingEdge && (timeoutToken === null)
-    timeoutToken = setTimeout(() => {
+    timeoutToken = setWeakTimeout(() => {
       timeoutToken = null
       !isLeadingEdge && func.apply(null, args)
     }, wait)
@@ -168,7 +168,7 @@ const withTimeoutPromise = (
   return Promise.race([
     promise,
     new Promise((resolve, reject) => {
-      timeoutToken = setTimeout(
+      timeoutToken = setWeakTimeout(
         () => reject(DUMMY_ERROR),
         timeout
       )

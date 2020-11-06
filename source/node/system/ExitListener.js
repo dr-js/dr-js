@@ -1,5 +1,11 @@
 import { catchAsync, catchSync } from 'source/common/error'
 
+__DEV__ && console.log({
+  listenerFunc: (eventPack) => { // can be async for `addExitListenerSync`
+    console.log(`[EXIT] ${JSON.stringify(eventPack)}${eventPack.error ? ` ${eventPack.error.stack || eventPack.error}` : ''}`) // suggested log pattern
+  }
+})
+
 const EXIT_LISTENER_LIST = [
   // [ eventName, listenerFunc ]
 
@@ -55,17 +61,17 @@ const clearExitListener = () => {
   listenerAsyncSet.clear()
 }
 
-const addExitListenerSync = (...args) => {
-  args.forEach((listenerSync) => listenerSyncSet.add(listenerSync))
+const addExitListenerSync = (...listenerSyncList) => {
+  listenerSyncList.forEach((listenerSync) => listenerSyncSet.add(listenerSync))
   !isBind && bindExitListener()
 }
-const addExitListenerAsync = (...args) => {
-  args.forEach((listenerAsync) => listenerAsyncSet.add(listenerAsync))
+const addExitListenerAsync = (...listenerSyncList) => {
+  listenerSyncList.forEach((listenerAsync) => listenerAsyncSet.add(listenerAsync))
   !isBind && bindExitListener()
 }
 
-const deleteExitListenerSync = (...args) => { args.forEach((listenerSync) => listenerSyncSet.delete(listenerSync)) }
-const deleteExitListenerAsync = (...args) => { args.forEach((listenerAsync) => listenerAsyncSet.delete(listenerAsync)) }
+const deleteExitListenerSync = (...listenerSyncList) => { listenerSyncList.forEach((listenerSync) => listenerSyncSet.delete(listenerSync)) }
+const deleteExitListenerAsync = (...listenerSyncList) => { listenerSyncList.forEach((listenerAsync) => listenerAsyncSet.delete(listenerAsync)) }
 
 export {
   clearExitListener,
