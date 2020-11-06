@@ -23,8 +23,8 @@ import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source
 
 const FORMAT_DEFAULT = {
   name: '', // CLI name, like: 'option-name-a'
-  nameENV: '', // auto append, like: 'OPTION_NAME_A'
-  nameCONFIG: '', // auto append, like: 'optionNameA'
+  nameListENV: [], // auto append, like: 'OPTION_NAME_A'
+  nameListCONFIG: [], // auto append, like: 'optionNameA'
   shortName: '', // CLI only, like 'a'
   aliasNameList: [], // for CLI, also for ENV and CONFIG with multi-char name
   optional: false, // false || (optionMap, optionFormatSet, format) => true
@@ -65,14 +65,17 @@ const createOptionParser = ({ formatList, prefixENV = '', prefixCONFIG = '' }) =
       aliasNameList.forEach((aliasName) => nameMapCLI.set(aliasName, format))
     }
 
-    for (const aliasName of [ name, ...aliasNameList ].filter((v) => v.length > 1).reverse()) {
+    format.nameListENV = []
+    format.nameListCONFIG = []
+    for (const aliasName of [ name, ...aliasNameList ].filter((v) => v.length > 1).reverse()) { // NOTE: in reverse order so when parse the name will overwrite alias
       const nameENV = joinSnakeCase(splitKebabCase(prefixENV ? `${prefixENV}-${aliasName}` : aliasName))
       const nameCONFIG = joinCamelCase(splitKebabCase(prefixCONFIG ? `${prefixCONFIG}-${aliasName}` : aliasName))
       nameMapENV.has(nameENV) && throwFormatError(`duplicate nameENV '${nameENV}'`, format, index, upperFormat)
       nameMapCONFIG.has(nameCONFIG) && throwFormatError(`duplicate nameCONFIG '${nameCONFIG}'`, format, index, upperFormat)
       nameMapENV.set(nameENV, format)
       nameMapCONFIG.set(nameCONFIG, format)
-      aliasName === name && Object.assign(format, { nameENV, nameCONFIG })
+      format.nameListENV.unshift(nameENV)
+      format.nameListCONFIG.unshift(nameCONFIG)
     }
 
     if (!format.optional) nonOptionalFormatSet.add(format)
@@ -210,13 +213,13 @@ const formatUsageCLI = (format) => join(
 
 const usageENV = (formatList) => join('"', indent(`#!/usr/bin/env bash\n${mapJoin(formatList, formatUsageENV)}`), '"')
 const formatUsageENV = (format) => join(
-  `export ${format.nameENV}="${formatUsageBase(format)}"`,
+  `export ${format.nameListENV[ 0 ]}="${formatUsageBase(format)}${(format.nameListENV.length === 1) ? '' : ` [ALIAS=${format.nameListENV.slice(1).join(',')}]`}"`,
   formatExtendList(format.extendFormatList, formatUsageENV, 0)
 )
 
 const usageCONFIG = (formatList) => join('{', indent(mapJoin(formatList, formatUsageCONFIG)), '}')
 const formatUsageCONFIG = (format) => join(
-  `"${format.nameCONFIG}": [ "${formatUsageBase(format)}" ],`,
+  `"${format.nameListCONFIG[ 0 ]}": [ "${formatUsageBase(format)}${(format.nameListCONFIG.length === 1) ? '' : ` [ALIAS=${format.nameListCONFIG.slice(1).join(',')}]`}" ],`,
   formatExtendList(format.extendFormatList, formatUsageCONFIG, 0)
 )
 

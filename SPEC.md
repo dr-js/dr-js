@@ -510,7 +510,7 @@
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_RP]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -522,21 +522,21 @@
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
->     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+]"
->     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_MODIFY_RENAME="[OPTIONAL] [ARGUMENT=2]"
->     export DR_JS_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+]"
+>     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_MKDIR]"
+>     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_CP]"
+>     export DR_JS_MODIFY_RENAME="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_MV]"
+>     export DR_JS_MODIFY_DELETE="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_RM]"
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
->     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL]"
->     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL]"
->     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
+>     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
+>     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
+>     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
+>     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
+>     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
+>     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
 >   "
 > CONFIG Usage:
 >   {
@@ -546,7 +546,7 @@
 >     "version": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "json": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=RP]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
@@ -558,20 +558,20 @@
 >     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
->     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+]" ],
->     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "modifyRename": [ "[OPTIONAL] [ARGUMENT=2]" ],
->     "modifyDelete": [ "[OPTIONAL] [ARGUMENT=0+]" ],
+>     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=mkdir]" ],
+>     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=cp]" ],
+>     "modifyRename": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=mv]" ],
+>     "modifyDelete": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=rm]" ],
 >     "status": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
->     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "serverWebsocketGroup": [ "[OPTIONAL]" ],
->     "serverTestConnection": [ "[OPTIONAL]" ],
->     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
+>     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
+>     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],
+>     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
+>     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
+>     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
+>     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
 >   }
 > ```
