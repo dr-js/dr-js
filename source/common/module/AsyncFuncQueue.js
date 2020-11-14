@@ -27,6 +27,7 @@ const createAsyncFuncQueue = () => {
   let queueTail = Promise.resolve() // queue head
 
   const getLength = () => queueStatus[ GET_SIZE ]()
+  const getTailPromise = () => queueTail // for this moment, will not wait for later push
 
   const reset = () => { // break previous queue, reset status
     // NOTE:
@@ -54,7 +55,7 @@ const createAsyncFuncQueue = () => {
     return asyncFuncPromise // for wait & get result from asyncFunc
   }
 
-  return { getLength, reset, push }
+  return { getLength, getTailPromise, reset, push }
 }
 
 export { createAsyncFuncQueue }

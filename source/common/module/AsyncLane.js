@@ -21,6 +21,7 @@ const createAsyncLane = ({
     ? { index, length: asyncQueue.getLength() }
     : asyncQueue.getLength()
   )
+  const getTailPromise = () => Promise.all(laneList.map(({ asyncQueue: { getTailPromise } }) => getTailPromise()))
 
   const reset = () => laneList.forEach(({ asyncQueue }) => { asyncQueue.reset() })
 
@@ -32,7 +33,7 @@ const createAsyncLane = ({
 
   return {
     laneList, // for extend func, not recommend direct access
-    getStatus, reset, push
+    getStatus, getTailPromise, reset, push
   }
 }
 

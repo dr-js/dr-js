@@ -14,7 +14,7 @@ const ASYNC_TASK_QUEUE_KEY_MAP = {
 //   better for maintain long running work or resource heavy process
 //   add status with basic time mark
 const createAsyncTaskQueue = () => {
-  const { getLength, reset, push: pushAsyncFunc } = createAsyncFuncQueue()
+  const { getLength, getTailPromise, reset, push: pushAsyncFunc } = createAsyncFuncQueue()
 
   const push = (asyncTask) => {
     asyncTask[ STATUS ] = { // always assign a new state
@@ -31,7 +31,7 @@ const createAsyncTaskQueue = () => {
     })
   }
 
-  return { getLength, reset, push }
+  return { getLength, getTailPromise, reset, push }
 }
 
 const createFilterStaleAsyncTask = (
