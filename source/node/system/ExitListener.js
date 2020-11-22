@@ -1,4 +1,4 @@
-import { catchAsync, catchSync } from 'source/common/error'
+import { catchAsync, catchSync, catchPromise } from 'source/common/error'
 
 __DEV__ && console.log({
   listenerFunc: (eventPack) => { // can be async for `addExitListenerSync`
@@ -73,10 +73,26 @@ const addExitListenerAsync = (...listenerSyncList) => {
 const deleteExitListenerSync = (...listenerSyncList) => { listenerSyncList.forEach((listenerSync) => listenerSyncSet.delete(listenerSync)) }
 const deleteExitListenerAsync = (...listenerSyncList) => { listenerSyncList.forEach((listenerAsync) => listenerAsyncSet.delete(listenerAsync)) }
 
+const guardPromiseEarlyExit = async ( // TODO: this is tricky to test
+  callback, // () => {}
+  promise
+) => {
+  const earlyExitCheck = (code) => code === 0 && isTestRunning === true && callback()
+  let isTestRunning = true
+  process.on('exit', earlyExitCheck)
+  const { result, error } = await catchPromise(promise)
+  isTestRunning = false
+  process.off('exit', earlyExitCheck)
+  if (error) throw error
+  return result
+}
+
 export {
   clearExitListener,
   addExitListenerSync,
   addExitListenerAsync,
   deleteExitListenerSync,
-  deleteExitListenerAsync
+  deleteExitListenerAsync,
+
+  guardPromiseEarlyExit
 }

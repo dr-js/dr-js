@@ -5,7 +5,7 @@ import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
-import { clock, setWeakTimeout, setWeakInterval } from 'source/common/time'
+import { clock } from 'source/common/time'
 import { isNumber, isBasicArray, isBasicObject } from 'source/common/check'
 import { prettyStringifyConfigObject } from 'source/common/format'
 import { createCacheMap } from 'source/common/data/CacheMap'
@@ -96,7 +96,7 @@ const createServerExot = ({
           // https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/
           const resetSessionTicketKey = () => server.setTicketKeys(randomBytes(48))
           sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
-          sessionTicketRotateToken = setWeakInterval(resetSessionTicketKey, SESSION_TICKET_ROTATE_TIME)
+          sessionTicketRotateToken = setInterval(resetSessionTicketKey, SESSION_TICKET_ROTATE_TIME)
           resetSessionTicketKey()
         }
         resolve()
@@ -104,7 +104,7 @@ const createServerExot = ({
     }),
     down: async () => server.listening && new Promise((resolve) => {
       sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
-      const forceCloseToken = isNumber(forceCloseTimeout) && forceCloseTimeout !== Infinity && setWeakTimeout(() => { for (const socket of socketSet) socket.destroy() }, forceCloseTimeout)
+      const forceCloseToken = isNumber(forceCloseTimeout) && forceCloseTimeout !== Infinity && setTimeout(() => { for (const socket of socketSet) socket.destroy() }, forceCloseTimeout)
       server.close(() => {
         forceCloseToken && clearTimeout(forceCloseToken)
         resolve()

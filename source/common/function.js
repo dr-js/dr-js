@@ -13,7 +13,7 @@ const debounce = (func, wait = 250, isLeadingEdge = false) => {
   return (...args) => {
     const isCallNow = isLeadingEdge && (timeoutToken === null)
     clearTimeout(timeoutToken)
-    timeoutToken = setWeakTimeout(() => {
+    timeoutToken = setTimeout(() => {
       timeoutToken = null
       !isLeadingEdge && func.apply(null, args)
     }, wait)
@@ -27,7 +27,7 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   return (...args) => {
     if (timeoutToken) return // inactive
     const isCallNow = isLeadingEdge && (timeoutToken === null)
-    timeoutToken = setWeakTimeout(() => {
+    timeoutToken = setWeakTimeout(() => { // NOTE: use weak version, since the value is dropped either way
       timeoutToken = null
       !isLeadingEdge && func.apply(null, args)
     }, wait)
@@ -168,7 +168,7 @@ const withTimeoutPromise = (
   return Promise.race([
     promise,
     new Promise((resolve, reject) => {
-      timeoutToken = setWeakTimeout(
+      timeoutToken = setWeakTimeout( // NOT: use weak version, since the input promise should keep the progress running
         () => reject(DUMMY_ERROR),
         timeout
       )

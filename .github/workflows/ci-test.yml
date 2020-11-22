@@ -38,6 +38,25 @@ jobs:
       - name: Patch `libgbm1` for `puppeteer@3` on linux # https://github.com/puppeteer/puppeteer/issues/5674
         run: node -e "process.exitCode = Number(os.platform() === 'linux')" || sudo apt-get install -y libgbm1
 
+      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step setup
+
+      - name: Cache JS
+        uses: actions/cache@v2 # https://github.com/actions/cache
+        env:
+          cache-version: 20201125
+        with:
+          key: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-
+          path: |
+            ~/.npm/
+            node_modules/
+            .github/cache/persist-gitignore/
+
+      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step mark
+
       - run: npm ci
 
       - run: npm test || npm test # retry more time since some net/fs test is still flaky
+
+      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step prune

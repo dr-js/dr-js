@@ -152,7 +152,7 @@ const createOptionGetter = (optionMap) => {
 
 const prepareOption = (optionConfig) => {
   const { parseCLI, parseENV, parseCONFIG, processOptionMap, formatUsage } = createOptionParser(optionConfig)
-  const parseOption = async () => createOptionGetter(await parseOptionMap({ parseCLI, parseENV, parseCONFIG, processOptionMap }))
+  const parseOption = async ({ optionCLI, optionENV } = {}) => createOptionGetter(await parseOptionMap({ parseCLI, parseENV, parseCONFIG, processOptionMap, optionCLI, optionENV }))
   return { parseOption, formatUsage }
 }
 

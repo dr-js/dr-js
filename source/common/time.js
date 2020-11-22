@@ -50,7 +50,7 @@ const [ setWeakTimeout, setWeakInterval ] = tryWeakTimer() // NOTE: using this o
 //   await setTimeoutAsync(500)
 //   return 'DATA'
 // }
-const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setWeakTimeout(resolve, wait))
+const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
 
 const setAwaitAsync = async (awaitCount = 0) => { // better use it as a relative delay method, passing 0 will still cause a baseline await/then
   while (awaitCount > 0) {

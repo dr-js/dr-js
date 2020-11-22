@@ -208,7 +208,7 @@
 + 📄 [source/node/system/DefaultOpen.js](source/node/system/DefaultOpen.js)
   - `getDefaultOpenCommandList`
 + 📄 [source/node/system/ExitListener.js](source/node/system/ExitListener.js)
-  - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
+  - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`, `guardPromiseEarlyExit`
 + 📄 [source/node/system/Process.js](source/node/system/Process.js)
   - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
@@ -416,7 +416,7 @@
     - **DefaultOpen**
       - `getDefaultOpenCommandList`
     - **ExitListener**
-      - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`
+      - `addExitListenerAsync`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`, `guardPromiseEarlyExit`
     - **Process**
       - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **ResolveCommand**
