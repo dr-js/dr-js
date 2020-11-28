@@ -16,6 +16,8 @@ import { setTimeoutAsync } from './time'
 
 const { describe, it } = global
 
+const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs watcher event seems to be both batched and late than linux/win32, so just wait longer
+
 describe('Common.Function', () => {
   it('debounce()', async () => {
     const { promise, resolve, reject } = createInsideOutPromise()
@@ -339,12 +341,12 @@ describe('Common.Function', () => {
   it('withTimeoutAsync()', async () => {
     await withTimeoutAsync( // no timeout, no promise/async
       () => {},
-      20
+      10
     )
 
     await withTimeoutAsync( // no timeout
       () => setTimeoutAsync(10),
-      20
+      20 * TIME_WAIT_SCALE
     )
 
     await withTimeoutAsync( // with timeout // NOTE: not designed to catch normal function (will throw before await)
@@ -356,7 +358,7 @@ describe('Common.Function', () => {
     )
 
     await withTimeoutAsync( // with timeout
-      () => setTimeoutAsync(20),
+      () => setTimeoutAsync(20 * TIME_WAIT_SCALE),
       10
     ).then(
       () => { throw new Error('should reject with timeout') },
@@ -368,13 +370,13 @@ describe('Common.Function', () => {
     const expectResult = {}
     await withTimeoutPromise( // no timeout
       Promise.resolve(expectResult),
-      20
+      10
     ).then((result) => { if (result !== expectResult) throw new Error(`unexpected result: ${result}`) })
 
     const expectError = new Error('expect error')
     await withTimeoutPromise( // no timeout
       Promise.reject(expectError),
-      20
+      10
     ).then(
       () => { throw new Error('should reject with timeout') },
       (error) => { if (error !== expectError) throw new Error(`unexpected Error: ${error}`) }
@@ -382,11 +384,11 @@ describe('Common.Function', () => {
 
     await withTimeoutPromise( // no timeout
       setTimeoutAsync(10),
-      20
+      20 * TIME_WAIT_SCALE
     )
 
     await withTimeoutPromise( // with timeout
-      setTimeoutAsync(20),
+      setTimeoutAsync(20 * TIME_WAIT_SCALE),
       10
     ).then(
       () => { throw new Error('should reject with timeout') },

@@ -6,7 +6,7 @@ import { isPromiseAlike } from 'source/common/check'
 // https://gist.github.com/nmsdvid/8807205
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
-// N milliseconds. If `immediate` is passed, trigger the function on the
+// N milliseconds. If `isLeadingEdge` is set, trigger the function on the
 // leading edge, instead of the trailing.
 const debounce = (func, wait = 250, isLeadingEdge = false) => {
   let timeoutToken = null
@@ -21,7 +21,7 @@ const debounce = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
-// inactive for `wait` time, will drop arguments during inactive time
+// Inactive for `wait` time, will drop arguments during inactive time
 const throttle = (func, wait = 250, isLeadingEdge = false) => {
   let timeoutToken = null
   return (...args) => {

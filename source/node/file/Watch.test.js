@@ -14,17 +14,21 @@ const TEST_ROOT = resolve(__dirname, './test-watch-gitignore/')
 // TODO: Strange timer mix-up, throttle not working & 2nd fs change event not fired till timer is called
 // TODO: try change code to `setTimeoutAsync(1000)` and `createFileWatcher({ wait: 500 })` to see the event being blocked & delayed
 
+const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs watcher event seems to be both batched and late than linux/win32, so just wait longer
+
 const createWatcherTest = (tag, path, func) => async () => {
   const fromTest = (...args) => resolve(TEST_ROOT, tag, ...args)
 
   path = fromTest(path)
-  const watcherExot = createFileWatcherExot({ path, wait: 10 })
+  const watcherExot = createFileWatcherExot({ path, wait: 10 * TIME_WAIT_SCALE })
 
   await createDirectory(fromTest('folder'))
   await fsAsync.writeFile(fromTest('file'), `${tag}|file`)
   await fsAsync.writeFile(fromTest('folder/folder-file'), `${tag}|folder-file`)
 
+  __DEV__ && console.log('[createWatcherTest] pre test')
   const { error } = await catchAsync(func, { fromTest, path, watcherExot })
+  __DEV__ && console.log('[createWatcherTest] post test')
   await watcherExot.down() // actually sync
   if (error) throw error
 }
@@ -45,7 +49,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.writeFile(path, 'file|changed')
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
     }))
 
@@ -57,15 +61,19 @@ describe('Node.File.Watch', () => {
         resultChangeState = { path, hasStat: Boolean(stat), hasChange }
       })
       await watcherExot.up()
+      __DEV__ && console.log('watcherExot.up')
 
       await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
-      await setTimeoutAsync(40)
+      __DEV__ && console.log('file|added')
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
 
       resultChangeState = undefined
       await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
+      __DEV__ && console.log('file|added')
       await fsAsync.rename(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
-      await setTimeoutAsync(40)
+      __DEV__ && console.log('file|rename')
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
     }))
 
@@ -80,7 +88,7 @@ describe('Node.File.Watch', () => {
 
       await fsAsync.rename(fromTest('file'), fromTest('rename-file'))
 
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -94,7 +102,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -108,7 +116,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await modifyDelete(fromTest('file'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -122,12 +130,12 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await modifyDelete(fromTest('folder/folder-file'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
 
       resultChangeState = undefined
       await modifyDelete(fromTest('folder'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -141,7 +149,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.rename(fromTest('file'), fromTest('file-folder'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -155,7 +163,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.rename(fromTest('folder'), fromTest('rename-folder'))
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
     }))
 
@@ -171,7 +179,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.writeFile(path, 'file|created')
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
@@ -187,7 +195,7 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await fsAsync.mkdir(path)
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
@@ -201,12 +209,12 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await modifyDelete(path)
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
 
       resultChangeState = undefined
       await fsAsync.writeFile(path, 'file|recreated')
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
 
@@ -220,12 +228,12 @@ describe('Node.File.Watch', () => {
       await watcherExot.up()
 
       await modifyDelete(path)
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
 
       resultChangeState = undefined
       await fsAsync.mkdir(path)
-      await setTimeoutAsync(40)
+      await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
   })

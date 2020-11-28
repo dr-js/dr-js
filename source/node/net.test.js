@@ -37,21 +37,17 @@ describe('Node.Net', () => {
   }))
 
   it('fetchLikeRequest() option: timeout', withTestServer(async ({ baseUrl }) => {
-    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 10 }).then(
-      () => { throw new Error('should throw time out error') },
+    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 20 }).then(
+      () => { throw new Error('should throw timeout 10 error') },
       expectError('NETWORK_TIMEOUT')
     )
-    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 50 }).then(
-      () => { throw new Error('should throw time out error') },
-      expectError('NETWORK_TIMEOUT')
-    )
-    await fetchLikeRequest(`${baseUrl}/test-timeout-payload`, { timeout: 40 }).then(
+    await fetchLikeRequest(`${baseUrl}/test-timeout-payload`, { timeout: 80 }).then(
       (response) => response.buffer(),
       (error) => { throw new Error(`should not timeout: ${error}`) }
     ).then(
       (buffer) => {
         console.log(buffer.length, BUFFER_SCRIPT.length)
-        throw new Error('should throw time out error')
+        throw new Error('should throw payload timeout error')
       },
       expectError('PAYLOAD_TIMEOUT')
     )

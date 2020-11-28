@@ -12,6 +12,8 @@ const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-logger-gitignore/')
 
+const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs seems to be late than linux/win32, so just wait longer
+
 before('prepare', () => resetDirectory(TEST_ROOT))
 after('clear', () => modifyDelete(TEST_ROOT))
 
@@ -30,21 +32,21 @@ describe('Node.Module.Logger', () => {
 
     add('3')
     add('4')
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(10 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(pathOutputFile)), '', 'should not write yet `<= queueLengthThreshold`')
 
     add('5')
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(10 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n', 'should write to file `> queueLengthThreshold`')
 
     add('6')
     save()
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(10 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n6\n', 'should write to file on manual `save`')
 
     add('7')
     down()
-    await setTimeoutAsync(10)
+    await setTimeoutAsync(10 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(pathOutputFile)), '1\n2\n3\n4\n5\n6\n7\n', 'should write to file on `down`')
   })
 
@@ -59,7 +61,7 @@ describe('Node.Module.Logger', () => {
         return `${logFileIndex}.log`
       },
       queueLengthThreshold: 4,
-      splitInterval: 100
+      splitInterval: 100 * TIME_WAIT_SCALE
     })
 
     // support `add()` before `up()`
@@ -72,34 +74,34 @@ describe('Node.Module.Logger', () => {
 
     add('3')
     add('4')
-    await setTimeoutAsync(20)
+    await setTimeoutAsync(20 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should not write yet `<= queueLengthThreshold`')
 
     add('5')
-    await setTimeoutAsync(20)
+    await setTimeoutAsync(20 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(getCurrentLogPath())), '1 1\n2\n3\n4\n5\n', 'should write to file `> queueLengthThreshold`')
 
     add('6')
     save()
-    await setTimeoutAsync(20)
+    await setTimeoutAsync(20 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(getCurrentLogPath())), '1 1\n2\n3\n4\n5\n6\n', 'should write to file on manual `save`')
 
     add('7 should manual split')
     split() // new file, reset split timer
-    await setTimeoutAsync(20)
+    await setTimeoutAsync(20 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n', 'should write to file on manual `split`')
     strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should change to new file on manual `split`')
 
     add('8', [ 'A' ])
     add('9', { k: 'v' }, 'should auto split')
-    await setTimeoutAsync(90) // 20 + 90ms since last split, so auto split should run
+    await setTimeoutAsync(90 * TIME_WAIT_SCALE) // 20 + 90ms since last split, so auto split should run
     strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '8 A\n9 [object Object] should auto split\n', 'should write to file on auto `split`')
     strictEqual(String(readFileSync(getCurrentLogPath())), '', 'should change to new file on auto `split`')
 
     add('10')
     add('11')
     down()
-    await setTimeoutAsync(20)
+    await setTimeoutAsync(20 * TIME_WAIT_SCALE)
     strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 1}.log`))), '10\n11\n', 'should write to file on `down`')
     strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 2}.log`))), '8 A\n9 [object Object] should auto split\n')
     strictEqual(String(readFileSync(resolve(pathLogDirectory, `${logFileIndex - 3}.log`))), '1 1\n2\n3\n4\n5\n6\n7 should manual split\n')

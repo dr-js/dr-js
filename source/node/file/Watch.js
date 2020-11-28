@@ -10,10 +10,12 @@ import { nearestExistPath } from './Path'
 // - can watch a non-exist file
 // - watch will resume when deleted file is recreated
 
-// TODO: convert to Exot
+// TODO:
+//   upper directory renaming will not trigger change (still the same stat for this node & upper node)
+//   so renaming then replace the path will not trigger change
 
-// TODO: upper directory renaming will not trigger change (still the same stat for this node & upper node)
-// TODO: so renaming then replace the path will not trigger change
+// NOTE:
+//   macos seems to queue up fs changes, so the throttle may be off a bit
 
 const CHANGE_PATH = 'rename' // const CHANGE_CONTENT = 'change'
 
@@ -41,15 +43,16 @@ const createFileWatcherExot = ({
     // content change: path-change/file-content/directory-file-list
     const stat = await fsAsync.lstat(path).catch(EMPTY_FUNC)
     const hasChange = Boolean(prevStat) !== Boolean(stat)
+    __DEV__ && console.log('emitThrottled', hasChange, Boolean(prevStat), Boolean(stat))
 
-    if (stat === undefined) {
+    if (stat === undefined) { // target file not found
       if (path === watcherPath) await setupWatch() // renamed, not the target any more
 
-      __DEV__ && !hasChange && console.log('emitThrottled dropped', hasChange, Boolean(prevStat), Boolean(stat))
+      __DEV__ && hasChange === false && console.log('emitThrottled dropped')
       if (hasChange === false) return
     }
 
-    __DEV__ && console.log('emitThrottled send', hasChange, Boolean(prevStat), Boolean(stat))
+    __DEV__ && console.log('emitThrottled send')
     const changeState = { path, stat, hasChange }
     prevStat = stat
     hub.send(changeState)
@@ -62,7 +65,7 @@ const createFileWatcherExot = ({
   }
   const onChangeEvent = (changeType, path) => {
     __DEV__ && console.log('[onChangeEvent]', changeType, path)
-    emitThrottled(changeType, path)
+    emitThrottled(/* changeType, path */)
   }
 
   const clearWatch = () => {
@@ -111,7 +114,6 @@ const createFileWatcherExot = ({
   return {
     id,
     up: async (onExotError) => {
-      clearWatch()
       await setupWatch()
       prevStat = watcherPath === path ? watcherStat : undefined
     },
