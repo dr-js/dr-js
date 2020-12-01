@@ -14,8 +14,8 @@ const TEST_ROOT = resolve(__dirname, './test-logger-gitignore/')
 
 const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs seems to be late than linux/win32, so just wait longer
 
-before('prepare', () => resetDirectory(TEST_ROOT))
-after('clear', () => modifyDelete(TEST_ROOT))
+before(() => resetDirectory(TEST_ROOT))
+after(() => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.Logger', () => {
   it('createSimpleLoggerExot()', async () => { // TODO: flaky test

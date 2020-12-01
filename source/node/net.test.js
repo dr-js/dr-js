@@ -13,11 +13,11 @@ const { describe, it, before, after, info = console.log } = global
 
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 
-before('prepare', () => {
+before(() => {
   writeFileSync(SOURCE_SCRIPT, BUFFER_SCRIPT)
 })
 
-after('clear', () => {
+after(() => {
   unlinkSync(SOURCE_SCRIPT)
 })
 

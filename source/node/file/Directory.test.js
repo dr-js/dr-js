@@ -45,7 +45,7 @@ const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/')
 const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/')
 const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/')
 
-before('prepare', async () => {
+before(async () => {
   await createDirectory(TEST_ROOT)
   await createDirectory(directoryPath0)
   await createDirectory(directoryPath1)
@@ -54,7 +54,7 @@ before('prepare', async () => {
   await createDirectory(directoryPathDelete)
 })
 
-after('clear', async () => {
+after(async () => {
   await deleteDirectory(TEST_ROOT)
 })
 

@@ -5,6 +5,7 @@ import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stre
 import { strictEqual } from 'source/common/verify'
 import { createStepper } from 'source/common/time'
 import { time, binary } from 'source/common/format'
+import { getSample } from 'source/common/math/sample'
 import {
   createRunlet,
   createCountPool, PoolIO,
@@ -51,13 +52,14 @@ const TEST_SOURCE = resolve(__dirname, './Stream.js')
 const TEST_INPUT = resolve(TEST_ROOT, './input')
 const TEST_OUTPUT = resolve(TEST_ROOT, './output')
 
-before('prepare', async () => {
+before(async () => {
   await resetDirectory(TEST_ROOT)
   const sourceBuffer = await fsAsync.readFile(TEST_SOURCE)
-  let loopCount = 2 ** 12 // will produce about 15MiB file
-  while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_INPUT, sourceBuffer)
+  const concatBuffer = Buffer.concat(getSample(() => sourceBuffer, 2 ** 6)) // TODO: NOTE: GitHub CI darwin fs is slow, 4096 small append will hit the default timeout 42sec, so pre-concat for now
+  let loopCount = Math.ceil((32 * 1024 * 1024) / concatBuffer.length) // will produce ~32MiB file
+  while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_INPUT, concatBuffer)
 })
-after('clear', async () => {
+after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 

@@ -37,11 +37,11 @@ const withTestServer = (asyncTest) => async () => {
   await down()
 }
 
-before('prepare', () => {
+before(() => {
   writeFileSync(SOURCE_SCRIPT, BUFFER_SCRIPT)
 })
 
-after('clear', () => {
+after(() => {
   unlinkSync(SOURCE_SCRIPT)
 })
 

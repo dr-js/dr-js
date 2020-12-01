@@ -49,13 +49,13 @@ const withTestServer = (asyncTest) => async () => {
   await down()
 }
 
-before('prepare', async () => {
+before(async () => {
   await resetDirectory(TEST_ROOT)
   const sourceBuffer = await fsAsync.readFile(TEST_SOURCE)
   let loopCount = 2 ** 9 // will produce about 3MiB file
   while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_FILE, sourceBuffer)
 })
-after('clear', async () => {
+after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 

@@ -37,11 +37,11 @@ const directoryPath4 = resolve(TEST_ROOT, 'a/e1/')
 const directoryPath5 = resolve(TEST_ROOT, 'a/b/')
 const directoryPath6 = resolve(TEST_ROOT, 'a/')
 
-before('prepare', async () => {
+before(async () => {
   await resetDirectory(TEST_ROOT)
 })
 
-after('clear', async () => {
+after(async () => {
   await deletePath(filePath2)
   await deletePath(directoryPath4)
   await deletePath(directoryPath5)

@@ -33,7 +33,7 @@ const createWatcherTest = (tag, path, func) => async () => {
   if (error) throw error
 }
 
-after('clear', async () => {
+after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 

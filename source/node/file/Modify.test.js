@@ -22,12 +22,12 @@ const filePath2 = resolve(TEST_ROOT, 'file2.js')
 const directoryPath0 = resolve(TEST_ROOT, 'directory0/')
 const directoryPath1 = resolve(TEST_ROOT, 'directory1/')
 
-before('prepare', async () => {
+before(async () => {
   await resetDirectory(TEST_ROOT)
   await modifyCopy(SOURCE_FILE, filePath2)
 })
 
-after('clear', async () => {
+after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 

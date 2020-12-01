@@ -16,8 +16,8 @@ const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-preset-gitignore/')
 
-before('prepare', () => resetDirectory(TEST_ROOT))
-after('clear', () => modifyDelete(TEST_ROOT))
+before(() => resetDirectory(TEST_ROOT))
+after(() => modifyDelete(TEST_ROOT))
 
 // __DEV__ && console.log('Preset key list:', Object.keys(Preset))
 // __DEV__ && console.log(Preset)

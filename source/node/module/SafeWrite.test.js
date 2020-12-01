@@ -11,8 +11,8 @@ const { describe, it, before, after } = global
 
 const TEST_ROOT = resolve(__dirname, './test-safe-write-gitignore/')
 
-before('prepare', () => resetDirectory(TEST_ROOT))
-after('clear', () => modifyDelete(TEST_ROOT))
+before(() => resetDirectory(TEST_ROOT))
+after(() => modifyDelete(TEST_ROOT))
 
 describe('Node.Module.SafeWrite', () => { // TODO: flaky test
   it('createSafeWriteStream() sync write', () => {
