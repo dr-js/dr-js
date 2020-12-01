@@ -52,7 +52,7 @@ const getVersion = () => ({
 
 const runMode = async (modeName, optionData) => {
   const { tryGet, tryGetFirst } = optionData
-  const log = tryGet('quiet')
+  const log = tryGetFirst('quiet')
     ? () => {}
     : console.log
   const logTaskResult = (task, path) => task(path).then(
@@ -61,7 +61,7 @@ const runMode = async (modeName, optionData) => {
   )
 
   const argumentList = tryGet(modeName) || []
-  const isOutputJSON = Boolean(tryGet('json'))
+  const isOutputJSON = Boolean(tryGetFirst('json'))
   const root = tryGetFirst('root') || process.cwd()
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
@@ -227,8 +227,8 @@ const runMode = async (modeName, optionData) => {
 
 const main = async () => {
   const optionData = await parseOption()
-  if (optionData.tryGet('version')) return logAuto(getVersion())
-  if (optionData.tryGet('help')) return logAuto(formatUsage())
+  if (optionData.tryGetFirst('version')) return logAuto(getVersion())
+  if (optionData.tryGetFirst('help')) return logAuto(formatUsage())
   const modeName = MODE_NAME_LIST.find((name) => optionData.tryGet(name))
   if (!modeName) throw new Error('no mode specified')
   await runMode(modeName, optionData).catch((error) => {

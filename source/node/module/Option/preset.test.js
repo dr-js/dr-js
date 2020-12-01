@@ -181,6 +181,9 @@ describe('Node.Module.Option.preset', () => {
         formatList: [
           Preset.Config,
           { name: 'option-toggle', ...Preset.Toggle },
+          { name: 'option-toggle-cli', ...Preset.Toggle },
+          { name: 'option-toggle-truthy', ...Preset.Toggle },
+          { name: 'option-toggle-falsy', ...Preset.Toggle },
           { name: 'option-string', optional: true, ...Preset.SingleString },
           { name: 'option-path', optional: true, ...Preset.SinglePath }
         ]
@@ -188,16 +191,22 @@ describe('Node.Module.Option.preset', () => {
       const { parseCLI, parseENV, parseCONFIG, processOptionMap } = createOptionParser(optionData2)
 
       it('test CLI', async () => {
-        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
+        const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [
             '--option-toggle',
+            // '--option-toggle-missing', // should be false
+            '--option-toggle-truthy', 'noop', // not defined falsy value
+            '--option-toggle-falsy', 'no',
             '--option-string', 'ABC',
             '--option-path', 'A/B/C/file'
           ],
           optionENV: {}
         }))
-        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
+        strictEqual(tryGetFirst('option-toggle-truthy'), true)
+        strictEqual(tryGetFirst('option-toggle-falsy'), false)
         strictEqual(getFirst('option-string'), 'ABC')
         strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
         strictEqual(pwd('non-option'), '')
@@ -206,16 +215,22 @@ describe('Node.Module.Option.preset', () => {
         strictEqual(pwd('option-path'), resolve('A/B/C/'))
       })
       it('test ENV', async () => {
-        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
+        const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [ '--config', 'env' ],
           optionENV: {
             OPTION_TOGGLE: '[]',
+            // OPTION_TOGGLE_MISSING: '[]',
+            OPTION_TOGGLE_TRUTHY: '["ANY"]',
+            OPTION_TOGGLE_FALSY: '[false]',
             OPTION_STRING: '[ "ABC" ]',
             OPTION_PATH: '[ "A/B/C/file" ]'
           }
         }))
-        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
+        strictEqual(tryGetFirst('option-toggle-truthy'), true)
+        strictEqual(tryGetFirst('option-toggle-falsy'), false)
         strictEqual(getFirst('option-string'), 'ABC')
         strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
         strictEqual(pwd('non-option'), '')
@@ -227,10 +242,13 @@ describe('Node.Module.Option.preset', () => {
         const pathConfig = resolve(TEST_ROOT, 'test-config.json')
         writeFileSync(pathConfig, JSON.stringify({
           optionToggle: true,
+          // optionToggleMissing: true,
+          optionToggleTruthy: true,
+          optionToggleFalsy: 'FALSE', // not case-sensitive
           optionString: 'not ABC',
           optionPath: 'A/B/C/file'
         }))
-        const { getFirst, pwd } = createOptionGetter(await parseOptionMap({
+        const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [
             '--config', pathConfig,
@@ -238,7 +256,10 @@ describe('Node.Module.Option.preset', () => {
           ],
           optionENV: {}
         }))
-        strictEqual(getFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
+        strictEqual(tryGetFirst('option-toggle-truthy'), true)
+        strictEqual(tryGetFirst('option-toggle-falsy'), false)
         strictEqual(getFirst('option-string'), 'ABC')
         strictEqual(getFirst('option-path'), resolve(dirname(pathConfig), 'A/B/C/file'))
         strictEqual(pwd('non-option'), '')
@@ -253,7 +274,7 @@ describe('Node.Module.Option.preset', () => {
     const testParseCompact = (compatFormat, expectFormat) => stringifyEqual(
       objectSortKey(Preset.parseCompact(compatFormat)),
       objectSortKey(expectFormat),
-      `should match expect, compatFormat: "${compatFormat}"`
+      `should match expect, compatFormat: "${compatFormat}"` // + `\n${JSON.stringify(objectSortKey(Preset.parseCompact(compatFormat)))}\n${JSON.stringify(objectSortKey(expectFormat))}`
     )
 
     testParseCompact('config', { name: 'config' })
@@ -282,7 +303,7 @@ describe('Node.Module.Option.preset', () => {
     testParseCompact('config/AF', { name: 'config', argumentCount: '1-' })
     testParseCompact('config/AP', { name: 'config', argumentCount: '1-', isPath: true })
 
-    testParseCompact('config/T', { name: 'config', argumentCount: '0-', description: 'set to enable', optional: true })
+    testParseCompact('config/T', { name: 'config', argumentCount: '0-1', description: Preset.Toggle.description, optional: true })
     testParseCompact('config/O', { name: 'config', optional: true })
     testParseCompact('config/P', { name: 'config', isPath: true })
     testParseCompact('config/O,P', { name: 'config', optional: true, isPath: true })

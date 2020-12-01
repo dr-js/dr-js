@@ -6,6 +6,8 @@ import { objectFilter } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 import { createOptionParser } from './parser'
 
+// TODO: REWRITE/TRIM: usable for now, but too much "magic", need a slim version
+
 const throwError = (message) => { throw new Error(message) }
 const filterFormatValue = (value) => value !== undefined && value !== ''
 
@@ -13,11 +15,22 @@ const getPreset = (argumentCount, argumentListVerify, argumentListNormalize, des
   argumentCount, argumentListNormalize, argumentListVerify, description, optional
 }, filterFormatValue)
 
+const TOGGLE_FALSY = 'false/no/n/0'
 const Preset = {
   Optional: { optional: true },
   Path: { isPath: true },
   Any: getPreset('0-', undefined, undefined, 'any', true),
-  Toggle: getPreset('0-', undefined, () => ([ true ]), 'set to enable', true)
+  // TODO: NOTE:
+  //   for fast CLI toggle like `-v`, the raw value would be an empty array `[]`
+  //   but to support `-v no` or `-v0`, the result will be `[ false ]`
+  //   so make sure to get the option with `tryGetFirst`, as `Boolean(tryGet('v'))` will fail in the explicit `false` situation
+  Toggle: getPreset(
+    '0-1',
+    undefined,
+    (argumentList) => TOGGLE_FALSY.split('/').includes(String(argumentList[ 0 ]).toLowerCase()) ? [ false ] : [ true ],
+    `set to ANY value to enable, except "${TOGGLE_FALSY}"`,
+    true
+  )
 }
 
 // Preset: first batch, generated

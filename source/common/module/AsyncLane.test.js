@@ -42,8 +42,7 @@ describe('source/common/module/AsyncLane', () => {
       createAsyncQueue: createAsyncFuncQueue
     })
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 0, 0, 0, 0 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 0 },
       { index: 1, length: 0 },
       { index: 2, length: 0 },
@@ -62,8 +61,7 @@ describe('source/common/module/AsyncLane', () => {
     const promise2 = asyncFuncLane.push(() => runAsyncTask(asyncTask2), 2)
     const promise3 = asyncFuncLane.push(() => runAsyncTask(asyncTask3), 3)
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 1, 1, 1, 1 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 1 },
       { index: 1, length: 1 },
       { index: 2, length: 1 },
@@ -73,8 +71,7 @@ describe('source/common/module/AsyncLane', () => {
     const promise4 = asyncFuncLane.push(() => runAsyncTask(asyncTask4), 0)
     const promise5 = asyncFuncLane.push(() => runAsyncTask(asyncTask5), 1)
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 2, 2, 1, 1 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 2 },
       { index: 1, length: 2 },
       { index: 2, length: 1 },
@@ -82,12 +79,16 @@ describe('source/common/module/AsyncLane', () => {
     ])
 
     doThrow(() => asyncFuncLane.push(() => {}, -1), 'should error when wrong laneIndex is given')
-    stringifyEqual(asyncFuncLane.getStatus(), [ 2, 2, 1, 1 ])
+    stringifyEqual(asyncFuncLane.calcStatus(), [
+      { index: 0, length: 2 },
+      { index: 1, length: 2 },
+      { index: 2, length: 1 },
+      { index: 3, length: 1 }
+    ])
 
     await promise3 // should have finished first batch
-    // console.log(asyncFuncLane.getStatus())
-    stringifyEqual(asyncFuncLane.getStatus(), [ 1, 1, 0, 0 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    // console.log(asyncFuncLane.calcStatus())
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 1 },
       { index: 1, length: 1 },
       { index: 2, length: 0 },
@@ -96,8 +97,7 @@ describe('source/common/module/AsyncLane', () => {
 
     await Promise.all([ promise0, promise1, promise2, promise3, promise4, promise5 ])
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 0, 0, 0, 0 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 0 },
       { index: 1, length: 0 },
       { index: 2, length: 0 },
@@ -125,8 +125,7 @@ describe('source/common/module/AsyncLane', () => {
     const promise4 = asyncFuncLane.push(() => runAsyncTask(asyncTask4), 0)
     const promise5 = asyncFuncLane.push(() => runAsyncTask(asyncTask5), 1)
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 2, 2, 1, 1 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 2 },
       { index: 1, length: 2 },
       { index: 2, length: 1 },
@@ -135,8 +134,7 @@ describe('source/common/module/AsyncLane', () => {
 
     asyncFuncLane.reset()
 
-    stringifyEqual(asyncFuncLane.getStatus(), [ 0, 0, 0, 0 ])
-    stringifyEqual(asyncFuncLane.getStatus(true), [
+    stringifyEqual(asyncFuncLane.calcStatus(), [
       { index: 0, length: 0 },
       { index: 1, length: 0 },
       { index: 2, length: 0 },
@@ -177,8 +175,7 @@ describe('source/common/module/AsyncLane', () => {
     const promise4 = asyncFuncAutoSelectLane.pushAuto(() => runAsyncTask(asyncTask4) /* , 0 */)
     const promise5 = asyncFuncAutoSelectLane.pushAuto(() => runAsyncTask(asyncTask5) /* , 1 */)
 
-    stringifyEqual(asyncFuncAutoSelectLane.getStatus(), [ 2, 2, 1, 1 ])
-    stringifyEqual(asyncFuncAutoSelectLane.getStatus(true), [
+    stringifyEqual(asyncFuncAutoSelectLane.calcStatus(), [
       { index: 0, length: 2 },
       { index: 1, length: 2 },
       { index: 2, length: 1 },
@@ -217,8 +214,7 @@ describe('source/common/module/AsyncLane', () => {
     // non-match, should fill by min-load
     const promise5 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask5), 9)
 
-    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(), [ 2, 1, 2, 1 ])
-    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(true), [
+    stringifyEqual(asyncFuncAutoSelectByTagLane.calcStatus(), [
       { index: 0, length: 2, tagList: [ 9, 0 ] },
       { index: 1, length: 1, tagList: [ 1 ] },
       { index: 2, length: 2, tagList: [ 2, 2 ] },
@@ -229,8 +225,7 @@ describe('source/common/module/AsyncLane', () => {
     const promise6 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask6))
     const promise7 = asyncFuncAutoSelectByTagLane.pushAutoTag(() => runAsyncTask(asyncTask7), '')
 
-    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(), [ 2, 2, 2, 2 ])
-    stringifyEqual(asyncFuncAutoSelectByTagLane.getStatus(true), [
+    stringifyEqual(asyncFuncAutoSelectByTagLane.calcStatus(), [
       { index: 0, length: 2, tagList: [ 9, 0 ] },
       { index: 1, length: 2, tagList: [ undefined, 1 ] },
       { index: 2, length: 2, tagList: [ 2, 2 ] },

@@ -17,10 +17,8 @@ const createAsyncLane = ({
   // init data to [ { index, asyncQueue } ]
   const laneList = getSample((index) => ({ index, asyncQueue: createAsyncQueue() }), laneSize)
 
-  const getStatus = (isVerbose) => laneList.map(({ index, asyncQueue }) => isVerbose
-    ? { index, length: asyncQueue.getLength() }
-    : asyncQueue.getLength()
-  )
+  const calcStatus = (func = DEFAULT_STATUS_MAP_FUNC) => laneList.map(func)
+
   const getTailPromise = () => Promise.all(laneList.map(({ asyncQueue: { getTailPromise } }) => getTailPromise()))
 
   const reset = () => laneList.forEach(({ asyncQueue }) => { asyncQueue.reset() })
@@ -31,11 +29,19 @@ const createAsyncLane = ({
     return lane.asyncQueue.push(value)
   }
 
+  const getStatus = (isVerbose) => laneList.map(({ index, asyncQueue }) => isVerbose // TODO: DEPRECATE: use `calcStatus`, this should not alter return type based on input, so bad design
+    ? { index, length: asyncQueue.getLength() }
+    : asyncQueue.getLength()
+  )
+
   return {
     laneList, // for extend func, not recommend direct access
-    getStatus, getTailPromise, reset, push
+    calcStatus, getTailPromise, reset, push,
+
+    getStatus // TODO: DEPRECATE
   }
 }
+const DEFAULT_STATUS_MAP_FUNC = ({ index, asyncQueue }) => ({ index, length: asyncQueue.getLength() })
 
 // ## sample extend ##
 //   below is some idea to extend asyncLane
@@ -53,7 +59,7 @@ const extendAutoSelectLane = (
   const { laneList } = asyncLane
 
   return {
-    ...asyncLane,
+    ...asyncLane, // no change
     pushAuto: (value) => asyncLane.push(value, selectLane(laneList, value).index) // new
   }
 }
@@ -77,16 +83,15 @@ const extendLaneValueList = (asyncLane) => {
 
   // patch data to [ { index, asyncQueue, valueList } ]
   laneList.forEach((lane) => { lane.valueList = [] }) // newer first, length may be longer due to lazy trim, when some long running func get pushed at the same time
+  const calcStatus = (func) => {
+    const status = asyncLane.calcStatus(func)
+    func === undefined && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList }) // patch status if no custom calcFunc is given
+    return status
+  }
 
   const reset = () => {
     asyncLane.reset()
     laneList.forEach(({ valueList }) => { valueList.length = 0 })
-  }
-
-  const getStatus = (isVerbose) => {
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList })
-    return status
   }
 
   const push = (value, laneIndex) => {
@@ -101,10 +106,17 @@ const extendLaneValueList = (asyncLane) => {
     valueList.length = asyncQueue.getLength()
   })
 
+  const getStatus = (isVerbose) => { // TODO: DEPRECATE
+    const status = asyncLane.getStatus(isVerbose)
+    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList })
+    return status
+  }
+
   return {
-    ...asyncLane,
-    getStatus, reset, push, // change
-    trimValueList // new
+    ...asyncLane, calcStatus, reset, push, // change
+    trimValueList, // new
+
+    getStatus // TODO: DEPRECATE
   }
 }
 
@@ -119,15 +131,15 @@ const extendLaneValueMap = (asyncLane) => {
   // patch data to [ { index, asyncQueue, valueMap } ]
   laneList.forEach((lane) => { lane.valueMap = new Map() }) // newer first, length may be longer due to lazy trim, when some long running func get pushed at the same time
 
+  const calcStatus = (func) => {
+    const status = asyncLane.calcStatus(func)
+    func === undefined && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] }) // patch status if no custom calcFunc is given
+    return status
+  }
+
   const reset = () => {
     asyncLane.reset()
     laneList.forEach(({ valueMap }) => { valueMap.clear() })
-  }
-
-  const getStatus = (isVerbose) => {
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
-    return status
   }
 
   const push = (value, laneIndex) => {
@@ -152,10 +164,17 @@ const extendLaneValueMap = (asyncLane) => {
     return lane && lane.valueMap.delete(id)
   }
 
+  const getStatus = (isVerbose) => { // TODO: DEPRECATE:
+    const status = asyncLane.getStatus(isVerbose)
+    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
+    return status
+  }
+
   return {
-    ...asyncLane,
-    getStatus, reset, push, // change
-    trimValueMap, findValue, dropValue // new
+    ...asyncLane, calcStatus, reset, push, // change
+    trimValueMap, findValue, dropValue, // new
+
+    getStatus // TODO: DEPRECATE
   }
 }
 
@@ -171,15 +190,15 @@ const extendAutoSelectByTagLane = (
   // patch data to [ { index, asyncQueue, tagList } ]
   laneList.forEach((lane) => { lane.tagList = [] }) // newer first, length may be longer due to lazy trim, when some long running func get pushed at the same time
 
+  const calcStatus = (func) => {
+    const status = asyncLane.calcStatus(func)
+    func === undefined && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList }) // patch status if no custom calcFunc is given
+    return status
+  }
+
   const reset = () => {
     asyncLane.reset()
     laneList.forEach(({ tagList }) => { tagList.length = 0 })
-  }
-
-  const getStatus = (isVerbose) => {
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList })
-    return status
   }
 
   const push = (value, laneIndex, tag) => {
@@ -190,9 +209,17 @@ const extendAutoSelectByTagLane = (
     return valuePromise
   }
 
+  const getStatus = (isVerbose) => { // TODO: DEPRECATE
+    const status = asyncLane.getStatus(isVerbose)
+    isVerbose && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList })
+    return status
+  }
+
   return {
-    ...asyncLane, reset, getStatus, push,
-    pushAutoTag: (value, tag) => push(value, selectByTagLane(laneList, value, tag).index, tag) // new
+    ...asyncLane, calcStatus, reset, push, // change
+    pushAutoTag: (value, tag) => push(value, selectByTagLane(laneList, value, tag).index, tag), // new
+
+    getStatus // TODO: DEPRECATE
   }
 }
 
