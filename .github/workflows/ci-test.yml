@@ -5,6 +5,11 @@ on:
     branches:
       - '**'
 
+env:
+  cache-version: 20201129
+  # for allow reset npm cache path on win32, revert: https://github.com/actions/virtual-environments/blob/win19/20201116.1/images/win/scripts/Installers/Install-NodeLts.ps1#L21
+  npm_config_cache: '' # wait for fix: https://github.com/actions/virtual-environments/pull/2153
+
 jobs:
   build:
     strategy:
@@ -16,11 +21,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Reset Git config # fix win32 CI cause `something to commit` test error: https://github.com/actions/checkout/issues/135#issuecomment-602171132
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-
       - name: Setup Git repo
         uses: actions/checkout@v2 # https://github.com/actions/checkout
 
@@ -29,34 +29,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Log CI info
+      - name: Patch & log CI info
         run: |
-          echo "system: $(node -p "os.platform() + ' - ' + os.release() + ' [' + os.arch() + ']'")"
-          echo "node: $(node -v)"
-          echo "npm: $(npm -v)"
-
-      - name: Patch `libgbm1` for `puppeteer@3` on linux # https://github.com/puppeteer/puppeteer/issues/5674
-        run: node -e "process.exitCode = Number(os.platform() === 'linux')" || sudo apt-get install -y libgbm1
-
-      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step setup
+          npx @dr-js/core@0.4.1-dev.8 -eI .github/ci-patch.js
+          dr-dev -c .github/cache/config.js --cache-step setup
 
       - name: Cache JS
         uses: actions/cache@v2 # https://github.com/actions/cache
-        env:
-          cache-version: 20201125
         with:
           key: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-
+          restore-keys: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-
           path: |
-            ~/.npm/
-            node_modules/
             .github/cache/persist-gitignore/
+            ~/.npm/
 
-      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step mark
+      - run: dr-dev -c .github/cache/config.js --cache-step mark
 
-      - run: npm ci
+      - run: npm ci # TODO: wait for npm@7 adoption and try npm install + cache for faster puppeteer install
 
-      - run: npm test || npm test # retry more time since some net/fs test is still flaky
+      - run: npm test
 
-      - run: npx @dr-js/dev@0.4 -c .github/cache/config.js --cache-step prune
+      - run: dr-dev -c .github/cache/config.js --cache-step prune

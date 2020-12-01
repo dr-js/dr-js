@@ -41,6 +41,21 @@ const processOutput = async ({ logger }) => {
   logger.padLog(`size reduce: ${sizeReduce}B`)
 }
 
+const retrySync = process.platform === 'linux'
+  ? (func, ...args) => func(...args) // one chance should be enough for linux
+  : (func, ...args) => { // +3 more chance, since some net/fs test is still flaky
+    try { return func(...args) } catch (error) {
+      console.error('[retrySync|0]', error)
+      try { return func(...args) } catch (error) {
+        console.error('[retrySync|1]', error)
+        try { return func(...args) } catch (error) {
+          console.error('[retrySync|2]', error)
+          return func(...args)
+        }
+      }
+    }
+  }
+
 runMain(async (logger) => {
   await verifyNoGitignore({ path: fromRoot('source'), logger })
   await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
@@ -53,10 +68,10 @@ runMain(async (logger) => {
   isTest && execShell('npm run lint')
   isTest && await processOutput({ logger }) // once more
   isTest && logger.padLog('test output')
-  isTest && execShell('npm run test-output-library')
-  isTest && execShell('npm run test-output-module')
+  isTest && retrySync(execShell, 'npm run test-output-library')
+  isTest && retrySync(execShell, 'npm run test-output-module')
   isTest && logger.padLog('test browser')
-  isTest && execShell('npm run test-browser')
+  isTest && retrySync(execShell, 'npm run test-browser')
   isTest && logger.padLog('test bin')
   isTest && execShell('npm run test-bin')
   await clearOutput({ fromOutput, logger })
