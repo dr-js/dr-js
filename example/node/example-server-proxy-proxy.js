@@ -37,7 +37,7 @@ server.on('request', createRequestListener({
     createResponderRouter({
       routeMap: createRouteMap([
         [ '/', 'GET', createExampleServerHTMLResponder() ],
-        [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+        [ '/static/*', [ 'GET', 'HEAD' ], (store) => responderServeStatic(store, getParamFilePath(store)) ],
         [ '/get-proxy', 'GET', (store) => store.response.write('THE FINAL RESPONSE') ],
         [ '/get-get-proxy', 'GET', responderProxy ],
         [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]

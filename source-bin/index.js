@@ -173,8 +173,9 @@ const runMode = async (modeName, optionData) => {
       })
       if (!response.ok) throw new Error(`bad status: ${response.status}`)
       const contentLength = Number(response.headers[ 'content-length' ])
-      log(`[fetch] get status: ${response.status}, fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
-      await outputStream(response.stream())
+      log(`[fetch] status: ${response.status}, header: ${prettyStringifyJSON(response.headers, 1, '  ')}`)
+      log(`[fetch] fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
+      await outputStream(response.stream()) // NOTE: stream will auto close, so if stdout is used, the "done" log will not print
       isDone = true
       return log('\n[fetch] done')
     }

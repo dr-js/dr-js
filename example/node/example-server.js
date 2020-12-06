@@ -28,7 +28,7 @@ server.on('request', createRequestListener({
     createResponderRouter({
       routeMap: createRouteMap([
         [ '/', 'GET', createExampleServerHTMLResponder() ],
-        [ '/static/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+        [ '/static/*', [ 'GET', 'HEAD' ], (store) => responderServeStatic(store, getParamFilePath(store)) ],
         [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ]
       ]),
       baseUrl: option.baseUrl

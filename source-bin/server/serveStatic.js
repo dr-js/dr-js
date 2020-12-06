@@ -24,7 +24,7 @@ const configure = ({
   const responderServeStatic = createResponderServeStatic({ expireTime })
 
   const routeConfigList = [
-    [ isSimpleServe ? '/*' : '/file/*', 'GET', (store) => responderServeStatic(store, getParamFilePath(store)) ],
+    [ isSimpleServe ? '/*' : '/file/*', [ 'GET', 'HEAD' ], (store) => responderServeStatic(store, getParamFilePath(store)) ],
     !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), routePrefix, staticRoot) ],
     !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}/list/` }) ]
   ]
