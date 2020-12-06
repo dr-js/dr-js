@@ -50,10 +50,10 @@ const createResponderRouter = ({
   const methodTag = METHOD_MAP[ method ]
   if (methodTag === undefined) return // throw new Error(`invalid method [${method}] from: ${url.href}`)
 
-  const routeDate = findRouteFromMap(routeMap, url.pathname)
-  if (routeDate === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
+  const routeData = findRouteFromMap(routeMap, url.pathname)
+  if (routeData === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
 
-  const { routeNode, paramValueList } = routeDate
+  const { routeNode, paramValueList } = routeData
   if (routeNode[ methodTag ] === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
 
   const { route, paramNameList, routeResponder } = routeNode[ methodTag ]

@@ -56,13 +56,13 @@ Object.assign(Preset, ...[
   }
 }))
 
-const pickOneOf = (selectList) => {
+const pickOneOf = (selectList, extraDescription = '') => {
   if (selectList.length <= 2) throwError(`expect more to pick: ${selectList}`)
   const argumentListVerify = (argumentList) => {
     arrayLength(argumentList, 1)
     oneOf(argumentList[ 0 ], selectList)
   }
-  return getPreset(1, argumentListVerify, undefined, `one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
+  return getPreset(1, argumentListVerify, undefined, `${extraDescription}one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
 }
 const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
   compactFormat,

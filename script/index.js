@@ -79,5 +79,5 @@ runMain(async (logger) => {
   await verifyOutputBin({ fromOutput, packageJSON, logger })
   isTest && await verifyGitStatusClean({ fromRoot, logger })
   const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ flagList: process.argv, packageJSON, pathPackagePack, logger })
+  await publishOutput({ packageJSON, pathPackagePack, logger })
 })

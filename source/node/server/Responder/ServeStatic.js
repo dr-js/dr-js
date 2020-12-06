@@ -49,6 +49,7 @@ const createResponderServeStatic = ({
     const bufferData = serveCacheMap.get(filePath)
     if (!bufferData) return false
     __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
+    isEnableRange && !encoding && store.response.setHeader('accept-ranges', 'bytes')
     encoding && store.response.setHeader('content-encoding', encoding)
     if (!range) await responderSendBuffer(store, bufferData)
     else {
@@ -63,6 +64,7 @@ const createResponderServeStatic = ({
     if (!stat.isFile() || !stat.size) return false
     const length = stat.size
     const entityTag = getWeakEntityTagByStat(stat)
+    isEnableRange && !encoding && store.response.setHeader('accept-ranges', 'bytes')
     encoding && store.response.setHeader('content-encoding', encoding)
     if (range) { // has range, pipe it
       if (range[ 1 ] === Infinity) range[ 1 ] = length - 1
@@ -82,11 +84,10 @@ const createResponderServeStatic = ({
   return async (store, filePath) => {
     const acceptGzip = isEnableGzip && REGEXP_ENCODING_GZIP.test(store.request.headers[ 'accept-encoding' ]) // try .gz for gzip
     const range = isEnableRange && parseRangeHeader(store.request.headers[ 'range' ])
-    isEnableRange && !acceptGzip && store.response.setHeader('accept-ranges', 'bytes')
-    if (acceptGzip && await serveCache(store, filePath + '.gz', 'gzip')) return
+    if (acceptGzip && await serveCache(store, filePath + '.gz', 'gzip')) return // try .gz
     if (await serveCache(store, filePath, undefined, range)) return
     const type = getMIMETypeFromFileName(filePath)
-    if (acceptGzip && await serve(store, filePath + '.gz', type, 'gzip')) return
+    if (acceptGzip && await serve(store, filePath + '.gz', type, 'gzip')) return // try .gz
     if (await serve(store, filePath, type, undefined, range)) return
     throw new Error(`miss file: ${filePath}`)
   }
