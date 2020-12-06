@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.2-dev.0",
+  "version": "0.4.2-dev.1",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -17,11 +17,11 @@
     "script-pack-test": "node -r @babel/register ./script verbose pack test",
     "script-publish": "node -r @babel/register ./script pack publish",
     "script-publish-dev": "node -r @babel/register ./script pack publish-dev",
-    "script-generate-spec": "dr-dev --EE BABEL_ENV=use-source -E -- node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
-    "script-delete-temp-build-file": "dr-dev --EE BABEL_ENV=use-source -E -- node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
+    "script-generate-spec": "node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
+    "script-delete-temp-build-file": "node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
-    "build-bin": "babel ./source-bin --out-dir ./output-gitignore/bin",
-    "build-bin-dev": "dr-dev --EE BABEL_ENV=dev -E -- npm run build-bin -- --watch",
+    "build-bin": "dr-dev --EE BABEL_ENV=outputBin -E -- babel ./source-bin --out-dir ./output-gitignore/bin",
+    "build-bin-dev": "dr-dev --EE BABEL_ENV=dev-outputBin -E -- babel ./source-bin --out-dir ./output-gitignore/bin --watch",
     "build-library-babel": "babel ./source --out-dir ./output-gitignore/library --ignore source/browser/",
     "build-library-babel-dev": "dr-dev --EE BABEL_ENV=dev -E -- npm run build-library-babel -- --watch",
     "build-library-webpack": "node -r @babel/register ./script/webpack production profile",
@@ -29,12 +29,14 @@
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
     "test-T": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T",
-    "test-dev": "npm run test-T -- source/common/module/AsyncLane.test.js",
+    "test-dev": "npm run test-T -- source/node/module/Option/preset.test.js",
     "test-runlet": "npm run test-T -- source/common/module/Runlet.test.js",
     "test-sanity": "npm run test-T -- source/node/.sanity.test/memoryLeakPendingPromiseChain.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
+    "test-source-bin": "dr-dev --TR @babel/register -T source-bin/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
     "test-output-module": "dr-dev --TR @babel/register -T output-gitignore/module/env/ output-gitignore/module/common/ output-gitignore/module/node/ --TFS .test.js",
+    "test-output-bin": "dr-dev -T output-gitignore/bin/ --TFS .test.js",
     "test-browser": "node -r @babel/register ./script/testBrowser production",
     "test-browser-dev": "node -r @babel/register ./script/testBrowser development",
     "test-bin": "node -r @babel/register ./script/testBin",
@@ -49,8 +51,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "0.4.3-dev.4",
-    "@dr-js/dev-web-puppeteer": "0.4.3-dev.4"
+    "@dr-js/dev": "0.4.3-dev.5",
+    "@dr-js/dev-web-puppeteer": "0.4.3-dev.5"
   },
   "sideEffects": false
 }

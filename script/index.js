@@ -70,6 +70,7 @@ runMain(async (logger) => {
   isTest && logger.padLog('test output')
   isTest && retrySync(execShell, 'npm run test-output-library')
   isTest && retrySync(execShell, 'npm run test-output-module')
+  isTest && retrySync(execShell, 'npm run test-output-bin')
   isTest && logger.padLog('test browser')
   isTest && retrySync(execShell, 'npm run test-browser')
   isTest && logger.padLog('test bin')

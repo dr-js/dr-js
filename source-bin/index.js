@@ -5,26 +5,26 @@ import { resolve, normalize } from 'path'
 import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { getEndianness } from '@dr-js/core/module/env/function'
+import { getEndianness } from 'source/env/function'
 
-import { percent, time, binary, prettyStringifyJSON } from '@dr-js/core/module/common/format'
-import { indentList } from '@dr-js/core/module/common/string'
-import { setTimeoutAsync } from '@dr-js/core/module/common/time'
-import { isBasicObject, isBasicFunction } from '@dr-js/core/module/common/check'
-import { throttle } from '@dr-js/core/module/common/function'
+import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
+import { indentList } from 'source/common/string'
+import { setTimeoutAsync } from 'source/common/time'
+import { isBasicObject, isBasicFunction } from 'source/common/check'
+import { throttle } from 'source/common/function'
 
-import { writeBufferToStreamAsync, quickRunletFromStream } from '@dr-js/core/module/node/data/Stream'
-import { createDirectory } from '@dr-js/core/module/node/file/Directory'
-import { modifyCopy, modifyRename, modifyDelete } from '@dr-js/core/module/node/file/Modify'
-import { autoTestServerPort } from '@dr-js/core/module/node/server/function'
-import { createServerExot } from '@dr-js/core/module/node/server/Server'
-import { createTCPProxyListener } from '@dr-js/core/module/node/server/Proxy'
-import { getDefaultOpenCommandList } from '@dr-js/core/module/node/system/DefaultOpen'
-import { resolveCommandAsync } from '@dr-js/core/module/node/system/ResolveCommand'
-import { runSync } from '@dr-js/core/module/node/system/Run'
-import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from '@dr-js/core/module/node/system/Process'
-import { getSystemStatus, describeSystemStatus } from '@dr-js/core/module/node/system/Status'
-import { fetchWithJump } from '@dr-js/core/module/node/net'
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
+import { createDirectory } from 'source/node/file/Directory'
+import { modifyCopy, modifyRename, modifyDelete } from 'source/node/file/Modify'
+import { autoTestServerPort } from 'source/node/server/function'
+import { createServerExot } from 'source/node/server/Server'
+import { createTCPProxyListener } from 'source/node/server/Proxy'
+import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen'
+import { resolveCommandAsync } from 'source/node/system/ResolveCommand'
+import { runSync } from 'source/node/system/Run'
+import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
+import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
+import { fetchWithJump } from 'source/node/net'
 
 import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection'
 import { configure as configureServerServeStatic } from './server/serveStatic'
@@ -51,8 +51,8 @@ const getVersion = () => ({
 })
 
 const runMode = async (modeName, optionData) => {
-  const { tryGet, tryGetFirst } = optionData
-  const log = tryGetFirst('quiet')
+  const { tryGet, tryGetFirst, getToggle } = optionData
+  const log = getToggle('quiet')
     ? () => {}
     : console.log
   const logTaskResult = (task, path) => task(path).then(
@@ -61,7 +61,7 @@ const runMode = async (modeName, optionData) => {
   )
 
   const argumentList = tryGet(modeName) || []
-  const isOutputJSON = Boolean(tryGetFirst('json'))
+  const isOutputJSON = getToggle('json')
   const root = tryGetFirst('root') || process.cwd()
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
@@ -227,8 +227,8 @@ const runMode = async (modeName, optionData) => {
 
 const main = async () => {
   const optionData = await parseOption()
-  if (optionData.tryGetFirst('version')) return logAuto(getVersion())
-  if (optionData.tryGetFirst('help')) return logAuto(formatUsage())
+  if (optionData.getToggle('version')) return logAuto(getVersion())
+  if (optionData.getToggle('help')) return logAuto(formatUsage())
   const modeName = MODE_NAME_LIST.find((name) => optionData.tryGet(name))
   if (!modeName) throw new Error('no mode specified')
   await runMode(modeName, optionData).catch((error) => {

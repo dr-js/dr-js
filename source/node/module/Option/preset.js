@@ -2,6 +2,7 @@ import { resolve, dirname } from 'path'
 import { tryRequire } from 'source/env/tryRequire'
 import { splitCamelCase } from 'source/common/string'
 import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify'
+import { tryParseJSONObject } from 'source/common/data/function'
 import { objectFilter } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
 import { createOptionParser } from './parser'
@@ -23,7 +24,7 @@ const Preset = {
   // TODO: NOTE:
   //   for fast CLI toggle like `-v`, the raw value would be an empty array `[]`
   //   but to support `-v no` or `-v0`, the result will be `[ false ]`
-  //   so make sure to get the option with `tryGetFirst`, as `Boolean(tryGet('v'))` will fail in the explicit `false` situation
+  //   so make sure to get the option with `getToggle|tryGetFirst`, as `Boolean(tryGet('v'))` will fail in the explicit `false` situation
   Toggle: getPreset(
     '0-1',
     undefined,
@@ -98,7 +99,12 @@ const parseCompactList = (...args) => args.map((compactFormat) => Array.isArray(
 Object.assign(Preset, {
   SinglePath: parseCompact('/SingleString,Path'),
   AllPath: parseCompact('/AllString,Path'),
-  Config: parseCompact('config,c/SingleString,Optional|from ENV: set to "env" to enable, default not use\nfrom JS/JSON: set to "path/to/config.js|json"'),
+  Config: parseCompact([
+    'config,c/SingleString,Optional|from JS/JSON: set to "path/to/config.js|json"',
+    'from ENV: set to "env" to enable, default not check env',
+    'from ENV JSON: set to "json-env:$env-name" to read the ENV string as JSON',
+    'from CLI JSON: set to "json-cli:$json-string" to read the appended string as JSON'
+  ].join('\n')),
 
   pickOneOf,
   parseCompact,
@@ -127,13 +133,15 @@ const parseOptionMap = async ({
   optionENV = process.env
 }) => {
   const optionMapCLI = optionMapResolvePathMutate(parseCLI(optionCLI))
-  const configString = optionMapCLI[ 'config' ] && optionMapCLI[ 'config' ].argumentList[ 0 ]
-  const optionMapExtra = !configString ? null
-    : configString === 'env' ? optionMapResolvePathMutate(parseENV(optionENV)) // TODO: NOTE: currently ENV is only parsed when CLI config is set to `env`, the good thing is it's easier to track
-      : optionMapResolvePathMutate(
-        parseCONFIG(tryRequire(resolve(configString)) || throwError(`failed to load config: ${configString}`)),
-        dirname(resolve(configString))
-      )
+  const [ baseString, appendString ] = splitConfigString(optionMapCLI[ 'config' ] && optionMapCLI[ 'config' ].argumentList[ 0 ])
+  const optionMapExtra = !baseString ? null
+    : baseString === 'env' ? optionMapResolvePathMutate(parseENV(optionENV)) // NOTE: ENV is only parsed when CLI config is set to `env`, the good thing is it's easier to track
+      : baseString === 'json-env' ? optionMapResolvePathMutate(parseCONFIG(tryParseJSONObject(optionENV[ appendString ], null) || throwError(`failed to load config: ${baseString}`)))
+        : baseString === 'json-cli' ? optionMapResolvePathMutate(parseCONFIG(tryParseJSONObject(appendString, null) || throwError(`failed to load config: ${baseString}`)))
+          : optionMapResolvePathMutate(
+            parseCONFIG(tryRequire(resolve(baseString)) || throwError(`failed to load config: ${baseString}`)),
+            dirname(resolve(baseString))
+          )
   const optionMap = processOptionMap({
     ...optionMapExtra, // allow overwrite by CLI
     ...optionMapCLI
@@ -141,6 +149,13 @@ const parseOptionMap = async ({
   __DEV__ && console.log('[parseOptionMap] get:')
   __DEV__ && Object.keys(optionMap).forEach((name) => console.log(`  - [${name}] ${JSON.stringify(optionMap[ name ])}`))
   return optionMap
+}
+const splitConfigString = (configString) => {
+  const [ baseString, ...appendList ] = !configString ? [] // support missing string
+    : (configString.startsWith('json-env:') || configString.startsWith('json-cli:')) ? configString.split(':') // `json-env/json-cli`, split at first ':'
+      : [ configString ] // `env` or config file path, no append strings
+  const appendString = appendList.join(':')
+  return [ baseString, appendString ]
 }
 const optionMapResolvePathMutate = (optionMap, pathRoot = process.cwd()) => { // NOTE: will mutate argumentList in optionMap
   Object.values(optionMap).forEach(({ format: { isPath }, argumentList }) => isPath && argumentList.forEach((v, i) => (argumentList[ i ] = resolve(pathRoot, v))))
@@ -152,15 +167,20 @@ const createOptionGetter = (optionMap) => {
   const tryGetFirst = (name) => optionMap[ name ] && optionMap[ name ].argumentList[ 0 ]
   const get = (name) => tryGet(name) || throwError(`expect option ${name}`)
   const getFirst = (name) => get(name)[ 0 ]
+  const getToggle = (name) => Boolean(tryGetFirst(name))
   const pwd = (name) => { // resolve the `proper-cwd` for the option // TODO: needed? all path option already got resolved
     const pathValue = optionMap[ name ] && (
       optionMap[ name ].format.isPath
         ? getFirst(name) // relative to the path type value
-        : optionMap[ name ].source === 'CONFIG' && getFirst('config') !== 'env' && getFirst('config') // relative to config file
+        : ( // relative to config file
+          optionMap[ name ].source === 'CONFIG' &&
+          ![ 'env', 'json-env', 'json-cli' ].includes(splitConfigString(getFirst('config'))[ 0 ]) &&
+          getFirst('config')
+        )
     )
     return pathValue ? dirname(pathValue) : '' // use the dirname of path typed option, or ''
   }
-  return { optionMap, tryGet, tryGetFirst, get, getFirst, pwd }
+  return { optionMap, tryGet, tryGetFirst, get, getFirst, getToggle, pwd }
 }
 
 const prepareOption = (optionConfig) => {

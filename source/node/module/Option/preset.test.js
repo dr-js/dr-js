@@ -190,6 +190,19 @@ describe('Node.Module.Option.preset', () => {
       }
       const { parseCLI, parseENV, parseCONFIG, processOptionMap } = createOptionParser(optionData2)
 
+      const commonTestCheck = ({ getFirst, tryGetFirst, pwd }, pathConfig) => {
+        strictEqual(tryGetFirst('option-toggle'), true)
+        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
+        strictEqual(tryGetFirst('option-toggle-truthy'), true)
+        strictEqual(tryGetFirst('option-toggle-falsy'), false)
+        strictEqual(getFirst('option-string'), 'ABC')
+        strictEqual(getFirst('option-path'), pathConfig ? resolve(dirname(pathConfig), 'A/B/C/file') : resolve('A/B/C/file'))
+        strictEqual(pwd('non-option'), '')
+        strictEqual(pwd('option-toggle'), pathConfig ? dirname(pathConfig) : '')
+        strictEqual(pwd('option-string'), '')
+        strictEqual(pwd('option-path'), pathConfig ? resolve(dirname(pathConfig), 'A/B/C/') : resolve('A/B/C/'))
+      }
+
       it('test CLI', async () => {
         const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
@@ -203,16 +216,7 @@ describe('Node.Module.Option.preset', () => {
           ],
           optionENV: {}
         }))
-        strictEqual(tryGetFirst('option-toggle'), true)
-        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
-        strictEqual(tryGetFirst('option-toggle-truthy'), true)
-        strictEqual(tryGetFirst('option-toggle-falsy'), false)
-        strictEqual(getFirst('option-string'), 'ABC')
-        strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
-        strictEqual(pwd('non-option'), '')
-        strictEqual(pwd('option-toggle'), '')
-        strictEqual(pwd('option-string'), '')
-        strictEqual(pwd('option-path'), resolve('A/B/C/'))
+        commonTestCheck({ getFirst, tryGetFirst, pwd })
       })
       it('test ENV', async () => {
         const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
@@ -227,16 +231,7 @@ describe('Node.Module.Option.preset', () => {
             OPTION_PATH: '[ "A/B/C/file" ]'
           }
         }))
-        strictEqual(tryGetFirst('option-toggle'), true)
-        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
-        strictEqual(tryGetFirst('option-toggle-truthy'), true)
-        strictEqual(tryGetFirst('option-toggle-falsy'), false)
-        strictEqual(getFirst('option-string'), 'ABC')
-        strictEqual(getFirst('option-path'), resolve('A/B/C/file'))
-        strictEqual(pwd('non-option'), '')
-        strictEqual(pwd('option-toggle'), '')
-        strictEqual(pwd('option-string'), '')
-        strictEqual(pwd('option-path'), resolve('A/B/C/'))
+        commonTestCheck({ getFirst, tryGetFirst, pwd })
       })
       it('test CONFIG', async () => {
         const pathConfig = resolve(TEST_ROOT, 'test-config.json')
@@ -245,7 +240,7 @@ describe('Node.Module.Option.preset', () => {
           // optionToggleMissing: true,
           optionToggleTruthy: true,
           optionToggleFalsy: 'FALSE', // not case-sensitive
-          optionString: 'not ABC',
+          optionString: 'ABC',
           optionPath: 'A/B/C/file'
         }))
         const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
@@ -256,16 +251,39 @@ describe('Node.Module.Option.preset', () => {
           ],
           optionENV: {}
         }))
-        strictEqual(tryGetFirst('option-toggle'), true)
-        strictEqual(tryGetFirst('option-toggle-missing'), undefined)
-        strictEqual(tryGetFirst('option-toggle-truthy'), true)
-        strictEqual(tryGetFirst('option-toggle-falsy'), false)
-        strictEqual(getFirst('option-string'), 'ABC')
-        strictEqual(getFirst('option-path'), resolve(dirname(pathConfig), 'A/B/C/file'))
-        strictEqual(pwd('non-option'), '')
-        strictEqual(pwd('option-toggle'), dirname(pathConfig))
-        strictEqual(pwd('option-string'), '')
-        strictEqual(pwd('option-path'), resolve(dirname(pathConfig), 'A/B/C/'))
+        commonTestCheck({ getFirst, tryGetFirst, pwd }, pathConfig)
+      })
+      it('test JSON ENV', async () => {
+        const TEST_JSON_ENV = 'TEST_JSON_ENV'
+        const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
+          parseCLI, parseENV, parseCONFIG, processOptionMap,
+          optionCLI: [ '--config', `json-env:${TEST_JSON_ENV}` ],
+          optionENV: {
+            [ TEST_JSON_ENV ]: JSON.stringify({
+              optionToggle: true,
+              // optionToggleMissing: true,
+              optionToggleTruthy: true,
+              optionToggleFalsy: 'FALSE', // not case-sensitive
+              optionString: 'ABC',
+              optionPath: 'A/B/C/file'
+            })
+          }
+        }))
+        commonTestCheck({ getFirst, tryGetFirst, pwd })
+      })
+      it('test JSON CLI', async () => {
+        const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
+          parseCLI, parseENV, parseCONFIG, processOptionMap,
+          optionCLI: [ '--config', `json-cli:${JSON.stringify({
+            optionToggle: true,
+            // optionToggleMissing: true,
+            optionToggleTruthy: true,
+            optionToggleFalsy: 'FALSE', // not case-sensitive
+            optionString: 'ABC',
+            optionPath: 'A/B/C/file'
+          })}` ]
+        }))
+        commonTestCheck({ getFirst, tryGetFirst, pwd })
       })
     })
   })

@@ -1,12 +1,8 @@
 const { getBabelConfig } = require('@dr-js/dev/library/babel')
 
 const BABEL_ENV = process.env.BABEL_ENV || ''
-const isUseSource = BABEL_ENV.includes('use-source')
+const isOutputBin = BABEL_ENV.includes('outputBin') // map `source/*` to `../library/*` for `source-bin` in output
 
 module.exports = getBabelConfig({
-  extraModuleResolverList: [ {
-    '^@dr-js/core/module/(.+)': isUseSource
-      ? './source/\\1' // when direct use/test `./source-bin` with `@babel/register`
-      : './library/\\1' // when build to output
-  } ]
+  extraModuleResolverList: isOutputBin ? [ { '^source/(.+)': './library/\\1' } ] : undefined
 })

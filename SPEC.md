@@ -435,8 +435,10 @@
 > ```
 > CLI Usage:
 >   --config --c -c [OPTIONAL] [ARGUMENT=1]
->       from ENV: set to "env" to enable, default not use
 >       from JS/JSON: set to "path/to/config.js|json"
+>       from ENV: set to "env" to enable, default not check env
+>       from ENV JSON: set to "json-env:$env-name" to read the ENV string as JSON
+>       from CLI JSON: set to "json-cli:$json-string" to read the appended string as JSON
 >   --help --h -h [OPTIONAL] [ARGUMENT=0-1]
 >       show full help
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]

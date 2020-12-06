@@ -1,13 +1,13 @@
-import { setTimeoutAsync } from '@dr-js/core/module/common/time'
-import { arraySplitChunk } from '@dr-js/core/module/common/immutable/Array'
-import { BASIC_EXTENSION_MAP } from '@dr-js/core/module/common/module/MIME'
+import { setTimeoutAsync } from 'source/common/time'
+import { arraySplitChunk } from 'source/common/immutable/Array'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 
-import { readableStreamToBufferAsync } from '@dr-js/core/module/node/data/Stream'
-import { createRequestListener, describeServerOption } from '@dr-js/core/module/node/server/Server'
-import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from '@dr-js/core/module/node/server/Responder/Common'
-import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from '@dr-js/core/module/node/server/Responder/Send'
-import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from '@dr-js/core/module/node/server/Responder/Router'
-import { addExitListenerSync, addExitListenerAsync } from '@dr-js/core/module/node/system/ExitListener'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { createRequestListener, describeServerOption } from 'source/node/server/Server'
+import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from 'source/node/server/Responder/Common'
+import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from 'source/node/server/Responder/Send'
+import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'source/node/server/Responder/Router'
+import { addExitListenerSync, addExitListenerAsync } from 'source/node/system/ExitListener'
 
 const commonServerUp = async ({
   serverExot: { up, server, option }, log, routePrefix,

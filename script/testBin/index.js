@@ -17,7 +17,7 @@ console.log(\`[process.argv.length] \${process.argv.length}\`)
 
 // NOTE: patched variable
 console.log(\`[evalArgv] \${evalArgv}\`) 
-console.log(\`[evalOption] \${describe(evalOption)}\`)
+console.log(\`[evalOption.optionMap] \${describe(evalOption.optionMap)}\`)
 console.log(\`[__filename] \${describe(__filename)}\`)
 console.log(\`[__dirname] \${describe(__dirname)}\`)
 
@@ -42,7 +42,7 @@ runMain(async (logger) => {
     strictEqual(stdoutString, [
       '[process.argv.length] 8',
       '[evalArgv] 1,2,3 4',
-      '[evalOption] <Object> {"optionMap","tryGet","tryGetFirst","get","getFirst","pwd"}',
+      '[evalOption] <Object> {"optionMap","tryGet","tryGetFirst","get","getFirst","getToggle","pwd"}',
       `[__filename] <String> ${JSON.stringify(fromRoot('script/testBin/scriptFile.js'))}`,
       `[__dirname] <String> ${JSON.stringify(fromRoot('script/testBin'))}`,
       '[binary] 120.56Ki',
@@ -69,7 +69,7 @@ runMain(async (logger) => {
     strictEqual(stdoutString, [
       '[process.argv.length] 7',
       '[evalArgv] 1,2,3 4',
-      '[evalOption] <Object> {"optionMap","tryGet","tryGetFirst","get","getFirst","pwd"}',
+      '[evalOption.optionMap] <Object> {"eval"}',
       `[__filename] <String> ${JSON.stringify(fromRoot('__SCRIPT_STRING__'))}`,
       `[__dirname] <String> ${JSON.stringify(fromRoot(''))}`,
       describeSystemPlatform(),
