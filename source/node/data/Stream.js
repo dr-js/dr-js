@@ -170,7 +170,7 @@ const createReadableStreamInputChip = ({
 }
 
 const createWritableStreamOutputChip = ({
-  stream,
+  stream, keepOpen = [ process.stdout, process.stderr ].includes(stream), // false for stream except process.std*, similar to: https://nodejs.org/api/stream.html#stream_readable_pipe_destination_options
   IOP = createInsideOutPromise(),
   key = 'chip:output:stream-writable', ...extra
 }) => {
@@ -214,8 +214,8 @@ const createWritableStreamOutputChip = ({
       } else if (state.error !== undefined) throw state.error
 
       if (pack[ 1 ] === END) {
-        stream.end()
-        while (state.isFinish === false) await waitIOP() // need to wait for write flush
+        !keepOpen && stream.end() // end most stream by default
+        while ((keepOpen ? state.isDrain : state.isFinish) === false) await waitIOP() // need to wait for write flush
         allOff()
         IOP.resolve()
       } else {

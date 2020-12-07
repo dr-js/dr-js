@@ -1,4 +1,14 @@
 import { resolve, dirname } from 'path'
+import { createWriteStream, promises as fsAsync } from 'fs'
+import { start as startREPL } from 'repl'
+
+import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
+import { createStepper } from 'source/common/time'
+import { isBasicObject } from 'source/common/check'
+import { throttle } from 'source/common/function'
+
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
+import { fetchWithJump } from 'source/node/net'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620
@@ -25,7 +35,92 @@ const evalScript = ( // NOTE: use eval not Function to derive local
   require('module').createRequire(evalScriptPath)
 )
 
+const stepper = createStepper()
+const logAuto = (...args) => console.log(
+  ...((args.length === 1 && isBasicObject(args[ 0 ]))
+    ? [ JSON.stringify(args[ 0 ], null, 2) ]
+    : args),
+  `(+${time(stepper())})`
+)
+
+const sharedOption = (optionData, modeName) => {
+  const { tryGet, tryGetFirst, getToggle } = optionData
+
+  const log = getToggle('quiet') ? () => {} : logAuto
+
+  const argumentList = tryGet(modeName) || []
+  const inputFile = tryGetFirst('input-file')
+  const outputFile = tryGetFirst('output-file')
+
+  const toBuffer = (value) => Buffer.isBuffer(value) ? value
+    : isBasicObject(value) ? JSON.stringify(value, null, 2)
+      : Buffer.from(value) // should be String
+  const outputValueAuto = async (value) => outputFile
+    ? fsAsync.writeFile(outputFile, toBuffer(value))
+    : writeBufferToStreamAsync(process.stdout, toBuffer(value))
+  const outputStream = (stream) => quickRunletFromStream(
+    stream,
+    outputFile ? createWriteStream(outputFile) : process.stdout
+  )
+
+  return { // sharedPack
+    optionData, modeName,
+    argumentList, log, inputFile, outputFile, outputValueAuto, outputStream
+  }
+}
+
+const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
+  // sharedPack
+  optionData, modeName,
+  argumentList, log, inputFile, outputValueAuto, outputStream,
+
+  // fetch
+  fetchUserAgent, fetchExtraOption
+}) => {
+  switch (modeName) {
+    case 'eval': {
+      modulePathHack()
+      const result = await evalScript(
+        inputFile ? String(await fsAsync.readFile(inputFile)) : argumentList[ 0 ],
+        inputFile || resolve('__SCRIPT_STRING__'),
+        inputFile ? argumentList : argumentList.slice(1),
+        optionData
+      )
+      return result !== undefined && outputValueAuto(result)
+    }
+    case 'repl':
+      modulePathHack()
+      return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
+
+    case 'fetch': {
+      let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
+      jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
+      timeout = Number(timeout) || 0 // in msec, 0 for unlimited
+      const body = inputFile ? await fsAsync.readFile(inputFile) : null
+      let isDone = false
+      const response = await fetchWithJump(initialUrl, {
+        method, timeout, jumpMax, body,
+        headers: { 'accept': '*/*', 'user-agent': fetchUserAgent }, // patch for
+        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
+        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
+        preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`),
+        ...fetchExtraOption
+      })
+      if (!response.ok) throw new Error(`bad status: ${response.status}`)
+      const contentLength = Number(response.headers[ 'content-length' ])
+      log(`[fetch] status: ${response.status}, header: ${prettyStringifyJSON(response.headers)}`)
+      log(`[fetch] fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
+      await outputStream(response.stream())
+      isDone = true
+      return log('\n[fetch] done')
+    }
+  }
+}
+
 export { // NOTE: only borrow script from here for test or for another bin/script, may cause bloat if webpack use both module/library
   modulePathHack,
-  evalScript
+  evalScript,
+
+  logAuto,
+  sharedOption, sharedMode
 }

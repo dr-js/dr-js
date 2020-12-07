@@ -258,4 +258,18 @@ describe('Node.Data.Stream', () => {
     createGzip(), createGunzip(),
     createGzip(), createGzip(), createGunzip(), createGunzip()
   ).then(unexpectedResolve, expectError('incorrect header check')))
+
+  it('quickRunletFromStream stdout should keepOpen', async () => {
+    await quickRunletFromStream(
+      bufferToReadableStream(Buffer.from('\nPING\n')),
+      process.stdout
+    )
+    strictEqual(process.stdout.writable, true)
+
+    await quickRunletFromStream(
+      bufferToReadableStream(Buffer.from('\nPONG\n')),
+      process.stdout
+    )
+    strictEqual(process.stdout.writable, true)
+  })
 })

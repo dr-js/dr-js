@@ -441,26 +441,28 @@
 >       from CLI JSON: set to "json-cli:$json-string" to read the appended string as JSON
 >   --help --h -h [OPTIONAL] [ARGUMENT=0-1]
 >       show full help
->   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]
->       less log
 >   --version --v -v [OPTIONAL] [ARGUMENT=0-1]
 >       show version
->   --json --J -J [OPTIONAL] [ARGUMENT=0-1]
->       output JSON, if supported
+>   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]
+>       less log
+>   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
+>       common option
+>   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
+>       common option
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=hostname:port (hostname default to 0.0.0.0)
 >   --route-prefix --RP [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=routePrefix (default to "", set like "/prefix")
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=path/cwd
->   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
->       common option
->   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
->       common option
+>   --json --J -J [OPTIONAL] [ARGUMENT=0-1]
+>       output JSON, if supported
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
 >       eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0-1]
 >       start node REPL
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
+>       fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
 >       wait specified time, in msec: $0=waitTime/2*1000
 >   --echo [OPTIONAL] [ARGUMENT=0+]
@@ -487,8 +489,6 @@
 >       use system default app to open uri or path: $0=uriOrPath/cwd
 >   --which --w -w [OPTIONAL] [ARGUMENT=1]
 >       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
->       fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
 >       show system process status: -J=isOutputJSON, $0=outputMode/"pid--"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
@@ -508,16 +508,17 @@
 >     #!/usr/bin/env bash
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_RP]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
 >     export DR_JS_WAIT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
@@ -531,7 +532,6 @@
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
->     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
@@ -544,16 +544,17 @@
 >   {
 >     "config": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "help": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "version": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=RP]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "repl": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
 >     "wait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "echo": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
@@ -567,7 +568,6 @@
 >     "status": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
->     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],

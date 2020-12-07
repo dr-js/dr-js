@@ -28,7 +28,8 @@ const main = async () => {
   //   fix win32 CI cause `something to commit` test error: https://github.com/actions/checkout/issues/135#issuecomment-602171132
   IS_WIN32 && await quickRun('git config core.autocrlf false')
   IS_WIN32 && await quickRun('git config core.eol lf')
-  IS_WIN32 && await quickRun('git reset --hard @{upstream}')
+  IS_WIN32 && await quickRun('git rm --cached -r .') // reset Git index, `rm .git/index` also work, check: https://stackoverflow.com/questions/5787937/git-status-shows-files-as-changed-even-though-contents-are-the-same/41041699#41041699
+  IS_WIN32 && await quickRun('git reset --hard')
 
   // Patch npm
   //   set cache path to `~/.npm/` for all platform (only win32 for now)

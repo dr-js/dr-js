@@ -1,19 +1,17 @@
 #!/usr/bin/env node
 
 import { cpus } from 'os'
-import { resolve, normalize } from 'path'
-import { createReadStream, createWriteStream, readFileSync, writeFileSync } from 'fs'
-import { start as startREPL } from 'repl'
+import { normalize } from 'path'
+import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 
 import { getEndianness } from 'source/env/function'
 
-import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
+import { prettyStringifyJSON } from 'source/common/format'
 import { indentList } from 'source/common/string'
 import { setTimeoutAsync } from 'source/common/time'
-import { isBasicObject, isBasicFunction } from 'source/common/check'
-import { throttle } from 'source/common/function'
+import { isBasicFunction } from 'source/common/check'
 
-import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
+import { quickRunletFromStream } from 'source/node/data/Stream'
 import { createDirectory } from 'source/node/file/Directory'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/file/Modify'
 import { autoTestServerPort } from 'source/node/server/function'
@@ -24,21 +22,15 @@ import { resolveCommandAsync } from 'source/node/system/ResolveCommand'
 import { runSync } from 'source/node/system/Run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
-import { fetchWithJump } from 'source/node/net'
 
 import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection'
 import { configure as configureServerServeStatic } from './server/serveStatic'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup'
 
-import { modulePathHack, evalScript } from './function'
+import { logAuto, sharedOption, sharedMode } from './function'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
 
 import { name as packageName, version as packageVersion } from '../package.json'
-
-const logAuto = (value) => console.log(isBasicObject(value)
-  ? JSON.stringify(value, null, 2)
-  : value
-)
 
 const getVersion = () => ({
   packageName,
@@ -50,27 +42,16 @@ const getVersion = () => ({
   cpuCount: (cpus() || [ 'TERMUX FIX' ]).length // TODO: fix Termux, check: https://github.com/termux/termux-app/issues/299
 })
 
-const runMode = async (modeName, optionData) => {
-  const { tryGet, tryGetFirst, getToggle } = optionData
-  const log = getToggle('quiet')
-    ? () => {}
-    : console.log
+const runMode = async (optionData, modeName) => {
+  const sharedPack = sharedOption(optionData, modeName)
+  const { tryGetFirst, getToggle } = optionData
+  const { argumentList, log, inputFile, outputFile } = sharedPack
+
+  const isOutputJSON = getToggle('json')
+  const root = tryGetFirst('root') || process.cwd()
   const logTaskResult = (task, path) => task(path).then(
     () => log(`[${modeName}] done: ${path}`),
     (error) => log(`[${modeName}] error: ${path}\n${error.stack || error}`)
-  )
-
-  const argumentList = tryGet(modeName) || []
-  const isOutputJSON = getToggle('json')
-  const root = tryGetFirst('root') || process.cwd()
-  const inputFile = tryGetFirst('input-file')
-  const outputFile = tryGetFirst('output-file')
-  const outputBuffer = (buffer) => outputFile
-    ? writeFileSync(outputFile, buffer)
-    : writeBufferToStreamAsync(process.stdout, buffer)
-  const outputStream = (stream) => quickRunletFromStream(
-    stream,
-    outputFile ? createWriteStream(outputFile) : process.stdout
   )
 
   // for ipv6 should use host like: `[::]:80`
@@ -96,26 +77,12 @@ const runMode = async (modeName, optionData) => {
   }
 
   switch (modeName) {
-    case 'eval': {
-      modulePathHack()
-      const result = await evalScript(
-        inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ],
-        inputFile || resolve('__SCRIPT_STRING__'),
-        inputFile ? argumentList : argumentList.slice(1),
-        optionData
-      )
-      return result !== undefined && outputBuffer(Buffer.isBuffer(result) ? result : Buffer.from(String(result)))
-    }
-    case 'repl':
-      modulePathHack()
-      return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
-
     case 'wait': {
       const waitTime = argumentList[ 0 ] || 2 * 1000
       return setTimeoutAsync(waitTime)
     }
     case 'echo':
-      return logAuto(argumentList)
+      return log(argumentList)
     case 'cat': {
       if (argumentList.length) for (const path of argumentList) await quickRunletFromStream(createReadStream(path), process.stdout)
       else if (!process.stdin.isTTY) await quickRunletFromStream(process.stdin, process.stdout)
@@ -142,10 +109,10 @@ const runMode = async (modeName, optionData) => {
       const commandNameOrPath = argumentList[ 0 ]
       const resultCommand = await resolveCommandAsync(commandNameOrPath, root)
       if (!resultCommand) throw new Error(`failed to resolve command: ${commandNameOrPath}`)
-      return logAuto(resultCommand)
+      return log(resultCommand)
     }
     case 'status':
-      return logAuto(isOutputJSON ? getSystemStatus() : describeSystemStatus())
+      return log(isOutputJSON ? getSystemStatus() : describeSystemStatus())
 
     case 'create-directory':
       for (const path of argumentList) await logTaskResult(createDirectory, path)
@@ -158,34 +125,13 @@ const runMode = async (modeName, optionData) => {
       for (const path of argumentList) await logTaskResult(modifyDelete, path)
       return
 
-    case 'fetch': {
-      let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
-      jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
-      timeout = Number(timeout) || 0 // in msec, 0 for unlimited
-      const body = inputFile ? readFileSync(inputFile) : null
-      let isDone = false
-      const response = await fetchWithJump(initialUrl, {
-        method, timeout, jumpMax, body,
-        headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, // patch for
-        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
-        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
-        preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
-      })
-      if (!response.ok) throw new Error(`bad status: ${response.status}`)
-      const contentLength = Number(response.headers[ 'content-length' ])
-      log(`[fetch] status: ${response.status}, header: ${prettyStringifyJSON(response.headers, 1, '  ')}`)
-      log(`[fetch] fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
-      await outputStream(response.stream()) // NOTE: stream will auto close, so if stdout is used, the "done" log will not print
-      isDone = true
-      return log('\n[fetch] done')
-    }
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList
-      return logAuto(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
+      return log(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      return writeFileSync(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(readFileSync(inputFile))), unfoldLevel))
+      return fsAsync.writeFile(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(await fsAsync.readFile(inputFile))), unfoldLevel))
     }
 
     case 'server-serve-static':
@@ -223,6 +169,12 @@ const runMode = async (modeName, optionData) => {
         ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)
       ]))
     }
+
+    default:
+      return sharedMode({
+        ...sharedPack,
+        fetchUserAgent: `${packageName}/${packageVersion}`
+      })
   }
 }
 
@@ -232,7 +184,7 @@ const main = async () => {
   if (optionData.getToggle('help')) return logAuto(formatUsage())
   const modeName = MODE_NAME_LIST.find((name) => optionData.tryGet(name))
   if (!modeName) throw new Error('no mode specified')
-  await runMode(modeName, optionData).catch((error) => {
+  await runMode(optionData, modeName).catch((error) => {
     console.warn(`[Error] in mode: ${modeName}: ${error.stack || error}`)
     process.exit(2)
   })

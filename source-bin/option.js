@@ -6,19 +6,23 @@ const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(c
 
 const COMMON_FORMAT_LIST = parseList(
   'help,h/T|show full help',
-  'quiet,q/T|less log',
   'version,v/T|show version',
-  'json,J/T|output JSON, if supported',
+
+  'quiet,q/T|less log',
+  'input-file,I/SP|common option',
+  'output-file,O/SP|common option',
+
   'host,H/SS|common option: $0=hostname:port (hostname default to 0.0.0.0)',
   'route-prefix,RP/SS|common option: $0=routePrefix (default to "", set like "/prefix")',
   'root,R/SP|common option: $0=path/cwd',
-  'input-file,I/SP|common option',
-  'output-file,O/SP|common option'
+
+  'json,J/T|output JSON, if supported'
 )
 
 const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
   'repl,i/T|start node REPL',
+  'fetch,f//1-4|fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0',
 
   'wait/AI/0-1|wait specified time, in msec: $0=waitTime/2*1000',
   'echo/A|show args: $@=...args',
@@ -34,7 +38,6 @@ const MODE_FORMAT_LIST = parseList(
   'status,s/T|basic system status: -J=isOutputJSON',
   'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
   'which,w//1|resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath',
-  'fetch,f//1-4|fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
