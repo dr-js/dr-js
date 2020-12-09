@@ -11,6 +11,7 @@ const COMMON_FORMAT_LIST = parseList(
   'quiet,q/T|less log',
   'input-file,I/SP|common option',
   'output-file,O/SP|common option',
+  'pid-file,pid/SP|common option',
 
   'host,H/SS|common option: $0=hostname:port (hostname default to 0.0.0.0)',
   'route-prefix,RP/SS|common option: $0=routePrefix (default to "", set like "/prefix")',
@@ -39,6 +40,8 @@ const MODE_FORMAT_LIST = parseList(
   'open,o//0-1|use system default app to open uri or path: $0=uriOrPath/cwd',
   'which,w//1|resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
+  'process-signal,sig//0-2|send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"',
+
   'json-format,jf/AI/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
   'server-serve-static,sss//0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',

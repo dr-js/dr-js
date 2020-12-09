@@ -167,6 +167,8 @@
   - `createOnFileChunkUpload`, `uploadFileByChunk`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLoggerExot`, `createSimpleLoggerExot`
++ 📄 [source/node/module/Pid.js](source/node/module/Pid.js)
+  - `configurePid`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
@@ -380,6 +382,8 @@
       - `createOnFileChunkUpload`, `uploadFileByChunk`
     - **Logger**
       - `createLoggerExot`, `createSimpleLoggerExot`
+    - **Pid**
+      - `configurePid`
     - **SafeWrite**
       - `createSafeWriteStream`
   - **Server**
@@ -449,6 +453,8 @@
 >       common option
 >   --output-file --O -O [OPTIONAL] [ARGUMENT=1]
 >       common option
+>   --pid-file --pid [OPTIONAL] [ARGUMENT=1]
+>       common option
 >   --host --H -H [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=hostname:port (hostname default to 0.0.0.0)
 >   --route-prefix --RP [OPTIONAL] [ARGUMENT=1]
@@ -491,6 +497,8 @@
 >       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
 >       show system process status: -J=isOutputJSON, $0=outputMode/"pid--"
+>   --process-signal --sig [OPTIONAL] [ARGUMENT=0-2]
+>       send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
@@ -512,6 +520,7 @@
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_PID_FILE="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_PID]"
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_RP]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
@@ -533,6 +542,7 @@
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
+>     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
@@ -548,6 +558,7 @@
 >     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "pidFile": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=pid]" ],
 >     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=RP]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
@@ -569,6 +580,7 @@
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
+>     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],

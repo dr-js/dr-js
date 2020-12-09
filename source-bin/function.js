@@ -8,6 +8,7 @@ import { isBasicObject } from 'source/common/check'
 import { throttle } from 'source/common/function'
 
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
+import { configurePid } from 'source/node/module/Pid'
 import { fetchWithJump } from 'source/node/net'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
@@ -43,7 +44,7 @@ const logAuto = (...args) => console.log(
   `(+${time(stepper())})`
 )
 
-const sharedOption = (optionData, modeName) => {
+const sharedOption = async (optionData, modeName) => {
   const { tryGet, tryGetFirst, getToggle } = optionData
 
   const log = getToggle('quiet') ? () => {} : logAuto
@@ -51,6 +52,8 @@ const sharedOption = (optionData, modeName) => {
   const argumentList = tryGet(modeName) || []
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
+
+  await configurePid({ filePid: tryGetFirst('pid-file') })
 
   const toBuffer = (value) => Buffer.isBuffer(value) ? value
     : isBasicObject(value) ? JSON.stringify(value, null, 2)

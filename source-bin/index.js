@@ -43,7 +43,7 @@ const getVersion = () => ({
 })
 
 const runMode = async (optionData, modeName) => {
-  const sharedPack = sharedOption(optionData, modeName)
+  const sharedPack = await sharedOption(optionData, modeName)
   const { tryGetFirst, getToggle } = optionData
   const { argumentList, log, inputFile, outputFile } = sharedPack
 
@@ -78,8 +78,8 @@ const runMode = async (optionData, modeName) => {
 
   switch (modeName) {
     case 'wait': {
-      const waitTime = argumentList[ 0 ] || 2 * 1000
-      return setTimeoutAsync(waitTime)
+      const waitTime = argumentList[ 0 ] || (2 * 1000)
+      return setTimeoutAsync(waitTime) // TODO: currently this need to be stopped with SIGKILL, SIGTERM will not work as the ref still holds
     }
     case 'echo':
       return log(argumentList)
@@ -128,6 +128,11 @@ const runMode = async (optionData, modeName) => {
     case 'process-status': {
       const [ outputMode = 'pid--' ] = argumentList
       return log(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
+    }
+    case 'process-signal': {
+      if (inputFile) argumentList.unshift(String(await fsAsync.readFile(inputFile)))
+      const [ pidString, signal = 'SIGTERM' ] = argumentList
+      return process.kill(Number(pidString), signal)
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
