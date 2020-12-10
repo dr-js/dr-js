@@ -1,7 +1,6 @@
 import { connect as TCPConnect } from 'net'
 import { connect as TLSConnect } from 'tls'
 
-// TODO: no TLS/SSL support (HTTPS)
 // TODO: no multi target server support (load balancing)
 
 // Usage:
@@ -19,7 +18,7 @@ const createTCPProxyListener = ({
   socket.on('close', socketEndListener)
 
   const option = await getTargetOption(socket)
-  if (option.host === undefined) option.host = option.hostname
+  if (option.host === undefined) option.host = option.hostname // NOTE: patch option format
   const targetSocket = (isSecure ? TLSConnect : TCPConnect)(option, () => {
     for (const data of preConnectDataList) targetSocket.write(data)
     preConnectDataList = null

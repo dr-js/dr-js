@@ -148,7 +148,7 @@
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `getRandomBufferAsync`, `toArrayBuffer`
+  - `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
@@ -359,7 +359,7 @@
 - **Node**
   - **Data**
     - **Buffer**
-      - `getRandomBufferAsync`, `toArrayBuffer`
+      - `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
     - **Stream**

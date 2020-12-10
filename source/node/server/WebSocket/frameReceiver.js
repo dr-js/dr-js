@@ -1,3 +1,4 @@
+import { createBufferRefragPool } from 'source/node/data/Buffer'
 import { BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function'
 
 const NULL_ERROR = (error) => { __DEV__ && error && console.log('[NULL_ERROR] get error', error) }
@@ -48,7 +49,7 @@ const listenAndReceiveFrame = (frameReceiverStore, socket, onFrame, onError = fr
 
   const onSocketData = (chunk) => {
     __DEV__ && console.log(`[Frame] onSocketData +${chunk.length}`)
-    frameReceiverStore.frameDecoder.pushBufferFrag(chunk)
+    frameReceiverStore.frameDecoder.pushFrag(chunk)
     while (true) {
       receiveResolve === null && promiseReceive()
       const hasMore = frameReceiverStore.frameDecoder.decode()
@@ -76,7 +77,7 @@ const DECODE_STAGE_DATA_BUFFER = 4
 const DECODE_STAGE_END_FRAME = 5
 
 const createFrameDecoder = (frameLengthLimit) => {
-  const { pushBufferFrag, tryShiftMergedBuffer } = createBufferPool()
+  const { pushFrag, tryGetRefragBuffer } = createBufferRefragPool()
 
   let mergedBuffer = null
 
@@ -94,7 +95,7 @@ const createFrameDecoder = (frameLengthLimit) => {
     __DEV__ && console.log('decode', { stage })
     switch (stage) {
       case DECODE_STAGE_INITIAL_OCTET:
-        if ((mergedBuffer = tryShiftMergedBuffer(2))) {
+        if ((mergedBuffer = tryGetRefragBuffer(2))) {
           const initialQuadlet = mergedBuffer.readUInt16BE(0)
           const quadbitFIN = (initialQuadlet >>> 12) & 0b1000
           const quadbitOpcode = (initialQuadlet >>> 8) & 0b1111
@@ -119,7 +120,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         }
         break
       case DECODE_STAGE_EXTEND_DATA_LENGTH_2:
-        if ((mergedBuffer = tryShiftMergedBuffer(2))) {
+        if ((mergedBuffer = tryGetRefragBuffer(2))) {
           decodedDataBufferLength = mergedBuffer.readUInt16BE(0)
           if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
           stage = decodedIsMask ? DECODE_STAGE_MASK_QUADLET : DECODE_STAGE_DATA_BUFFER
@@ -129,7 +130,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         }
         break
       case DECODE_STAGE_EXTEND_DATA_LENGTH_8:
-        if ((mergedBuffer = tryShiftMergedBuffer(8))) {
+        if ((mergedBuffer = tryGetRefragBuffer(8))) {
           decodedDataBufferLength = mergedBuffer.readUInt32BE(0) * 0x100000000 + mergedBuffer.readUInt32BE(4)
           if (decodedDataBufferLength > BUFFER_MAX_LENGTH) throw new Error('decodedDataBufferLength too big')
           if (decodedDataBufferLength > frameLengthLimit) throw new Error(`dataBuffer length ${decodedDataBufferLength} exceeds limit: ${frameLengthLimit}`)
@@ -140,7 +141,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         }
         break
       case DECODE_STAGE_MASK_QUADLET:
-        if ((mergedBuffer = tryShiftMergedBuffer(4))) {
+        if ((mergedBuffer = tryGetRefragBuffer(4))) {
           decodedMaskQuadletBuffer = mergedBuffer
           stage = decodedDataBufferLength ? DECODE_STAGE_DATA_BUFFER : DECODE_STAGE_END_FRAME
 
@@ -149,7 +150,7 @@ const createFrameDecoder = (frameLengthLimit) => {
         }
         break
       case DECODE_STAGE_DATA_BUFFER:
-        if ((mergedBuffer = tryShiftMergedBuffer(decodedDataBufferLength))) {
+        if ((mergedBuffer = tryGetRefragBuffer(decodedDataBufferLength))) {
           decodedDataBuffer = mergedBuffer
           decodedIsMask && applyMaskQuadletBufferInPlace(decodedDataBuffer, decodedMaskQuadletBuffer)
           stage = DECODE_STAGE_END_FRAME
@@ -184,61 +185,10 @@ const createFrameDecoder = (frameLengthLimit) => {
     }
 
   return {
-    pushBufferFrag,
+    pushFrag,
     decode,
     resetDecode,
     tryGetDecodedFrame
-  }
-}
-
-const createBufferPool = () => { // push smaller buffer frag, shift whole merged buffer
-  const pool = []
-  let poolSumLength = 0
-
-  const pushBufferFrag = (bufferFrag) => {
-    pool.push(bufferFrag)
-    poolSumLength += bufferFrag.length
-  }
-
-  const tryShiftMergedBuffer = (length) => {
-    if (poolSumLength < length) return // not enough yet
-
-    poolSumLength -= length
-
-    if (length === pool[ 0 ].length) { // frag size just fit
-      return pool.shift()
-    }
-
-    if (length < pool[ 0 ].length) { // frag bigger than merged buffer
-      const buffer = pool[ 0 ].slice(0, length)
-      pool[ 0 ] = pool[ 0 ].slice(length)
-      return buffer
-    }
-
-    { // merge multiple frag
-      const buffer = Buffer.allocUnsafe(length)
-      let offset = 0
-      while (length > 0) {
-        const frag = pool[ 0 ]
-        const fragLength = frag.length
-        if (length >= fragLength) { // add frag
-          frag.copy(buffer, offset)
-          pool.shift()
-          offset += fragLength
-          length -= fragLength
-        } else { // add part of frag
-          frag.copy(buffer, offset, 0, length)
-          pool[ 0 ] = frag.slice(length)
-          length = 0
-        }
-      }
-      return buffer
-    }
-  }
-
-  return {
-    pushBufferFrag,
-    tryShiftMergedBuffer
   }
 }
 

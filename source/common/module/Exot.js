@@ -14,30 +14,32 @@ const createDummyExot = ({ // most Exot create func should be just sync, and mov
   // ## other option to config this Exot
   idPrefix = 'DUMMY-EXOT-',
   // ## pattern
-  id = getRandomId(idPrefix) // unique string id, or specific name like "server-HTTP"
+  id = getRandomId(idPrefix), // unique string id, or specific name like "server-HTTP"
+  onUp, onDown, ...extra // for fast convert some IO to Exot
 } = {}) => {
   let isActive = false
 
-  const up = ( // NOTE: can also be sync, outer func better use await for both
+  const up = async ( // NOTE: can also be sync, outer func better use await for both
     // ## pattern (the ONLY option, so Exot config can't suddenly change, and make pattern simple)
     onExotError // (error) => {} // can be OPTIONAL, mostly for ACK error outside of Exot function call, non-expert outside code should handle by `down` the Exot
   ) => {
     if (isActive) throw new Error('already up')
     if (!onExotError) throw new Error('expect onExotError to receive ExotError notice') // add assert if no OPTIONAL
-    // { do work }
+    onUp && await onUp(onExotError) // { do work }
     isActive = true // late set (call up again during up should be a bug, a check here is optional, but not required)
   }
 
-  const down = () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing) // NOTE: can also be sync, outer func better use await for both
+  const down = async () => { // NO throw/reject, should confidently release external resource, and allow call when down (do nothing) // NOTE: can also be sync, outer func better use await for both
     if (!isActive) return // skip
     isActive = false // early set (since this should not throw)
-    // { do work }
+    onDown && await onDown() // { do work }
   }
 
   // NOTE: not extend state to `up.../up/down.../down` to keep the pattern simple, and when lifecycle code is separated and in one place, prevent double calling is easier
   const isUp = () => isActive // should return `true` on the last line of `up`, and `false` the first line of `down`
 
   return {
+    ...extra,
     // ## pattern
     id, up, down, isUp
   }
@@ -52,8 +54,9 @@ const createExotGroup = ({
   exotList = [], exotMap = toExotMap(...exotList),
   isBatch = false
 } = {}) => {
-  const upEach = async (onExotError = onExotErrorGroup) => { for (const exot of exotMap.values()) await exot.up(onExotError) }
-  const upBatch = async (onExotError = onExotErrorGroup) => { await Promise.all(mapExotMapValue(exotMap, (exot) => exot.up(onExotError))) }
+  // check isUp to prevent re-up error
+  const upEach = async (onExotError = onExotErrorGroup) => { for (const exot of exotMap.values()) exot.isUp() || await exot.up(onExotError) }
+  const upBatch = async (onExotError = onExotErrorGroup) => { await Promise.all(mapExotMapValue(exotMap, (exot) => exot.isUp() || exot.up(onExotError))) }
 
   // down in reverse order, so exot dependency do not tangle
   const downEach = async () => { for (const exot of Array.from(exotMap.values()).reverse()) await exot.down() }
@@ -75,7 +78,7 @@ const createExotGroup = ({
 
   const load = async (exot, onExotError = onExotErrorGroup) => {
     set(exot)
-    await exot.up(onExotError)
+    exot.isUp() || await exot.up(onExotError)
   }
   const drop = async (exotId) => {
     const exot = deleteKeyword(exotId)
