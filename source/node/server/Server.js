@@ -40,7 +40,7 @@ const createServerExot = ({
   id = 'server',
   protocol,
   skipSessionPatch = false, // allow disable the session ticket rotation patch (check below comment)
-  forceCloseTimeout = 8 * 1000, // default wait 8sec max for on-going connection to end, set to Infinity to wait on
+  forceCloseTimeout = 2 * 1000, // default wait 2sec max for on-going connection to end, set to Infinity to wait on
   ...option
 }) => {
   if (![ 'tcp:', 'tls:', 'http:', 'https:' ].includes(protocol)) throw new Error(`invalid protocol: ${protocol}`)
