@@ -17,8 +17,8 @@ const describeRunOutcome = (data) => data.stdoutPromise
   : describeRunOutcomeSync(data) // sync from `runSync`
 
 const describeRunOutcomeSync = ({
-  message, stack, // maybe missing on success or process error
-  code, signal, // maybe missing on process error
+  message, stack, // from JS error
+  code, signal, // from process error
   command, argList,
   stdout, stderr // , stdoutPromise, stderrPromise // maybe missing for process with stdio inherit
 }) => [
@@ -30,11 +30,11 @@ const describeRunOutcomeSync = ({
   stderr && stderr.length && `[stderr] ${stderr}`
 ].filter(Boolean).join('\n')
 
-const run = ({ command, argList = [], option, quiet = false }) => {
+const run = ({ command, argList = [], option, quiet = false, describeError = false }) => { // NOTE: describeError may await once more and alter stacktrace
   const subProcess = spawn(command, argList, getOption(option, quiet))
   const stdoutPromise = quiet ? readableStreamToBufferAsync(subProcess.stdout) : undefined
   const stderrPromise = quiet ? readableStreamToBufferAsync(subProcess.stderr) : undefined
-  const promise = new Promise((resolve, reject) => {
+  let promise = new Promise((resolve, reject) => {
     subProcess.on('error', (error) => reject(toRunError(error, { command, argList, stdoutPromise, stderrPromise }))) // default error code
     subProcess.on('exit', (code, signal) => {
       const data = { code, signal, command, argList, stdoutPromise, stderrPromise }
@@ -42,13 +42,17 @@ const run = ({ command, argList = [], option, quiet = false }) => {
       else resolve(data)
     })
   })
+  if (describeError) promise = promise.catch(async (error) => { throw new Error(await describeRunOutcome(error)) })
   return { subProcess, promise, stdoutPromise, stderrPromise }
 }
 
-const runSync = ({ command, argList = [], option, quiet = false }) => {
+const runSync = ({ command, argList = [], option, quiet = false, describeError = false }) => {
   const { error, status: code, signal, stdout, stderr } = spawnSync(command, argList, getOption(option, quiet))
   const data = { code, signal, command, argList, stdout, stderr }
-  if (error || (code !== 0)) throw toRunError(error, data)
+  if (error || (code !== 0)) {
+    const runError = toRunError(error, data)
+    throw (describeError ? new Error(describeRunOutcomeSync(runError)) : runError)
+  }
   return data
 }
 
@@ -64,5 +68,6 @@ const withCwd = (pathCwd, taskAsync) => async (...args) => { // TODO: DEPRECATE:
 export {
   describeRunOutcome, describeRunOutcomeSync,
   run, runSync,
+
   withCwd // TODO: DEPRECATE: seems unused
 }

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.2",
+  "version": "0.4.3-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
     "test-T": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T",
-    "test-dev": "npm run test-T -- source/node/data/Stream.test.js",
+    "test-dev": "npm run test-T -- source/node/system/Run.test.js",
     "test-runlet": "npm run test-T -- source/common/module/Runlet.test.js",
     "test-sanity": "npm run test-T -- source/node/.sanity.test/memoryLeakPendingPromiseChain.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
