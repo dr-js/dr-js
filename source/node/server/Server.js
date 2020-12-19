@@ -126,16 +126,17 @@ const createRequestListener = ({
   responderEnd = DEFAULT_RESPONDER_END
 }) => async (request, response) => { // for listen the server `request` event: https://nodejs.org/api/http.html#http_event_request
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
-  const stateStore = createStateStoreLite({
+  const store = createStateStoreLite({
     time: clock(), // in msec, relative to process start
     error: null // populated by failed responder
   })
-  stateStore.request = request // http.IncomingMessage: https://nodejs.org/api/http.html#http_class_http_incomingmessage
-  stateStore.response = response // http.ServerResponse: https://nodejs.org/api/http.html#http_class_http_serverresponse
+  store.socket = request.socket // should be same: `request.socket === response.socket` // net.Socket: https://nodejs.org/api/net.html#net_class_net_socket
+  store.request = request // http.IncomingMessage: https://nodejs.org/api/http.html#http_class_http_incomingmessage
+  store.response = response // http.ServerResponse: https://nodejs.org/api/http.html#http_class_http_serverresponse
   try {
-    for (const responder of responderList) await responder(stateStore)
-  } catch (error) { await responderError(stateStore, error) }
-  await responderEnd(stateStore)
+    for (const responder of responderList) await responder(store)
+  } catch (error) { await responderError(store, error) }
+  await responderEnd(store)
 }
 
 const describeServerOption = (

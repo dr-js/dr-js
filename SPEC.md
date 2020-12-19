@@ -52,7 +52,7 @@
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
 + 📄 [source/common/data/Iter.js](source/common/data/Iter.js)
-  - `unwrap`, `wrapAsync`, `wrapSync`
+  - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
   - `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
@@ -127,6 +127,8 @@
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/Runlet.js](source/common/module/Runlet.js)
   - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
++ 📄 [source/common/module/RunletChip.js](source/common/module/RunletChip.js)
+  - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
@@ -258,7 +260,7 @@
     - **DataUri**
       - `decode`, `encode`
     - **Iter**
-      - `unwrap`, `wrapAsync`, `wrapSync`
+      - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
     - **LinkedList**
       - `createDoublyLinkedList`, `createNode`
     - **ListMap**
@@ -327,6 +329,8 @@
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **Runlet**
       - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
+    - **RunletChip**
+      - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
@@ -447,6 +451,8 @@
 >       show full help
 >   --version --v -v [OPTIONAL] [ARGUMENT=0-1]
 >       show version
+>   --note --N -N [OPTIONAL] [ARGUMENT=1+]
+>       noop, tag for ps/htop
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]
 >       less log
 >   --input-file --I -I [OPTIONAL] [ARGUMENT=1]
@@ -517,6 +523,7 @@
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_NOTE="[OPTIONAL] [ARGUMENT=1+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -555,6 +562,7 @@
 >     "config": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "help": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "version": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "note": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],

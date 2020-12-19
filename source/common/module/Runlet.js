@@ -1,8 +1,4 @@
 import { createMapMap } from 'source/common/data/MapMap'
-import { unwrap, wrapAsync } from 'source/common/data/Iter'
-import { createInsideOutPromise } from 'source/common/function'
-
-// TODO: still under testing, pattern not stable
 
 // Runlet is a Stream with less code and clearer execution order.
 //
@@ -26,7 +22,7 @@ import { createInsideOutPromise } from 'source/common/function'
 //   Special symbol used to signal Chip and Pool how the flow should change,
 //     send along with value in pack
 // TODO: add DELIMITER/ENDL for packet boundary support?
-const END = Symbol('runlet:hint:end') // for Chip receive/return, without value, meaning returning chip will not process/output more value (NOTE: to support split flow, allow return Number as value to pushPend extra END)
+const END = Symbol('runlet:hint:end') // for Chip receive/return, without value, meaning returning chip will not process/output more value (NOTE: to support split flow, allow return Number as value to pushPend extra END, the Number value is cleared before send down)
 const SKIP = Symbol('runlet:hint:skip') // for Chip receive/return, without value, meaning chip want more input for an output (ratio N:1)
 const REDO = Symbol('runlet:hint:redo') // for Chip return only, with value, meaning chip will output more for same input (ratio 1:N) (NOTE: do not pack reuse with REDO, and the pack will stay in runningChipMap when REDO)
 
@@ -66,7 +62,7 @@ const createRunlet = ({
   poolMap = new Map(),
   chipMap = new Map(),
   endChipKeySet = new Set(), // mark Chip received END hint
-  runningChipMap = new Map(),
+  runningChipMap = new Map(), // chipKey: pack
   onError = LOUD_FUNC // normal error should handled in Chip, this is mostly for Bug reporting, should just report & crash
 }) => {
   const triggerChipFuncMap = new Map() // chipKey: triggerChipFunc
@@ -529,6 +525,8 @@ const createLogicalCountPool = ({ // allow added logic to bind multiple pend as 
 //   Added state to store side effect, so the process function can be pure function, conceptually.
 //   For performance, the state is expected to be changed by direct mutate so less GC involved,
 //     but it may be reasonable to go full immutable for some case.
+//   Error from chip.process will detach the Runlet, and notify all Chip,
+//     so most Chip should self-recover or send down error as pack value
 
 // ChipSyncBasic:
 //   A sample pass-though Chip of all supported config.
@@ -541,112 +539,6 @@ const ChipSyncBasic = { // NOTE: always duplicate this Chip when use, or the sou
   process: (pack, state, error) => error ? undefined : { pack, state }, // pass through
   describe: () => 'CHIP-SYNC-BASIC' // optional
 }
-
-const createArrayInputChip = ({
-  array = [], // will not change value
-  state = { index: 0, indexMax: array.length, array },
-  key = 'chip:input:array', ...extra
-}) => ({
-  ...extra, key, prevPoolKey: KEY_POOL_IO, prevPendKey: KEY_PEND_INPUT,
-  state,
-  process: async (pack, state, error) => {
-    if (error) return
-    if (__DEV__ && pack[ 1 ] !== SKIP) throw new Error(`unexpected input: ${[ ...pack, state, error ].map((v) => String(v)).join(', ')}`)
-    if (state.index === state.indexMax) pack[ 1 ] = END
-    else {
-      pack[ 0 ] = state.array[ state.index ]
-      pack[ 1 ] = undefined
-      state.index++
-    }
-    return { pack, state }
-  },
-  describe: () => `[${state.index}/${state.indexMax}]`
-})
-
-const createArrayOutputChip = ({
-  array = [], // will put ALL value in, until END
-  state = { array },
-  IOP = createInsideOutPromise(),
-  key = 'chip:output:array', ...extra
-}) => ({
-  ...extra, key, nextPoolKey: KEY_POOL_IO, nextPendKey: KEY_PEND_OUTPUT,
-  state,
-  process: async (pack, state, error) => {
-    if (error) return IOP.reject(error)
-    if (pack[ 1 ] === END) IOP.resolve(state.array)
-    else {
-      state.array.push(pack[ 0 ])
-      pack[ 0 ] = undefined
-      pack[ 1 ] = SKIP
-    }
-    return { pack, state }
-  },
-  describe: () => `[${array.length}]`,
-  promise: IOP.promise
-})
-
-const createAsyncIteratorInputChip = ({
-  iterable, iterator, next = unwrap({ iterable, iterator }), // async or sync
-  key = 'chip:input:async-iterator', ...extra
-}) => ({
-  ...extra, key, prevPoolKey: KEY_POOL_IO, prevPendKey: KEY_PEND_INPUT,
-  process: async (pack, state, error) => {
-    if (error) return
-    if (__DEV__ && pack[ 1 ] !== SKIP) throw new Error(`unexpected input: ${[ ...pack, state, error ].map((v) => String(v)).join(', ')}`)
-    const { value, done } = await next() // TODO: NOTE: this will drop value when send with `done: true`
-    const isEND = done === true
-    pack[ 0 ] = isEND ? undefined : value
-    pack[ 1 ] = isEND ? END : undefined
-    return { pack, state }
-  }
-})
-
-const createAsyncIteratorOutputChip = ({
-  key = 'chip:output:async-iterator', ...extra
-}) => {
-  const state = { readIOP: createInsideOutPromise(), packIOP: createInsideOutPromise() }
-  const next = async () => { // Symbol.asyncIterator
-    if (state.readIOP === undefined) return { value: undefined, done: true }
-    state.readIOP.resolve()
-    const [ value, hint ] = await state.packIOP.promise
-    return { value, done: hint === END }
-  }
-  return {
-    ...wrapAsync(next), ...extra, key, nextPoolKey: KEY_POOL_IO, nextPendKey: KEY_PEND_OUTPUT,
-    state,
-    process: async (pack, state, error) => {
-      if (error) return state.packIOP.reject(error)
-      await state.readIOP.promise
-      state.packIOP.resolve(pack)
-      const isEND = pack[ 1 ] === END
-      state.readIOP = isEND ? undefined : createInsideOutPromise()
-      state.packIOP = isEND ? undefined : createInsideOutPromise()
-      return { pack: isEND ? pack : createPack(undefined, SKIP), state } // don't reuse pack, the content may be reset before read
-    }
-  }
-}
-
-// ENDRegulatorChip:
-//   Needed after the merge Pend after 2+ Input Chip, so only the last END pass,
-//     or before the split Pend before 2+ Output Chip, so there's enough END for each.
-const createENDRegulatorChip = ({ // TODO: maybe use LogicalPool instead, so Pend will auto hold or dup END for M:N Chip ratio? Though this will make some Pend code more complex
-  inputChipCount = 1, outputChipCount = 1, // should pass in at least a 2+, or just skip this Chip
-  key = 'chip:end-regulator', ...extra // all the extra Pool/Pend config
-}) => ({
-  ...extra, key,
-  state: { inputEND: inputChipCount, outputEND: outputChipCount },
-  process: async (pack, state, error) => {
-    if (error) return
-    if (pack[ 1 ] === END) {
-      state.inputEND--
-      const pack = state.inputEND > 0
-        ? createPack(undefined, SKIP)
-        : createPack(state.outputEND >= 2 ? state.outputEND : undefined, END)
-      return { pack, state }
-    }
-    return { pack, state } // pass through
-  }
-})
 
 const toPoolMap = (poolList = []) => {
   const poolMap = new Map()
@@ -683,17 +575,25 @@ const toLinearChipList = (chipList, {
   return chipList
 }
 
-const quickConfigPend = (poolMap, chipMap) => {
+const quickConfigPend = (poolMap, chipMap, extraConfig) => {
   for (const chip of chipMap.values()) poolMap.get(chip.prevPoolKey).configPend(chip.prevPendKey, chip.prevPendSizePrivate, chip.prevPendSizeLimit, chip.prevPendLogic) // only for passive input Pend
   for (const chip of chipMap.values()) poolMap.get(chip.nextPoolKey).configPend(chip.nextPendKey, chip.nextPendSizePrivate, chip.nextPendSizeLimit, chip.nextPendLogic) // prefer config Pend with chip.next*
-  return { poolMap, chipMap }
+  return { ...extraConfig, poolMap, chipMap }
 }
 
 export {
   END, SKIP, REDO,
   createPack, clearPack, describePack,
   createRunlet,
-  createCountPool, KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO, TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE, createLogicalCountPool,
-  ChipSyncBasic, createArrayInputChip, createArrayOutputChip, createAsyncIteratorInputChip, createAsyncIteratorOutputChip, createENDRegulatorChip,
+  createCountPool,
+  KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO,
+  TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE, createLogicalCountPool,
+  ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 }
+
+export { // TODO: DEPRECATE: import from RunletChip
+  createArrayInputChip, createArrayOutputChip,
+  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
+  createENDRegulatorChip
+} from './RunletChip'

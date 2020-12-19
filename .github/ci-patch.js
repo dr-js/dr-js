@@ -1,6 +1,6 @@
 const { resolve } = require('path')
 const { release, arch, homedir } = require('os')
-const { run, describeRunOutcome } = require('@dr-js/core/library/node/system/Run')
+const { run } = require('@dr-js/core/library/node/system/Run')
 
 console.log(`[ci-patch] system: ${process.platform}-${release()}[${arch()}]`)
 console.log(`[ci-patch] node: ${process.version}`)
@@ -13,11 +13,7 @@ const quickRun = async (argListOrString) => { // accept string list of very basi
   const argList = Array.isArray(argListOrString) ? argListOrString : argListOrString.split(' ').filter(Boolean)
   const command = argList.shift()
   console.log(`[ci-patch] run: "${command} ${argList.join(' ')}"`)
-  const { promise } = run({ command, argList, option: { cwd: PATH_ROOT } })
-  await promise.catch(async (error) => {
-    console.error(await describeRunOutcome(error))
-    throw error
-  })
+  await run({ command, argList, option: { cwd: PATH_ROOT }, describeError: true }).promise
 }
 
 const main = async () => {

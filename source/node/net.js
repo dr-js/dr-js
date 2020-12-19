@@ -4,7 +4,7 @@ import { createGunzip } from 'zlib'
 
 import { clock } from 'source/common/time'
 import { isString, isArrayBuffer } from 'source/common/check'
-import { withRetryAsync } from 'source/common/function'
+import { createInsideOutPromise, withRetryAsync } from 'source/common/function'
 import { toArrayBuffer } from 'source/node/data/Buffer'
 import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
 
@@ -14,19 +14,22 @@ const requestHttp = (
   body // optional, Buffer/String/ReadableStream/ArrayBuffer
 ) => {
   url = url instanceof URL ? url : new URL(url)
-  let request
-  const promise = new Promise((resolve, reject) => {
-    request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, resolve)
-    const endWithError = (error) => {
-      request.destroy()
-      reject(error)
-    }
-    request.on('timeout', () => endWithError(new Error('NETWORK_TIMEOUT')))
-    request.on('error', endWithError)
-    if (isReadableStream(body)) setupStreamPipe(body, request)
-    else if (isArrayBuffer(body)) request.end(Buffer.from(body))
-    else request.end(body) // Buffer/String
+  const { promise, resolve, reject } = createInsideOutPromise()
+  const onError = (error) => {
+    request.destroy()
+    reject(error)
+  }
+  const onTimeout = option.timeout && (() => onError(new Error('NETWORK_TIMEOUT')))
+  const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, (response) => {
+    request.off('error', onError)
+    onTimeout && request.off('timeout', onTimeout)
+    resolve(response)
   })
+  request.on('error', onError)
+  onTimeout && request.on('timeout', onTimeout)
+  if (isReadableStream(body)) setupStreamPipe(body, request)
+  else if (isArrayBuffer(body)) request.end(Buffer.from(body))
+  else request.end(body) // Buffer/String/undefined
   return { url, request, promise }
 }
 

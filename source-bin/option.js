@@ -7,6 +7,7 @@ const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(c
 const COMMON_FORMAT_LIST = parseList(
   'help,h/T|show full help',
   'version,v/T|show version',
+  'note,N/AS|noop, tag for ps/htop',
 
   'quiet,q/T|less log',
   'input-file,I/SP|common option',

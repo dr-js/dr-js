@@ -210,7 +210,7 @@ const createWritableStreamOutputChip = ({
     process: async (pack, state, error) => {
       if (error) {
         allOff()
-        return IOP.reject(error)
+        return IOP.reject(error) // NOTE: return value is undefined
       } else if (state.error !== undefined) throw state.error
 
       if (pack[ 1 ] === END) {

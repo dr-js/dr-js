@@ -9,7 +9,6 @@ const gzipAsync = promisify(gzip)
 // TODO: check timeout for responderSend?
 
 const setResponseContent = (store, entityTag, type, length) => {
-  if (store.request.destroyed) return
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   shouldSendContent
@@ -19,7 +18,6 @@ const setResponseContent = (store, entityTag, type, length) => {
 }
 
 const setResponseContentRange = (store, entityTag, type, length = '*', start, end) => {
-  if (store.request.destroyed) return
   entityTag && store.response.setHeader('etag', entityTag)
   store.response.writeHead(206, { 'content-type': type, 'content-length': end - start + 1, 'content-range': `bytes ${start}-${end}/${length}` })
   return true
@@ -34,7 +32,6 @@ const responderSendBufferRange = (store, { buffer, entityTag, type = DEFAULT_MIM
   length && writeBufferToStreamAsync(store.response, buffer.slice(start, end + 1))
 
 const responderSendBufferCompress = async (store, { buffer, bufferGzip, entityTag, type = DEFAULT_MIME, length = buffer.length }) => {
-  if (store.request.destroyed) return
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')
@@ -57,7 +54,6 @@ const responderSendStreamRange = (store, { streamRange, entityTag, type = DEFAUL
   quickRunletFromStream(streamRange, store.response)
 
 const responderSendStreamCompress = async (store, { stream, streamGzip, entityTag, type = DEFAULT_MIME, length }) => {
-  if (store.request.destroyed) return
   entityTag && store.response.setHeader('etag', entityTag)
   const shouldSendContent = !entityTag || !store.request.headers[ 'if-none-match' ] || !store.request.headers[ 'if-none-match' ].includes(entityTag)
   const shouldGzip = shouldSendContent && length && store.request.headers[ 'accept-encoding' ] && store.request.headers[ 'accept-encoding' ].includes('gzip')

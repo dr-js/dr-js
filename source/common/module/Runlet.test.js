@@ -9,10 +9,18 @@ import {
   END, SKIP, REDO,
   createPack, // clearPack, describePack,
   createRunlet,
-  createCountPool, KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO, TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE, createLogicalCountPool,
-  ChipSyncBasic, createArrayInputChip, createArrayOutputChip, createAsyncIteratorInputChip, createAsyncIteratorOutputChip, createENDRegulatorChip,
+  createCountPool,
+  KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO,
+  TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE,
+  createLogicalCountPool,
+  ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from './Runlet'
+import {
+  createArrayInputChip, createArrayOutputChip,
+  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
+  createENDRegulatorChip
+} from './RunletChip'
 
 const { describe, it, info = console.log } = global
 
