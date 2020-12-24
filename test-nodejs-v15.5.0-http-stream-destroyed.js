@@ -25,16 +25,17 @@ const testNormalPost = () => new Promise((resolve) => {
   const httpServer = createServer()
   httpServer.listen(PORT, HOSTNAME)
   httpServer.on('request', async (request, response) => {
-    log('[httpServer] request|response.destroyed', request.destroyed, response.destroyed)
+    log('[httpServer] same socket', request.socket === response.socket)
+    log('[httpServer] soc/req/res.destroyed', request.socket.destroyed, request.destroyed, response.destroyed)
     const requestBuffer = await readableStreamToBufferAsync(request)
-    log('[httpServer] request|response.destroyed read', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed read', request.socket.destroyed, request.destroyed, response.destroyed)
     log('[httpServer] requestBuffer.length', requestBuffer.length)
     await setTimeoutAsync(128)
-    log('[httpServer] request|response.destroyed 128', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed wait128', request.socket.destroyed, request.destroyed, response.destroyed)
     response.end(requestBuffer)
-    log('[httpServer] request|response.destroyed end', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed end', request.socket.destroyed, request.destroyed, response.destroyed)
     httpServer.close(() => {
-      log('[httpServer] request|response.destroyed close', request.destroyed, response.destroyed)
+      log('[httpServer] soc/req/res.destroyed close', request.socket.destroyed, request.destroyed, response.destroyed)
       resolve()
     })
   })
@@ -43,9 +44,10 @@ const testNormalPost = () => new Promise((resolve) => {
   // POST request
   const httpRequest = request(`http://${HOSTNAME}:${PORT}`, { method: 'POST' })
   httpRequest.on('response', async (httpResponse) => {
-    log('- [httpRequest] httpRequest|httpResponse.destroyed', httpRequest.destroyed, httpResponse.destroyed)
+    log('- [httpRequest] same socket', httpRequest.socket === httpResponse.socket)
+    log('- [httpRequest] soc/req/res.destroyed', httpRequest.socket.destroyed, httpRequest.destroyed, httpResponse.destroyed)
     const responseBuffer = await readableStreamToBufferAsync(httpResponse)
-    log('- [httpRequest] httpRequest|httpResponse.destroyed read', httpRequest.destroyed, httpResponse.destroyed)
+    log('- [httpRequest] soc/req/res.destroyed read', httpRequest.socket.destroyed, httpRequest.destroyed, httpResponse.destroyed)
     log('- [httpRequest] responseBuffer.length', responseBuffer.length)
   })
   httpRequest.end(PAYLOAD_BUFFER)
@@ -59,16 +61,16 @@ const testClientClose = () => new Promise((resolve) => {
   const httpServer = createServer()
   httpServer.listen(PORT, HOSTNAME)
   httpServer.on('request', async (request, response) => {
-    log('[httpServer] request|response.destroyed', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed', request.socket.destroyed, request.destroyed, response.destroyed)
     const requestBuffer = await readableStreamToBufferAsync(request)
-    log('[httpServer] request|response.destroyed read', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed read', request.socket.destroyed, request.destroyed, response.destroyed)
     log('[httpServer] requestBuffer.length', requestBuffer.length)
     await setTimeoutAsync(128)
-    log('[httpServer] request|response.destroyed 128', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed wait128', request.socket.destroyed, request.destroyed, response.destroyed)
     response.end(requestBuffer)
-    log('[httpServer] request|response.destroyed end', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed end', request.socket.destroyed, request.destroyed, response.destroyed)
     httpServer.close(() => {
-      log('[httpServer] request|response.destroyed close', request.destroyed, response.destroyed)
+      log('[httpServer] soc/req/res.destroyed close', request.socket.destroyed, request.destroyed, response.destroyed)
       resolve()
     })
   })
@@ -77,17 +79,17 @@ const testClientClose = () => new Promise((resolve) => {
   // POST request
   const httpRequest = request(`http://${HOSTNAME}:${PORT}`, { method: 'POST' })
   httpRequest.on('response', async (httpResponse) => {
-    log('- [SHOULD NOT REACH THIS] [httpRequest] httpRequest|httpResponse.destroyed', httpRequest.destroyed, httpResponse.destroyed)
+    log('- [SHOULD NOT REACH THIS] [httpRequest] soc/req/res.destroyed', httpRequest.socket.destroyed, httpRequest.destroyed, httpResponse.destroyed)
   })
   httpRequest.end(PAYLOAD_BUFFER)
   httpRequest.on('error', (error) => {
-    log('- [httpRequest] httpRequest.destroyed error', httpRequest.destroyed)
+    log('- [httpRequest] soc/req.destroyed error', httpRequest.socket.destroyed, httpRequest.destroyed)
     log('- [httpRequest] error', error.message)
   })
   setTimeoutAsync(64).then(() => {
     log('- [httpRequest] httpRequest.destroy!')
     httpRequest.destroy()
-    log('- [httpRequest] httpRequest.destroyed destroy', httpRequest.destroyed)
+    log('- [httpRequest] soc/req.destroyed destroy', httpRequest.socket.destroyed, httpRequest.destroyed)
   })
   log('- [httpRequest] created')
 })
@@ -101,9 +103,9 @@ const testServerClose = () => new Promise((resolve) => {
   httpServer.on('request', async (request, response) => {
     log('[httpServer] request.destroy!')
     request.destroy()
-    log('[httpServer] request|response.destroyed destroy', request.destroyed, response.destroyed)
+    log('[httpServer] soc/req/res.destroyed destroy', request.socket.destroyed, request.destroyed, response.destroyed)
     httpServer.close(() => {
-      log('[httpServer] request|response.destroyed close', request.destroyed, response.destroyed)
+      log('[httpServer] soc/req/res.destroyed close', request.socket.destroyed, request.destroyed, response.destroyed)
       resolve()
     })
   })
@@ -112,11 +114,11 @@ const testServerClose = () => new Promise((resolve) => {
   // POST request
   const httpRequest = request(`http://${HOSTNAME}:${PORT}`, { method: 'POST' })
   httpRequest.on('response', async (httpResponse) => {
-    log('- [SHOULD NOT REACH THIS] [httpRequest] httpRequest|httpResponse.destroyed', httpRequest.destroyed, httpResponse.destroyed)
+    log('- [SHOULD NOT REACH THIS] [httpRequest] soc/req/res.destroyed', httpRequest.socket.destroyed, httpRequest.destroyed, httpResponse.destroyed)
   })
   httpRequest.end(PAYLOAD_BUFFER)
   httpRequest.on('error', (error) => {
-    log('- [httpRequest] httpRequest.destroyed error', httpRequest.destroyed)
+    log('- [httpRequest] soc/req.destroyed error', httpRequest.socket.destroyed, httpRequest.destroyed)
     log('- [httpRequest] error', error.message)
   })
   log('- [httpRequest] created')
