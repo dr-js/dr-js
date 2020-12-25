@@ -84,7 +84,7 @@ const readableStreamToBufferAsync = (readableStream) => new Promise((resolve, re
 })
 
 const writeBufferToStreamAsync = (writableStream, buffer) => new Promise((resolve, reject) => { // partially handled during write, will reset to not handled to allow reuse
-  if (buffer.length === 0) return resolve() // for ServerResponse the callback will miss if the chunk is non-empty. https://nodejs.org/api/http.html#http_request_write_chunk_encoding_callback
+  if (buffer.length === 0) return resolve() // for ServerResponse the callback will miss if the chunk is empty. https://nodejs.org/api/http.html#http_request_write_chunk_encoding_callback
   writableStream.once('error', reject)
   writableStream.write(buffer, () => {
     writableStream.off('error', reject) // allow reuse, so clean up

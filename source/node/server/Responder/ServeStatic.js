@@ -66,16 +66,15 @@ const createResponderServeStatic = ({
     return true
   }
 
-  const serveCache = async (store, filePath, encoding, rangePair) => {
-    const bufferData = serveCacheMap.get(filePath)
+  const serveCache = async (store, filePath, filePathGz, rangePair) => {
+    const filePathServe = filePathGz || filePath
+    const bufferData = serveCacheMap.get(filePathServe)
     if (!bufferData) return false
-    __DEV__ && console.log(`[HIT] CACHE: ${filePath}`)
-    encoding && store.response.setHeader('content-encoding', encoding)
-    isEnableRange && !encoding && store.response.setHeader('accept-ranges', 'bytes') // no "gzip+range" combo, check: https://stackoverflow.com/questions/33947562/is-it-possible-to-send-http-response-using-gzip-and-byte-ranges-at-the-same-time
-    if (rangePair) {
-      rangePair[ 1 ] = Math.min(rangePair[ 1 ], bufferData.length - 1)
-      await responderSendBufferRange(store, bufferData, rangePair)
-    } else await responderSendBuffer(store, bufferData)
+    __DEV__ && console.log(`[HIT] CACHE: ${filePathServe}`)
+    filePathGz && store.response.setHeader('content-encoding', 'gzip')
+    isEnableRange && store.response.setHeader('accept-ranges', 'bytes')
+    if (rangePair) await responderSendBufferRange(store, bufferData, rangePair)
+    else await responderSendBuffer(store, bufferData)
     return true
   }
 
@@ -87,14 +86,14 @@ const createResponderServeStatic = ({
     const type = getMIMETypeFromFileName(filePath)
     const length = stat.size
     filePathGz && store.response.setHeader('content-encoding', 'gzip')
-    isEnableRange && !filePathGz && store.response.setHeader('accept-ranges', 'bytes') // no "gzip+range" combo, check: https://stackoverflow.com/questions/33947562/is-it-possible-to-send-http-response-using-gzip-and-byte-ranges-at-the-same-time
+    isEnableRange && store.response.setHeader('accept-ranges', 'bytes')
     if (rangePair) { // has range, pipe it
       rangePair[ 1 ] = Math.min(rangePair[ 1 ], length - 1)
       await responderSendStreamRange(store, { streamRange: createReadStream(filePathServe, { start: rangePair[ 0 ], end: rangePair[ 1 ] }), entityTag, type, length }, rangePair)
     } else if (length > sizeSingleMax) { // too big, just pipe it
       __DEV__ && console.log(`[BAIL] CACHE: ${filePathServe}`)
       await responderSendStream(store, { stream: createReadStream(filePathServe), entityTag, type, length })
-    } else { // right size, try cache
+    } else { // right size, send & cache
       const bufferData = { buffer: await fsAsync.readFile(filePathServe), entityTag, type, length }
       serveCacheMap.set(filePathServe, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePathServe}`)
@@ -110,7 +109,7 @@ const createResponderServeStatic = ({
     const rangePair = isEnableRange && parseRangeHeader(store.request.headers[ 'range' ])
 
     // try serve from cache (memory) first
-    if (filePathGz && await serveCache(store, filePathGz, 'gzip')) return // try .gz, but drop range
+    if (filePathGz && await serveCache(store, filePath, filePathGz)) return // try .gz, but drop range
     if (await serveCache(store, filePath, undefined, rangePair)) return
 
     // serve from fs (disk)

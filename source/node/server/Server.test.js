@@ -18,6 +18,8 @@ const { describe, it } = global
 
 const TEST_BUFFER_TEXT = 'TEST BUFFER!'.repeat(32)
 const TEST_BUFFER = Buffer.from(TEST_BUFFER_TEXT)
+const TEST_BUFFER_ZERO_TEXT = ''
+const TEST_BUFFER_ZERO = Buffer.from(TEST_BUFFER_ZERO_TEXT)
 
 describe('Node.Server.Server', () => {
   it('createServerExot()', async () => {
@@ -31,12 +33,18 @@ describe('Node.Server.Server', () => {
             [ '/test-param-any/*', 'GET', (store) => responderSendJSON(store, { object: { param: getRouteParamAny(store) } }) ],
 
             [ '/test-buffer', 'GET', (store) => responderSendBuffer(store, { buffer: TEST_BUFFER }) ],
+            [ '/test-buffer-zero', 'GET', (store) => responderSendBuffer(store, { buffer: TEST_BUFFER_ZERO }) ],
             [ '/test-buffer-range', 'GET', (store) => responderSendBufferRange(store, { buffer: TEST_BUFFER }, [ 4, 8 ]) ],
+            [ '/test-buffer-range-zero', 'GET', (store) => responderSendBufferRange(store, { buffer: TEST_BUFFER }, [ 8, 8 ]) ],
             [ '/test-buffer-gzip', 'GET', (store) => responderSendBufferCompress(store, { buffer: TEST_BUFFER }) ],
+            [ '/test-buffer-gzip-zero', 'GET', (store) => responderSendBufferCompress(store, { buffer: TEST_BUFFER_ZERO }) ],
 
             [ '/test-stream', 'GET', (store) => responderSendStream(store, { stream: bufferToReadableStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
+            [ '/test-stream-zero', 'GET', (store) => responderSendStream(store, { stream: bufferToReadableStream(TEST_BUFFER_ZERO), length: TEST_BUFFER_ZERO.length }) ],
             [ '/test-stream-range', 'GET', (store) => responderSendStreamRange(store, { streamRange: bufferToReadableStream(TEST_BUFFER.slice(4, 8 + 1)), length: TEST_BUFFER.length }, [ 4, 8 ]) ],
+            [ '/test-stream-range-zero', 'GET', (store) => responderSendStreamRange(store, { streamRange: bufferToReadableStream(TEST_BUFFER.slice(8, 8 + 1)), length: TEST_BUFFER.length }, [ 8, 8 ]) ],
             [ '/test-stream-gzip', 'GET', (store) => responderSendStreamCompress(store, { stream: bufferToReadableStream(TEST_BUFFER), length: TEST_BUFFER.length }) ],
+            [ '/test-stream-gzip-zero', 'GET', (store) => responderSendStreamCompress(store, { stream: bufferToReadableStream(TEST_BUFFER_ZERO), length: TEST_BUFFER_ZERO.length }) ],
 
             [ '/test-json', 'GET', (store) => responderSendJSON(store, { object: { testKey: 'testValue' } }) ]
           ]),
@@ -65,14 +73,29 @@ describe('Node.Server.Server', () => {
       'fetch /test-buffer'
     )
     strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-buffer-zero`)).text(),
+      TEST_BUFFER_ZERO_TEXT,
+      'fetch /test-buffer-zero'
+    )
+    strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer-range`)).text(),
       String(TEST_BUFFER.slice(4, 8 + 1)),
       'fetch /test-buffer-range'
     )
     strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-buffer-range-zero`)).text(),
+      String(TEST_BUFFER.slice(8, 8 + 1)),
+      'fetch /test-buffer-range-zero'
+    )
+    strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer-gzip`)).text(),
       TEST_BUFFER_TEXT,
       'fetch /test-buffer-gzip'
+    )
+    strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-buffer-gzip-zero`)).text(),
+      TEST_BUFFER_ZERO_TEXT,
+      'fetch /test-buffer-gzip-zero'
     )
 
     strictEqual(
@@ -81,14 +104,29 @@ describe('Node.Server.Server', () => {
       'fetch /test-stream'
     )
     strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-stream-zero`)).text(),
+      TEST_BUFFER_ZERO_TEXT,
+      'fetch /test-stream-zero'
+    )
+    strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-stream-range`)).text(),
       String(TEST_BUFFER.slice(4, 8 + 1)),
       'fetch /test-stream-range'
     )
     strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-stream-range-zero`)).text(),
+      String(TEST_BUFFER.slice(8, 8 + 1)),
+      'fetch /test-stream-range-zero'
+    )
+    strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-stream-gzip`)).text(),
       TEST_BUFFER_TEXT,
       'fetch /test-stream-gzip'
+    )
+    strictEqual(
+      await (await fetchLikeRequest(`${baseUrl}/test-stream-gzip-zero`)).text(),
+      TEST_BUFFER_ZERO_TEXT,
+      'fetch /test-stream-gzip-zero'
     )
 
     stringifyEqual(
