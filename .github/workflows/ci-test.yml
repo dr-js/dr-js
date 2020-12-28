@@ -25,3 +25,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: node test-nodejs-v15.5.0-http-stream-destroyed.js
+
+      - run: node test-nodejs-message-aborted.js
