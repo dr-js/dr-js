@@ -32,7 +32,7 @@ const main = async () => {
   await quickRun([ ...`${COMMAND_SUDO_NPM} config set cache`.split(' '), resolve(homedir(), '.npm/'), '--global' ])
 
   // Patch install @dr-js/dev globally
-  await quickRun(`${COMMAND_SUDO_NPM} install --global @dr-js/dev@^0.4.2`)
+  await quickRun(`${COMMAND_SUDO_NPM} install --global @dr-js/dev@^0.4`)
 }
 
 main().then(

@@ -1,7 +1,7 @@
 import { catchAsync } from 'source/common/error'
 import { createServer as createNetServer } from 'net'
 
-const parseCookieString = (cookieString) => cookieString
+const parseCookieString = (cookieString) => cookieString // TODO: DEPRECATE: move to `@dr-js/node`
   .split(';')
   .reduce((o, v) => {
     const [ key, ...valueList ] = v.split('=')
@@ -31,7 +31,7 @@ const autoTestServerPort = async (expectPortList, hostname) => {
 }
 
 export {
-  parseCookieString,
+  parseCookieString, // TODO: DEPRECATE: move to `@dr-js/node`
   getUnusedPort,
   autoTestServerPort
 }

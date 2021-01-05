@@ -31,7 +31,7 @@ jobs:
 
       - name: Patch & log CI info
         run: |
-          npx @dr-js/core@^0.4.3 -eI .github/ci-patch.js
+          npx @dr-js/core@^0.4 -eI .github/ci-patch.js
           dr-dev -c .github/cache/config.js --cache-step setup
 
       - name: Cache JS

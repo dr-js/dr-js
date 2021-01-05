@@ -16,6 +16,7 @@ const wrapAsync = (next) => ({
   [ Symbol.asyncIterator ]: () => ({ next }) // as async iterable
 })
 
+// NOTE: this lock-step implementation needs to be call in order: `next`(Iter) first, then `send`, else the first value to `send` will get dropped
 const createLockStepAsyncIter = () => {
   let sendIOP = createInsideOutPromise()
   let nextIOP = createInsideOutPromise()
