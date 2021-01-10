@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { runMain } from '@dr-js/dev/module/main'
 
 import { strictEqual } from 'source/common/verify'
-import { run } from 'source/node/system/Run'
+import { run } from 'source/node/run'
 import { describeSystemPlatform } from 'source/node/system/Status'
 
 const PATH_ROOT = resolve(__dirname, '../../')
@@ -27,16 +27,12 @@ console.log(describeSystemPlatform())
 runMain(async (logger) => {
   {
     logger.padLog('test eval scriptFile')
-    const { promise, stdoutPromise } = run({
-      command: process.execPath,
-      argList: [
-        'output-gitignore/bin',
-        '--eval', '1', '2', '3 4',
-        '-I', 'script/testBin/scriptFile.js'
-      ],
-      option: { cwd: PATH_ROOT },
-      quiet: true
-    })
+    const { promise, stdoutPromise } = run([
+      process.execPath,
+      'output-gitignore/bin',
+      '--eval', '1', '2', '3 4',
+      '-I', 'script/testBin/scriptFile.js'
+    ], { cwd: PATH_ROOT, quiet: true })
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
@@ -55,15 +51,11 @@ runMain(async (logger) => {
 
   {
     logger.padLog('test eval scriptString')
-    const { promise, stdoutPromise } = run({
-      command: process.execPath,
-      argList: [
-        'output-gitignore/bin',
-        '--eval', SCRIPT_STRING, '1', '2', '3 4'
-      ],
-      option: { cwd: PATH_ROOT },
-      quiet: true
-    })
+    const { promise, stdoutPromise } = run([
+      process.execPath,
+      'output-gitignore/bin',
+      '--eval', SCRIPT_STRING, '1', '2', '3 4'
+    ], { cwd: PATH_ROOT, quiet: true })
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [

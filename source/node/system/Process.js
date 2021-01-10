@@ -2,7 +2,7 @@ import { setTimeoutAsync } from 'source/common/time'
 import { autoEllipsis } from 'source/common/string'
 import { padTable } from 'source/common/format'
 import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTreeNode } from 'source/common/data/Tree'
-import { run } from './Run'
+import { run } from 'source/node/run'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   const parseTitleCol = (titleString) => { // a col means \w+\s+, or \s+\w+ (for this output), so every 2 \w\s flip means a col
@@ -40,9 +40,9 @@ const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   }
 
   const createGetProcessListAsync = (commandString, lineSeparator, keyList, valueProcessList) => {
-    const [ command, ...argList ] = commandString.split(' ')
+    const argList = commandString.split(' ')
     return async () => {
-      const { promise, stdoutPromise } = run({ command, argList, quiet: true })
+      const { promise, stdoutPromise } = run(argList, { quiet: true })
       await promise
       return parseTableOutput(String(await stdoutPromise), lineSeparator, keyList, valueProcessList)
     }

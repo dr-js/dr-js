@@ -1,6 +1,6 @@
 import { strictEqual } from 'source/common/verify'
-import { run } from './Run'
 import { padTable } from 'source/common/format'
+import { run } from 'source/node/run'
 
 import {
   getProcessListAsync,
@@ -28,11 +28,7 @@ describe('Node.System.Process', () => {
   })
 
   it('getProcessList() sub-process', async () => {
-    const { subProcess, promise } = run({
-      command: 'node',
-      argList: [ '-e', 'setTimeout(console.log, 200)' ],
-      quiet: true
-    })
+    const { subProcess, promise } = run([ process.execPath, '-e', 'setTimeout(console.log, 200)' ], { quiet: true })
     const result = await getProcessListAsync()
 
     subProcess.kill()

@@ -19,7 +19,7 @@ import { createServerExot } from 'source/node/server/Server'
 import { createTCPProxyListener } from 'source/node/server/Proxy'
 import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen'
 import { resolveCommandAsync } from 'source/node/system/ResolveCommand'
-import { runSync } from 'source/node/system/Run'
+import { runSync } from 'source/node/run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
 
@@ -102,8 +102,7 @@ const runMode = async (optionData, modeName) => {
 
     case 'open': {
       const uri = argumentList[ 0 ] || '.' // can be url or path
-      const [ command, ...prefixArgList ] = getDefaultOpenCommandList()
-      return runSync({ command, argList: [ ...prefixArgList, uri.includes('://') ? uri : normalize(uri) ] })
+      return runSync([ ...getDefaultOpenCommandList(), uri.includes('://') ? uri : normalize(uri) ])
     }
     case 'which': {
       const commandNameOrPath = argumentList[ 0 ]

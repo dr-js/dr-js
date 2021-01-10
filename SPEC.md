@@ -149,6 +149,8 @@
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
++ 📄 [source/node/run.js](source/node/run.js)
+  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
   - `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
@@ -437,6 +439,8 @@
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
   - **Resource**
     - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
+  - **Run**
+    - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)

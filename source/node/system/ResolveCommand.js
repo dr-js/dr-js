@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process'
 import { resolve } from 'path'
-import { run } from './Run'
+import { run } from 'source/node/run'
 
 const configureWin32 = (extList = (process.env.PATHEXT || '.EXE;.BAT;.CMD').toUpperCase().split(';')) => [ // process.env.PATHEXT // '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC'
   'where.exe', // search cwd // https://ss64.com/nt/where.html
@@ -35,7 +35,7 @@ const resolveCommandName = (commandName, cwd) => { // if not found, result in em
 
 const resolveCommandNameAsync = async (commandName, cwd) => { // if not found, result in empty string: ""
   const [ checkCommand, processFunc ] = configureCached()
-  const { promise, stdoutPromise } = run({ command: checkCommand, argList: [ commandName ], option: { cwd }, quiet: true })
+  const { promise, stdoutPromise } = run([ checkCommand, commandName ], { cwd, quiet: true })
   return processFunc(String(await promise.then(() => stdoutPromise, () => '')))
 }
 

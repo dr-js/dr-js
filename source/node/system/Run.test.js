@@ -3,7 +3,7 @@ import { catchSync, catchPromise } from 'source/common/error'
 import { getRandomId } from 'source/common/math/random'
 import {
   describeRunOutcome, describeRunOutcomeSync,
-  run, runSync
+  run, runSync // TODO: DEPRECATE: old test
 } from './Run'
 
 const { describe, it, info = console.log } = global

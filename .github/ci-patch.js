@@ -1,6 +1,6 @@
 const { resolve } = require('path')
 const { release, arch, homedir } = require('os')
-const { run } = require('@dr-js/core/library/node/system/Run')
+const { run } = require('@dr-js/core/library/node/system/Run') // TODO: DEPRECATE
 
 console.log(`[ci-patch] system: ${process.platform}-${release()}[${arch()}]`)
 console.log(`[ci-patch] node: ${process.version}`)
