@@ -1,4 +1,17 @@
-// TODO: since this is all common js, move under common/module?
+import { readFileSync } from 'fs'
+import { tryRequireResolve } from 'source/env/tryRequire'
+
+const DR_BROWSER_FILE_PATH = () => [
+  './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`
+  '../Dr.browser.js', // relative to `source/env/tryRequire`
+  '@dr-js/core/library/Dr.browser.js' // within normal node_module structure
+].reduce((o, path) => o || tryRequireResolve(path), null)
+
+let cache = ''
+const DR_BROWSER_SCRIPT_TAG = () => {
+  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  return cache
+}
 
 // TODO: move to common/string?
 const filterJoin = (array) => array.filter(Boolean).join('\n')
@@ -117,9 +130,12 @@ const simpleCompactCSS = (CSSString) => CSSString
   .replace(/;}/g, '}') // reduce tail semicolon
 
 export {
+  DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
+
   COMMON_LAYOUT,
   COMMON_STYLE,
   COMMON_SCRIPT, COMMON_FUNC_MAP,
+
   styleTagMerge,
   simpleCompactCSS
 }

@@ -21,7 +21,7 @@ const createTagList = () => {
   return { tagList, defineTag, tag }
 }
 
-describe('Common.SanityTest.Promise', () => {
+process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
   it('Promise.resolve(Promise.resolve())', async () => {
     const value = {}
 

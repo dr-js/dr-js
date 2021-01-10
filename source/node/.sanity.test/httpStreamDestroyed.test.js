@@ -6,7 +6,7 @@ import { getUnusedPort } from 'source/node/server/function'
 
 const { describe, it, info = console.log } = global
 
-describe('Node.SanityTest.HttpStreamDestroyed', () => {
+process.env.TEST_SANITY && describe('Node.SanityTest.HttpStreamDestroyed', () => {
   it('test inspired by the HTTP `stream.destroyed` change in nodejs v15.5.0', async () => { // check: https://github.com/nodejs/node/issues/36617
     const HOSTNAME = '127.0.0.1'
     const PORT = await getUnusedPort(3000, HOSTNAME)

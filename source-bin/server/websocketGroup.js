@@ -1,7 +1,6 @@
 import { catchAsync } from 'source/common/error'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 
-import { DR_BROWSER_SCRIPT_TAG } from 'source/node/resource'
 import { packBufferPacket, parseBufferPacket } from 'source/node/data/BufferPacket'
 import { responderEndWithRedirect } from 'source/node/server/Responder/Common'
 import { responderSendBufferCompress, prepareBufferData } from 'source/node/server/Responder/Send'
@@ -9,7 +8,7 @@ import { createResponderRouter, createRouteMap, getRouteParamAny } from 'source/
 import { OPCODE_TYPE, WEBSOCKET_EVENT } from 'source/node/server/WebSocket/function'
 import { enableWebSocketServer } from 'source/node/server/WebSocket/WebSocketServer'
 import { createUpdateRequestListener } from 'source/node/server/WebSocket/WebSocketUpgradeRequest'
-import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/node/server/commonHTML'
+import { DR_BROWSER_SCRIPT_TAG, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/node/server/commonHTML'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'

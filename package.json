@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.4",
+  "version": "0.4.5-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -15,8 +15,8 @@
     "// script ======================": "",
     "script-pack": "node -r @babel/register ./script quiet pack",
     "script-pack-test": "node -r @babel/register ./script verbose pack test",
-    "script-publish": "node -r @babel/register ./script pack publish",
-    "script-publish-dev": "node -r @babel/register ./script pack publish-dev",
+    "script-publish": "dr-dev --EE TEST_SANITY=true -E -- node -r @babel/register ./script pack publish",
+    "script-publish-dev": "dr-dev --EE TEST_SANITY=true -E -- node -r @babel/register ./script pack publish-dev",
     "script-generate-spec": "node -r @babel/register ./script/generateSpec ./tempFileDelete.config.json",
     "script-delete-temp-build-file": "node -r @babel/register ./source-bin -c ./tempFileDelete.config.json",
     "// build =======================": "",
@@ -28,7 +28,7 @@
     "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
     "// test ========================": "",
-    "test-T": "dr-dev --EE BABEL_ENV=dev -E -- dr-dev --TR @babel/register -T",
+    "test-T": "dr-dev --EE 'BABEL_ENV=dev&TEST_SANITY=true' -E -- dr-dev --TR @babel/register -T",
     "test-dev": "npm run test-T -- source/node/server/Server.test.js",
     "test-runlet": "npm run test-T -- source/common/module/Runlet.test.js",
     "test-sanity": "npm run test-T -- source/node/.sanity.test/memoryLeakPendingPromiseChain.test.js",
@@ -43,7 +43,7 @@
     "// =============================": "",
     "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json output-gitignore/library",
     "lint": "eslint ./source/ ./source-bin/ ./script/ ./example/",
-    "test": "npm run script-pack-test",
+    "test": "dr-dev --EE TEST_SANITY=true -E -- npm run script-pack-test",
     "prepack": "echo \"Error: pack with script-*\" && exit 1"
   },
   "engines": {

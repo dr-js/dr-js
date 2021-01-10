@@ -6,7 +6,7 @@ const { describe, it } = global
 // for linux it's `code: null, signal: SIGABRT`
 const EXIT_CODE_NODE_OOM = process.platform === 'win32' ? 134 : null
 
-describe('Node.SanityTest.MemoryLeakPendingPromiseChain (slow)', () => {
+process.env.TEST_SANITY && describe('Node.SanityTest.MemoryLeakPendingPromiseChain (slow)', () => {
   it('[OOM] tail-recursive promise setup 00', createTestFunc(EXIT_CODE_NODE_OOM, async () => {
     // GH sample, edit & formatted. https://github.com/promises-aplus/promises-spec/issues/179#issuecomment-93453094
     const run = (i) => new Promise((resolve) => setImmediate(resolve))

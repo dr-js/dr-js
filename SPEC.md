@@ -6,7 +6,7 @@
 
 #### Export Path
 + 📄 [source/browser/DOM.js](source/browser/DOM.js)
-  - `applyReceiveFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
+  - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
@@ -182,7 +182,7 @@
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServerExot`, `describeServerOption`
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
-  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
+  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
@@ -242,7 +242,7 @@
     - **LocalStorageStateStore**
       - `createLocalStorageStateStore`
   - **DOM**
-    - `applyReceiveFileListListener`, `getElementAtViewport`, `getPathElementList`, `throttleByAnimationFrame`
+    - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
   - **Net**
     - `fetchLikeRequest`
   - **Resource**
@@ -417,7 +417,7 @@
     - **Server**
       - `createRequestListener`, `createServerExot`, `describeServerOption`
     - **CommonHTML**
-      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `simpleCompactCSS`, `styleTagMerge`
+      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
       - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
   - **System**

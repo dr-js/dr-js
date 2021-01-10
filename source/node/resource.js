@@ -1,41 +1,29 @@
-import { readFileSync, promises as fsAsync } from 'fs'
+import { promises as fsAsync } from 'fs'
 import { runInThisContext } from 'vm'
-import { tryRequireResolve } from 'source/env/tryRequire'
 import { fetchLikeRequest } from 'source/node/net'
 
-const DR_BROWSER_FILE_PATH = () => [
-  './Dr.browser.js', // maybe after webpack
-  '../Dr.browser.js', // relative to source/env/tryRequire
-  '@dr-js/core/library/Dr.browser.js' // within normal node_module structure
-].reduce((o, path) => o || tryRequireResolve(path), null)
-
-let cache = ''
-const DR_BROWSER_SCRIPT_TAG = () => {
-  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
-  return cache
-}
-
 // TODO: check if is needed, or simplify
-const loadRemoteScript = async (uri) => {
+const loadRemoteScript = async (uri) => { // TODO: DEPRECATE: move to `@dr-js/node`
   const scriptString = await (await fetchLikeRequest(uri)).text()
   return runInThisContext(scriptString, { filename: uri, displayErrors: true })
 }
-const loadLocalScript = async (filePath) => {
+const loadLocalScript = async (filePath) => { // TODO: DEPRECATE: move to `@dr-js/node`
   const scriptString = String(await fsAsync.readFile(filePath))
   return runInThisContext(scriptString, { filename: filePath, displayErrors: true })
 }
-const loadScript = (uri) => uri.includes('://')
+const loadScript = (uri) => uri.includes('://') // TODO: DEPRECATE: move to `@dr-js/node`
   ? loadRemoteScript(uri)
   : loadLocalScript(uri)
 
-const loadRemoteJSON = async (uri) => (await fetchLikeRequest(uri)).json()
-const loadLocalJSON = async (filePath) => JSON.parse(String(await fsAsync.readFile(filePath)))
-const loadJSON = (uri) => uri.includes('://')
+const loadRemoteJSON = async (uri) => (await fetchLikeRequest(uri)).json() // TODO: DEPRECATE: move to `@dr-js/node`
+const loadLocalJSON = async (filePath) => JSON.parse(String(await fsAsync.readFile(filePath))) // TODO: DEPRECATE: move to `@dr-js/node`
+const loadJSON = (uri) => uri.includes('://') // TODO: DEPRECATE: move to `@dr-js/node`
   ? loadRemoteJSON(uri)
   : loadLocalJSON(uri)
 
 export {
-  DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
-  loadRemoteScript, loadLocalScript, loadScript,
-  loadRemoteJSON, loadLocalJSON, loadJSON
+  loadRemoteScript, loadLocalScript, loadScript, // TODO: DEPRECATE: move to `@dr-js/node`
+  loadRemoteJSON, loadLocalJSON, loadJSON // TODO: DEPRECATE: move to `@dr-js/node`
 }
+
+export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from 'source/node/server/commonHTML' // TODO: DEPRECATE
