@@ -1,34 +1,35 @@
-const { WEBSOCKET_EVENT } = require('../../output-gitignore/library/node/server/WebSocket/function')
-const { createWebSocketClient } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketClient')
+// const { setTimeoutAsync } = require('../../output-gitignore/library/common/time')
+const { createWSClient } = require('../../output-gitignore/library/node/server/WS/Client')
 
 const BIG_STRING = '0123456789abcdef'.repeat(1024)
 const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
-createWebSocketClient({
-  url: 'ws://127.0.0.1:3000',
-  option: { requestProtocolString: [ 'json', 'a', 'b' ].join(',') },
-  onUpgradeResponse: (webSocket, response, bodyHeadBuffer) => {
-    // return webSocket.doCloseSocket() // can just close here
+createWSClient('ws://127.0.0.1:3000', { protocolList: [ 'json', 'a', 'b' ] })
+  .then(async (ws) => {
+    console.log('>> OPEN')
+    await Promise.all([
+      (async () => {
+        await ws.sendText('WebSocketClient open message: 123ABC!@#')
+        await ws.sendText('BIG STRING') // big string request
+        await ws.sendText('BIG BUFFER') // big buffer request
 
-    const { origin, isSecure } = webSocket
-    console.log('[ON_UPGRADE_REQUEST]', { origin, isSecure }, bodyHeadBuffer.length)
+        await ws.sendText(BIG_STRING) // big string echo
+        await ws.sendBinary(BIG_BUFFER) // big buffer echo
 
-    webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
-      console.log('>> OPEN')
-      webSocket.sendText('WebSocketClient open message: 123ABC!@#')
-      setTimeout(async () => webSocket.sendText(BIG_STRING), 1000) // big string
-      setTimeout(async () => webSocket.sendBuffer(BIG_BUFFER), 2000) // big buffer
-      setTimeout(() => webSocket.close(1000, 'CLOSE RECEIVED'), 3000) // close
-    })
-    webSocket.on(WEBSOCKET_EVENT.FRAME, ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME: ${dataType} [${dataBuffer.length}]: ${String(dataBuffer).slice(0, 20)}`)
-    })
-    webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
-      console.log('>> CLOSE')
-    })
-  },
-  onError: (error) => {
-    console.warn('[createWebSocketClient][Error]', error)
-    console.warn('[createWebSocketClient] start "example-server.js" first?')
-  }
-})
+        await ws.sendText('CLOSE') // close text
+        // await setTimeoutAsync(0) // or the close will be too fast for last buffer echo
+        // await ws.close(1000, 'CLOSE RECEIVED') // direct close
+      })(),
+      (async () => {
+        for await (const { opcode, buffer } of ws) {
+          console.log('>> FRAME:', opcode, buffer.length, String(buffer).slice(0, 20))
+        }
+      })()
+    ])
+    console.log('>> CLOSE')
+  })
+  .catch((error) => {
+    console.warn('[createWSClient][Error]', error)
+    console.warn('[createWSClient] start "example-server.js" first?')
+    process.exitCode = 1
+  })

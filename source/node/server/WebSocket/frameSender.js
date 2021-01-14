@@ -90,7 +90,7 @@ const sendEncodedFrame = (frameSenderStore, socket) => { // will send the frame 
   }))
 }
 
-export {
+export { // TODO: DEPRECATE: use `node/server/WS`
   createFrameSenderStore,
 
   encodeFrame,

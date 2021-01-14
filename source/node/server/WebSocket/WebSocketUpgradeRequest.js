@@ -26,4 +26,4 @@ const createUpdateRequestListener = ({
   return stateStore.getState().protocol
 }
 
-export { createUpdateRequestListener }
+export { createUpdateRequestListener } // TODO: DEPRECATE: use `node/server/WS`

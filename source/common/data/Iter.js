@@ -1,4 +1,5 @@
 import { createInsideOutPromise } from 'source/common/function'
+import { getRandomId } from 'source/common/math/random'
 
 const unwrap = ({
   iterable, // { [ Symbol.asyncIterator ] } or { [ Symbol.iterator ] }
@@ -16,31 +17,45 @@ const wrapAsync = (next) => ({
   [ Symbol.asyncIterator ]: () => ({ next }) // as async iterable
 })
 
-// NOTE: this lock-step implementation needs to be call in order: `next`(Iter) first, then `send`, else the first value to `send` will get dropped
 const createLockStepAsyncIter = () => {
   let sendIOP = createInsideOutPromise()
   let nextIOP = createInsideOutPromise()
   let sendLock = false
   let nextLock = false
+  let isDone = false
+  const id = __DEV__ && getRandomId()
+  __DEV__ && console.log(`[LSAI|${id}] create`)
   return {
     ...wrapAsync(async () => { // NOTE: expect to call this before send/throw to `await nextIOP.promise`
       if (nextLock) throw new Error('double-next')
+      __DEV__ && console.log(`[LSAI|${id}|next] pre`)
       nextLock = true
       sendIOP.resolve()
       const result = await nextIOP.promise
-      nextIOP = createInsideOutPromise()
+      __DEV__ && console.log(`[LSAI|${id}|next] post`, result)
+      if (isDone === false) nextIOP = createInsideOutPromise()
       nextLock = false
       return result // { value, done }
     }),
-    send: async (value, done = false) => {
+    send: async (value, done = false) => { // send after done will be no-op
       if (sendLock) throw new Error('double-send')
+      __DEV__ && console.log(`[LSAI|${id}|send] pre`, done)
       sendLock = true
       await sendIOP.promise
-      nextIOP.resolve({ value, done })
-      sendIOP = createInsideOutPromise()
+      isDone = done
+      nextIOP.resolve({ value, done }) // TODO: need to allow next resolve after done
+      __DEV__ && console.log(`[LSAI|${id}|send] post`)
+      if (isDone === false) sendIOP = createInsideOutPromise()
       sendLock = false
     },
-    throw: async (error) => { nextIOP.reject(error) }
+    abort: (value) => { // will bypass pending send, for normal done, use `.send(undefined, true)`
+      isDone = true
+      nextIOP.resolve({ value, done: true })
+    },
+    throw: (error) => {
+      isDone = true
+      nextIOP.reject(error)
+    }
   }
 }
 

@@ -192,7 +192,7 @@ const createFrameDecoder = (frameLengthLimit) => {
   }
 }
 
-export {
+export { // TODO: DEPRECATE: use `node/server/WS`
   createFrameReceiverStore,
   listenAndReceiveFrame
 }

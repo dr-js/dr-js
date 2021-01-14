@@ -41,35 +41,30 @@ const OPCODE_TYPE = {
 }
 
 const WEBSOCKET_VERSION = 13
-const WEBSOCKET_EVENT = {
-  OPEN: 'ws:open',
-  FRAME: 'ws:frame',
-  CLOSE: 'ws:close'
-}
-
 const WEBSOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 const getRequestKey = () => randomBytes(16).toString('base64')
 const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEBSOCKET_MAGIC_STRING}`).digest('base64')
 
 const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
 
-// TODO: will overwrite buffer, consider optimize speed?
-const applyMaskQuadletBufferInPlace = (buffer, maskQuadletBuffer) => {
-  for (let index = 0, indexMax = buffer.length; index < indexMax; index++) {
-    buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
+// NOTE: will overwrite buffer // TODO: consider further optimize speed?
+const applyMaskQuadletBufferInPlace = (buffer, maskQuadletBuffer, indexOffset = 0) => {
+  for (let index = 0, indexMax = buffer.length - indexOffset; index < indexMax; index++) {
+    buffer[ index + indexOffset ] ^= maskQuadletBuffer[ index & 3 ]
   }
 }
 
-export { // TODO: DEPRECATE: use `node/server/WS`
+// `sec-websocket-protocol` string is comma separated string like: `a,b,c-d-e`
+const packProtocolList = (array) => array.join(',')
+const parseProtocolString = (string) => (string || '').split(/, */)
+
+export {
   FRAME_CONFIG,
   OPCODE_TYPE,
 
-  WEBSOCKET_VERSION,
-  WEBSOCKET_EVENT,
+  WEBSOCKET_VERSION, getRequestKey, getRespondKey,
 
-  getRequestKey,
-  getRespondKey,
+  BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace,
 
-  BUFFER_MAX_LENGTH,
-  applyMaskQuadletBufferInPlace
+  packProtocolList, parseProtocolString
 }

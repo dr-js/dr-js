@@ -6,8 +6,8 @@ const { responderEnd, createResponderLog, createResponderLogEnd } = require('../
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
 const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
 const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
-const { OPCODE_TYPE, WEBSOCKET_EVENT } = require('../../output-gitignore/library/node/server/WebSocket/function')
-const { enableWebSocketServer } = require('../../output-gitignore/library/node/server/WebSocket/WebSocketServer')
+const { OPCODE_TYPE } = require('../../output-gitignore/library/node/server/WS/function')
+const { enableWSServer } = require('../../output-gitignore/library/node/server/WS/Server')
 
 const { createExampleServerHTMLResponder } = require('./example-server-html')
 
@@ -43,35 +43,24 @@ server.on('request', createRequestListener({
 const BIG_STRING = '0123456789abcdef'.repeat(1024)
 const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)
 
-const webSocketSet = enableWebSocketServer({
-  server,
-  onUpgradeRequest: (webSocket, request, bodyHeadBuffer) => {
-    // return webSocket.doCloseSocket() // can just close here
-
-    const { origin, protocolList, isSecure } = webSocket
-    console.log('[ON_UPGRADE_REQUEST]', { origin, protocolList, isSecure }, bodyHeadBuffer.length)
-
-    webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
-      console.log(`>> OPEN, current active: ${webSocketSet.size} (self excluded)`)
-    })
-    webSocket.on(WEBSOCKET_EVENT.FRAME, async ({ dataType, dataBuffer }) => {
-      console.log(`>> FRAME: ${dataType} [${dataBuffer.length}]: ${String(dataBuffer).slice(0, 20)}`)
-
-      if (dataType === OPCODE_TYPE.TEXT) {
-        if (String(dataBuffer) === 'CLOSE') return webSocket.close(1000, 'CLOSE RECEIVED')
-        if (String(dataBuffer) === 'BIG STRING') return webSocket.sendText(BIG_STRING)
-        if (String(dataBuffer) === 'BIG BUFFER') return webSocket.sendBuffer(BIG_BUFFER)
+const wsSet = enableWSServer(server, {
+  onUpgradeRequest: async (request, socket, headBuffer, info) => {
+    console.log('[ON_UPGRADE_REQUEST]', info, headBuffer.length)
+    const ws = info.getWS(info.protocolList[ 0 ])
+    console.log(`>> OPEN, current active: ${wsSet.size} (self included)`)
+    for await (const { opcode, buffer } of ws) {
+      console.log('>> FRAME:', opcode, buffer.length, String(buffer).slice(0, 20))
+      if (!ws.getIsOpen()) continue // should drop frame after close, the for await loop is not safe OPEN guarantee
+      if (opcode === OPCODE_TYPE.TEXT && String(buffer) === 'CLOSE') await ws.close(1000, 'CLOSE RECEIVED')
+      else if (opcode === OPCODE_TYPE.TEXT && String(buffer) === 'BIG STRING') await ws.sendText(BIG_STRING)
+      else if (opcode === OPCODE_TYPE.TEXT && String(buffer) === 'BIG BUFFER') await ws.sendBinary(BIG_BUFFER)
+      else { // echo back
+        console.log('>> echo back:', opcode, buffer.length)
+        opcode === OPCODE_TYPE.TEXT && await ws.sendText(String(buffer))
+        opcode === OPCODE_TYPE.BINARY && await ws.sendBinary(buffer)
       }
-
-      // echo back
-      dataType === OPCODE_TYPE.TEXT && webSocket.sendText(String(dataBuffer))
-      dataType === OPCODE_TYPE.BINARY && webSocket.sendBuffer(dataBuffer)
-    })
-    webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
-      console.log(`>> CLOSE, current active: ${webSocketSet.size} (self included)`)
-    })
-
-    return protocolList[ 0 ]
+    }
+    console.log(`>> CLOSE, current active: ${wsSet.size} (self included)`)
   }
 })
 

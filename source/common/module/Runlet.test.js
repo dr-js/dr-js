@@ -18,7 +18,7 @@ import {
 } from './Runlet'
 import {
   createArrayInputChip, createArrayOutputChip,
-  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
+  createAsyncIterInputChip, createAsyncIterOutputChip,
   createENDRegulatorChip
 } from './RunletChip'
 
@@ -170,9 +170,9 @@ describe('Common.Module.Runlet', () => {
       createCountPool({ key: poolKey, sizeLimit: samplePoolSizeLimit })
     ])
     const chipMap = toChipMap([
-      createAsyncIteratorInputChip({ nextPoolKey: poolKey, nextPendKey: 'pend:a', iterable: getSampleRange(1, sampleSourceCount) }),
+      createAsyncIterInputChip({ nextPoolKey: poolKey, nextPendKey: 'pend:a', iterable: getSampleRange(1, sampleSourceCount) }),
       { ...ChipSyncBasic, prevPoolKey: poolKey, prevPendKey: 'pend:a', nextPoolKey: poolKey, nextPendKey: 'pend:b' },
-      createAsyncIteratorOutputChip({ key: 'out', prevPoolKey: poolKey, prevPendKey: 'pend:b' })
+      createAsyncIterOutputChip({ key: 'out', prevPoolKey: poolKey, prevPendKey: 'pend:b' })
     ])
 
     const { attach, trigger, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
@@ -566,7 +566,7 @@ describe('Common.Module.Runlet', () => {
         key: 'chip:trans-B-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-B', nextPoolKey: poolKey, nextPendKey: 'pend:out-C',
         splitCount: 2, splitValue: async (value, index, indexMax) => ({ type: 'C', index: (value.index + index * 0.01) })
       }), 8),
-      createAsyncIteratorOutputChip({ key: 'chip:out-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-C' }), // jump wire
+      createAsyncIterOutputChip({ key: 'chip:out-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-C' }), // jump wire
       delayChipProcess(createArrayInputChip({
         key: 'chip:input-A', nextPoolKey: poolKey, nextPendKey: 'pend:out-A',
         array: getSample((index) => ({ type: 'A', index }), 30)
@@ -631,7 +631,7 @@ describe('Common.Module.Runlet', () => {
         key: 'chip:trans-B-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-B', nextPoolKey: poolKey, nextPendKey: 'pend:out-C',
         splitCount: 2, splitValue: async (value, index, indexMax) => ({ type: 'C', index: (value.index + index * 0.01) })
       }), 8),
-      createAsyncIteratorOutputChip({ key: 'chip:out-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-C' }) // jump wire
+      createAsyncIterOutputChip({ key: 'chip:out-C', prevPoolKey: poolKey, prevPendKey: 'pend:out-C' }) // jump wire
     ])
     const chipOutC = chipMapB.get('chip:out-C')
 

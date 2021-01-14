@@ -6,7 +6,7 @@ import { connect as TLSConnect } from 'tls'
 // Usage:
 //   server.on('connection', createTCPProxyListener({ ... }))
 const createTCPProxyListener = ({
-  isSecure,
+  isSecure = false,
   getTargetOption = (socket) => ({ hostname: '127.0.0.1', port: 80 }) // can also be used for connection check
 }) => async (socket) => {
   let preConnectDataList = [] // will be set to null after connect

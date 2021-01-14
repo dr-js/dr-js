@@ -1,13 +1,11 @@
-import { catchAsync } from 'source/common/error'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 
 import { packBufferPacket, parseBufferPacket } from 'source/node/data/BufferPacket'
-import { responderEndWithRedirect } from 'source/node/server/Responder/Common'
+import { createResponderLog, responderEndWithRedirect } from 'source/node/server/Responder/Common'
 import { responderSendBufferCompress, prepareBufferData } from 'source/node/server/Responder/Send'
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'source/node/server/Responder/Router'
-import { OPCODE_TYPE, WEBSOCKET_EVENT } from 'source/node/server/WebSocket/function'
-import { enableWebSocketServer } from 'source/node/server/WebSocket/WebSocketServer'
-import { createUpdateRequestListener } from 'source/node/server/WebSocket/WebSocketUpgradeRequest'
+import { OPCODE_TYPE } from 'source/node/server/WS/function'
+import { enableWSServer, createUpgradeRequestListener } from 'source/node/server/WS/Server'
 import { DR_BROWSER_SCRIPT_TAG, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/node/server/commonHTML'
 
 const TYPE_CLOSE = '#CLOSE'
@@ -16,26 +14,18 @@ const TYPE_INFO_USER = '#INFO_USER'
 const TYPE_BUFFER_GROUP = '#BUFFER_GROUP'
 const TYPE_BUFFER_SINGLE = '#BUFFER_SINGLE'
 
-const wrapFrameBufferPacket = (webSocket, onData) => async ({ dataType, dataBuffer }) => {
-  __DEV__ && console.log('>> FRAME:', dataType, dataBuffer.length) // String(dataBuffer).slice(0, 20)
-  if (dataType !== OPCODE_TYPE.BINARY) return webSocket.close(1000, 'expect BINARY')
-  const { error } = await catchAsync(onData, parseBufferPacket(dataBuffer))
-  __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
-  error && webSocket.close(1000, String(error))
-}
-
 // TODO: keep limited message history?
 
 const groupInfoMap = {}
 const groupIdSetMap = {}
 
-const addUser = (groupPath, id, webSocket) => {
+const addUser = (groupPath, id, ws) => {
   if (groupIdSetMap[ groupPath ] === undefined) groupIdSetMap[ groupPath ] = new Set()
   const groupIdSet = groupIdSetMap[ groupPath ]
   groupIdSet.add(id)
   if (groupInfoMap[ groupPath ] === undefined) groupInfoMap[ groupPath ] = new Map()
   const groupInfo = groupInfoMap[ groupPath ]
-  groupInfo.set(id, { id, webSocket, groupIdSet })
+  groupInfo.set(id, { id, ws, groupIdSet })
   return groupInfo
 }
 
@@ -58,60 +48,66 @@ const fixUserIdClash = (groupPath, id) => {
   return `${prefix}-${suffix}`
 }
 
-const upgradeRequestProtocol = (store) => {
-  const { webSocket } = store
+const groupMain = async (store) => {
+  const { ws } = store
   const { groupPath, id } = store.getState()
   const sendGroupInfo = (groupInfo) => {
     if (groupInfo.size === 0) return
     const buffer = packBufferPacket(JSON.stringify({ type: TYPE_INFO_GROUP, payload: Array.from(groupIdSetMap[ groupPath ]) }))
-    groupInfo.forEach((v) => v.webSocket.sendBuffer(buffer))
+    groupInfo.forEach((v) => v.ws.sendBinary(buffer))
   }
   const sendGroupBuffer = (groupInfo, type, payload, payloadBuffer) => {
     if (groupInfo.size <= 1) return
     const buffer = packBufferPacket(JSON.stringify({ type, payload: { ...payload, id } }), payloadBuffer)
     groupInfo.forEach((v) => {
       __DEV__ && v.id !== id && console.log('[sendGroupBuffer] send buffer to', v.id)
-      v.id !== id && v.webSocket.sendBuffer(buffer)
+      v.id !== id && v.ws.sendBinary(buffer)
     })
   }
   const sendTargetBuffer = (groupInfo, type, payload, targetId, payloadBuffer) => {
     const targetInfo = groupInfo.get(targetId)
     __DEV__ && targetInfo && console.log('[sendTargetBuffer] send buffer to', targetInfo.id)
-    targetInfo && targetInfo.webSocket.sendBuffer(packBufferPacket(JSON.stringify({ type, targetId, payload: { ...payload, id } }), payloadBuffer))
+    targetInfo && targetInfo.ws.sendBinary(packBufferPacket(JSON.stringify({ type, targetId, payload: { ...payload, id } }), payloadBuffer))
   }
-  webSocket.on(WEBSOCKET_EVENT.OPEN, () => {
-    const groupInfo = addUser(groupPath, id, webSocket)
-    webSocket.sendBuffer(packBufferPacket(JSON.stringify({ type: TYPE_INFO_USER, payload: { groupPath, id } })))
-    sendGroupInfo(groupInfo)
-    __DEV__ && console.log(`[RequestProtocol] >> OPEN, current group: ${groupInfo.size} (self included)`, groupPath)
-  })
-  webSocket.on(WEBSOCKET_EVENT.CLOSE, () => {
-    const groupInfo = deleteUser(groupPath, id)
-    sendGroupInfo(groupInfo)
-    __DEV__ && console.log(`[RequestProtocol] >> CLOSE, current group: ${groupInfo.size} (self included)`, groupPath)
-  })
-  webSocket.on(WEBSOCKET_EVENT.FRAME, wrapFrameBufferPacket(webSocket, ([ headerString, payloadBuffer ]) => {
-    const { type, payload, targetId } = JSON.parse(headerString)
-    if (type === TYPE_CLOSE) webSocket.close(1000, 'CLOSE received')
-    if (type === TYPE_BUFFER_GROUP) sendGroupBuffer(groupInfoMap[ groupPath ], type, payload, payloadBuffer)
-    if (type === TYPE_BUFFER_SINGLE) sendTargetBuffer(groupInfoMap[ groupPath ], type, payload, targetId, payloadBuffer)
-  }))
+
+  const groupInfo = addUser(groupPath, id, ws)
+  await ws.sendBinary(packBufferPacket(JSON.stringify({ type: TYPE_INFO_USER, payload: { groupPath, id } })))
+  sendGroupInfo(groupInfo)
+  __DEV__ && console.log(`[RequestProtocol] >> OPEN, current group: ${groupInfo.size} (self included)`, groupPath)
+
+  try {
+    for await (const { opcode, buffer } of ws) {
+      __DEV__ && console.log('>> FRAME:', opcode, buffer.length) // String(buffer).slice(0, 20)
+      if (opcode !== OPCODE_TYPE.BINARY) throw new Error('expect BINARY')
+      const [ headerString, payloadBuffer ] = parseBufferPacket(buffer)
+      const { type, payload, targetId } = JSON.parse(headerString)
+      if (type === TYPE_CLOSE) ws.close(1000, 'CLOSE received')
+      if (type === TYPE_BUFFER_GROUP) sendGroupBuffer(groupInfo, type, payload, payloadBuffer)
+      if (type === TYPE_BUFFER_SINGLE) sendTargetBuffer(groupInfo, type, payload, targetId, payloadBuffer)
+    }
+  } catch (error) {
+    __DEV__ && error && console.warn('[ERROR][wrapFrameBufferPacket]', error)
+    error && ws.close(1000, String(error))
+  }
+
+  deleteUser(groupPath, id)
+  sendGroupInfo(groupInfo)
+  __DEV__ && console.log(`[RequestProtocol] >> CLOSE, current group: ${groupInfo.size} (self included)`, groupPath)
 }
 
-const FRAME_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
+const DATA_LENGTH_LIMIT = 256 * 1024 * 1024 // 256 MiB
 const PROTOCOL_TYPE_SET = new Set([ 'group-binary-packet' ])
 const responderWebSocketGroupUpgrade = async (store) => {
-  const { url: { searchParams } } = store.getState() // TODO: depend on createResponderRouter
-  const { protocolList } = store.webSocket
-  // const { origin, protocolList, isSecure } = store.webSocket
-  // __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { origin, protocolList, isSecure }, store.bodyHeadBuffer.length)
+  const { url: { searchParams }, info: { protocolList } } = store.getState() // TODO: depend on createResponderRouter
+  __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { protocolList }, store.getState().headBuffer.length)
   const groupPath = decodeURIComponent(getRouteParamAny(store) || '')
   const id = searchParams.get('id')
   const protocol = getProtocol(protocolList, PROTOCOL_TYPE_SET)
+  __DEV__ && console.log('[responderWebSocketGroupUpgrade]', { groupPath, id, protocol })
   if (!groupPath || !id || !protocol) return
-  __DEV__ && console.log('[responderWebSocketGroupUpgrade] pass', { groupPath, id, protocol })
-  store.setState({ protocol, groupPath, id: fixUserIdClash(groupPath, id) })
-  upgradeRequestProtocol(store)
+  store.upgradeWS(protocol)
+  store.setState({ groupPath, id: fixUserIdClash(groupPath, id) })
+  await groupMain(store)
 }
 
 const getProtocol = (protocolList, protocolTypeSet) => {
@@ -120,7 +116,7 @@ const getProtocol = (protocolList, protocolTypeSet) => {
   return protocol
 }
 
-const configure = ({ serverExot, routePrefix }) => {
+const configure = ({ serverExot, log, routePrefix }) => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
     COMMON_STYLE(),
     mainStyle
@@ -132,7 +128,7 @@ const configure = ({ serverExot, routePrefix }) => {
       TYPE_INFO_USER,
       TYPE_BUFFER_GROUP,
       TYPE_BUFFER_SINGLE,
-      FRAME_LENGTH_LIMIT,
+      DATA_LENGTH_LIMIT,
       ROUTE_PREFIX: routePrefix,
       onload: mainScriptInit
     }),
@@ -144,16 +140,17 @@ const configure = ({ serverExot, routePrefix }) => {
     [ '/*', 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}/` }) ]
   ]
 
-  const { server, option: { baseUrl } } = serverExot
-  enableWebSocketServer({
-    server,
-    onUpgradeRequest: createUpdateRequestListener({
-      responderList: [ createResponderRouter({
-        routeMap: createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ], routePrefix),
-        baseUrl
-      }) ]
+  enableWSServer(serverExot.server, {
+    onUpgradeRequest: createUpgradeRequestListener({
+      responderList: [
+        createResponderLog({ log }),
+        createResponderRouter({
+          routeMap: createRouteMap([ [ '/websocket-group/*', 'GET', responderWebSocketGroupUpgrade ] ], routePrefix),
+          serverExot
+        })
+      ]
     }),
-    frameLengthLimit: FRAME_LENGTH_LIMIT
+    dataLengthLimit: 100000 // DATA_LENGTH_LIMIT TODO: TEST not crash server
   })
 
   return {
@@ -199,7 +196,7 @@ const mainScriptInit = () => {
     document, alert, getSelection, location, Blob, WebSocket,
     qS, cE,
     TYPE_CLOSE, TYPE_INFO_GROUP, TYPE_INFO_USER, TYPE_BUFFER_GROUP, TYPE_BUFFER_SINGLE,
-    FRAME_LENGTH_LIMIT,
+    DATA_LENGTH_LIMIT,
     ROUTE_PREFIX,
     Dr: {
       Common: {
@@ -371,7 +368,7 @@ const mainScriptInit = () => {
     if (!text && !file) return
     const fileName = file && file.name
     const fileSize = file && file.size
-    if (fileSize > FRAME_LENGTH_LIMIT) return alert(`fill size too big! max: ${binary(FRAME_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
+    if (fileSize > DATA_LENGTH_LIMIT) return alert(`fill size too big! max: ${binary(DATA_LENGTH_LIMIT)}B, get ${binary(fileSize)}B`)
     text && addLog({ id: STATE.id, text, className: 'color-self' })
     const fileTag = fileName && addLogWithFile({ isSend: true, id: STATE.id, fileName, fileSize, className: 'color-self' })
     STATE.websocket.send(packBlobPacket(JSON.stringify({ type: TYPE_BUFFER_GROUP, payload: { text, fileName, fileSize, fileId: fileTag && fileTag.id } })))
@@ -382,7 +379,7 @@ const mainScriptInit = () => {
   qS('#button-toggle').onclick = toggleWebSocket
   qS('#button-send').onclick = sendPayload
 
-  const { start, addKeyCommand } = createKeyCommandHub({})
+  const { start, addKeyCommand } = createKeyCommandHub()
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'd' }, callback: toggleWebSocket })
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'l' }, callback: clearLog })
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'Enter' }, callback: sendPayload })

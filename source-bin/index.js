@@ -72,7 +72,7 @@ const runMode = async (optionData, modeName) => {
   const startServer = async (configureFunc, option) => {
     const serverExot = await quickServerExot()
     const routePrefix = tryGetFirst('route-prefix') || ''
-    commonServerDown(serverExot)
+    commonServerDown(serverExot, log)
     return commonServerUp({ serverExot, log, routePrefix, ...configureFunc({ serverExot, log, routePrefix, ...option }) })
   }
 
@@ -166,7 +166,7 @@ const runMode = async (optionData, modeName) => {
       const serverExot = await quickServerExot('tcp:')
       serverExot.server.on('connection', createTCPProxyListener({ getTargetOption }))
       await serverExot.up()
-      commonServerDown(serverExot)
+      commonServerDown(serverExot, log)
       return log(indentList('[TCPProxy]', [
         `pid: ${process.pid}`,
         `at: ${serverExot.option.hostname}:${serverExot.option.port}`,

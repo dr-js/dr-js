@@ -50,9 +50,9 @@ const createArrayOutputChip = ({
   promise: IOP.promise
 })
 
-const createAsyncIteratorInputChip = ({
+const createAsyncIterInputChip = ({
   iterable, iterator, next = unwrap({ iterable, iterator }), // async or sync
-  key = 'chip:input:async-iterator', ...extra
+  key = 'chip:input:async-iter', ...extra
 }) => ({
   ...extra, key, prevPoolKey: KEY_POOL_IO, prevPendKey: KEY_PEND_INPUT,
   process: async (pack, state, error) => {
@@ -66,9 +66,9 @@ const createAsyncIteratorInputChip = ({
   }
 })
 
-const createAsyncIteratorOutputChip = ({
+const createAsyncIterOutputChip = ({
   LSAI = createLockStepAsyncIter(),
-  key = 'chip:output:async-iterator', ...extra
+  key = 'chip:output:async-iter', ...extra
 }) => ({
   ...LSAI,
   ...extra, key, nextPoolKey: KEY_POOL_IO, nextPendKey: KEY_PEND_OUTPUT,
@@ -105,6 +105,8 @@ const createENDRegulatorChip = ({ // TODO: maybe use LogicalPool instead, so Pen
 
 export {
   createArrayInputChip, createArrayOutputChip,
-  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
-  createENDRegulatorChip
+  createAsyncIterInputChip, createAsyncIterOutputChip,
+  createENDRegulatorChip,
+
+  createAsyncIterInputChip as createAsyncIteratorInputChip, createAsyncIterOutputChip as createAsyncIteratorOutputChip // TODO: DEPRECATE
 }

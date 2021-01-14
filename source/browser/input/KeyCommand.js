@@ -7,7 +7,7 @@ const { document } = window
 const createKeyCommandHub = ({
   eventSource = document,
   isSkipPreventDefault = false // normally preventDefault won't hurt
-}) => {
+} = {}) => {
   const keyCommandMap = new Map()
   const keyCommandListener = (event) => keyCommandMap.forEach((keyCommand) => {
     const { target, checkMap, callback } = keyCommand

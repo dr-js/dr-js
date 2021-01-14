@@ -66,4 +66,4 @@ const enableWebSocketServer = ({
   return webSocketSet
 }
 
-export { enableWebSocketServer }
+export { enableWebSocketServer } // TODO: DEPRECATE: use `node/server/WS`

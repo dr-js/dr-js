@@ -78,4 +78,4 @@ const createWebSocketClient = ({
   })
 }
 
-export { createWebSocketClient }
+export { createWebSocketClient } // TODO: DEPRECATE: use `node/server/WS`

@@ -7,7 +7,7 @@ import { createRequestListener, describeServerOption } from 'source/node/server/
 import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from 'source/node/server/Responder/Common'
 import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from 'source/node/server/Responder/Send'
 import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'source/node/server/Responder/Router'
-import { addExitListenerSync, addExitListenerAsync } from 'source/node/system/ExitListener'
+import { addExitListenerLossyOnce } from 'source/node/system/ExitListener'
 
 const commonServerUp = async ({
   serverExot: { up, server, option }, log, routePrefix,
@@ -35,10 +35,10 @@ const commonServerUp = async ({
   routePrefix && Object.assign(extraInfo, { routePrefix })
   log(describeServerOption(option, title, extraInfo))
 }
-const commonServerDown = (serverExot) => {
-  addExitListenerAsync(serverExot.down)
-  addExitListenerSync(serverExot.down)
-}
+const commonServerDown = (serverExot, log) => addExitListenerLossyOnce(({ eventType, error }) => {
+  log && log(`[exit|${eventType}] ${error}`)
+  return serverExot.down()
+})
 
 const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 

@@ -1,4 +1,5 @@
 import { catchAsync, catchSync, catchPromise } from 'source/common/error'
+import { once } from 'source/common/function'
 
 __DEV__ && console.log({
   listenerFunc: (eventPack) => { // can be async for `addExitListenerSync`
@@ -29,14 +30,14 @@ const listenerSyncSet = new Set()
 const listenerAsyncSet = new Set()
 
 const exitListenerSync = (eventPack) => {
-  // console.log('[exitListenerSync]', eventPack)
+  __DEV__ && console.log('[exitListenerSync]', eventPack)
   isBind && unbindExitListener()
   for (const listenerSync of Array.from(listenerSyncSet)) catchSync(listenerSync, eventPack)
 
   process.exitCode = eventPack.code || (eventPack.error && 1) || 0 // TODO: change to set exitCode so clunky clean up can be detected
 }
 const exitListenerAsync = async (eventPack) => {
-  // console.log('[exitListenerAsync]', eventPack)
+  __DEV__ && console.log('[exitListenerAsync]', eventPack)
   isBind && unbindExitListener()
   for (const listenerAsync of Array.from(listenerAsyncSet)) await catchAsync(listenerAsync, eventPack)
   exitListenerSync(eventPack)
@@ -69,6 +70,12 @@ const addExitListenerAsync = (...listenerSyncList) => {
   listenerSyncList.forEach((listenerAsync) => listenerAsyncSet.add(listenerAsync))
   !isBind && bindExitListener()
 }
+const addExitListenerLossyOnce = (listener) => { // NOTE: lossy means a async listener will not work as intended on a sync exit
+  const onceListener = once(listener)
+  addExitListenerAsync(onceListener)
+  addExitListenerSync(onceListener)
+  return onceListener // for delete
+}
 
 const deleteExitListenerSync = (...listenerSyncList) => { listenerSyncList.forEach((listenerSync) => listenerSyncSet.delete(listenerSync)) }
 const deleteExitListenerAsync = (...listenerSyncList) => { listenerSyncList.forEach((listenerAsync) => listenerAsyncSet.delete(listenerAsync)) }
@@ -89,10 +96,8 @@ const guardPromiseEarlyExit = async ( // TODO: this is tricky to test
 
 export {
   clearExitListener,
-  addExitListenerSync,
-  addExitListenerAsync,
-  deleteExitListenerSync,
-  deleteExitListenerAsync,
+  addExitListenerSync, addExitListenerAsync, addExitListenerLossyOnce,
+  deleteExitListenerSync, deleteExitListenerAsync,
 
   guardPromiseEarlyExit
 }
