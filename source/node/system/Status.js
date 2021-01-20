@@ -3,6 +3,7 @@ import {
   hostname, cpus, networkInterfaces,
   totalmem, freemem, loadavg, uptime
 } from 'os'
+import { readFileSync } from 'fs'
 
 import { percent, time, binary } from 'source/common/format'
 import { indentLine, indentList } from 'source/common/string'
@@ -20,14 +21,33 @@ const describeSystemProcessor = (processorList = getSystemProcessor()) => proces
   .map(({ model, speed, times }) => `[${model}] speed:${speed}MHz ${Object.entries(times).map(([ k, v ]) => `${k}:${time(v)}`).join(' ')}`)
   .join('\n')
 
-const getSystemMemory = () => ({ // this will not include swap, and free means fully unused, so cached memory is not counted
-  total: totalmem(),
-  free: freemem()
-})
-const describeSystemMemory = ({ total, free } = getSystemMemory()) => [
-  `Used: ${percent((total - free) / total)}`,
-  `Total: ${binary(total)}B`,
-  `Free: ${binary(free)}B`
+const getSystemMemory = platform() !== 'linux' ? () => ({ // this will not include swap, and free means fully unused, so cached memory is not counted
+  total: totalmem(), // in bytes
+  free: freemem(), // in bytes
+  swapTotal: 0,
+  swapFree: 0
+}) : () => {
+  // ~$ cat /proc/meminfo
+  // MemTotal:        9170456 kB
+  // MemFree:          325068 kB
+  // MemAvailable:    2137580 kB // use this as it's more in line with the common "free" concept
+  // ...
+  // SwapTotal:       2097152 kB
+  // SwapFree:        2048256 kB
+  // ...
+  const stringMemInfo = String(readFileSync('/proc/meminfo'))
+  const toByte = (regexp) => parseInt(regexp.exec(stringMemInfo)[ 1 ]) * 1024
+  return {
+    total: toByte(/MemTotal:\s+(\d+)/),
+    free: toByte(/MemAvailable:\s+(\d+)/), // contains cache + free
+    swapTotal: toByte(/SwapTotal:\s+(\d+)/), // SwapTotal may be 0, check before divide
+    swapFree: toByte(/SwapFree:\s+(\d+)/)
+  }
+}
+const describeSystemMemory = ({ total, free, swapTotal, swapFree } = getSystemMemory()) => [
+  `Used: ${percent((total - free) / total)}${swapTotal ? `+${percent((swapTotal - swapFree) / swapTotal)}` : ''}`,
+  `Total: ${binary(total)}B${swapTotal ? `+${binary(swapTotal)}B` : ''}`,
+  `Free: ${binary(free)}B${swapTotal ? `+${binary(swapFree)}B` : ''}`
 ].join('\n')
 
 const getSystemNetwork = () => ({

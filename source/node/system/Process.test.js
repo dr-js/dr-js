@@ -4,7 +4,8 @@ import { run } from 'source/node/run'
 
 import {
   getProcessListAsync,
-  toProcessTree
+  toProcessTree,
+  killProcessInfoAsync
 } from './Process'
 
 const { describe, it } = global
@@ -30,9 +31,11 @@ describe('Node.System.Process', () => {
   it('getProcessList() sub-process', async () => {
     const { subProcess, promise } = run([ process.execPath, '-e', 'setTimeout(console.log, 200)' ], { quiet: true })
     const result = await getProcessListAsync()
-
-    subProcess.kill()
-    await promise.catch((error) => { __DEV__ && console.log(error) })
+    await Promise.all([
+      killProcessInfoAsync(subProcess),
+      promise.catch((error) => { __DEV__ && console.log(error) })
+    ])
+    await killProcessInfoAsync(subProcess) // allow kill killed
 
     const subProcessItem = result.find(({ pid, ppid, command }) => (
       pid === subProcess.pid &&

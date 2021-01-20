@@ -1,80 +1,66 @@
 import { setTimeoutAsync } from 'source/common/time'
 import { autoEllipsis } from 'source/common/string'
-import { padTable } from 'source/common/format'
+import { binary, padTable } from 'source/common/format'
 import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTreeNode } from 'source/common/data/Tree'
 import { run } from 'source/node/run'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   const parseTitleCol = (titleString) => { // a col means \w+\s+, or \s+\w+ (for this output), so every 2 \w\s flip means a col
     let flipCharType = titleString.charAt(0) === ' '
-    let flipCount = 2
+    let flipCount = 0
     const colStartIndexList = [ 0 ] // colStartIndex
     for (let index = 0, indexMax = titleString.length; index < indexMax; index++) {
-      const charType = titleString.charAt(index) === ' '
-      if (flipCharType === charType) continue
+      if (flipCharType === (titleString.charAt(index) === ' ')) continue
       flipCharType = !flipCharType
-      flipCount--
-      if (flipCount !== 0) continue
-      colStartIndexList.push(index)
-      flipCount = 2
+      flipCount++
+      if (flipCount % 2 === 0) colStartIndexList.push(index)
     }
     return colStartIndexList
   }
 
-  const parseRow = (rowString, colStartIndexList, keyList, valueProcessList) => {
-    const itemMap = {}
+  const parseRow = (rowString, colStartIndexList, itemList = []) => {
     for (let index = 0, indexMax = colStartIndexList.length; index < indexMax; index++) {
-      itemMap[ keyList[ index ] ] = valueProcessList[ index ](rowString.slice(
-        colStartIndexList[ index ],
-        colStartIndexList[ index + 1 ]
-      ))
+      itemList.push(rowString.slice(colStartIndexList[ index ], colStartIndexList[ index + 1 ]))
     }
-    return itemMap
+    return itemList // list of string
   }
 
-  const parseTableOutput = (outputString, lineSeparator, keyList = [], valueProcessList = []) => {
-    const [ titleLine, ...rowList ] = outputString.split(lineSeparator)
+  const parseTableOutput = (outputString, lineSeparator, itemSwapFunc = (v) => v, processList = []) => {
+    const [ titleLine, ...rowList ] = outputString.split(lineSeparator).filter(Boolean)
     const colStartIndexList = parseTitleCol(titleLine)
-    if (colStartIndexList.length !== keyList.length) throw new Error(`title col mismatch: ${colStartIndexList.length}, expect: ${keyList.length}`)
-    return rowList.map((rowString) => rowString && parseRow(rowString, colStartIndexList, keyList, valueProcessList)).filter(Boolean)
+    rowList.forEach((rowString) => {
+      const [ pid, ppid, memory, command ] = itemSwapFunc(parseRow(rowString, colStartIndexList))
+      processList.push({ pid: parseInt(pid), ppid: parseInt(ppid), memory: parseInt(memory), command: command.trim() }) // NOTE: the memory is approximated
+    })
+    return processList
   }
 
-  const createGetProcessListAsync = (commandString, lineSeparator, keyList, valueProcessList) => {
+  const createGetProcessListAsync = (commandString, lineSeparator, itemSwapFunc) => {
     const argList = commandString.split(' ')
     return async () => {
-      const { promise, stdoutPromise } = run(argList, { quiet: true })
+      const { promise, stdoutPromise } = run(argList, { quiet: true, describeError: true })
       await promise
-      return parseTableOutput(String(await stdoutPromise), lineSeparator, keyList, valueProcessList)
+      return parseTableOutput(String(await stdoutPromise), lineSeparator, itemSwapFunc)
     }
   }
 
-  const valueProcessString = (string) => String(string).trim()
-  const valueProcessInteger = (string) => parseInt(string)
-
-  const ProcessListLinux = [
-    'ps ax -ww -o pid,ppid,args',
+  const getProcessListAsyncLinux = createGetProcessListAsync(
+    'ps -wweo pid,ppid,rss=MEMORY__,args', // https://ss64.com/bash/ps.html // https://www.unix.com/man-page/osx/1/ps/ // set rss title to `MEMORY__` so it will keep aligned, unless rss is 95+GiB
     '\n',
-    [ 'pid', 'ppid', 'command' ],
-    [ valueProcessInteger, valueProcessInteger, valueProcessString ]
-  ]
-  const ProcessListAndroid = [ 'ps ax -o pid,ppid,args', ...ProcessListLinux.slice(1) ]
-  const ProcessListWin32 = [
-    'WMIC PROCESS get Commandline,ParentProcessId,Processid',
+    ([ pid, ppid, rss, command ]) => [ pid, ppid, parseInt(rss) * 1024, command ] // NOTE: `rss` is in KiB
+  )
+  const getProcessListAsyncWin32 = createGetProcessListAsync(
+    'WMIC PROCESS get Commandline,Name,ParentProcessId,ProcessId,WorkingSetSize', // NOTE: the output order is locked, regardless of the query order // use `WMIC PROCESS GET -?:FULL` for key list
     '\r\r\n', // for WMIC `\r\r\n` output // check: https://stackoverflow.com/questions/24961755/batch-how-to-correct-variable-overwriting-misbehavior-when-parsing-output
-    [ 'command', 'ppid', 'pid' ],
-    [ valueProcessString, valueProcessInteger, valueProcessInteger ]
-  ]
-
-  const getProcessListAsyncLinux = createGetProcessListAsync(...ProcessListLinux)
-  const getProcessListAsyncAndroid = createGetProcessListAsync(...ProcessListAndroid)
-  const getProcessListAsyncWin32 = createGetProcessListAsync(...ProcessListWin32)
+    ([ command, name, ppid, pid, wss ]) => [ pid, ppid, wss, command.trim() || name ] // NOTE: use name for some process without a command
+  )
 
   Object.assign(GET_PROCESS_LIST_ASYNC_MAP, {
     INIT: true,
     linux: getProcessListAsyncLinux,
     win32: getProcessListAsyncWin32,
     darwin: getProcessListAsyncLinux,
-    android: getProcessListAsyncAndroid
+    android: getProcessListAsyncLinux
   })
 }
 
@@ -86,7 +72,7 @@ const GET_PROCESS_LIST_ASYNC_MAP = {
   android: null
 }
 
-// NOTE: not a fast command (linux: ~100ms, win32: ~500ms)
+// NOTE: not a fast command (linux: ~50ms, win32: ~200ms)
 const getProcessListAsync = () => {
   if (GET_PROCESS_LIST_ASYNC_MAP.INIT === false) INIT_GET_PROCESS_LIST_ASYNC_MAP()
   const getAsync = GET_PROCESS_LIST_ASYNC_MAP[ process.platform ]
@@ -98,7 +84,9 @@ const PROCESS_LIST_SORT_MAP = {
   'pid++': (a, b) => a.pid - b.pid,
   'pid--': (a, b) => b.pid - a.pid,
   'ppid++': (a, b) => a.ppid - b.ppid || a.pid - b.pid,
-  'ppid--': (a, b) => b.ppid - a.ppid || a.pid - b.pid
+  'ppid--': (a, b) => b.ppid - a.ppid || a.pid - b.pid,
+  'memory++': (a, b) => a.memory - b.memory,
+  'memory--': (a, b) => b.memory - a.memory
 }
 const sortProcessList = (processList, sortOrder = 'pid--') => processList.sort(PROCESS_LIST_SORT_MAP[ sortOrder ])
 
@@ -108,19 +96,19 @@ const toProcessPidMap = (processList) => (processList).reduce((o, info) => {
 }, {})
 
 // const SAMPLE_PROCESS_TREE = {
-//   pid: 0, ppid: -1, command: 'ROOT',
+//   pid: 0, ppid: -1, memory: 0, command: 'ROOT',
 //   subTree: {
 //     1: { ... }
 //     2: { ... }
 //   }
 // }
-const toProcessTree = (processList) => { // NOTE: will mutate processList (add `subTree` value)
-  const rootInfo = { pid: 0, ppid: -1, command: 'ROOT' }
+const toProcessTree = (processList) => { // NOTE: will mutate processList (add `subTree: {}` attribute)
+  const rootInfo = { pid: 0, ppid: -1, memory: 0, command: 'ROOT' }
   const processMap = { 0: rootInfo }
   const subTreeMap = { 0: {} }
   for (const info of processList) {
     const { pid, ppid } = info
-    if (pid === 0) continue // NOTE: win32 root process has { pid: 0, ppid: 0 }, linux do not (no pid: 0)
+    if (pid === 0) continue // NOTE: win32 have { pid: 0, ppid: 0 }, but linux do not (no pid: 0), just merge both to rootInfo
     processMap[ pid ] = info
     if (subTreeMap[ ppid ] === undefined) subTreeMap[ ppid ] = {}
     subTreeMap[ ppid ][ pid ] = info
@@ -131,13 +119,21 @@ const toProcessTree = (processList) => { // NOTE: will mutate processList (add `
   Object.entries(subTreeMap).forEach(([ ppid, subTree ]) => {
     let info = processMap[ ppid ]
     if (!info) { // root-less process, normally found in win32, will create a patch process to root
-      info = { pid: ppid, ppid: rootInfo.pid, command: '' }
+      info = { pid: ppid, ppid: rootInfo.pid, memory: 0, command: '...' }
       subTreeMap[ info.ppid ][ info.pid ] = info
     }
     info.subTree = subTree
   })
 
   return rootInfo
+}
+
+const flattenProcessTree = (processTree, processList = []) => { // the root info will not be in list // mostly used to flatten subTree
+  processTreeDepthFirstSearch(
+    processTree,
+    (info) => { processList.push(info) }
+  )
+  return processList
 }
 
 const isInfoMatch = ({ pid, ppid, command }, info) => (
@@ -163,11 +159,15 @@ const killProcessInfoAsync = async (info) => { // TODO: may be too expensive?
   process.kill(info.pid)
   await setTimeoutAsync(500)
   if (!await isExistAsync()) return
+  await setTimeoutAsync(500)
+  if (!await isExistAsync()) return
   process.kill(info.pid) // 2nd try
-  await setTimeoutAsync(2000)
+  await setTimeoutAsync(500)
+  if (!await isExistAsync()) return
+  await setTimeoutAsync(500)
   if (!await isExistAsync()) return
   process.kill(info.pid, 'SIGKILL') // last try
-  await setTimeoutAsync(4000)
+  await setTimeoutAsync(1000)
   if (!await isExistAsync()) return
   throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
 }
@@ -194,18 +194,25 @@ const describeAllProcessStatusAsync = async (outputMode) => {
   const status = await getAllProcessStatusAsync(outputMode)
   if (outputMode.startsWith('t')) { // tree|t|tree-wide|tw
     const text = prettyStringifyProcessTree(status)
-    return (outputMode !== 'tree-wide' && outputMode !== 'tw')
-      ? text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
-      : text
+    if (outputMode === 'tree-wide' | outputMode === 'tw') return text
+    else return text.split('\n').map((line) => autoEllipsis(line, 128, 96, 16)).join('\n')
   } else {
-    return padTable({ table: [ [ 'pid', 'ppid', 'command' ], ...status.map(({ pid, ppid, command }) => [ pid, ppid, command ]) ] })
+    return padTable({
+      table: [
+        [ 'PID', 'PPID', 'MEMORY', 'COMMAND' ],
+        ...status.map(({ pid, ppid, memory, command }) => [ pid, ppid, memory, command ])
+      ],
+      padFuncList: [ 'R', 'R', 'R', 'L' ]
+    })
   }
 }
 
 const prettyStringifyProcessTree = (processRootInfo) => {
   const resultList = []
-  const addLine = (prefix, { pid, command }) => resultList.push(`${`${pid}`.padStart(8, ' ')} | ${prefix}${command || '...'}`) // 64bit system may have 7digit pid?
-  addLine('', { pid: 'pid', command: 'command' })
+  const pad = (value, count) => `${value}`.padStart(count, ' ')
+  const padMemory = (value) => pad(value === -1 ? 'MEMORY' : `${binary(value)}B`, 10)
+  const addLine = (prefix, { pid, memory, command }) => resultList.push(`${pad(pid, 8)} ${padMemory(memory)} ${prefix}${command}`) // 64bit system may have 7digit pid?
+  addLine('', { pid: 'PID', memory: -1, command: 'COMMAND' })
   prettyStringifyTreeNode(
     ([ info, level, hasMore ]) => info.subTree && Object.values(info.subTree).map((subInfo, subIndex, { length }) => [ subInfo, level + 1, subIndex !== length - 1 ]),
     [ processRootInfo, -1, false ],
@@ -223,14 +230,17 @@ const isPidExist = (pid) => {
     return true
   } catch (error) {
     __DEV__ && console.warn('[isPidExist]', error)
-    return false
+    // NOTE: on linux non-root user may get EPERM (Permission denied) checking a root process, instead of `ESRCH`,
+    //   so `EPERM` also means pid exist, but this case you can not `SIGTERM` it
+    //   also this is a best-effort detect, so a false may still not mean no process
+    return error.code === 'EPERM'
   }
 }
 
 export {
   getProcessListAsync, sortProcessList,
   toProcessPidMap, findProcessPidMapInfo,
-  toProcessTree, findProcessTreeInfo,
+  toProcessTree, findProcessTreeInfo, flattenProcessTree,
   killProcessInfoAsync, killProcessTreeInfoAsync,
   getAllProcessStatusAsync, describeAllProcessStatusAsync,
   isPidExist

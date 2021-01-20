@@ -1,5 +1,5 @@
 // NOTE: the search func can be used as walk/traverse, just not return true during search
-// NOTE: the initialNode will not appear in search, only below node will
+// NOTE: the `initialNode` will not appear in search, only below node will
 
 const createTreeDepthFirstSearch = (getSubNodeListFunc) => { // ([ node, level, ... ], extra) => [ [ node, level + 1, ... ] ] // or return undefined to end branch
   const unshiftStack = (stack, node, extra) => {

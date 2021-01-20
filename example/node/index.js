@@ -7,7 +7,7 @@ const main = async () => {
 
   console.log('== exec ========================')
   const argList = (process.platform === 'win32' ? 'CMD.exe /S /C dir' : 'ls -l').split(' ')
-  console.log(await describeRunOutcome(await run(argList, { quiet: true }).promise))
+  console.log(await describeRunOutcome(await run(argList, { quiet: true, describeError: true }).promise))
 }
 
 main().catch(console.error)
