@@ -19,6 +19,7 @@ const getDirInfoList = async (path) => {
 }
 
 const getDirInfoTree = async (path) => {
+  path = join(path, '.') // NOTE: to drop trailing `/` (the path `sep`)
   const dirInfoListMap = new Map()
   const queue = [ path ]
   while (queue.length) {

@@ -1,4 +1,4 @@
-import { join as joinPath, dirname, resolve } from 'path'
+import { join as joinPath, dirname, resolve, sep } from 'path'
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { getSample } from 'source/common/math/sample'
 import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
@@ -23,27 +23,27 @@ import {
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/')
-const SOURCE_FILE = resolve(__dirname, './Directory.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../data/')
-const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../')
+const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/') + sep
+const SOURCE_FILE = resolve(__dirname, './Directory.js') + sep
+const SOURCE_DIRECTORY = resolve(__dirname, '../data/') + sep
+const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../') + sep
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
-const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/')
-const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/')
-const directoryPath2 = resolve(TEST_ROOT, '1/')
+const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/') + sep
+const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/') + sep
+const directoryPath2 = resolve(TEST_ROOT, '1/') + sep
 
-const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/')
-const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/')
-const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/')
+const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/') + sep
+const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/') + sep
+const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/') + sep
 
-const directoryPathRename = resolve(TEST_ROOT, 'rename-source/b/c/d/e/')
-const directoryPathRenameSource = resolve(TEST_ROOT, 'rename-source/')
-const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/')
+const directoryPathRename = resolve(TEST_ROOT, 'rename-source/b/c/d/e/') + sep
+const directoryPathRenameSource = resolve(TEST_ROOT, 'rename-source/') + sep
+const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/') + sep
 
-const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/')
-const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/')
+const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/') + sep
+const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/') + sep
 
 before(async () => {
   await createDirectory(TEST_ROOT)
@@ -88,7 +88,7 @@ describe('Node.File.Directory', () => {
 
     // console.log(dirInfoTree)
 
-    strictEqual(dirInfoTree.root, TEST_ROOT)
+    strictEqual(dirInfoTree.root + sep, TEST_ROOT)
     strictEqual(dirInfoTree.dirInfoListMap.get(dirInfoTree.root).length, 5)
     strictEqual(dirInfoTree.dirInfoListMap.size, 26)
     stringifyEqual(
