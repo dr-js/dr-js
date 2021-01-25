@@ -228,7 +228,7 @@
 + 📄 [source/node/system/ExitListener.js](source/node/system/ExitListener.js)
   - `addExitListenerAsync`, `addExitListenerLossyOnce`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`, `guardPromiseEarlyExit`
 + 📄 [source/node/system/Process.js](source/node/system/Process.js)
-  - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
+  - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
   - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
@@ -448,7 +448,7 @@
     - **ExitListener**
       - `addExitListenerAsync`, `addExitListenerLossyOnce`, `addExitListenerSync`, `clearExitListener`, `deleteExitListenerAsync`, `deleteExitListenerSync`, `guardPromiseEarlyExit`
     - **Process**
-      - `describeAllProcessStatusAsync`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
+      - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **ResolveCommand**
       - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
     - **Run**

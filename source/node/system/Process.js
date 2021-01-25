@@ -143,6 +143,8 @@ const isInfoMatch = ({ pid, ppid, command }, info) => (
   (command === undefined || info.command === command) // allow skip command check
 )
 
+const findProcessListInfo = (info, processList) => processList.find((v) => isInfoMatch(info, v))
+
 const findProcessPidMapInfo = (info, processPidMap) => isInfoMatch(info, processPidMap[ info.pid ])
   ? processPidMap[ info.pid ]
   : undefined
@@ -153,22 +155,16 @@ const findProcessTreeInfo = (info, processTree) => processTreeDepthFirstSearch(
 )
 
 const killProcessInfoAsync = async (info) => { // TODO: may be too expensive?
-  const isExistAsync = async () => isPidExist(info.pid) && findProcessPidMapInfo(info, toProcessPidMap(await getProcessListAsync()))
-
-  if (!await isExistAsync()) return
-  process.kill(info.pid)
-  await setTimeoutAsync(500)
-  if (!await isExistAsync()) return
-  await setTimeoutAsync(500)
-  if (!await isExistAsync()) return
-  process.kill(info.pid) // 2nd try
-  await setTimeoutAsync(500)
-  if (!await isExistAsync()) return
-  await setTimeoutAsync(500)
-  if (!await isExistAsync()) return
-  process.kill(info.pid, 'SIGKILL') // last try
-  await setTimeoutAsync(1000)
-  if (!await isExistAsync()) return
+  const isExistAsync = async () => isPidExist(info.pid) && findProcessListInfo(info, await getProcessListAsync()) // check again after getting processList
+  for (const [ wait, signal ] of [
+    [ 50 ], [ 100 ], [ 250 ], [ 500 ], [ 500 ],
+    [ 1000, 'SIGKILL' ] // last try
+  ]) {
+    if (!await isExistAsync()) return // killed
+    try { process.kill(info.pid, signal) } catch (error) { __DEV__ && console.log('', error) }
+    await setTimeoutAsync(wait)
+  }
+  if (!await isExistAsync()) return // killed
   throw new Error(`failed to stop process, pid: ${info.pid}, ppid: ${info.ppid}, command: ${info.command}`)
 }
 
@@ -238,7 +234,7 @@ const isPidExist = (pid) => {
 }
 
 export {
-  getProcessListAsync, sortProcessList,
+  getProcessListAsync, sortProcessList, findProcessListInfo,
   toProcessPidMap, findProcessPidMapInfo,
   toProcessTree, findProcessTreeInfo, flattenProcessTree,
   killProcessInfoAsync, killProcessTreeInfoAsync,

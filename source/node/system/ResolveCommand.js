@@ -2,13 +2,13 @@ import { spawnSync } from 'child_process'
 import { resolve } from 'path'
 import { run } from 'source/node/run'
 
-const configureWin32 = (extList = (process.env.PATHEXT || '.EXE;.BAT;.CMD').toUpperCase().split(';')) => [ // process.env.PATHEXT // '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC'
-  'where.exe', // search cwd // https://ss64.com/nt/where.html
-  (stdoutString) => stdoutString.split('\r\n').find((path) => extList.includes(path.slice(path.lastIndexOf('.')).toUpperCase())) || ''
-]
 const configureLinux = () => [
   'which', // do not search cwd // https://ss64.com/bash/which.html
   (stdoutString) => stdoutString.trim()
+]
+const configureWin32 = (extList = (process.env.PATHEXT || '.EXE;.BAT;.CMD').toUpperCase().split(';')) => [ // process.env.PATHEXT // '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC'
+  'where.exe', // search cwd // https://ss64.com/nt/where.html
+  (stdoutString) => stdoutString.split('\r\n').find((path) => extList.includes(path.slice(path.lastIndexOf('.')).toUpperCase())) || ''
 ]
 
 const CONFIGURE_MAP = {
@@ -28,11 +28,11 @@ const configureCached = () => {
   return cacheConfigure
 }
 
+// for resolving
 const resolveCommandName = (commandName, cwd) => { // if not found, result in empty string: ""
   const [ checkCommand, processFunc ] = configureCached()
   return processFunc(String(spawnSync(checkCommand, [ commandName ], { cwd }).stdout || ''))
 }
-
 const resolveCommandNameAsync = async (commandName, cwd) => { // if not found, result in empty string: ""
   const [ checkCommand, processFunc ] = configureCached()
   const { promise, stdoutPromise } = run([ checkCommand, commandName ], { cwd, quiet: true })

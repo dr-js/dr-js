@@ -1,10 +1,7 @@
 import { strictEqual } from 'source/common/verify'
 import { catchSync, catchPromise } from 'source/common/error'
 import { getRandomId } from 'source/common/math/random'
-import {
-  describeRunOutcome, describeRunOutcomeSync,
-  run, runSync // TODO: DEPRECATE: old test
-} from './Run'
+import { describeRunOutcome, describeRunOutcomeSync, run, runSync } from './Run' // TODO: DEPRECATE: old test
 
 const { describe, it, info = console.log } = global
 
