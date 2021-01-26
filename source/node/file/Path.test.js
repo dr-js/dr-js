@@ -1,25 +1,29 @@
-import { resolve } from 'path'
+import { resolve, sep } from 'path'
 import { strictEqual, doThrow } from 'source/common/verify'
 import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   STAT_ERROR,
   PATH_TYPE,
+
   getPathTypeFromStat,
-  getPathLstat,
+  getPathLstat, getPathStat,
+
   copyPath,
   renamePath,
   deletePath,
+
   existPath, nearestExistPath,
+  toPosixPath, dropTrailingSep,
   createPathPrefixLock
 } from './Path'
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = resolve(__dirname, './test-file-gitignore/')
+const TEST_ROOT = resolve(__dirname, './test-file-gitignore/') + sep
 const SOURCE_FILE = resolve(__dirname, './Path.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../module/')
-const SOURCE_DIRECTORY_TRIM = resolve(__dirname, '../module')
+const SOURCE_DIRECTORY = resolve(__dirname, '../module/') + sep
+const SOURCE_DIRECTORY_TRIM = resolve(__dirname, '../module/')
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
@@ -27,15 +31,15 @@ const filePath0 = resolve(TEST_ROOT, 'file0.js')
 const filePath1 = resolve(TEST_ROOT, 'file1.js')
 const filePath2 = resolve(TEST_ROOT, 'file2.js')
 
-const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/')
-const directoryPath1 = resolve(TEST_ROOT, 'a/b/c/d/')
-const directoryPath2 = resolve(TEST_ROOT, 'a/b/c/d/e/')
+const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/') + sep
+const directoryPath1 = resolve(TEST_ROOT, 'a/b/c/d/') + sep
+const directoryPath2 = resolve(TEST_ROOT, 'a/b/c/d/e/') + sep
 
-const directoryPath3 = resolve(TEST_ROOT, 'a/e0/')
-const directoryPath4 = resolve(TEST_ROOT, 'a/e1/')
+const directoryPath3 = resolve(TEST_ROOT, 'a/e0/') + sep
+const directoryPath4 = resolve(TEST_ROOT, 'a/e1/') + sep
 
-const directoryPath5 = resolve(TEST_ROOT, 'a/b/')
-const directoryPath6 = resolve(TEST_ROOT, 'a/')
+const directoryPath5 = resolve(TEST_ROOT, 'a/b/') + sep
+const directoryPath6 = resolve(TEST_ROOT, 'a/') + sep
 
 before(async () => {
   await resetDirectory(TEST_ROOT)
@@ -56,6 +60,14 @@ describe('Node.File.Path', () => {
     strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_DIRECTORY_TRIM)), PATH_TYPE.Directory)
     strictEqual(await getPathLstat(invalidPath), STAT_ERROR)
     strictEqual(getPathTypeFromStat(await getPathLstat(invalidPath)), PATH_TYPE.Error)
+  })
+
+  it('getPathStat()', async () => {
+    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_FILE)), PATH_TYPE.File)
+    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY)), PATH_TYPE.Directory)
+    strictEqual(getPathTypeFromStat(await getPathStat(SOURCE_DIRECTORY_TRIM)), PATH_TYPE.Directory)
+    strictEqual(await getPathStat(invalidPath), STAT_ERROR)
+    strictEqual(getPathTypeFromStat(await getPathStat(invalidPath)), PATH_TYPE.Error)
   })
 
   it('copyPath()', async () => {
@@ -121,7 +133,19 @@ describe('Node.File.Path', () => {
     strictEqual(await nearestExistPath(__filename), __filename)
 
     strictEqual(await nearestExistPath(resolve(__filename, 'not-exist')), __filename)
-    strictEqual(await nearestExistPath(resolve(TEST_ROOT, '11/22/33/44/55')), TEST_ROOT)
+    strictEqual(await nearestExistPath(resolve(TEST_ROOT, '11/22/33/44/55')) + sep, TEST_ROOT)
+  })
+
+  it('toPosixPath()', async () => {
+    strictEqual(toPosixPath('a/b/c'), 'a/b/c')
+    strictEqual(toPosixPath('a/b/c/'), 'a/b/c/')
+    strictEqual(toPosixPath('a\\b\\c'), 'a/b/c')
+    strictEqual(toPosixPath('a\\b\\c\\'), 'a/b/c/')
+  })
+
+  it('dropTrailingSep()', async () => {
+    strictEqual(dropTrailingSep(TEST_ROOT + sep) + sep, TEST_ROOT)
+    strictEqual(dropTrailingSep(TEST_ROOT + sep + sep) + sep, TEST_ROOT)
   })
 
   it('createPathPrefixLock()', () => {

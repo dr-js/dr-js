@@ -1,5 +1,5 @@
 import { strictEqual } from 'source/common/verify'
-import { resolve } from 'path'
+import { resolve, sep } from 'path'
 import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
 import { resetDirectory } from '@dr-js/dev/module/node/file'
 
@@ -11,16 +11,16 @@ import {
 
 const { describe, it, before, after } = global
 
-const TEST_ROOT = resolve(__dirname, './test-modify-gitignore/')
+const TEST_ROOT = resolve(__dirname, './test-modify-gitignore/') + sep
 const SOURCE_FILE = resolve(__dirname, './Modify.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../')
+const SOURCE_DIRECTORY = resolve(__dirname, '../') + sep
 
 const filePath0 = resolve(TEST_ROOT, 'file0.js')
 const filePath1 = resolve(TEST_ROOT, 'file1.js')
 const filePath2 = resolve(TEST_ROOT, 'file2.js')
 
-const directoryPath0 = resolve(TEST_ROOT, 'directory0/')
-const directoryPath1 = resolve(TEST_ROOT, 'directory1/')
+const directoryPath0 = resolve(TEST_ROOT, 'directory0/') + sep
+const directoryPath1 = resolve(TEST_ROOT, 'directory1/') + sep
 
 before(async () => {
   await resetDirectory(TEST_ROOT)

@@ -152,7 +152,7 @@
 + 📄 [source/node/run.js](source/node/run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runSync`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
+  - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
@@ -162,7 +162,7 @@
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
   - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
 + 📄 [source/node/file/Path.js](source/node/file/Path.js)
-  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
+  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `dropTrailingSep`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcherExot`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
@@ -377,7 +377,7 @@
 - **Node**
   - **Data**
     - **Buffer**
-      - `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
+      - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
     - **Stream**
@@ -388,7 +388,7 @@
     - **Modify**
       - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
     - **Path**
-      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
+      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `dropTrailingSep`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
     - **Watch**
       - `createFileWatcherExot`
   - **Module**

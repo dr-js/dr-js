@@ -1,4 +1,4 @@
-import { randomFill } from 'crypto'
+import { randomFill, createHash } from 'crypto'
 import { promisify } from 'util'
 
 const randomFillAsync = promisify(randomFill)
@@ -14,6 +14,12 @@ const toArrayBuffer = (buffer) => {
 
 // in bytes
 const getRandomBufferAsync = (size) => randomFillAsync(Buffer.allocUnsafe(size))
+
+const calcHash = (
+  bufferOrString,
+  algorithm = 'sha1', // for speed: https://security.stackexchange.com/questions/95696/which-hash-algorithm-takes-longer-time-if-we-compare-between-md5-or-sha256/95697#95697
+  encoding = 'base64' // set to 'buffer' for buffer result
+) => createHash(algorithm).update(bufferOrString).digest(encoding)
 
 const createBufferRefragPool = () => { // push smaller buffer frag, shift resized buffer frag
   const pool = []
@@ -72,5 +78,6 @@ const createBufferRefragPool = () => { // push smaller buffer frag, shift resize
 export {
   toArrayBuffer,
   getRandomBufferAsync,
+  calcHash,
   createBufferRefragPool
 }

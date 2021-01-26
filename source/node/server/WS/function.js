@@ -1,5 +1,6 @@
-import { createHash, randomBytes } from 'crypto'
+import { randomBytes } from 'crypto'
 import { constants as bufferConstants } from 'buffer'
+import { calcHash } from 'source/node/data/Buffer'
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 // Frame format:
@@ -43,7 +44,7 @@ const OPCODE_TYPE = {
 const WEBSOCKET_VERSION = 13
 const WEBSOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
 const getRequestKey = () => randomBytes(16).toString('base64')
-const getRespondKey = (requestKey) => createHash('sha1').update(`${requestKey}${WEBSOCKET_MAGIC_STRING}`).digest('base64')
+const getRespondKey = (requestKey) => calcHash(`${requestKey}${WEBSOCKET_MAGIC_STRING}`)
 
 const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
 

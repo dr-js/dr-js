@@ -2,7 +2,7 @@ import { gzip, gzipSync, createGzip } from 'zlib'
 import { promisify } from 'util'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
-import { getEntityTagByContentHashAsync, getEntityTagByContentHash } from 'source/node/module/EntityTag'
+import { getEntityTagByContentHash } from 'source/node/module/EntityTag'
 
 const gzipAsync = promisify(gzip)
 
@@ -92,16 +92,12 @@ const prepareBufferData = (buffer, type) => ({
   entityTag: getEntityTagByContentHash(buffer)
 })
 
-const prepareBufferDataAsync = async (buffer, type) => ({
-  buffer, type,
-  bufferGzip: await gzipAsync(buffer),
-  entityTag: await getEntityTagByContentHashAsync(buffer)
-})
-
 const createResponderFavicon = (
   buffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNMXvf/PwAGnQMR4CJUOAAAAABJRU5ErkJggg==', 'base64'), // png 1px #63aeff
   type = BASIC_EXTENSION_MAP.png
 ) => (store) => responderSendBufferCompress(store, prepareBufferData(buffer, type))
+
+const prepareBufferDataAsync = async (buffer, type) => prepareBufferData(buffer, type) // TODO: DEPRECATE: just use the sync version, this will not be more efficient as the buffer should already be in memory
 
 export {
   responderSendBuffer,
@@ -117,5 +113,6 @@ export {
   createResponderFavicon,
 
   prepareBufferData,
-  prepareBufferDataAsync
+
+  prepareBufferDataAsync // TODO: DEPRECATE
 }

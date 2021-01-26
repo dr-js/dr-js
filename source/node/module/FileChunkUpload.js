@@ -1,6 +1,5 @@
 import { resolve, dirname } from 'path'
 import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
-import { createHash } from 'crypto'
 
 import { rethrowError } from 'source/common/error'
 import { getRandomId } from 'source/common/math/random'
@@ -9,7 +8,7 @@ import { toString as arrayBufferToString, fromString as arrayBufferFromString } 
 import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
 import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue'
 
-import { toArrayBuffer } from 'source/node/data/Buffer'
+import { toArrayBuffer, calcHash } from 'source/node/data/Buffer'
 import { quickRunletFromStream } from 'source/node/data/Stream'
 import { createPathPrefixLock } from 'source/node/file/Path'
 import { createDirectory } from 'source/node/file/Directory'
@@ -58,7 +57,7 @@ const createOnFileChunkUpload = async ({
 
     if (chunkHashArrayBuffer.byteLength) {
       const chunkHashBuffer = Buffer.from(chunkHashArrayBuffer)
-      const verifyChunkHashBuffer = createHash('sha256').update(chunkBuffer).digest()
+      const verifyChunkHashBuffer = calcHash(chunkBuffer, 'sha256', 'buffer')
       if ((Buffer.compare(chunkHashBuffer, verifyChunkHashBuffer) !== 0)) {
         throw new Error(`chunk ${chunkIndex} of ${key} hash mismatch, get: ${verifyChunkHashBuffer.toString('base64')}, expect ${chunkHashBuffer.toString('base64')}`)
       }
@@ -134,7 +133,7 @@ const uploadFileByChunk = async ({
     const chunkByteLength = chunkArrayBuffer.byteLength
     const chainArrayBufferPacket = packChainArrayBufferPacket([
       arrayBufferFromString(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
-      toArrayBuffer(createHash('sha256').update(chunkBuffer).digest()), // verifyChunkHashBuffer
+      toArrayBuffer(calcHash(chunkBuffer, 'sha256', 'buffer')), // verifyChunkHashBuffer
       chunkArrayBuffer
     ])
     await uploadFileChunk(chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal })

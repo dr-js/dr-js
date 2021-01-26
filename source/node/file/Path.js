@@ -1,5 +1,5 @@
 import { Stats, promises as fsAsync } from 'fs'
-import { resolve, dirname } from 'path'
+import { join, resolve, dirname } from 'path'
 
 // NOTE: default will not follow symlink, and some symlink may form a loop
 
@@ -70,6 +70,8 @@ const nearestExistPath = async (path) => { // use absolute path // NOTE: may be 
 const toPosixPath = (path) => path.replace(REGEXP_PATH_SEP_WIN32, '/')
 const REGEXP_PATH_SEP_WIN32 = /\\/g
 
+const dropTrailingSep = (path) => join(path, '.') // `a/b/c/` -> `a/b/c`
+
 const createPathPrefixLock = (rootPath) => {
   rootPath = resolve(rootPath)
   return (relativePath) => { // TODO: will silently drop path when used like `ppl('img', 'a.png')`, should add fool-proof error/check?
@@ -91,6 +93,6 @@ export {
   deletePath,
 
   existPath, nearestExistPath,
-  toPosixPath,
+  toPosixPath, dropTrailingSep,
   createPathPrefixLock
 }

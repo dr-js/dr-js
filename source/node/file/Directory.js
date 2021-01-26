@@ -1,7 +1,7 @@
 import { join, dirname, basename } from 'path'
 import { promises as fsAsync } from 'fs'
 import { createTreeBreadthFirstSearchAsync, createTreeBottomUpSearchAsync } from 'source/common/data/Tree'
-import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath } from './Path'
+import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath, dropTrailingSep } from './Path'
 
 const getPathTypeFromDirent = (dirent) => dirent.isSymbolicLink() ? PATH_TYPE.Symlink // need stat again to get the target type
   : dirent.isDirectory() ? PATH_TYPE.Directory
@@ -19,7 +19,7 @@ const getDirInfoList = async (path) => {
 }
 
 const getDirInfoTree = async (path) => {
-  path = join(path, '.') // NOTE: to drop trailing `/` (the path `sep`)
+  path = dropTrailingSep(path)
   const dirInfoListMap = new Map()
   const queue = [ path ]
   while (queue.length) {
