@@ -120,6 +120,13 @@ const removeInvalidCharXML = (string) => string.replace(REGEXP_INVALID_CHAR_XML,
 // for path mostly, lazy encode URI to keep more common char as-is: new URL ('https://0/;,:@&=+$/').pathname === '/;,:@&=+$/'
 const lazyEncodeURI = (string) => encodeURI(string).replace(/[?#]/g, (string) => string === '?' ? '%3F' : '%23')
 
+const forEachRegExpExec = (regexpGlobal, string, func) => {
+  let result
+  while ((result = regexpGlobal.exec(string))) { // [ fullMatch, group1, group2, ... ] // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+    if (func(result)) return // allow break by return truthy value
+  }
+}
+
 export {
   indentLine,
   indentList,
@@ -136,5 +143,7 @@ export {
   escapeHTML, unescapeHTML,
   removeInvalidCharXML,
 
-  lazyEncodeURI
+  lazyEncodeURI,
+
+  forEachRegExpExec
 }

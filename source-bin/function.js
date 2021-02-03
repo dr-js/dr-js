@@ -77,8 +77,9 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
   optionData, modeName,
   argumentList, log, inputFile, outputValueAuto, outputStream,
 
-  // fetch
-  fetchUserAgent, fetchExtraOption
+  // fetch overwrite for `@dr-js/node` to add http-proxy support
+  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
+  fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
 }) => {
   switch (modeName) {
     case 'eval': {
@@ -101,11 +102,11 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
       const body = inputFile ? await fsAsync.readFile(inputFile) : null
       let isDone = false
-      const response = await fetchWithJump(initialUrl, {
+      const response = await fetchWJ(initialUrl, {
         method, timeout, jumpMax, body,
-        headers: { 'accept': '*/*', 'user-agent': fetchUserAgent }, // patch for
-        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
-        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`)),
+        headers: { 'accept': '*/*', 'user-agent': fetchUA }, // patch for sites require a UA, like GitHub
+        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
+        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
         preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`),
         ...fetchExtraOption
       })
@@ -120,10 +121,23 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
   }
 }
 
+const runMain = (mainFunc, ...argv) => { // NOTE: convenient to use with --eval
+  const stepper = createStepper()
+  Promise.resolve(mainFunc(...argv)).then(
+    () => console.log(`done ${time(stepper())}`),
+    (error) => {
+      console.error(error)
+      process.exitCode = 1
+    }
+  )
+}
+
 export { // NOTE: only borrow script from here for test or for another bin/script, may cause bloat if webpack use both module/library
   modulePathHack,
   evalScript,
 
   logAuto,
-  sharedOption, sharedMode
+  sharedOption, sharedMode,
+
+  runMain
 }

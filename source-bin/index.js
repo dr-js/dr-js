@@ -19,7 +19,7 @@ import { createServerExot } from 'source/node/server/Server'
 import { createTCPProxyListener } from 'source/node/server/Proxy'
 import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen'
 import { resolveCommandAsync } from 'source/node/system/ResolveCommand'
-import { runSync } from 'source/node/run'
+import { runSync, runDetached } from 'source/node/run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
 
@@ -101,8 +101,8 @@ const runMode = async (optionData, modeName) => {
     }
 
     case 'open': {
-      const uri = argumentList[ 0 ] || '.' // can be url or path
-      return runSync([ ...getDefaultOpenCommandList(), uri.includes('://') ? uri : normalize(uri) ])
+      const [ uri = '.', isDetached = false ] = argumentList // `uri` can be url or path, and detached will lost logging, but allow followup command to run
+      return (isDetached ? runDetached : runSync)([ ...getDefaultOpenCommandList(), uri.includes('://') ? uri : normalize(uri) ])
     }
     case 'which': {
       const commandNameOrPath = argumentList[ 0 ]
@@ -177,7 +177,7 @@ const runMode = async (optionData, modeName) => {
     default:
       return sharedMode({
         ...sharedPack,
-        fetchUserAgent: `${packageName}/${packageVersion}`
+        fetchUA: `${packageName}/${packageVersion}`
       })
   }
 }
