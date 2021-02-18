@@ -1,4 +1,7 @@
 import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify'
+import { time, binary } from 'source/common/format'
+import { createStepper } from 'source/common/time'
+import { withRepeat } from 'source/common/function'
 import {
   // indentLine,
   // indentList,
@@ -10,11 +13,18 @@ import {
 
   createMarkReplacer,
 
-  escapeHTML, unescapeHTML
-  // removeInvalidCharXML
+  // escapeRegExp,
+
+  escapeHTML, unescapeHTML,
+  // removeInvalidCharXML,
+
+  // lazyEncodeURI,
+
+  forEachRegExpExec,
+  forEachLine
 } from './string'
 
-const { describe, it } = global
+const { describe, it, info = console.log } = global
 
 describe('Common.String', () => {
   it('escapeHTML/unescapeHTML()', () => {
@@ -77,5 +87,77 @@ describe('Common.String', () => {
       markReplacer([ TEXT_REPLACE_FROM, TEXT_NOT_REPLACE, TEXT_REPLACE_FROM, TEXT_NOT_REPLACE ].join(' AND ')),
       [ TEXT_REPLACE_TO, TEXT_NOT_REPLACE, TEXT_REPLACE_TO, TEXT_NOT_REPLACE ].join(' AND ')
     )
+  })
+
+  // forEachLine
+  it('forEachRegExpExec()', () => {
+    const resultList = []
+    forEachRegExpExec(/\w(\d+)/g, 'A0 B1 C2 a000 b111 c222', (result) => { resultList.push([ result[ 0 ], result[ 1 ] ]) })
+    stringifyEqual(resultList, [
+      [ 'A0', '0' ],
+      [ 'B1', '1' ],
+      [ 'C2', '2' ],
+      [ 'a000', '000' ],
+      [ 'b111', '111' ],
+      [ 'c222', '222' ]
+    ])
+  })
+  it('forEachRegExpExec() break loop', () => {
+    const resultList = []
+    forEachRegExpExec(/\w(\d+)/g, 'A0 B1 C2 a000 b111 c222', (result) => resultList.push([ result[ 0 ], result[ 1 ] ]) || 'break-loop')
+    stringifyEqual(resultList, [
+      [ 'A0', '0' ]
+    ], 'should stop loop when truthy value is returned')
+  })
+  it('forEachRegExpExec() empty string', () => {
+    const resultList = []
+    forEachRegExpExec(/\w(\d+)/g, '', (result) => { resultList.push([ result[ 0 ], result[ 1 ] ]) })
+    stringifyEqual(resultList, [])
+  })
+
+  it('forEachLine()', () => {
+    const string = '\n\nA0 B1 C2\na000 b111 c222\n\n'
+    const resultList = []
+    forEachLine(string, (line) => { resultList.push(line) })
+    stringifyEqual(resultList, string.split('\n'))
+  })
+  it('forEachLine() break loop', () => {
+    const string = '\n\nA0 B1 C2\na000 b111 c222\n\n'
+    const resultList = []
+    forEachLine(string, (line) => resultList.push(line) || 'break-loop')
+    stringifyEqual(resultList, [ '' ], 'should stop loop when truthy value is returned')
+  })
+  it('forEachLine() single line', () => {
+    const string = 'A0 B1 C2 a000 b111 c222'
+    const resultList = []
+    forEachLine(string, (line) => { resultList.push(line) })
+    stringifyEqual(resultList, string.split('\n'))
+  })
+  it('forEachLine() empty string', () => {
+    const string = ''
+    const resultList = []
+    forEachLine(string, (line) => { resultList.push(line) })
+    stringifyEqual(resultList, string.split('\n'))
+  })
+  __DEV__ && it('forEachLine() benchmark', () => { // NOTE: for now it seems avoid array push will increase performance
+    const stepper = createStepper()
+    const string = '\n\nA0 B1 C2\na000 b111 c222\n\n'.repeat(1024).repeat(1024)
+    info(time(stepper()), 'done prepare', binary(string.length))
+
+    withRepeat((looped) => {
+      const resultList = []
+      forEachLine(string, (line) => { resultList.push(line) })
+      info(looped, time(stepper()), 'done forEachLine')
+
+      let resultCount = 0
+      forEachLine(string, (line) => { resultCount++ })
+      info(looped, time(stepper()), 'done forEachLine count')
+
+      const expectList = string.split('\n')
+      info(looped, time(stepper()), 'done split')
+
+      stringifyEqual(resultList, expectList)
+      strictEqual(resultCount, expectList.length)
+    }, 4)
   })
 })

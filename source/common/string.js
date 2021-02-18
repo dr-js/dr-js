@@ -127,6 +127,18 @@ const forEachRegExpExec = (regexpGlobal, string, func) => {
   }
 }
 
+const forEachLine = (string, func) => { // NOTE: this only split by `\n`, basically a more flexible `string.split('\n')`
+  const length = string.length
+  const maxIndex = length + 1
+  let fromIndex = 0
+  do {
+    let toIndex = string.indexOf('\n', fromIndex)
+    if (toIndex === -1) toIndex = length
+    if (func(string.slice(fromIndex, toIndex))) return // allow break by return truthy value
+    fromIndex = toIndex + 1
+  } while (fromIndex !== maxIndex) // check after loop so empty string like `""` can get one callback
+}
+
 export {
   indentLine,
   indentList,
@@ -145,5 +157,6 @@ export {
 
   lazyEncodeURI,
 
-  forEachRegExpExec
+  forEachRegExpExec,
+  forEachLine
 }

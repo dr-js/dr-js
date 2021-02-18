@@ -5,6 +5,7 @@ import { start as startREPL } from 'repl'
 import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
 import { createStepper } from 'source/common/time'
 import { isBasicObject } from 'source/common/check'
+import { basicArray } from 'source/common/verify'
 import { throttle } from 'source/common/function'
 
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
@@ -13,15 +14,24 @@ import { fetchWithJump } from 'source/node/net'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620
-//   > $ dr-js -e console.log(module.filename)
+//   > $ dr-js -e "console.log(module.filename)"
 //   >   .../npm/node_modules/@dr-js/core/bin/function.js
+//   > $ npx @dr-js/core -e "console.log(module.filename)"
+//   >   .../.npm/_npx/####/lib/node_modules/@dr-js/core/bin/function.js
 // and:
-//   `.../npm/node_modules/@dr-js/core/bin/function.js` + `../../../../` = `.../npm/node_modules/` // allow the this and related module to resolve
+//   `.../npm/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../npm/node_modules/` // allow this and related module to resolve
+//   `.../.npm/_npx/####/lib/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../.npm/_npx/####/lib/node_modules/` // allow this and related module to resolve
 // NOTE:
 //   currently for the `output-gitignore` code, output of `require('@dr-js/core/package').version` will be
-//   the version from `./node_modules/@dr-js/core/package.json`, since it's higher in the path,
+//   the version from `./node_modules/@dr-js/core/package.json`, since it's higher in the path list,
 //   and the '../../../../' will result in an invalid path
-const modulePathHack = () => require('module')._resolveLookupPaths('modulePaths').push(resolve(module.filename, '../../../../'))
+const modulePathHack = (newPath) => {
+  if (!newPath.endsWith('node_modules')) return // keep only valid paths
+  const modulePaths = require('module')._resolveLookupPaths('modulePaths') // list of path to look for global node_modules, check the value of `module.paths` in repl
+  basicArray(modulePaths)
+  if (!modulePaths.includes(newPath)) modulePaths.push(newPath)
+}
+const patchModulePath = () => modulePathHack(resolve(module.filename, '../../../../'))
 
 const evalScript = ( // NOTE: use eval not Function to derive local
   evalScriptString, // inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ]
@@ -77,13 +87,16 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
   optionData, modeName,
   argumentList, log, inputFile, outputValueAuto, outputStream,
 
+  // patchModulePath overwrite, so more patch path can be added
+  patchMP = patchModulePath,
+
   // fetch overwrite for `@dr-js/node` to add http-proxy support
   fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
   fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
 }) => {
   switch (modeName) {
     case 'eval': {
-      modulePathHack()
+      await patchMP()
       const result = await evalScript(
         inputFile ? String(await fsAsync.readFile(inputFile)) : argumentList[ 0 ],
         inputFile || resolve('__SCRIPT_STRING__'),
@@ -93,7 +106,7 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
       return result !== undefined && outputValueAuto(result)
     }
     case 'repl':
-      modulePathHack()
+      await patchMP()
       return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
 
     case 'fetch': {
@@ -132,8 +145,8 @@ const runMain = (mainFunc, ...argv) => { // NOTE: convenient to use with --eval
   )
 }
 
-export { // NOTE: only borrow script from here for test or for another bin/script, may cause bloat if webpack use both module/library
-  modulePathHack,
+export { // NOTE: only borrow script from here for test or for another bin/script, will cause bloat if webpack pull code from both module/library
+  modulePathHack, patchModulePath,
   evalScript,
 
   logAuto,

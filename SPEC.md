@@ -36,7 +36,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
-  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -367,7 +367,7 @@
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
-    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
   - **Verify**
