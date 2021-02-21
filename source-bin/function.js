@@ -82,7 +82,8 @@ const sharedOption = async (optionData, modeName) => {
   }
 }
 
-const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
+// NOTE: for `@dr-js/node` to reuse & extend
+const sharedMode = async ({
   // sharedPack
   optionData, modeName,
   argumentList, log, inputFile, outputValueAuto, outputStream,
@@ -134,23 +135,10 @@ const sharedMode = async ({ // NOTE: for `@dr-js/node` to reuse & extend
   }
 }
 
-const runMain = (mainFunc, ...argv) => { // NOTE: convenient to use with --eval
-  const stepper = createStepper()
-  Promise.resolve(mainFunc(...argv)).then(
-    () => console.log(`done ${time(stepper())}`),
-    (error) => {
-      console.error(error)
-      process.exitCode = 1
-    }
-  )
-}
-
 export { // NOTE: only borrow script from here for test or for another bin/script, will cause bloat if webpack pull code from both module/library
   modulePathHack, patchModulePath,
   evalScript,
 
   logAuto,
-  sharedOption, sharedMode,
-
-  runMain
+  sharedOption, sharedMode
 }

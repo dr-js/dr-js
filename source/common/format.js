@@ -204,6 +204,7 @@ const prettyStringifyConfigObject = (value, pad = '  ', padStringInitial = '') =
   const resultList = []
   stringifySwitch(resultList, value, padStringInitial)
   resultList.length-- // drop the last '\n'
+  if (resultList.length === 1) resultList.unshift(padStringInitial) // add padding for simple value
   return resultList.join('')
 }
 

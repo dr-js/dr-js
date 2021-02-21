@@ -322,8 +322,11 @@ describe('Common.Format', () => {
 
   it('prettyStringifyConfigObject()', () => {
     const testPrettyStringifyConfigObject = (value, pad, outputLineList = []) => {
-      __DEV__ && console.log(prettyStringifyConfigObject(value, pad))
-      return strictEqual(prettyStringifyConfigObject(value, pad), outputLineList.join('\n'))
+      const PAD_STRING_INITIAL = '=!@#$%='
+      const actual = prettyStringifyConfigObject(value, pad, PAD_STRING_INITIAL)
+      const expect = `${PAD_STRING_INITIAL}${outputLineList.join(`\n${PAD_STRING_INITIAL}`)}`
+      __DEV__ && console.log({ match: actual === expect, actual, expect })
+      strictEqual(actual, expect)
     }
 
     testPrettyStringifyConfigObject(undefined, undefined, [ 'undefined' ])
