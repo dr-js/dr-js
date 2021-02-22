@@ -14,6 +14,7 @@ import {
   createMarkReplacer,
 
   // escapeRegExp,
+  replaceAll,
 
   escapeHTML, unescapeHTML,
   // removeInvalidCharXML,
@@ -86,6 +87,17 @@ describe('Common.String', () => {
     strictEqual(
       markReplacer([ TEXT_REPLACE_FROM, TEXT_NOT_REPLACE, TEXT_REPLACE_FROM, TEXT_NOT_REPLACE ].join(' AND ')),
       [ TEXT_REPLACE_TO, TEXT_NOT_REPLACE, TEXT_REPLACE_TO, TEXT_NOT_REPLACE ].join(' AND ')
+    )
+  })
+
+  it('replaceAll()', () => {
+    strictEqual(
+      replaceAll('aaa[!@#$%^&*(){}-=_+]bbb[!@#$%^&*(){}-=_+]ccc[!@#$%^&*(){}-=_+]ddd', '[!@#$%^&*(){}-=_+]', '-'),
+      'aaa-bbb-ccc-ddd'
+    )
+    strictEqual(
+      replaceAll('aaaaaaaaaaaa', 'aaa', '-'),
+      '----'
     )
   })
 

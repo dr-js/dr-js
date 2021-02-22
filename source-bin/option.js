@@ -40,6 +40,7 @@ const MODE_FORMAT_LIST = parseList(
   'status,s/T|basic system status: -J=isOutputJSON',
   'open,o//0-2|use system default app to open uri or path: $0=uriOrPath/cwd, $1=isDetached/false',
   'which,w//1|resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath',
+  'detach,bg/A|run command detached: -O=logFile/ignore, $0=...argsList',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'process-signal,sig//0-2|send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"',
 

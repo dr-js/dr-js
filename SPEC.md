@@ -36,7 +36,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
-  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
   - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
 + 📄 [source/common/verify.js](source/common/verify.js)
@@ -367,7 +367,7 @@
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
-    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
     - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
   - **Verify**
@@ -525,6 +525,8 @@
 >       use system default app to open uri or path: $0=uriOrPath/cwd, $1=isDetached/false
 >   --which --w -w [OPTIONAL] [ARGUMENT=1]
 >       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
+>   --detach --bg [OPTIONAL] [ARGUMENT=0+]
+>       run command detached: -O=logFile/ignore, $0=...argsList
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
 >       show system process status: -J=isOutputJSON, $0=outputMode/"pid--"
 >   --process-signal --sig [OPTIONAL] [ARGUMENT=0-2]
@@ -572,6 +574,7 @@
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-2]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_DETACH="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_BG]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
@@ -611,6 +614,7 @@
 >     "status": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-2]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "detach": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=bg]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],

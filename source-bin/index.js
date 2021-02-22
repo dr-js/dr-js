@@ -18,7 +18,7 @@ import { autoTestServerPort } from 'source/node/server/function'
 import { createServerExot } from 'source/node/server/Server'
 import { createTCPProxyListener } from 'source/node/server/Proxy'
 import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen'
-import { resolveCommandAsync } from 'source/node/system/ResolveCommand'
+import { resolveCommand } from 'source/node/system/ResolveCommand'
 import { runSync, runDetached } from 'source/node/run'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
@@ -106,9 +106,13 @@ const runMode = async (optionData, modeName) => {
     }
     case 'which': {
       const commandNameOrPath = argumentList[ 0 ]
-      const resultCommand = await resolveCommandAsync(commandNameOrPath, root)
+      const resultCommand = resolveCommand(commandNameOrPath, root)
       if (!resultCommand) throw new Error(`failed to resolve command: ${commandNameOrPath}`)
       return log(resultCommand)
+    }
+    case 'detach': {
+      const commandNameOrPath = argumentList[ 0 ]
+      return runDetached([ resolveCommand(commandNameOrPath, root), ...argumentList.slice(1) ], { stdoutFile: outputFile || undefined })
     }
     case 'status':
       return log(isOutputJSON ? getSystemStatus() : describeSystemStatus())

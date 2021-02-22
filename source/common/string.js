@@ -45,8 +45,13 @@ const createMarkReplacer = (valueMap = {}) => {
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
 // https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
 // https://lodash.com/docs#escapeRegExp
-const REGEXP_ESCAPE_REGEXP = /[\\^$.*+?()[\]{}|]/g
+const REGEXP_ESCAPE_REGEXP = /[.*+?^${}()|[\]\\]/g
 const escapeRegExp = (string) => string.replace(REGEXP_ESCAPE_REGEXP, '\\$&')
+
+// NOTE: for compatibility, code for newer runtime should just use `String.prototype.replaceAll()`
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll
+// https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
+const replaceAll = (string, fromString, to) => string.replace(new RegExp(escapeRegExp(fromString), 'g'), to)
 
 if (__DEV__) { // code to generate
   const ESCAPE_HTML_MAP = {}
@@ -151,6 +156,7 @@ export {
   createMarkReplacer,
 
   escapeRegExp,
+  replaceAll,
 
   escapeHTML, unescapeHTML,
   removeInvalidCharXML,
