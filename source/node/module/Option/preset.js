@@ -5,6 +5,7 @@ import { string, number, boolean, integer, regexp, basicObject, basicFunction, a
 import { tryParseJSONObject } from 'source/common/data/function'
 import { objectFilter } from 'source/common/immutable/Object'
 import { arraySplitChunk } from 'source/common/immutable/Array'
+import { unpackGz64, unpackBr64 } from 'source/node/data/Z64String'
 import { createOptionParser } from './parser'
 
 // TODO: REWRITE/TRIM: usable for now, but too much "magic", need a slim version
@@ -102,8 +103,8 @@ Object.assign(Preset, {
   Config: parseCompact([
     'config,c/SingleString,Optional|from JS/JSON: set to "path/to/config.js|json"',
     'from ENV: set to "env" to enable, default not check env',
-    'from ENV JSON: set to "json-env:$env-name" to read the ENV string as JSON',
-    'from CLI JSON: set to "json-cli:$json-string" to read the appended string as JSON'
+    'from ENV JSON: set to "json-env:ENV_NAME" to read the ENV string as JSON, or "jz64/jb64-env"',
+    'from CLI JSON: set to "json-cli:JSON_STRING" to read the appended string as JSON, or "jz64/jb64-cli"'
   ].join('\n')),
 
   pickOneOf,
@@ -136,8 +137,8 @@ const parseOptionMap = async ({
   const [ baseString, appendString ] = splitConfigString(optionMapCLI[ 'config' ] && optionMapCLI[ 'config' ].argumentList[ 0 ])
   const optionMapExtra = !baseString ? null
     : baseString === 'env' ? optionMapResolvePathMutate(parseENV(optionENV)) // NOTE: ENV is only parsed when CLI config is set to `env`, the good thing is it's easier to track
-      : baseString === 'json-env' ? optionMapResolvePathMutate(parseCONFIG(tryParseJSONObject(optionENV[ appendString ], null) || throwError(`failed to load config: ${baseString}`)))
-        : baseString === 'json-cli' ? optionMapResolvePathMutate(parseCONFIG(tryParseJSONObject(appendString, null) || throwError(`failed to load config: ${baseString}`)))
+      : /^j(son|z64|b64)-env$/.test(baseString) ? optionMapResolvePathMutate(parseCONFIG(tryParseObjectStringAlike(optionENV[ appendString ], baseString) || throwError(`failed to load config: ${baseString}`)))
+        : /^j(son|z64|b64)-cli$/.test(baseString) ? optionMapResolvePathMutate(parseCONFIG(tryParseObjectStringAlike(appendString, baseString) || throwError(`failed to load config: ${baseString}`)))
           : optionMapResolvePathMutate(
             parseCONFIG(tryRequire(resolve(baseString)) || throwError(`failed to load config: ${baseString}`)),
             dirname(resolve(baseString))
@@ -152,7 +153,7 @@ const parseOptionMap = async ({
 }
 const splitConfigString = (configString) => {
   const [ baseString, ...appendList ] = !configString ? [] // support missing string
-    : (configString.startsWith('json-env:') || configString.startsWith('json-cli:')) ? configString.split(':') // `json-env/json-cli`, split at first ':'
+    : (/^j(son|z64|b64)-env:/.test(configString) || /^j(son|z64|b64)-cli:/.test(configString)) ? configString.split(':') // `j*-env/j*-cli`, split at first ':'
       : [ configString ] // `env` or config file path, no append strings
   const appendString = appendList.join(':')
   return [ baseString, appendString ]
@@ -160,6 +161,13 @@ const splitConfigString = (configString) => {
 const optionMapResolvePathMutate = (optionMap, pathRoot = process.cwd()) => { // NOTE: will mutate argumentList in optionMap
   Object.values(optionMap).forEach(({ format: { isPath }, argumentList }) => isPath && argumentList.forEach((v, i) => (argumentList[ i ] = resolve(pathRoot, v))))
   return optionMap
+}
+const tryParseObjectStringAlike = (string, baseString) => {
+  try {
+    let jsonString = string // assume json first
+    if (baseString.charAt(2) === '6') jsonString = (baseString.charAt(1) === 'z' ? unpackGz64 : unpackBr64)(string)
+    return tryParseJSONObject(jsonString, null)
+  } catch (error) { __DEV__ && console.warn(error) }
 }
 
 const createOptionGetter = (optionMap) => {
@@ -174,7 +182,7 @@ const createOptionGetter = (optionMap) => {
         ? getFirst(name) // relative to the path type value
         : ( // relative to config file
           optionMap[ name ].source === 'CONFIG' &&
-          ![ 'env', 'json-env', 'json-cli' ].includes(splitConfigString(getFirst('config'))[ 0 ]) &&
+          !/^env|j(son|z64|b64)-(env|cli)$/.test(splitConfigString(getFirst('config'))[ 0 ]) && // inline config, not file
           getFirst('config')
         )
     )

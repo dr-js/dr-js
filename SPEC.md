@@ -157,6 +157,8 @@
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
++ 📄 [source/node/data/Z64String.js](source/node/data/Z64String.js)
+  - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -382,6 +384,8 @@
       - `packBufferPacket`, `parseBufferPacket`
     - **Stream**
       - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
+    - **Z64String**
+      - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
   - **File**
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
@@ -469,8 +473,8 @@
 >   --config --c -c [OPTIONAL] [ARGUMENT=1]
 >       from JS/JSON: set to "path/to/config.js|json"
 >       from ENV: set to "env" to enable, default not check env
->       from ENV JSON: set to "json-env:$env-name" to read the ENV string as JSON
->       from CLI JSON: set to "json-cli:$json-string" to read the appended string as JSON
+>       from ENV JSON: set to "json-env:ENV_NAME" to read the ENV string as JSON, or "jz64/jb64-env"
+>       from CLI JSON: set to "json-cli:JSON_STRING" to read the appended string as JSON, or "jz64/jb64-cli"
 >   --help --h -h [OPTIONAL] [ARGUMENT=0-1]
 >       show full help
 >   --version --v -v [OPTIONAL] [ARGUMENT=0-1]
