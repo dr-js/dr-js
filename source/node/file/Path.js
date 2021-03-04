@@ -52,7 +52,7 @@ const copyPath = async (pathFrom, pathTo, pathStat) => {
 const renamePath = async (pathFrom, pathTo) => fsAsync.rename(pathFrom, pathTo) // resolve to nothing
 
 const deletePath = async (path, pathStat) => {
-  if (pathStat === undefined) pathStat = await getPathStat(path)
+  if (pathStat === undefined) pathStat = await getPathLstat(path)
   return pathStat.isDirectory()
     ? fsAsync.rmdir(path) // resolve to nothing
     : fsAsync.unlink(path) // resolve to nothing
