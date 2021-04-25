@@ -92,8 +92,7 @@ const sharedMode = async ({
   patchMP = patchModulePath,
 
   // fetch overwrite for `@dr-js/node` to add http-proxy support
-  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
-  fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
+  fetchWJ = fetchWithJump, fetchUA, fetchEXT
 }) => {
   switch (modeName) {
     case 'eval': {
@@ -122,7 +121,7 @@ const sharedMode = async ({
         onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
         onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
         preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`),
-        ...fetchExtraOption
+        ...fetchEXT
       })
       if (!response.ok) throw new Error(`bad status: ${response.status}`)
       const contentLength = Number(response.headers[ 'content-length' ])

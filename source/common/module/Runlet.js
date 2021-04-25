@@ -591,9 +591,3 @@ export {
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 }
-
-export { // TODO: DEPRECATE: import from RunletChip
-  createArrayInputChip, createArrayOutputChip,
-  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
-  createENDRegulatorChip
-} from './RunletChip'

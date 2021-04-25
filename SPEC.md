@@ -9,8 +9,6 @@
   - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
-+ 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
@@ -126,9 +124,9 @@
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/Runlet.js](source/common/module/Runlet.js)
-  - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
+  - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createCountPool`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
 + 📄 [source/common/module/RunletChip.js](source/common/module/RunletChip.js)
-  - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
+  - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
@@ -147,8 +145,6 @@
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
-+ 📄 [source/node/resource.js](source/node/resource.js)
-  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/run.js](source/node/run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runSync`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
@@ -168,7 +164,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcherExot`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
-  - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
+  - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FileChunkUpload.js](source/node/module/FileChunkUpload.js)
   - `createOnFileChunkUpload`, `uploadFileByChunk`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
@@ -188,7 +184,7 @@
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
-  - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
+  - `autoTestServerPort`, `getUnusedPort`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
@@ -196,23 +192,9 @@
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
-  - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+  - `createResponderFavicon`, `prepareBufferData`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
-  - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
-+ 📄 [source/node/server/WebSocket/WebSocket.js](source/node/server/WebSocket/WebSocket.js)
-  - `createWebSocket`
-+ 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
-  - `createWebSocketClient`
-+ 📄 [source/node/server/WebSocket/WebSocketServer.js](source/node/server/WebSocket/WebSocketServer.js)
-  - `enableWebSocketServer`
-+ 📄 [source/node/server/WebSocket/WebSocketUpgradeRequest.js](source/node/server/WebSocket/WebSocketUpgradeRequest.js)
-  - `createUpdateRequestListener`
-+ 📄 [source/node/server/WebSocket/frameReceiver.js](source/node/server/WebSocket/frameReceiver.js)
-  - `createFrameReceiverStore`, `listenAndReceiveFrame`
-+ 📄 [source/node/server/WebSocket/frameSender.js](source/node/server/WebSocket/frameSender.js)
-  - `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`
-+ 📄 [source/node/server/WebSocket/function.js](source/node/server/WebSocket/function.js)
-  - `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
+  - `createDefaultCacheMap`, `createResponderServeStatic`
 + 📄 [source/node/server/WS/Base.js](source/node/server/WS/Base.js)
   - `createWSBase`
 + 📄 [source/node/server/WS/Client.js](source/node/server/WS/Client.js)
@@ -233,8 +215,6 @@
   - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
   - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
-+ 📄 [source/node/system/Run.js](source/node/system/Run.js)
-  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
   - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
@@ -261,8 +241,6 @@
     - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
   - **Net**
     - `fetchLikeRequest`
-  - **Resource**
-    - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 - **Common**
   - **Data**
     - **ArrayBuffer**
@@ -344,9 +322,9 @@
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **Runlet**
-      - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
+      - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createCountPool`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
     - **RunletChip**
-      - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
+      - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
     - **SemVer**
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
@@ -399,7 +377,7 @@
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **EntityTag**
-      - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
+      - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
     - **FileChunkUpload**
       - `createOnFileChunkUpload`, `uploadFileByChunk`
     - **Logger**
@@ -417,9 +395,9 @@
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
-        - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+        - `createResponderFavicon`, `prepareBufferData`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
-        - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
+        - `createDefaultCacheMap`, `createResponderServeStatic`
     - **WS**
       - **Base**
         - `createWSBase`
@@ -428,16 +406,6 @@
       - **Server**
         - `createUpgradeRequestListener`, `enableWSServer`
       - `createFrameDecodeChip`, `createCloseFramePack`, `createFrameEncodeChip`, `encodeBinaryFramePack`, `encodePingFramePack`, `encodePongFramePack`, `encodeTextFramePack`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`, `packProtocolList`, `parseProtocolString`
-    - **WebSocket**
-      - **WebSocket**
-        - `createWebSocket`
-      - **WebSocketClient**
-        - `createWebSocketClient`
-      - **WebSocketServer**
-        - `enableWebSocketServer`
-      - **WebSocketUpgradeRequest**
-        - `createUpdateRequestListener`
-      - `createFrameReceiverStore`, `listenAndReceiveFrame`, `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
     - **Proxy**
       - `createTCPProxyListener`
     - **Server**
@@ -445,7 +413,7 @@
     - **CommonHTML**
       - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
-      - `autoTestServerPort`, `getUnusedPort`, `parseCookieString`
+      - `autoTestServerPort`, `getUnusedPort`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpenCommandList`
@@ -455,14 +423,10 @@
       - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **ResolveCommand**
       - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
-    - **Run**
-      - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Net**
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
-  - **Resource**
-    - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
   - **Run**
     - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runSync`
 
