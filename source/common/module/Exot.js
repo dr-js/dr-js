@@ -1,7 +1,6 @@
 import { isString, isObjectAlike, isBasicFunction } from 'source/common/check'
 import { getRandomId } from 'source/common/math/random'
 
-// TODO: still under testing, pattern not stable
 // Exot is short for "Exot-ic", a pattern for wrapping external IO or Resource that require manual `up` and `down`.
 
 const createExotError = (exotId, message) => { // error with exotId
