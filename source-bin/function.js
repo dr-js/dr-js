@@ -4,7 +4,7 @@ import { start as startREPL } from 'repl'
 
 import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
 import { createStepper } from 'source/common/time'
-import { isBasicObject } from 'source/common/check'
+import { isObjectAlike } from 'source/common/check'
 import { basicArray } from 'source/common/verify'
 import { throttle } from 'source/common/function'
 
@@ -48,7 +48,7 @@ const evalScript = ( // NOTE: use eval not Function to derive local
 
 const stepper = createStepper()
 const logAuto = (...args) => console.log(
-  ...((args.length === 1 && isBasicObject(args[ 0 ]))
+  ...((args.length === 1 && isObjectAlike(args[ 0 ]))
     ? [ JSON.stringify(args[ 0 ], null, 2) ]
     : args),
   `(+${time(stepper())})`
@@ -66,7 +66,7 @@ const sharedOption = async (optionData, modeName) => {
   await configurePid({ filePid: tryGetFirst('pid-file') })
 
   const toBuffer = (value) => Buffer.isBuffer(value) ? value
-    : isBasicObject(value) ? JSON.stringify(value, null, 2)
+    : isObjectAlike(value) ? JSON.stringify(value, null, 2)
       : Buffer.from(value) // should be String
   const outputValueAuto = async (value) => outputFile
     ? fsAsync.writeFile(outputFile, toBuffer(value))
