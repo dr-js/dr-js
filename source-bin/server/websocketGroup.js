@@ -1,4 +1,5 @@
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
+import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/common/module/HTML'
 
 import { packBufferPacket, parseBufferPacket } from 'source/node/data/BufferPacket'
 import { createResponderLog, responderEndWithRedirect } from 'source/node/server/Responder/Common'
@@ -6,7 +7,7 @@ import { responderSendBufferCompress, prepareBufferData } from 'source/node/serv
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'source/node/server/Responder/Router'
 import { OPCODE_TYPE } from 'source/node/server/WS/function'
 import { enableWSServer, createUpgradeRequestListener } from 'source/node/server/WS/Server'
-import { DR_BROWSER_SCRIPT_TAG, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/node/server/commonHTML'
+import { DR_BROWSER_SCRIPT_TAG } from 'source/node/server/function'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'

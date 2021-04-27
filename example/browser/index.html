@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="initial-scale=1, width=device-width" />
 <title>example</title>
@@ -6,7 +6,7 @@
 <script src="../../output-gitignore/library/Dr.browser.js"></script>
 <script>window.Dr || document.write('<script src="https://unpkg.com/@dr-js/core"><\/script>')</script>
 <script type="module">
-  import { COMMON_STYLE, COMMON_FUNC_MAP } from '../../source/node/server/commonHTML.js'
+  const { COMMON_STYLE, COMMON_FUNC_MAP } = window.Dr.Common.Module.HTML
 
   const parseHTMLFunc = (HTML) => {
     const elementList = [ ...window.cE('div', { innerHTML: HTML }).children ]
