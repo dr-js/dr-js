@@ -1,12 +1,12 @@
-import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
+import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
 import {
   ASYNC_TASK_PHASE_MAP,
   ASYNC_TASK_KEY_MAP,
   getAsyncTaskPhase,
   runAsyncTask,
   resetAsyncTask
-} from './AsyncTask'
+} from './AsyncTask.js'
 
 const { describe, it } = global
 

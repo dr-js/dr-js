@@ -1,10 +1,10 @@
-import { strictEqual, doThrow, doThrowAsync } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { setTimeoutAsync } from 'source/common/time'
-import { getRandomId } from 'source/common/math/random'
-import { getGlobal } from 'source/env/global'
+import { strictEqual, doThrow, doThrowAsync } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { getRandomId } from 'source/common/math/random.js'
+import { getGlobal } from 'source/env/global.js'
 
-import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot'
+import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot.js'
 
 const { describe, it, info = console.log } = global
 

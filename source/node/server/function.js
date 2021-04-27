@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { createServer as createNetServer } from 'net'
-import { catchAsync } from 'source/common/error'
-import { tryRequireResolve } from 'source/env/tryRequire'
+import { catchAsync } from 'source/common/error.js'
+import { tryRequireResolve } from 'source/env/tryRequire.js'
 
 const DR_BROWSER_FILE_PATH = () => [
   './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`

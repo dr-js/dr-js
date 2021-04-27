@@ -1,10 +1,10 @@
-import { stringifyEqual } from 'source/common/verify'
+import { stringifyEqual } from 'source/common/verify.js'
 
 import {
   createPatchKit,
   toObjectPatchKit,
   toArrayWithKeyPatchKit
-} from './Patch'
+} from './Patch.js'
 
 const { describe, it } = global
 

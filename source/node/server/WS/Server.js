@@ -1,7 +1,7 @@
-import { clock } from 'source/common/time'
-import { createStateStoreLite } from 'source/common/immutable/StateStore'
-import { createWSBase } from './Base'
-import { WEBSOCKET_VERSION, getRespondKey, parseProtocolString } from './function'
+import { clock } from 'source/common/time.js'
+import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
+import { createWSBase } from './Base.js'
+import { WEBSOCKET_VERSION, getRespondKey, parseProtocolString } from './function.js'
 
 const enableWSServer = (server, {
   onUpgradeRequest = (request, socket, headBuffer, info) => {}, // do nothing by default, will close socket

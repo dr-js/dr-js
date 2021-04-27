@@ -1,15 +1,15 @@
-import { isBasicObject } from 'source/common/check'
-import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
+import { isBasicObject } from 'source/common/check.js'
+import { createTreeDepthFirstSearch } from 'source/common/data/Tree.js'
 import {
   parseRouteToMap,
   findRouteFromMap,
   getRouteParamAny as getRouteMapParamAny,
   getRouteParam as getRouteMapParam
-} from 'source/common/module/RouteMap'
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { COMMON_LAYOUT, COMMON_STYLE } from 'source/common/module/HTML'
+} from 'source/common/module/RouteMap.js'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { COMMON_LAYOUT, COMMON_STYLE } from 'source/common/module/HTML.js'
 
-import { responderSendBufferCompress, prepareBufferData } from './Send'
+import { responderSendBufferCompress, prepareBufferData } from './Send.js'
 
 const METHOD_MAP = {
   GET: '/GET',

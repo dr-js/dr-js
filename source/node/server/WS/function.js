@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto'
 import { constants as bufferConstants } from 'buffer'
-import { calcHash } from 'source/node/data/Buffer'
+import { calcHash } from 'source/node/data/Buffer.js'
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
 // Frame format:

@@ -1,4 +1,4 @@
-import { typeNameOf } from 'source/common/format'
+import { typeNameOf } from 'source/common/format.js'
 
 const { describe, it, info = console.log } = global
 

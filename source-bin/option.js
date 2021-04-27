@@ -1,4 +1,4 @@
-import { Preset, prepareOption } from 'source/node/module/Option/preset'
+import { Preset, prepareOption } from 'source/node/module/Option/preset.js'
 
 const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(compactFormat, {
   optional: true // set all optional

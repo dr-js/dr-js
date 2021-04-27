@@ -1,7 +1,7 @@
 import { join as joinPath, dirname, resolve, sep } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { getSample } from 'source/common/math/sample'
-import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { getSample } from 'source/common/math/sample.js'
+import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path.js'
 import {
   // getPathTypeFromDirent,
   getDirInfoList,
@@ -19,7 +19,7 @@ import {
   deleteDirectory,
 
   getFileList
-} from './Directory'
+} from './Directory.js'
 
 const { describe, it, before, after } = global
 

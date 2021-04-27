@@ -1,11 +1,11 @@
-import { strictEqual } from 'source/common/verify'
-import { catchSync, catchPromise } from 'source/common/error'
-import { getRandomId } from 'source/common/math/random'
-import { setTimeoutAsync } from 'source/common/time'
+import { strictEqual } from 'source/common/verify.js'
+import { catchSync, catchPromise } from 'source/common/error.js'
+import { getRandomId } from 'source/common/math/random.js'
+import { setTimeoutAsync } from 'source/common/time.js'
 import {
   describeRunOutcome, describeRunOutcomeSync,
   run, runSync, runDetached
-} from './run'
+} from './run.js'
 
 const { describe, it, info = console.log } = global
 

@@ -1,13 +1,13 @@
 import { createReadStream, promises as fsAsync } from 'fs'
-import { createCacheMap } from 'source/common/data/CacheMap'
-import { getMIMETypeFromFileName } from 'source/common/module/MIME'
-import { getPathStat } from 'source/node/file/Path'
-import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
-import { responderEndWithStatusCode } from './Common'
+import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { getMIMETypeFromFileName } from 'source/common/module/MIME.js'
+import { getPathStat } from 'source/node/file/Path.js'
+import { getWeakEntityTagByStat } from 'source/node/module/EntityTag.js'
+import { responderEndWithStatusCode } from './Common.js'
 import {
   responderSendBuffer, responderSendBufferRange,
   responderSendStream, responderSendStreamRange
-} from './Send'
+} from './Send.js'
 
 const DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32MiB
 const DEFAULT_CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512KiB

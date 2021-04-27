@@ -1,12 +1,12 @@
-import { strictEqual } from 'source/common/verify'
-import { isEqualArrayBuffer, fromString } from './ArrayBuffer'
+import { strictEqual } from 'source/common/verify.js'
+import { isEqualArrayBuffer, fromString } from './ArrayBuffer.js'
 import {
   HEADER_BYTE_SIZE,
   packArrayBufferPacket,
   parseArrayBufferPacket,
   packChainArrayBufferPacket,
   parseChainArrayBufferPacket
-} from './ArrayBufferPacket'
+} from './ArrayBufferPacket.js'
 
 const { describe, it } = global
 

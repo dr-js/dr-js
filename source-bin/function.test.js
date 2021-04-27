@@ -1,4 +1,4 @@
-import { strictEqual, basicArray } from 'source/common/verify'
+import { strictEqual, basicArray } from 'source/common/verify.js'
 
 const { describe, it } = global
 

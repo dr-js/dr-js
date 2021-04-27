@@ -1,15 +1,15 @@
 import { Readable } from 'stream'
 import { createInterface } from 'readline'
 
-import { isObjectAlike, isBasicFunction } from 'source/common/check'
-import { createInsideOutPromise } from 'source/common/function'
+import { isObjectAlike, isBasicFunction } from 'source/common/check.js'
+import { createInsideOutPromise } from 'source/common/function.js'
 import {
   END, SKIP, REDO,
   createPack,
   createRunlet,
   createCountPool, KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-} from 'source/common/module/Runlet'
+} from 'source/common/module/Runlet.js'
 
 // edited from: https://github.com/sindresorhus/is-stream
 const isReadableStream = (stream) => (

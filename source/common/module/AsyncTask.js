@@ -1,5 +1,5 @@
-import { basicObject, basicFunction, promiseAlike } from 'source/common/verify'
-import { catchPromise } from 'source/common/error'
+import { basicObject, basicFunction, promiseAlike } from 'source/common/verify.js'
+import { catchPromise } from 'source/common/error.js'
 
 // ## AsyncTask ##
 //   a data structure to allow saving resource heavy code to run later

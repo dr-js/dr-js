@@ -1,5 +1,5 @@
-import { withTempDirectory } from '@dr-js/dev/module/node/file'
-import { run } from 'source/node/run'
+import { withTempDirectory } from '@dr-js/dev/module/node/file.js'
+import { run } from 'source/node/run.js'
 
 const { info = console.log } = global
 

@@ -1,4 +1,4 @@
-import { isCompactArrayShallowEqual } from './check'
+import { isCompactArrayShallowEqual } from './check.js'
 
 // memorize expensive immutable transform
 const transformCache = (transformFunc) => {

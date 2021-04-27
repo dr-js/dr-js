@@ -1,11 +1,11 @@
-import { setTimeoutAsync } from 'source/common/time'
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { writeBufferToStreamAsync, readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { getUnusedPort } from 'source/node/server/function'
-import { createServerExot, createRequestListener } from 'source/node/server/Server'
-import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common'
-import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
-import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { writeBufferToStreamAsync, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { getUnusedPort } from 'source/node/server/function.js'
+import { createServerExot, createRequestListener } from 'source/node/server/Server.js'
+import { responderEnd, responderEndWithStatusCode } from 'source/node/server/Responder/Common.js'
+import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send.js'
+import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router.js'
 
 const bufferList = []
 bufferList.length = 8 * 1024

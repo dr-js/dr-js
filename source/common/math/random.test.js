@@ -1,10 +1,10 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   getRandomInt,
   getRandomIntList,
   getRandomId,
   getRandomArrayBuffer
-} from './random'
+} from './random.js'
 
 const { describe, it } = global
 

@@ -1,11 +1,11 @@
 import { resolve } from 'path'
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import { readFileSync } from 'fs'
-import { setTimeoutAsync } from 'source/common/time'
-import { modifyDelete } from 'source/node/file/Modify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { modifyDelete } from 'source/node/file/Modify.js'
+import { resetDirectory } from '@dr-js/dev/module/node/file.js'
 
-import { createSafeWriteStream } from './SafeWrite'
+import { createSafeWriteStream } from './SafeWrite.js'
 
 const { describe, it, before, after } = global
 

@@ -1,4 +1,4 @@
-import { createTestFunc, commonFunc } from './function.test'
+import { createTestFunc, commonFunc } from './function.test.js'
 
 const { describe, it } = global
 

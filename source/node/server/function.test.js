@@ -1,6 +1,6 @@
-import { strictEqual } from 'source/common/verify'
-import { getUnusedPort, autoTestServerPort } from './function'
-import { createServerExot } from './Server'
+import { strictEqual } from 'source/common/verify.js'
+import { getUnusedPort, autoTestServerPort } from './function.js'
+import { createServerExot } from './Server.js'
 
 const { describe, it } = global
 

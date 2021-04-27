@@ -1,5 +1,5 @@
-import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify'
-import { parseSemVer, compareSemVer } from './SemVer'
+import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify.js'
+import { parseSemVer, compareSemVer } from './SemVer.js'
 
 const { describe, it } = global
 

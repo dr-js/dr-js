@@ -1,10 +1,10 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { getUnusedPort } from 'source/node/server/function'
-import { createServerExot } from 'source/node/server/Server'
-import { OPCODE_TYPE } from './function'
-import { createWSClient } from './Client'
-import { enableWSServer } from './Server'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { getUnusedPort } from 'source/node/server/function.js'
+import { createServerExot } from 'source/node/server/Server.js'
+import { OPCODE_TYPE } from './function.js'
+import { createWSClient } from './Client.js'
+import { enableWSServer } from './Server.js'
 
 const { describe, it } = global
 

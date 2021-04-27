@@ -5,8 +5,8 @@ import {
 } from 'os'
 import { readFileSync } from 'fs'
 
-import { percent, time, binary } from 'source/common/format'
-import { indentLine, indentList } from 'source/common/string'
+import { percent, time, binary } from 'source/common/format.js'
+import { indentLine, indentList } from 'source/common/string.js'
 
 const getSystemPlatform = () => ({
   platform: platform(),

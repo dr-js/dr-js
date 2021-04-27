@@ -1,13 +1,13 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync, createReadStream } from 'fs'
-import { setTimeoutAsync } from 'source/common/time'
-import { percent } from 'source/common/format'
-import { stringifyEqual, strictEqual } from 'source/common/verify'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
-import { toArrayBuffer } from 'source/node/data/Buffer'
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { ping, fetchLikeRequest } from './net'
-import { BUFFER_SCRIPT, withTestServer } from './testServer.test'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { percent } from 'source/common/format.js'
+import { stringifyEqual, strictEqual } from 'source/common/verify.js'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
+import { toArrayBuffer } from 'source/node/data/Buffer.js'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { ping, fetchLikeRequest } from './net.js'
+import { BUFFER_SCRIPT, withTestServer } from './testServer.test.js'
 
 const { describe, it, before, after, info = console.log } = global
 

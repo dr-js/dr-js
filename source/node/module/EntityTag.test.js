@@ -1,9 +1,9 @@
-import { strictEqual, notStrictEqual } from 'source/common/verify'
+import { strictEqual, notStrictEqual } from 'source/common/verify.js'
 import { statSync } from 'fs'
 import {
   getEntityTagByContentHash,
   getWeakEntityTagByStat
-} from './EntityTag'
+} from './EntityTag.js'
 
 const { describe, it } = global
 

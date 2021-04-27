@@ -1,5 +1,5 @@
-import { notStrictEqual, stringifyEqual } from 'source/common/verify'
-import { clock, requestFrameUpdate, setAwaitAsync } from './time'
+import { notStrictEqual, stringifyEqual } from 'source/common/verify.js'
+import { clock, requestFrameUpdate, setAwaitAsync } from './time.js'
 
 const { describe, it } = global
 

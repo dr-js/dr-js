@@ -1,4 +1,4 @@
-import { concatArrayBuffer, deconcatArrayBuffer, fromString, toString } from './ArrayBuffer'
+import { concatArrayBuffer, deconcatArrayBuffer, fromString, toString } from './ArrayBuffer.js'
 
 const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
 const HEADER_BYTE_SIZE = 4 // Math.ceil(Math.log2(MAX_PACKET_HEADER_SIZE) / 8)

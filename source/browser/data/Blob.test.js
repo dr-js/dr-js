@@ -1,12 +1,12 @@
-import { strictEqual } from 'source/common/verify'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
+import { strictEqual } from 'source/common/verify.js'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 
 import {
   Blob,
   parseBlobAsText,
   parseBlobAsDataURL,
   parseBlobAsArrayBuffer
-} from './Blob'
+} from './Blob.js'
 
 const { describe, it } = global
 const { btoa } = window
