@@ -1,11 +1,11 @@
-import { unwrap, createLockStepAsyncIter } from 'source/common/data/Iter'
-import { createInsideOutPromise } from 'source/common/function'
+import { unwrap, createLockStepAsyncIter } from 'source/common/data/Iter.js'
+import { createInsideOutPromise } from 'source/common/function.js'
 
 import {
   END, SKIP,
   createPack,
   KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT
-} from './Runlet'
+} from './Runlet.js'
 
 const createArrayInputChip = ({
   array = [], // will not change value

@@ -1,7 +1,7 @@
-import { getTimestamp } from 'source/common/time'
-import { getRandomArrayBuffer } from 'source/common/math/random'
-import { swapObfuscateString } from 'source/common/data/function'
-import { packArrayBufferPacket, parseArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
+import { getTimestamp } from 'source/common/time.js'
+import { getRandomArrayBuffer } from 'source/common/math/random.js'
+import { swapObfuscateString } from 'source/common/data/function.js'
+import { packArrayBufferPacket, parseArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
 
 const CHECK_CODE_SEP = '-'
 

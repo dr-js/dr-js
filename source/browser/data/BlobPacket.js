@@ -1,6 +1,6 @@
-import { fromString, toString } from 'source/common/data/ArrayBuffer'
-import { HEADER_BYTE_SIZE, packArrayBufferHeader } from 'source/common/data/ArrayBufferPacket'
-import { Blob, parseBlobAsArrayBuffer } from './Blob'
+import { fromString, toString } from 'source/common/data/ArrayBuffer.js'
+import { HEADER_BYTE_SIZE, packArrayBufferHeader } from 'source/common/data/ArrayBufferPacket.js'
+import { Blob, parseBlobAsArrayBuffer } from './Blob.js'
 
 const EMPTY_BLOB = new Blob()
 

@@ -1,4 +1,4 @@
-import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source/common/string'
+import { indentLine, splitKebabCase, joinCamelCase, joinSnakeCase } from 'source/common/string.js'
 
 // NOTE: currently all option format must be named, which is good but slightly inconvenient // TODO: add a default `_` name?
 // TODO: REWRITE/TRIM: usable for now, but too much "magic", need a slim version

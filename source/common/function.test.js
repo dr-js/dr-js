@@ -1,4 +1,4 @@
-import { doThrow, stringifyEqual, strictEqual } from 'source/common/verify'
+import { doThrow, stringifyEqual, strictEqual } from 'source/common/verify.js'
 import {
   debounce,
   throttle,
@@ -11,8 +11,8 @@ import {
   withTimeoutAsync,
   withTimeoutPromise,
   createInsideOutPromise
-} from './function'
-import { setTimeoutAsync } from './time'
+} from './function.js'
+import { setTimeoutAsync } from './time.js'
 
 const { describe, it } = global
 

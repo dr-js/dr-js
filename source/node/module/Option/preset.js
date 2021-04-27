@@ -1,12 +1,12 @@
 import { resolve, dirname } from 'path'
-import { tryRequire } from 'source/env/tryRequire'
-import { splitCamelCase } from 'source/common/string'
-import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify'
-import { tryParseJSONObject } from 'source/common/data/function'
-import { objectFilter } from 'source/common/immutable/Object'
-import { arraySplitChunk } from 'source/common/immutable/Array'
-import { unpackGz64, unpackBr64 } from 'source/node/data/Z64String'
-import { createOptionParser } from './parser'
+import { tryRequire } from 'source/env/tryRequire.js'
+import { splitCamelCase } from 'source/common/string.js'
+import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify.js'
+import { tryParseJSONObject } from 'source/common/data/function.js'
+import { objectFilter } from 'source/common/immutable/Object.js'
+import { arraySplitChunk } from 'source/common/immutable/Array.js'
+import { unpackGz64, unpackBr64 } from 'source/node/data/Z64String.js'
+import { createOptionParser } from './parser.js'
 
 // TODO: REWRITE/TRIM: usable for now, but too much "magic", need a slim version
 

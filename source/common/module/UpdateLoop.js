@@ -1,5 +1,5 @@
-import { CLOCK_TO_SECOND, requestFrameUpdate, cancelFrameUpdate, createTimer } from 'source/common/time'
-import { objectSet, objectDelete } from 'source/common/immutable/Object'
+import { CLOCK_TO_SECOND, requestFrameUpdate, cancelFrameUpdate, createTimer } from 'source/common/time.js'
+import { objectSet, objectDelete } from 'source/common/immutable/Object.js'
 
 const createUpdater = () => {
   let funcList // prefer drop, index non-constant, will be refreshed on every update

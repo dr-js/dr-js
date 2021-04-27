@@ -1,6 +1,6 @@
 import { openSync, closeSync } from 'fs'
 import { spawn, spawnSync } from 'child_process'
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 
 const getOption = (option, quiet) => ({
   stdio: quiet ? [ 'ignore', 'pipe', 'pipe' ] : 'inherit',

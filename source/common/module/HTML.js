@@ -1,4 +1,4 @@
-import { filterJoin } from 'source/common/string'
+import { filterJoin } from 'source/common/string.js'
 
 const COMMON_LAYOUT = (extraHeadList = [], extraBodyList = []) => `<!DOCTYPE html>
 <html>

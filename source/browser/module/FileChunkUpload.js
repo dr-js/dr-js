@@ -1,6 +1,6 @@
-import { fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer'
-import { packChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
-import { parseBlobAsArrayBuffer } from 'source/browser/data/Blob'
+import { fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer.js'
+import { packChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { parseBlobAsArrayBuffer } from 'source/browser/data/Blob.js'
 
 const { crypto, isSecureContext } = window
 

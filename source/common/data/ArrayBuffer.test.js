@@ -1,13 +1,13 @@
-import { strictEqual } from 'source/common/verify'
-import { time } from 'source/common/format'
-import { createStepper } from 'source/common/time'
-import { getSampleRange, getSample } from 'source/common/math/sample'
+import { strictEqual } from 'source/common/verify.js'
+import { time } from 'source/common/format.js'
+import { createStepper } from 'source/common/time.js'
+import { getSampleRange, getSample } from 'source/common/math/sample.js'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
   fromString,
   toString
-} from './ArrayBuffer'
+} from './ArrayBuffer.js'
 
 const { describe, it, info = console.log } = global
 

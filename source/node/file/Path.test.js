@@ -1,6 +1,6 @@
 import { resolve, sep } from 'path'
-import { strictEqual, doThrow } from 'source/common/verify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { strictEqual, doThrow } from 'source/common/verify.js'
+import { resetDirectory } from '@dr-js/dev/module/node/file.js'
 
 import {
   STAT_ERROR,
@@ -16,7 +16,7 @@ import {
   existPath, nearestExistPath,
   toPosixPath, dropTrailingSep,
   createPathPrefixLock
-} from './Path'
+} from './Path.js'
 
 const { describe, it, before, after } = global
 

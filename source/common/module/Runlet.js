@@ -1,4 +1,4 @@
-import { createMapMap } from 'source/common/data/MapMap'
+import { createMapMap } from 'source/common/data/MapMap.js'
 
 // Runlet is a Stream with less code and clearer execution order.
 //

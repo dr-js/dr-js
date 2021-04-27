@@ -1,5 +1,5 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { isBasicObject } from 'source/common/check'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { isBasicObject } from 'source/common/check.js'
 import {
   createTreeDepthFirstSearch,
   createTreeDepthFirstSearchAsync,
@@ -7,7 +7,7 @@ import {
   createTreeBreadthFirstSearchAsync,
   createTreeBottomUpSearch,
   createTreeBottomUpSearchAsync
-} from './Tree'
+} from './Tree.js'
 
 const { describe, it } = global
 

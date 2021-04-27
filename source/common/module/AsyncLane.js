@@ -1,5 +1,5 @@
-import { getSample } from 'source/common/math/sample'
-import { createAsyncFuncQueue } from './AsyncFuncQueue'
+import { getSample } from 'source/common/math/sample.js'
+import { createAsyncFuncQueue } from './AsyncFuncQueue.js'
 
 // ## AsyncLane ##
 //   list of AsyncQueue (here AsyncQueue = lane)

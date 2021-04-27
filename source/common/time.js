@@ -1,4 +1,4 @@
-import { getGlobal } from 'source/env/global'
+import { getGlobal } from 'source/env/global.js'
 
 const tryClock = () => {
   try { // browser

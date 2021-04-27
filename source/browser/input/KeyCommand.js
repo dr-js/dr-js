@@ -1,5 +1,5 @@
-import { getRandomId } from 'source/common/math/random'
-import { isObjectContain } from 'source/common/check'
+import { getRandomId } from 'source/common/math/random.js'
+import { isObjectContain } from 'source/common/check.js'
 
 const { document } = window
 

@@ -1,6 +1,6 @@
-import { catchAsync } from 'source/common/error'
-import { createCacheMap } from 'source/common/data/CacheMap'
-import { responderEndWithStatusCode } from './Common'
+import { catchAsync } from 'source/common/error.js'
+import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { responderEndWithStatusCode } from './Common.js'
 
 const DEFAULT_RESPONDER_DENY = (store, limitLeft) => responderEndWithStatusCode(store, { statusCode: limitLeft <= 0 ? 429 : 400 })
 const DEFAULT_GET_REQUEST_KEY = (store) => `${store.request.socket.remoteAddress}` // limit by ip only

@@ -2,11 +2,11 @@ import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
-import { clock } from 'source/common/time'
-import { isString, isArrayBuffer } from 'source/common/check'
-import { createInsideOutPromise, withRetryAsync } from 'source/common/function'
-import { toArrayBuffer } from 'source/node/data/Buffer'
-import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { clock } from 'source/common/time.js'
+import { isString, isArrayBuffer } from 'source/common/check.js'
+import { createInsideOutPromise, withRetryAsync } from 'source/common/function.js'
+import { toArrayBuffer } from 'source/node/data/Buffer.js'
+import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 
 const requestHttp = (
   url, // URL/String

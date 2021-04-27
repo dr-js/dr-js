@@ -1,8 +1,8 @@
-import { stringifyEqual, strictEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { percent } from 'source/common/format'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
-import { fetchLikeRequest } from './net'
+import { stringifyEqual, strictEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { percent } from 'source/common/format.js'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
+import { fetchLikeRequest } from './net.js'
 
 const { describe, it, info = console.log } = global
 

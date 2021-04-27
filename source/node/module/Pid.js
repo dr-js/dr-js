@@ -1,10 +1,10 @@
 import { dirname } from 'path'
 import { unlinkSync, readFileSync, writeFileSync } from 'fs'
-import { catchSync } from 'source/common/error'
+import { catchSync } from 'source/common/error.js'
 
-import { createDirectory } from 'source/node/file/Directory'
-import { addExitListenerSync } from 'source/node/system/ExitListener'
-import { isPidExist } from 'source/node/system/Process'
+import { createDirectory } from 'source/node/file/Directory.js'
+import { addExitListenerSync } from 'source/node/system/ExitListener.js'
+import { isPidExist } from 'source/node/system/Process.js'
 
 const configurePid = async ({
   filePid, // if not set, will skip create pid file

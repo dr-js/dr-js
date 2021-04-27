@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process'
 import { resolve } from 'path'
-import { run } from 'source/node/run'
+import { run } from 'source/node/run.js'
 
 const configureLinux = () => [
   'which', // do not search cwd // https://ss64.com/bash/which.html

@@ -1,6 +1,6 @@
-import { getTimestamp } from 'source/common/time'
-import { createAsyncFuncQueue } from './AsyncFuncQueue'
-import { ASYNC_TASK_KEY_MAP, runAsyncTask } from './AsyncTask'
+import { getTimestamp } from 'source/common/time.js'
+import { createAsyncFuncQueue } from './AsyncFuncQueue.js'
+import { ASYNC_TASK_KEY_MAP, runAsyncTask } from './AsyncTask.js'
 
 const { PLAN_PROMISE, OUTPUT } = ASYNC_TASK_KEY_MAP
 

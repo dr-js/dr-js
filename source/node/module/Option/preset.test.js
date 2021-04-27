@@ -1,17 +1,17 @@
 import { writeFileSync } from 'fs'
 import { resolve, dirname } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { objectSortKey } from 'source/common/mutable/Object'
-import { packGz64, packBr64 } from 'source/node/data/Z64String'
-import { modifyDelete } from 'source/node/file/Modify'
-import { createOptionParser } from './parser'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { objectSortKey } from 'source/common/mutable/Object.js'
+import { packGz64, packBr64 } from 'source/node/data/Z64String.js'
+import { modifyDelete } from 'source/node/file/Modify.js'
+import { createOptionParser } from './parser.js'
+import { resetDirectory } from '@dr-js/dev/module/node/file.js'
 
 import {
   Preset,
   parseOptionMap,
   createOptionGetter
-} from './preset'
+} from './preset.js'
 
 const { describe, it, before, after } = global
 
