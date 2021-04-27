@@ -1,5 +1,19 @@
-import { catchAsync } from 'source/common/error'
+import { readFileSync } from 'fs'
 import { createServer as createNetServer } from 'net'
+import { catchAsync } from 'source/common/error'
+import { tryRequireResolve } from 'source/env/tryRequire'
+
+const DR_BROWSER_FILE_PATH = () => [
+  './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`
+  '../Dr.browser.js', // relative to `source/env/tryRequire`
+  '@dr-js/core/library/Dr.browser.js' // within normal node_module structure
+].reduce((o, path) => o || tryRequireResolve(path), null)
+
+let cache = ''
+const DR_BROWSER_SCRIPT_TAG = () => {
+  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  return cache
+}
 
 // set to non-zero to check if that port is available
 const getUnusedPort = (expectPort = 0, hostname = '0.0.0.0') => new Promise((resolve, reject) => {
@@ -22,6 +36,7 @@ const autoTestServerPort = async (expectPortList, hostname) => {
 }
 
 export {
+  DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
   getUnusedPort,
   autoTestServerPort
 }

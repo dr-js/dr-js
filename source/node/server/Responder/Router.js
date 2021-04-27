@@ -7,8 +7,8 @@ import {
   getRouteParam as getRouteMapParam
 } from 'source/common/module/RouteMap'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
+import { COMMON_LAYOUT, COMMON_STYLE } from 'source/common/module/HTML'
 
-import { COMMON_LAYOUT, COMMON_STYLE } from 'source/node/server/commonHTML'
 import { responderSendBufferCompress, prepareBufferData } from './Send'
 
 const METHOD_MAP = {
