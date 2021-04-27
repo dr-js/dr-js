@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.11",
+  "version": "0.5.0-dev.0",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
