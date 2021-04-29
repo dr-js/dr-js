@@ -1,6 +1,6 @@
 import { resolve, sep } from 'path'
 import { strictEqual, doThrow } from 'source/common/verify.js'
-import { resetDirectory } from '@dr-js/dev/module/node/file.js'
+import { resetDirectory } from 'source/node/file/Directory.js'
 
 import {
   STAT_ERROR,
