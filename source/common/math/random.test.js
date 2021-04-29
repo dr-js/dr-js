@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { includes, strictEqual } from 'source/common/verify.js'
 import {
   getRandomInt,
   getRandomIntList,
@@ -26,7 +26,7 @@ describe('Common.Math.Random', () => {
 
   it('getRandomId()', () => {
     strictEqual(getRandomId('[abc]').startsWith('[abc]'), true)
-    strictEqual(getRandomId().includes('-'), true)
+    includes(getRandomId(), '-')
   })
 
   it('getRandomArrayBuffer()', () => {

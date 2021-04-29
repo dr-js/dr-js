@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { includes, strictEqual } from 'source/common/verify.js'
 import { createOptionParser } from './parser.js'
 
 const { describe, it } = global
@@ -44,8 +44,8 @@ describe('Node.Module.Option.Parser', () => {
   describe('formatUsage', () => {
     const message = 'TEST_MESSAGE'
     it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-    it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-    it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+    it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+    it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
   })
 
   describe('parseCLI', () => {
@@ -149,8 +149,8 @@ describe('Node.Module.Option.Parser', () => {
 
     const message = 'TEST_MESSAGE'
     it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-    it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-    it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+    it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+    it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
 
     it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
   })

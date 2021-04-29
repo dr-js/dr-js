@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { includes, strictEqual } from 'source/common/verify.js'
 import { catchSync, catchPromise } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { setTimeoutAsync } from 'source/common/time.js'
@@ -30,7 +30,7 @@ describe('Node.Run', () => {
     {
       const { error: outcome } = await catchPromise(run(TEST_ARG_LIST_BAD, { stdio: 'ignore' }).promise)
       info(TITLE_DESCRIBE + await describeRunOutcome(outcome))
-      strictEqual(outcome.message.includes('ENOENT'), true)
+      includes(outcome.message, 'ENOENT')
       strictEqual(outcome.command, TEST_ARG_LIST_BAD[ 0 ])
     }
   })
@@ -40,20 +40,18 @@ describe('Node.Run', () => {
       const { promise, stdoutPromise } = run(TEST_ARG_LIST_EXIT_0, { quiet: true })
       const outcome = await promise
       info(TITLE_DESCRIBE + await describeRunOutcome(outcome))
-      const stdoutString = String(await stdoutPromise)
-      strictEqual(stdoutString.includes('TEST_ARG_LIST_EXIT_0'), true)
+      includes(String(await stdoutPromise), 'TEST_ARG_LIST_EXIT_0')
     }
     {
       const { promise, stdoutPromise } = run(TEST_ARG_LIST_EXIT_42, { quiet: true })
       const { error: outcome } = await catchPromise(promise)
       info(TITLE_DESCRIBE + await describeRunOutcome(outcome))
-      const stdoutString = String(await stdoutPromise)
-      strictEqual(stdoutString.includes('TEST_ARG_LIST_EXIT_42'), true)
+      includes(String(await stdoutPromise), 'TEST_ARG_LIST_EXIT_42')
     }
     {
       const { error: outcome } = await catchPromise(run(TEST_ARG_LIST_BAD, { quiet: true }).promise)
       info(TITLE_DESCRIBE + await describeRunOutcome(outcome))
-      strictEqual(outcome.message.includes('ENOENT'), true)
+      includes(outcome.message, 'ENOENT')
       strictEqual(outcome.command, TEST_ARG_LIST_BAD[ 0 ])
     }
   })
@@ -70,7 +68,7 @@ describe('Node.Run', () => {
     {
       const { error: outcome } = catchSync(runSync, TEST_ARG_LIST_BAD, { stdio: 'ignore' })
       info(TITLE_DESCRIBE + describeRunOutcomeSync(outcome)) // should be sync
-      strictEqual(outcome.message.includes('ENOENT'), true)
+      includes(outcome.message, 'ENOENT')
       strictEqual(outcome.command, TEST_ARG_LIST_BAD[ 0 ])
     }
   })
@@ -79,19 +77,17 @@ describe('Node.Run', () => {
     {
       const outcome = runSync(TEST_ARG_LIST_EXIT_0, { quiet: true })
       info(describeRunOutcomeSync(outcome))
-      const stdoutString = String(outcome.stdout)
-      strictEqual(stdoutString.includes('TEST_ARG_LIST_EXIT_0'), true)
+      includes(String(outcome.stdout), 'TEST_ARG_LIST_EXIT_0')
     }
     {
       const { error: outcome } = catchSync(runSync, TEST_ARG_LIST_EXIT_42, { quiet: true })
       info(describeRunOutcomeSync(outcome))
-      const stdoutString = String(outcome.stdout)
-      strictEqual(stdoutString.includes('TEST_ARG_LIST_EXIT_42'), true)
+      includes(String(outcome.stdout), 'TEST_ARG_LIST_EXIT_42')
     }
 
     const { error: outcome } = catchSync(runSync, TEST_ARG_LIST_BAD, { quiet: true })
     info(TITLE_DESCRIBE + describeRunOutcomeSync(outcome)) // should be sync
-    strictEqual(outcome.message.includes('ENOENT'), true)
+    includes(outcome.message, 'ENOENT')
     strictEqual(outcome.command, TEST_ARG_LIST_BAD[ 0 ])
   })
 
