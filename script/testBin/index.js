@@ -32,7 +32,7 @@ runMain(async (logger) => {
       'output-gitignore/bin',
       '--eval', '1', '2', '3 4',
       '-I', 'script/testBin/scriptFile.js'
-    ], { cwd: PATH_ROOT, quiet: true, describeError: true })
+    ], { cwd: PATH_ROOT, quiet: true })
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
@@ -55,7 +55,7 @@ runMain(async (logger) => {
       process.execPath,
       'output-gitignore/bin',
       '--eval', SCRIPT_STRING, '1', '2', '3 4'
-    ], { cwd: PATH_ROOT, quiet: true, describeError: true })
+    ], { cwd: PATH_ROOT, quiet: true })
     const stdoutString = String(await promise.then(() => stdoutPromise))
     console.log({ stdoutString })
     strictEqual(stdoutString, [

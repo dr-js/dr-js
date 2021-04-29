@@ -1,3 +1,9 @@
+const remessageError = (error, nextMessage) => {
+  error.stack && error.stack.replace(error.message, nextMessage) // NOTE: V8(Chrome/Nodejs) will save a copy of message in the `.stack` for simpler `.toString()`, but FireFox will compose correctly
+  error.message = nextMessage
+  return error
+}
+
 const rethrowError = (error) => {
   console.warn(error)
   throw error
@@ -33,6 +39,7 @@ const packResult = (result) => ({ result, error: undefined })
 const packError = (error) => ({ result: undefined, error: error || new Error() })
 
 export {
+  remessageError,
   rethrowError,
   tryCall,
   catchSync,

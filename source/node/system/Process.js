@@ -38,7 +38,7 @@ const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   const createGetProcessListAsync = (commandString, lineSeparator, itemSwapFunc) => {
     const argList = commandString.split(' ')
     return async () => {
-      const { promise, stdoutPromise } = run(argList, { quiet: true, describeError: true })
+      const { promise, stdoutPromise } = run(argList, { quiet: true })
       await promise
       return parseTableOutput(String(await stdoutPromise), lineSeparator, itemSwapFunc)
     }
