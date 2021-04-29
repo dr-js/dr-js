@@ -77,8 +77,16 @@ const createDirectory = async (path, pathStat) => {
 const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirInfoTree(await getDirInfoTree(pathFrom, pathStat), pathTo)
 
 const deleteDirectory = async (path, pathStat) => {
-  await deleteDirInfoTree(await getDirInfoTree(path, pathStat))
-  return deletePath(path, pathStat)
+  await deleteDirInfoTree(await getDirInfoTree(path, pathStat)) // delete all content
+  return deletePath(path, pathStat) // delete dir
+}
+
+const resetDirectory = async (path, pathStat) => {
+  if (pathStat === undefined) pathStat = await getPathStat(path) // resolve symlink for the initial path
+  if (!pathStat.isDirectory()) {
+    pathStat !== STAT_ERROR && await deletePath(path, pathStat)
+    await createDirectory(path)
+  } else await deleteDirInfoTree(await getDirInfoTree(path, pathStat)) // delete all content
 }
 
 const getFileList = async (
@@ -119,7 +127,7 @@ export {
 
   createDirectory,
   copyDirectory,
-  deleteDirectory,
+  deleteDirectory, resetDirectory,
 
   getFileList
 }
