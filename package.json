@@ -41,6 +41,7 @@
     "test-browser-dev": "node -r @babel/register ./script/testBrowser development",
     "test-bin": "node -r @babel/register ./script/testBin",
     "// =============================": "",
+    "tag-push": "TAG=\"$(node -p \"'v'+require('./package.json').version\")\" && git tag --force \"$TAG\" && git push --force origin \"$TAG\"",
     "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json output-gitignore/library",
     "lint": "eslint ./source/ ./source-bin/ ./script/ ./example/",
     "test": "dr-dev --EE TEST_SANITY=true -E -- npm run script-pack-test",
