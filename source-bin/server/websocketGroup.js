@@ -150,7 +150,7 @@ const configure = ({ serverExot, log, routePrefix }) => {
         })
       ]
     }),
-    dataLengthLimit: 100000 // DATA_LENGTH_LIMIT TODO: TEST not crash server
+    dataLengthLimit: DATA_LENGTH_LIMIT // TODO: TEST not crash server
   })
 
   return {

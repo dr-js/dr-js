@@ -18,8 +18,8 @@ const main = async () => {
   await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE')
   await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE')
 
-  await setup(`${__dirname}/file-watcher-gitignore/a/b`)
-  // await setup(`${__dirname}/file-watcher-gitignore/a/b/file`)
+  await setup(resolve(TEMP_PATH, 'a/b'))
+  // await setup(resolve(TEMP_PATH, 'a/b/file'))
 
   // un-comment to test if will log [subscribe called]
 

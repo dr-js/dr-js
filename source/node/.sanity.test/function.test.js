@@ -1,9 +1,10 @@
+import { resolve } from 'path'
 import { withTempDirectory } from '@dr-js/dev/module/node/file'
 import { run } from 'source/node/run'
 
 const { info = console.log } = global
 
-const PATH_TEMP = `${__dirname}/temp-gitignore`
+const PATH_TEMP = resolve(__dirname, 'temp-gitignore/')
 
 const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
   PATH_TEMP,
