@@ -67,9 +67,9 @@ __DEV__ && console.log('SAMPLE_ASYNC_TASK', {
     (async (type, payload) => {}) || // recommended Redux dispatch pattern: `async (type, payload) => resolveToResultStateOrRejectWithError`
     (async (type, ...extraOptionalArgList) => { // use as async emit, for retrieving state, or try to cancel early
       if (type === 'get:state') return { state: 'still running' }
-      if (type === 'cancel') {} // do something to make task promise resolve/reject faster
+      if (type === 'cancel') { /* do something to make task promise resolve/reject faster */ }
       if (type === 'get:value') return 'the value' // receive value and
-      if (type === 'set:value') {} // change value and alter the task behaviour?
+      if (type === 'set:value') { /* change value and alter the task behaviour? */ }
     })
   ),
   [ PROMISE ]: Promise, // indicate the end of run phase, resolve to `{ result, error }`, no reject, after OUTPUT is set

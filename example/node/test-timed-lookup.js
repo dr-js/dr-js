@@ -1,3 +1,4 @@
+const { resolve } = require('path')
 const { readFileSync, writeFileSync } = require('fs')
 const { toArrayBuffer } = require('../../output-gitignore/library/node/data/Buffer')
 const {
@@ -8,7 +9,7 @@ const {
   parseDataArrayBuffer
 } = require('../../output-gitignore/library/common/module/TimedLookup')
 
-const FILE_TIMED_LOOKUP = `${__dirname}/test-timed-lookup-gitignore.key`
+const FILE_TIMED_LOOKUP = resolve(__dirname, 'test-timed-lookup-gitignore.key')
 
 const main = async () => {
   let lookupData
