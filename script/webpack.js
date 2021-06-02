@@ -1,18 +1,12 @@
-import { resolve } from 'path'
-
 import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack'
-import { runMain } from '@dr-js/dev/module/main'
-
-const PATH_ROOT = resolve(__dirname, '..')
-const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')
-const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
-const fromOutput = (...args) => resolve(PATH_OUTPUT, ...args)
+import { runMain, commonCombo } from '@dr-js/dev/module/main'
 
 runMain(async (logger) => {
+  const { fromRoot, fromOutput } = commonCombo(logger)
   const { mode, isWatch, profileOutput, getCommonWebpackConfig } = await commonFlag({ fromRoot, logger })
 
   const config = getCommonWebpackConfig({
-    output: { path: fromOutput('library'), filename: '[name].js', library: 'Dr', libraryTarget: 'umd' },
+    output: { path: fromOutput('library'), filename: '[name].js', library: { name: 'Dr', type: 'window' } },
     entry: { 'Dr.browser': 'source/Dr.browser' }
   })
 
