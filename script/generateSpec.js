@@ -1,12 +1,12 @@
 import { sep } from 'path'
 import { existsSync } from 'fs'
 
-import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset'
-import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate'
-import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown'
-import { runMain, commonCombo, writeFileSync } from '@dr-js/dev/module/main'
+import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
+import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
+import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown.js'
+import { runMain, commonCombo, writeFileSync } from '@dr-js/dev/module/main.js'
 
-import { formatUsage } from 'source-bin/option'
+import { formatUsage } from 'source-bin/option.js'
 
 const [
   , // node

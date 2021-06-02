@@ -1,4 +1,4 @@
-const { describe, binary } = require('@dr-js/core/library/common/format')
+const { describe, binary } = require('@dr-js/core/library/common/format.js')
 
 const { main } = require('./scriptFileSub')
 

@@ -1,11 +1,11 @@
-import { FILTER_TEST_JS_FILE } from '@dr-js/dev/module/node/preset'
-import { getFileListFromPathList } from '@dr-js/dev/module/node/file'
-import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack'
-import { testWithPuppeteer, wrapTestScriptStringToHTML } from '@dr-js/dev/module/puppeteer'
+import { FILTER_TEST_JS_FILE } from '@dr-js/dev/module/node/preset.js'
+import { getFileListFromPathList } from '@dr-js/dev/module/node/file.js'
+import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack.js'
+import { testWithPuppeteer, wrapTestScriptStringToHTML } from '@dr-js/dev/module/puppeteer.js'
 import { fromPathCombo } from '@dr-js/dev/module/output.js'
-import { runMain, resolve, readFileSync } from '@dr-js/dev/module/main'
+import { runMain, resolve, readFileSync } from '@dr-js/dev/module/main.js'
 
-import { withTestServer } from 'source/node/testServer.test'
+import { withTestServer } from 'source/node/testServer.test.js'
 
 const NAME_TEST_BROWSER = 'test-browser'
 runMain(async (logger) => {

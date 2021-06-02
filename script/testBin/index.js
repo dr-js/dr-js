@@ -2,16 +2,16 @@ import { resolve } from 'path'
 
 import { runMain } from '@dr-js/dev/module/main'
 
-import { strictEqual } from 'source/common/verify'
-import { run } from 'source/node/run'
-import { describeSystemPlatform } from 'source/node/system/Status'
+import { strictEqual } from 'source/common/verify.js'
+import { run } from 'source/node/run.js'
+import { describeSystemPlatform } from 'source/node/system/Status.js'
 
 const PATH_ROOT = resolve(__dirname, '../../')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
 const SCRIPT_STRING = `
-const { describe } = require('@dr-js/core/library/common/format')
-const { describeSystemPlatform } = require('@dr-js/core/library/node/system/Status')
+const { describe } = require('@dr-js/core/library/common/format.js')
+const { describeSystemPlatform } = require('@dr-js/core/library/node/system/Status.js')
 
 console.log(\`[process.argv.length] \${process.argv.length}\`)
 

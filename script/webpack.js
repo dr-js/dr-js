@@ -1,5 +1,5 @@
-import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack'
-import { runMain, commonCombo } from '@dr-js/dev/module/main'
+import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack.js'
+import { runMain, commonCombo } from '@dr-js/dev/module/main.js'
 
 runMain(async (logger) => {
   const { fromRoot, fromOutput } = commonCombo(logger)

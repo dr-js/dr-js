@@ -7,9 +7,9 @@ const {
   easeInSine, easeOutSine, easeInOutSine,
   easeInExpo, easeOutExpo, easeInOutExpo,
   easeInCirc, easeOutCirc, easeInOutCirc
-} = require('../../output-gitignore/library/common/math/easing')
-const { getSampleRate } = require('../../output-gitignore/library/common/math/sample')
-const { getBlockChart } = require('../../output-gitignore/library/common/module/BlockChart')
+} = require('../../output-gitignore/library/common/math/easing.js')
+const { getSampleRate } = require('../../output-gitignore/library/common/math/sample.js')
+const { getBlockChart } = require('../../output-gitignore/library/common/module/BlockChart.js')
 
 const SAMPLE_LIST = getSampleRate(40)
 const testChart = (name, func) => console.log(`[${name}]\n|${getBlockChart({ valueList: SAMPLE_LIST.map(func), width: 80 }).join('\n|')}`)

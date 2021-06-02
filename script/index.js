@@ -1,8 +1,8 @@
-import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset'
-import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output'
-import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
-import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor'
-import { runMain, argvFlag, commonCombo } from '@dr-js/dev/module/main'
+import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset.js'
+import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output.js'
+import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify.js'
+import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor.js'
+import { runMain, argvFlag, commonCombo } from '@dr-js/dev/module/main.js'
 
 const retrySync = process.platform === 'linux'
   ? (func, ...args) => func(...args) // one chance should be enough for linux

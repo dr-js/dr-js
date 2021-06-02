@@ -1,4 +1,4 @@
-const { splitCamelCase } = require('@dr-js/core/library/common/string')
+const { splitCamelCase } = require('@dr-js/core/library/common/string.js')
 
 const main = () => {
   // NOTE: this is normal module value

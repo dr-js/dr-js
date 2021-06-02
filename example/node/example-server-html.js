@@ -1,6 +1,6 @@
-const { BASIC_EXTENSION_MAP } = require('../../output-gitignore/library/common/module/MIME')
-const { responderSendBufferCompress, prepareBufferData } = require('../../output-gitignore/library/node/server/Responder/Send')
-const { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } = require('../../output-gitignore/library/common/module/HTML')
+const { BASIC_EXTENSION_MAP } = require('../../output-gitignore/library/common/module/MIME.js')
+const { responderSendBufferCompress, prepareBufferData } = require('../../output-gitignore/library/node/server/Responder/Send.js')
+const { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } = require('../../output-gitignore/library/common/module/HTML.js')
 
 const createExampleServerHTMLResponder = () => {
   const bufferData = prepareBufferData(Buffer.from(COMMON_LAYOUT([
