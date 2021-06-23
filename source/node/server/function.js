@@ -15,15 +15,6 @@ const DR_BROWSER_SCRIPT_TAG = () => {
   return cache
 }
 
-const parseCookieString = (cookieString) => cookieString // TODO: DEPRECATE: move to `@dr-js/node`
-  .split(';')
-  .reduce((o, v) => {
-    const [ key, ...valueList ] = v.split('=')
-    const value = valueList.join('=').trim()
-    if (value !== '') o[ key.trim() ] = value
-    return o
-  }, {})
-
 // set to non-zero to check if that port is available
 const getUnusedPort = (expectPort = 0, hostname = '0.0.0.0') => new Promise((resolve, reject) => {
   const server = createNetServer()
@@ -47,7 +38,6 @@ const autoTestServerPort = async (expectPortList, hostname) => {
 export {
   DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
 
-  parseCookieString, // TODO: DEPRECATE: move to `@dr-js/node`
   getUnusedPort,
   autoTestServerPort
 }
