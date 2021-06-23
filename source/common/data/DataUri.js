@@ -1,5 +1,4 @@
 import { isString } from 'source/common/check.js'
-import { objectFromEntries } from 'source/common/immutable/Object.js'
 import { encode as encodeBase64, decode as decodeBase64 } from './Base64.js'
 
 // dataUri format `data:[<mediatype>][;base64],<data>`
@@ -26,7 +25,7 @@ const decode = (string = '') => {
   isPayloadBase64 && headerStringList.pop()
   const mime = (headerStringList.length && !headerStringList[ 0 ].includes('=') && headerStringList.shift()) || undefined // mime type do not have `=`
   const paramMap = headerStringList.length === 0 ? undefined
-    : objectFromEntries(new URLSearchParams(headerStringList.join('&')).entries())
+    : Object.fromEntries(new URLSearchParams(headerStringList.join('&')).entries())
   const value = (isPayloadBase64 ? decodeBase64 : decodeURIComponent)(string.slice(payloadIndex + 1), isPayloadBase64)
   return { value, mime, paramMap }
 }

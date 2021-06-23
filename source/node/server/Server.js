@@ -10,7 +10,6 @@ import { isNumber, isBasicArray, isBasicObject } from 'source/common/check.js'
 import { prettyStringifyConfigObject } from 'source/common/format.js'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
 import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
-import { objectFromEntries } from 'source/common/immutable/Object.js'
 import { responderEnd } from './Responder/Common.js'
 
 // TODO: add HTTP2 or just skip to HTTP3?
@@ -146,7 +145,7 @@ const describeServerOption = (
 ) => `[${title}]\n${prettyStringifyConfigObject({
   pid: process.pid,
   baseUrl,
-  ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? {} : objectFromEntries(
+  ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? {} : Object.fromEntries(
     Object.entries(networkInterfaces())
       .reduce((o, [ interfaceName, interfaceList ]) => {
         interfaceList.forEach(({ address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
