@@ -2,8 +2,8 @@ import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify'
 import { readFileSync } from 'fs'
 import { setTimeoutAsync } from 'source/common/time'
+import { resetDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import { createSafeWriteStream } from './SafeWrite'
 

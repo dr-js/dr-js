@@ -12,8 +12,8 @@ import {
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet'
+import { resetDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   isReadableStream, isWritableStream,

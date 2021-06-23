@@ -1,7 +1,7 @@
 import { strictEqual } from 'source/common/verify'
 import { resolve, sep } from 'path'
 import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { resetDirectory } from './Directory'
 
 import {
   modifyCopy,

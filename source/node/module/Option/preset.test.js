@@ -3,9 +3,9 @@ import { resolve, dirname } from 'path'
 import { strictEqual, stringifyEqual } from 'source/common/verify'
 import { objectSortKey } from 'source/common/mutable/Object'
 import { packGz64, packBr64 } from 'source/node/data/Z64String'
+import { resetDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
 import { createOptionParser } from './parser'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   Preset,

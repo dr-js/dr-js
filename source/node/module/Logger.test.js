@@ -3,8 +3,8 @@ import { readFileSync } from 'fs'
 import { strictEqual } from 'source/common/verify'
 import { setTimeoutAsync } from 'source/common/time'
 import { existPath } from 'source/node/file/Path'
+import { resetDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import { createSimpleLoggerExot, createLoggerExot } from './Logger'
 

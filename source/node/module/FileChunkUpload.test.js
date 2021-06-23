@@ -2,13 +2,13 @@ import { resolve } from 'path'
 import { promises as fsAsync } from 'fs'
 import { strictEqual } from 'source/common/verify'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { resetDirectory } from 'source/node/file/Directory'
 import { modifyDelete } from 'source/node/file/Modify'
 import { getUnusedPort } from 'source/node/server/function'
 import { createServerExot, createRequestListener } from 'source/node/server/Server'
 import { responderEndWithStatusCode } from 'source/node/server/Responder/Common'
 import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
 import { fetchLikeRequest } from 'source/node/net'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
 
 import {
   createOnFileChunkUpload,
