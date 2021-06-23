@@ -30,7 +30,7 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchPromise`, `catchSync`, `rethrowError`, `tryCall`
+  - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `tryCall`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -367,7 +367,7 @@
   - **Compare**
     - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
-    - `catchAsync`, `catchPromise`, `catchSync`, `rethrowError`, `tryCall`
+    - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `tryCall`
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
