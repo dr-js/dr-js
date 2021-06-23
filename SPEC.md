@@ -11,10 +11,30 @@
   - `fetchLikeRequest`
 + 📄 [source/browser/resource.js](source/browser/resource.js)
   - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
++ 📄 [source/browser/canvas/Color.js](source/browser/canvas/Color.js)
+  - `hexCSSFromRgb`, `hexCSSFromRgba`, `rgbaFromUint32`, `uint32FromRgba`
++ 📄 [source/browser/canvas/ImageData.js](source/browser/canvas/ImageData.js)
+  - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
++ 📄 [source/browser/canvas/ImageDataOperation.js](source/browser/canvas/ImageDataOperation.js)
+  - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
++ 📄 [source/browser/canvas/function.js](source/browser/canvas/function.js)
+  - `loadImage`, `loadText`
++ 📄 [source/browser/canvas/Font/fontGenerator.js](source/browser/canvas/Font/fontGenerator.js)
+  - `createFontGenerator`
++ 📄 [source/browser/canvas/Font/fontGeneratorBitmap.js](source/browser/canvas/Font/fontGeneratorBitmap.js)
+  - `createFontGeneratorBitmap`
++ 📄 [source/browser/canvas/Font/fontMapper.js](source/browser/canvas/Font/fontMapper.js)
+  - `createFontMapper`
++ 📄 [source/browser/canvas/Font/fontRender.js](source/browser/canvas/Font/fontRender.js)
+  - `createFontRender`
++ 📄 [source/browser/canvas/Font/fontRenderBitmap.js](source/browser/canvas/Font/fontRenderBitmap.js)
+  - `createFontRenderBitmap`
 + 📄 [source/browser/data/Blob.js](source/browser/data/Blob.js)
   - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
 + 📄 [source/browser/data/BlobPacket.js](source/browser/data/BlobPacket.js)
   - `packBlobPacket`, `parseBlobPacket`
++ 📄 [source/browser/input/EnhancedEventProcessor.js](source/browser/input/EnhancedEventProcessor.js)
+  - `createSwipeEnhancedEventProcessor`
 + 📄 [source/browser/input/KeyCommand.js](source/browser/input/KeyCommand.js)
   - `createKeyCommandHub`
 + 📄 [source/browser/input/PointerEvent.js](source/browser/input/PointerEvent.js)
@@ -25,6 +45,8 @@
   - `createHistoryStateStore`
 + 📄 [source/browser/module/LocalStorageStateStore.js](source/browser/module/LocalStorageStateStore.js)
   - `createLocalStorageStateStore`
++ 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
+  - `createInterpolationAutoTimer`, `createVectorAccumulator`
 + 📄 [source/common/check.js](source/common/check.js)
   - `isArrayBuffer`, `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`
 + 📄 [source/common/compare.js](source/common/compare.js)
@@ -244,12 +266,25 @@
 
 #### Export Tree
 - **Browser**
+  - **Canvas**
+    - **Font**
+      - `createFontGenerator`, `createFontGeneratorBitmap`, `createFontMapper`, `createFontRender`, `createFontRenderBitmap`
+    - **Color**
+      - `hexCSSFromRgb`, `hexCSSFromRgba`, `rgbaFromUint32`, `uint32FromRgba`
+    - **ImageData**
+      - `applyCanvasElementExt`, `applyCanvasImageDataExt`, `applyImageElementExt`, `canvasElementToCanvasImageData`, `canvasImageDataToCanvasElement`, `createCanvasElement`, `createCanvasImageData`, `createImageElement`, `getQuickCanvas`, `getQuickContext2d`, `imageElementToCanvasElement`, `imageElementToCanvasImageData`
+    - **ImageDataOperation**
+      - `crop`, `drawPixel`, `drawPixelLine`, `drawPixelLineList`, `floodFill`, `getPixelColor`, `replacePixelColor`, `scale`
+    - **Function**
+      - `loadImage`, `loadText`
   - **Data**
     - **Blob**
       - `Blob`, `parseBlobAsArrayBuffer`, `parseBlobAsDataURL`, `parseBlobAsText`
     - **BlobPacket**
       - `packBlobPacket`, `parseBlobPacket`
   - **Input**
+    - **EnhancedEventProcessor**
+      - `createSwipeEnhancedEventProcessor`
     - **KeyCommand**
       - `createKeyCommandHub`
     - **PointerEvent**
@@ -261,6 +296,8 @@
       - `createHistoryStateStore`
     - **LocalStorageStateStore**
       - `createLocalStorageStateStore`
+    - **MotionAutoTimer**
+      - `createInterpolationAutoTimer`, `createVectorAccumulator`
   - **DOM**
     - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
   - **Net**
