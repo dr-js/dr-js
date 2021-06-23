@@ -1,14 +1,18 @@
 const { resolve } = require('path')
 const { promises: fsAsync } = require('fs')
-const { createFileWatcher } = require('../../output-gitignore/library/node/file/Watch.js')
+const { createFileWatcherExot } = require('../../output-gitignore/library/node/file/Watch.js')
 const { createDirectory } = require('../../output-gitignore/library/node/file/Directory.js')
 const { modifyDeleteForce } = require('../../output-gitignore/library/node/file/Modify.js')
 
 const TEMP_PATH = resolve(__dirname, 'file-watcher-gitignore')
 
 const main = async () => {
-  const { setup, subscribe } = createFileWatcher({ persistent: true })
-  subscribe(() => console.log('>> [subscribe called] <<'))
+  const { up, subscribe } = createFileWatcherExot({
+    path: resolve(TEMP_PATH, 'a/b'),
+    // path: resolve(TEMP_PATH, 'a/b/file'),
+    persistent: true
+  })
+  subscribe((changeState) => console.log('>> [subscribe called] <<', changeState))
 
   await modifyDeleteForce(TEMP_PATH)
   await createDirectory(resolve(TEMP_PATH, 'a/b/c/d/e'))
@@ -18,8 +22,7 @@ const main = async () => {
   await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE')
   await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE')
 
-  await setup(resolve(TEMP_PATH, 'a/b'))
-  // await setup(resolve(TEMP_PATH, 'a/b/file'))
+  await up()
 
   // un-comment to test if will log [subscribe called]
 

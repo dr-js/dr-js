@@ -39,10 +39,10 @@ const createFileWatcherExot = ({
   let watcherUpper
 
   const emitThrottled = throttle(async () => {
-    // path change: create/delete(also for rename since this watches single node)
-    // content change: path-change/file-content/directory-file-list
+    // hasChange: true = path level change = create/delete(also for rename since this watches single node)
+    // hasChange: false = content level change = path-change/file-content/directory-file-list
     const stat = await fsAsync.lstat(path).catch(EMPTY_FUNC)
-    const hasChange = Boolean(prevStat) !== Boolean(stat)
+    const hasChange = Boolean(prevStat) !== Boolean(stat) // TODO: consider rename to `hasPathChange`?
     __DEV__ && console.log('emitThrottled', hasChange, Boolean(prevStat), Boolean(stat))
 
     if (stat === undefined) { // target file not found
