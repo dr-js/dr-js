@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs'
 import { resolve, dirname } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { includes, strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { objectSortKey } from 'source/common/mutable/Object.js'
 import { packGz64, packBr64 } from 'source/node/data/Z64String.js'
 import { resetDirectory } from 'source/node/file/Directory.js'
@@ -66,8 +66,8 @@ describe('Node.Module.Option.preset', () => {
     describe('formatUsage', () => {
       const message = 'TEST_MESSAGE'
       it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-      it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-      it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+      it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+      it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
     })
 
     describe('parseCLI', () => {
@@ -171,8 +171,8 @@ describe('Node.Module.Option.preset', () => {
 
       const message = 'TEST_MESSAGE'
       it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-      it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-      it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+      it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+      it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
 
       it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
     })

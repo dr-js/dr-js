@@ -59,6 +59,10 @@ const notStrictEqual = (actual, expect, message) => isStrictEqual(actual, expect
 const stringifyEqual = (actual, expect, message = 'should stringify equal') => isStringifyEqual(actual, expect) || throwError('StringifyEqual', message, describeEqual(actual, expect))
 const notStringifyEqual = (actual, expect, message = 'should not stringify equal') => isStringifyEqual(actual, expect) && throwError('NotStringifyEqual', message, describeEqual(actual, expect))
 
+// for string/array/typedArray
+const includes = (actual, expect, message) => (actual && actual.includes && actual.includes(expect)) || throwError('Includes', message, `expect ${describe(actual)} to include ${expect}`)
+const notIncludes = (actual, expect, message) => (actual && actual.includes && !actual.includes(expect)) || throwError('NotIncludes', message, `expect ${describe(actual)} to not include ${expect}`)
+
 export {
   string,
   boolean,
@@ -75,5 +79,6 @@ export {
   doThrow, doNotThrow,
   doThrowAsync, doNotThrowAsync,
   strictEqual, notStrictEqual,
-  stringifyEqual, notStringifyEqual
+  stringifyEqual, notStringifyEqual,
+  includes, notIncludes
 }

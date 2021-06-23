@@ -1,6 +1,6 @@
 import { join as joinPath, dirname, resolve, sep } from 'path'
 import { writeFileSync } from 'fs'
-import { strictEqual, stringifyEqual, doThrowAsync } from 'source/common/verify.js'
+import { strictEqual, stringifyEqual, doThrowAsync, includes } from 'source/common/verify.js'
 import { getSample } from 'source/common/math/sample.js'
 import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path.js'
 import {
@@ -200,7 +200,7 @@ describe('Node.File.Directory', () => {
     it('getFileList() Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY)
       strictEqual(fileList.length >= 2, true)
-      strictEqual(fileList.includes(LIST_FILE), true)
+      includes(fileList, LIST_FILE)
     })
 
     it('getFileList(createSuffixFilterFileCollector) File', async () => {
@@ -215,7 +215,7 @@ describe('Node.File.Directory', () => {
       const jsFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.js'))
       const abcdefghFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.abcdefgh'))
       strictEqual(jsFileList.length >= 2, true)
-      strictEqual(jsFileList.includes(LIST_FILE), true)
+      includes(jsFileList, LIST_FILE)
       strictEqual(abcdefghFileList.length, 0)
     })
 
@@ -223,13 +223,13 @@ describe('Node.File.Directory', () => {
       const fileList = await getFileList(LIST_FILE, createPrefixMapperFileCollector('PREFIX-'))
       strictEqual(fileList.length, 1)
       strictEqual(fileList[ 0 ][ 0 ], LIST_FILE)
-      strictEqual(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
+      includes(fileList[ 0 ][ 1 ], 'PREFIX-')
     })
 
     it('getFileList(createPrefixMapperFileCollector) Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY, createPrefixMapperFileCollector('PREFIX-'))
       strictEqual(fileList.length >= 2, true)
-      strictEqual(fileList.map((v) => v[ 0 ]).includes(LIST_FILE), true)
+      includes(fileList.map((v) => v[ 0 ]), LIST_FILE)
       strictEqual(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
     })
   })
