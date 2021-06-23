@@ -1,4 +1,4 @@
-import { clamp } from 'source/common/math/base'
+import { clamp } from 'source/common/math/base.js'
 
 const BLOCK_CHAR_LIST = [ '', '▏', '▎', '▍', '▋', '▊', '▉' ]
 

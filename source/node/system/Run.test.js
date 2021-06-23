@@ -1,7 +1,7 @@
-import { strictEqual } from 'source/common/verify'
-import { catchSync, catchPromise } from 'source/common/error'
-import { getRandomId } from 'source/common/math/random'
-import { describeRunOutcome, describeRunOutcomeSync, run, runSync } from './Run' // TODO: DEPRECATE: old test
+import { strictEqual } from 'source/common/verify.js'
+import { catchSync, catchPromise } from 'source/common/error.js'
+import { getRandomId } from 'source/common/math/random.js'
+import { describeRunOutcome, describeRunOutcomeSync, run, runSync } from './Run.js' // TODO: DEPRECATE: old test
 
 const { describe, it, info = console.log } = global
 

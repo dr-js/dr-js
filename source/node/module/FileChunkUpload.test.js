@@ -1,19 +1,19 @@
 import { resolve } from 'path'
 import { promises as fsAsync } from 'fs'
-import { strictEqual } from 'source/common/verify'
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { resetDirectory } from 'source/node/file/Directory'
-import { modifyDelete } from 'source/node/file/Modify'
-import { getUnusedPort } from 'source/node/server/function'
-import { createServerExot, createRequestListener } from 'source/node/server/Server'
-import { responderEndWithStatusCode } from 'source/node/server/Responder/Common'
-import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
-import { fetchLikeRequest } from 'source/node/net'
+import { strictEqual } from 'source/common/verify.js'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { resetDirectory } from 'source/node/file/Directory.js'
+import { modifyDelete } from 'source/node/file/Modify.js'
+import { getUnusedPort } from 'source/node/server/function.js'
+import { createServerExot, createRequestListener } from 'source/node/server/Server.js'
+import { responderEndWithStatusCode } from 'source/node/server/Responder/Common.js'
+import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router.js'
+import { fetchLikeRequest } from 'source/node/net.js'
 
 import {
   createOnFileChunkUpload,
   uploadFileByChunk
-} from './FileChunkUpload'
+} from './FileChunkUpload.js'
 
 const { describe, it, before, after, info = console.log } = global
 

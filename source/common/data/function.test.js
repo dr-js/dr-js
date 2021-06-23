@@ -1,9 +1,9 @@
-import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify'
+import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify.js'
 import {
   hashStringToNumber,
   tryParseJSONObject,
   getValueByKeyList
-} from './function'
+} from './function.js'
 
 const { describe, it } = global
 

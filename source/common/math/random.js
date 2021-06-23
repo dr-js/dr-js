@@ -1,4 +1,4 @@
-import { tryRequire } from 'source/env/tryRequire'
+import { tryRequire } from 'source/env/tryRequire.js'
 
 // range [from, to] // this will not auto swap, meaning <from> should be smaller than <to>
 const RANDOM_INT = (from, to) => Math.floor(Math.random() * (to - from + 1) + from)

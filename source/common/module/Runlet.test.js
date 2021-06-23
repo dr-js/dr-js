@@ -1,10 +1,10 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { compareStringWithNumber } from 'source/common/compare'
-import { setTimeoutAsync, createStepper } from 'source/common/time'
-import { catchPromise } from 'source/common/error'
-import { time } from 'source/common/format'
-import { getSample, getSampleRange } from 'source/common/math/sample'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { compareStringWithNumber } from 'source/common/compare.js'
+import { setTimeoutAsync, createStepper } from 'source/common/time.js'
+import { catchPromise } from 'source/common/error.js'
+import { time } from 'source/common/format.js'
+import { getSample, getSampleRange } from 'source/common/math/sample.js'
 import {
   END, SKIP, REDO,
   createPack, // clearPack, describePack,
@@ -15,12 +15,12 @@ import {
   createLogicalCountPool,
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-} from './Runlet'
+} from './Runlet.js'
 import {
   createArrayInputChip, createArrayOutputChip,
   createAsyncIterInputChip, createAsyncIterOutputChip,
   createENDRegulatorChip
-} from './RunletChip'
+} from './RunletChip.js'
 
 const { describe, it, info = console.log } = global
 

@@ -1,6 +1,6 @@
-import { fromString, toString } from 'source/common/data/ArrayBuffer'
-import { HEADER_BYTE_SIZE, packArrayBufferHeader } from 'source/common/data/ArrayBufferPacket'
-import { toArrayBuffer } from './Buffer'
+import { fromString, toString } from 'source/common/data/ArrayBuffer.js'
+import { HEADER_BYTE_SIZE, packArrayBufferHeader } from 'source/common/data/ArrayBufferPacket.js'
+import { toArrayBuffer } from './Buffer.js'
 
 const EMPTY_BUFFER = Buffer.allocUnsafe(0)
 

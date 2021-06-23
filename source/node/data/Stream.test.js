@@ -2,18 +2,18 @@ import { resolve } from 'path'
 import { createGzip, createGunzip, gzipSync } from 'zlib'
 import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stream'
-import { strictEqual } from 'source/common/verify'
-import { createStepper } from 'source/common/time'
-import { time, binary } from 'source/common/format'
-import { getSample } from 'source/common/math/sample'
+import { strictEqual } from 'source/common/verify.js'
+import { createStepper } from 'source/common/time.js'
+import { time, binary } from 'source/common/format.js'
+import { getSample } from 'source/common/math/sample.js'
 import {
   createRunlet,
   createCountPool, PoolIO,
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-} from 'source/common/module/Runlet'
-import { resetDirectory } from 'source/node/file/Directory'
-import { modifyDelete } from 'source/node/file/Modify'
+} from 'source/common/module/Runlet.js'
+import { resetDirectory } from 'source/node/file/Directory.js'
+import { modifyDelete } from 'source/node/file/Modify.js'
 
 import {
   isReadableStream, isWritableStream,
@@ -28,7 +28,7 @@ import {
   createWritableStreamOutputChip,
   createTransformStreamChip,
   quickRunletFromStream
-} from './Stream'
+} from './Stream.js'
 
 const { describe, it, before, after, info = console.log } = global
 

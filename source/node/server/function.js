@@ -1,5 +1,5 @@
-import { catchAsync } from 'source/common/error'
 import { createServer as createNetServer } from 'net'
+import { catchAsync } from 'source/common/error.js'
 
 const parseCookieString = (cookieString) => cookieString // TODO: DEPRECATE: move to `@dr-js/node`
   .split(';')

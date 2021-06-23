@@ -1,9 +1,9 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
 import {
   wrapAsync,
   createLockStepAsyncIter
-} from './Iter'
+} from './Iter.js'
 
 const { describe, it } = global
 

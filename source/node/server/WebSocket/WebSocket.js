@@ -1,5 +1,5 @@
-import { createEventEmitter } from 'source/common/module/Event'
-import { FRAME_CONFIG, OPCODE_TYPE, WEBSOCKET_EVENT } from './function'
+import { createEventEmitter } from 'source/common/module/Event.js'
+import { FRAME_CONFIG, OPCODE_TYPE, WEBSOCKET_EVENT } from './function.js'
 import {
   createFrameSenderStore,
   encodeFrame,
@@ -7,12 +7,12 @@ import {
   encodePingFrame,
   encodePongFrame,
   sendEncodedFrame
-} from './frameSender'
+} from './frameSender.js'
 
 import {
   createFrameReceiverStore,
   listenAndReceiveFrame
-} from './frameReceiver'
+} from './frameReceiver.js'
 
 const WEBSOCKET_PING_PONG_TIMEOUT = __DEV__ ? 5 * 1000 : 60 * 1000 // in msec, 60sec
 const WEBSOCKET_CLOSE_TIMEOUT = __DEV__ ? 0.5 * 1000 : 5 * 1000 // in msec, 5sec

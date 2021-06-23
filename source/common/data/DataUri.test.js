@@ -1,8 +1,8 @@
-import { stringifyEqual } from 'source/common/verify'
-import { getSampleRange } from 'source/common/math/sample'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
-import { encode as encodeBase64 } from './Base64'
-import { encode, decode } from './DataUri'
+import { stringifyEqual } from 'source/common/verify.js'
+import { getSampleRange } from 'source/common/math/sample.js'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
+import { encode as encodeBase64 } from './Base64.js'
+import { encode, decode } from './DataUri.js'
 
 const { describe, it } = global
 

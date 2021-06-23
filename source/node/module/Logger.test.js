@@ -1,12 +1,12 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
-import { strictEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { existPath } from 'source/node/file/Path'
-import { resetDirectory } from 'source/node/file/Directory'
-import { modifyDelete } from 'source/node/file/Modify'
+import { strictEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { existPath } from 'source/node/file/Path.js'
+import { resetDirectory } from 'source/node/file/Directory.js'
+import { modifyDelete } from 'source/node/file/Modify.js'
 
-import { createSimpleLoggerExot, createLoggerExot } from './Logger'
+import { createSimpleLoggerExot, createLoggerExot } from './Logger.js'
 
 const { describe, it, before, after } = global
 

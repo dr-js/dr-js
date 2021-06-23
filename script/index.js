@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { execSync } from 'child_process'
 
-import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset'
-import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output'
-import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify'
-import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor'
-import { runMain, argvFlag } from '@dr-js/dev/module/main'
+import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset.js'
+import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output.js'
+import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify.js'
+import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor.js'
+import { runMain, argvFlag } from '@dr-js/dev/module/main.js'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const PATH_OUTPUT = resolve(__dirname, '../output-gitignore')

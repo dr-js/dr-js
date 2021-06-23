@@ -1,8 +1,8 @@
-import { setTimeoutAsync } from 'source/common/time'
-import { autoEllipsis } from 'source/common/string'
-import { binary, padTable } from 'source/common/format'
-import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTreeNode } from 'source/common/data/Tree'
-import { run } from 'source/node/run'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { autoEllipsis } from 'source/common/string.js'
+import { binary, padTable } from 'source/common/format.js'
+import { createTreeDepthFirstSearch, createTreeBottomUpSearchAsync, prettyStringifyTreeNode } from 'source/common/data/Tree.js'
+import { run } from 'source/node/run.js'
 
 const INIT_GET_PROCESS_LIST_ASYNC_MAP = () => {
   const parseTitleCol = (titleString) => { // a col means \w+\s+, or \s+\w+ (for this output), so every 2 \w\s flip means a col

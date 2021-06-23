@@ -1,6 +1,6 @@
-import { clock, setWeakTimeout, setTimeoutAsync } from 'source/common/time'
-import { rethrowError } from 'source/common/error'
-import { isPromiseAlike } from 'source/common/check'
+import { clock, setWeakTimeout, setTimeoutAsync } from 'source/common/time.js'
+import { rethrowError } from 'source/common/error.js'
+import { isPromiseAlike } from 'source/common/check.js'
 
 // https://davidwalsh.name/javascript-debounce-function
 // https://gist.github.com/nmsdvid/8807205

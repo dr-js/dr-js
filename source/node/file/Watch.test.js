@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { promises as fsAsync } from 'fs'
-import { stringifyEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { catchAsync } from 'source/common/error'
-import { createDirectory } from './Directory'
-import { modifyDelete } from './Modify'
-import { createFileWatcherExot } from './Watch'
+import { stringifyEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { catchAsync } from 'source/common/error.js'
+import { createDirectory } from './Directory.js'
+import { modifyDelete } from './Modify.js'
+import { createFileWatcherExot } from './Watch.js'
 
 const { describe, it, after, info = console.log } = global
 

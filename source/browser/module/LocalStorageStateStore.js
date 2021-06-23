@@ -1,4 +1,4 @@
-import { isCompactArrayShallowEqual } from 'source/common/immutable/check'
+import { isCompactArrayShallowEqual } from 'source/common/immutable/check.js'
 
 const { localStorage } = window
 

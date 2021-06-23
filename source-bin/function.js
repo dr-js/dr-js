@@ -2,15 +2,15 @@ import { resolve, dirname } from 'path'
 import { createWriteStream, promises as fsAsync } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
-import { createStepper } from 'source/common/time'
-import { isObjectAlike } from 'source/common/check'
-import { basicArray } from 'source/common/verify'
-import { throttle } from 'source/common/function'
+import { percent, time, binary, prettyStringifyJSON } from 'source/common/format.js'
+import { createStepper } from 'source/common/time.js'
+import { isObjectAlike } from 'source/common/check.js'
+import { basicArray } from 'source/common/verify.js'
+import { throttle } from 'source/common/function.js'
 
-import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
-import { configurePid } from 'source/node/module/Pid'
-import { fetchWithJump } from 'source/node/net'
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
+import { configurePid } from 'source/node/module/Pid.js'
+import { fetchWithJump } from 'source/node/net.js'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620

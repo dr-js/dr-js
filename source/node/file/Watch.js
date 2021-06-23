@@ -1,8 +1,8 @@
 import { dirname } from 'path'
 import { watch, promises as fsAsync } from 'fs'
-import { throttle } from 'source/common/function'
-import { createHub } from 'source/common/module/Event'
-import { nearestExistPath } from './Path'
+import { throttle } from 'source/common/function.js'
+import { createHub } from 'source/common/module/Event.js'
+import { nearestExistPath } from './Path.js'
 
 // single node only: a file, or one level of directory
 // will throttle event

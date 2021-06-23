@@ -1,6 +1,6 @@
 import { promises as fsAsync } from 'fs'
 import { runInThisContext } from 'vm'
-import { fetchLikeRequest } from 'source/node/net'
+import { fetchLikeRequest } from 'source/node/net.js'
 
 // TODO: check if is needed, or simplify
 const loadRemoteScript = async (uri) => { // TODO: DEPRECATE: move to `@dr-js/node`
@@ -26,4 +26,4 @@ export {
   loadRemoteJSON, loadLocalJSON, loadJSON // TODO: DEPRECATE: move to `@dr-js/node`
 }
 
-export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from 'source/node/server/commonHTML' // TODO: DEPRECATE
+export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from 'source/node/server/commonHTML.js' // TODO: DEPRECATE

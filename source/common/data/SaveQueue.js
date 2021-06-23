@@ -1,4 +1,4 @@
-import { catchAsync } from 'source/common/error'
+import { catchAsync } from 'source/common/error.js'
 
 const EMPTY_FUNC = () => {}
 

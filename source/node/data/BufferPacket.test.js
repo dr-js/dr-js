@@ -1,7 +1,7 @@
-import { strictEqual } from 'source/common/verify'
-import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
-import { toArrayBuffer } from './Buffer'
-import { packBufferPacket, parseBufferPacket } from './BufferPacket'
+import { strictEqual } from 'source/common/verify.js'
+import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { toArrayBuffer } from './Buffer.js'
+import { packBufferPacket, parseBufferPacket } from './BufferPacket.js'
 
 const { describe, it } = global
 

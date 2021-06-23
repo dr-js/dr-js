@@ -1,5 +1,5 @@
-import { createHub } from 'source/common/module/Event'
-import { createDoublyLinkedList, createNode } from './LinkedList'
+import { createHub } from 'source/common/module/Event.js'
+import { createDoublyLinkedList, createNode } from './LinkedList.js'
 
 const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 

@@ -1,4 +1,4 @@
-import { compareStringWithNumber } from 'source/common/compare'
+import { compareStringWithNumber } from 'source/common/compare.js'
 
 const REGEXP_SEMVER = /^(\d+)\.(\d+)\.(\d+)(.*)$/ // simple match
 

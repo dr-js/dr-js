@@ -1,10 +1,10 @@
 import { resolve } from 'path'
 
-import { runMain } from '@dr-js/dev/module/main'
+import { runMain } from '@dr-js/dev/module/main.js'
 
-import { strictEqual } from 'source/common/verify'
-import { run } from 'source/node/run'
-import { describeSystemPlatform } from 'source/node/system/Status'
+import { strictEqual } from 'source/common/verify.js'
+import { run } from 'source/node/run.js'
+import { describeSystemPlatform } from 'source/node/system/Status.js'
 
 const PATH_ROOT = resolve(__dirname, '../../')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)

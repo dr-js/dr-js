@@ -1,4 +1,4 @@
-import { calcHash } from 'source/node/data/Buffer'
+import { calcHash } from 'source/node/data/Buffer.js'
 
 const getEntityTagByContentHash = (buffer) => {
   const length = buffer.length.toString(16)

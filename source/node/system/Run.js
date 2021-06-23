@@ -1,8 +1,8 @@
-import { catchAsync } from 'source/common/error'
+import { catchAsync } from 'source/common/error.js'
 import {
   describeRunOutcome, describeRunOutcomeSync,
   run, runSync
-} from 'source/node/run'
+} from 'source/node/run.js'
 
 const runDeprecate = ({ command, argList = [], option, quiet = false, describeError = false }) => run([ command, ...argList ], { quiet, describeError, ...option })
 const runSyncDeprecate = ({ command, argList = [], option, quiet = false, describeError = false }) => runSync([ command, ...argList ], { quiet, describeError, ...option })

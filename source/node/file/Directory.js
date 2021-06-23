@@ -1,7 +1,7 @@
 import { join, dirname, basename } from 'path'
 import { promises as fsAsync } from 'fs'
-import { createTreeBreadthFirstSearchAsync, createTreeBottomUpSearchAsync } from 'source/common/data/Tree'
-import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath, dropTrailingSep } from './Path'
+import { createTreeBreadthFirstSearchAsync, createTreeBottomUpSearchAsync } from 'source/common/data/Tree.js'
+import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath, dropTrailingSep } from './Path.js'
 
 const getPathTypeFromDirent = (dirent) => dirent.isSymbolicLink() ? PATH_TYPE.Symlink // need stat again to get the target type
   : dirent.isDirectory() ? PATH_TYPE.Directory

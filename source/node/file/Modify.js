@@ -1,6 +1,6 @@
 import { dirname } from 'path'
-import { getPathLstat, copyPath, renamePath, deletePath } from './Path'
-import { createDirectory, copyDirectory, deleteDirectory } from './Directory'
+import { getPathLstat, copyPath, renamePath, deletePath } from './Path.js'
+import { createDirectory, copyDirectory, deleteDirectory } from './Directory.js'
 
 const EMPTY_FUNC = () => {}
 

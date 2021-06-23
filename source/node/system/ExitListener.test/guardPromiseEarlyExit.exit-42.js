@@ -1,5 +1,5 @@
-import { runMain } from '@dr-js/dev/module/main'
-import { guardPromiseEarlyExit } from '../ExitListener'
+import { runMain } from '@dr-js/dev/module/main.js'
+import { guardPromiseEarlyExit } from '../ExitListener.js'
 
 runMain(async () => {
   const promiseBroken = new Promise(() => {})

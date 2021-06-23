@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs'
-import { tryRequireResolve } from 'source/env/tryRequire'
+import { tryRequireResolve } from 'source/env/tryRequire.js'
 
 const DR_BROWSER_FILE_PATH = () => [
   './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`

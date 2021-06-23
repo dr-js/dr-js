@@ -1,4 +1,4 @@
-import { createInsideOutPromise } from 'source/common/function'
+import { createInsideOutPromise } from 'source/common/function.js'
 
 // NOTE: simple size reduction for minify
 const GET_SIZE = 'A'

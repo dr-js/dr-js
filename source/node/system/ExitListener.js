@@ -1,5 +1,5 @@
-import { catchAsync, catchSync, catchPromise } from 'source/common/error'
-import { once } from 'source/common/function'
+import { catchAsync, catchSync, catchPromise } from 'source/common/error.js'
+import { once } from 'source/common/function.js'
 
 __DEV__ && console.log({
   listenerFunc: (eventPack) => { // can be async for `addExitListenerSync`

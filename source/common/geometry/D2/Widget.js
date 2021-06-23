@@ -1,7 +1,7 @@
 // 2D rectangle: { center: 2D.vector, size: 2D.vector, rotate: angle, ...data: any }
 
-import { roundFloat } from 'source/common/math/base'
-import { getDist, getRotate, round as roundVector } from './Vector'
+import { roundFloat } from 'source/common/math/base.js'
+import { getDist, getRotate, round as roundVector } from './Vector.js'
 
 const PI_HALF = Math.PI * 0.5
 

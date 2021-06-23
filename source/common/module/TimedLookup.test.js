@@ -1,7 +1,7 @@
-import { strictEqual, notStrictEqual, doThrow } from 'source/common/verify'
-import { getTimestamp } from 'source/common/time'
-import { isObjectContain } from 'source/common/check'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
+import { strictEqual, notStrictEqual, doThrow } from 'source/common/verify.js'
+import { getTimestamp } from 'source/common/time.js'
+import { isObjectContain } from 'source/common/check.js'
+import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import {
   verifyOption,
   generateLookupData,
@@ -9,7 +9,7 @@ import {
   verifyCheckCode,
   packDataArrayBuffer,
   parseDataArrayBuffer
-} from './TimedLookup'
+} from './TimedLookup.js'
 
 const { describe, it } = global
 

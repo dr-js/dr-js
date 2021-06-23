@@ -1,12 +1,12 @@
-import { strictEqual } from 'source/common/verify'
-import { padTable } from 'source/common/format'
-import { run } from 'source/node/run'
+import { strictEqual } from 'source/common/verify.js'
+import { padTable } from 'source/common/format.js'
+import { run } from 'source/node/run.js'
 
 import {
   getProcessListAsync,
   toProcessTree,
   killProcessInfoAsync
-} from './Process'
+} from './Process.js'
 
 const { describe, it } = global
 

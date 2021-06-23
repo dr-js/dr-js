@@ -1,5 +1,5 @@
-import { strictEqual } from 'source/common/verify'
-import { createOptionParser } from './parser'
+import { strictEqual } from 'source/common/verify.js'
+import { createOptionParser } from './parser.js'
 
 const { describe, it } = global
 

@@ -1,9 +1,9 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   compareString,
   compareStringLocale,
   compareStringWithNumber
-} from './compare'
+} from './compare.js'
 
 const { describe, it } = global
 

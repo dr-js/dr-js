@@ -1,6 +1,6 @@
-import { strictEqual, notStrictEqual, doThrow, doNotThrow } from 'source/common/verify'
-import { getGlobal, getEnvironment } from './global'
-import { getEndianness, assert } from './function'
+import { strictEqual, notStrictEqual, doThrow, doNotThrow } from 'source/common/verify.js'
+import { getGlobal, getEnvironment } from './global.js'
+import { getEndianness, assert } from './function.js'
 
 const { describe, it } = global
 

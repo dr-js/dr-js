@@ -1,5 +1,5 @@
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { createElement } from './DOM'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { createElement } from './DOM.js'
 
 const { document, fetch } = window
 
@@ -33,4 +33,4 @@ export {
   saveArrayBufferCache, // TODO: DEPRECATE:
   loadArrayBufferCache, // TODO: DEPRECATE:
   deleteArrayBufferCache // TODO: DEPRECATE:
-} from './DOM'
+} from './DOM.js'

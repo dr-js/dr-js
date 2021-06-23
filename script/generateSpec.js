@@ -2,12 +2,12 @@ import { resolve, sep } from 'path'
 import { writeFileSync, existsSync } from 'fs'
 import { execSync } from 'child_process'
 
-import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset'
-import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate'
-import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown'
-import { runMain } from '@dr-js/dev/module/main'
+import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
+import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
+import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown.js'
+import { runMain } from '@dr-js/dev/module/main.js'
 
-import { formatUsage } from 'source-bin/option'
+import { formatUsage } from 'source-bin/option.js'
 
 const PATH_ROOT = resolve(__dirname, '..')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)

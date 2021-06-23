@@ -1,13 +1,13 @@
-import { strictEqual } from 'source/common/verify'
 import { resolve, sep } from 'path'
-import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
-import { resetDirectory } from './Directory'
+import { strictEqual } from 'source/common/verify.js'
+import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path.js'
+import { resetDirectory } from './Directory.js'
 
 import {
   modifyCopy,
   modifyRename,
   modifyDelete
-} from './Modify'
+} from './Modify.js'
 
 const { describe, it, before, after } = global
 

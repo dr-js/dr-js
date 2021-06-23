@@ -1,5 +1,5 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { createCacheMap } from './CacheMap'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { createCacheMap } from './CacheMap.js'
 
 const { describe, it } = global
 

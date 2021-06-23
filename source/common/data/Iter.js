@@ -1,5 +1,5 @@
-import { createInsideOutPromise } from 'source/common/function'
-import { getRandomId } from 'source/common/math/random'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { getRandomId } from 'source/common/math/random.js'
 
 const unwrap = ({
   iterable, // { [ Symbol.asyncIterator ] } or { [ Symbol.iterator ] }

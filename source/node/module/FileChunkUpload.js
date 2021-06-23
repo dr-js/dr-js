@@ -1,18 +1,18 @@
 import { resolve, dirname } from 'path'
 import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 
-import { rethrowError } from 'source/common/error'
-import { getRandomId } from 'source/common/math/random'
-import { createCacheMap } from 'source/common/data/CacheMap'
-import { toString as arrayBufferToString, fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer'
-import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
-import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue'
+import { rethrowError } from 'source/common/error.js'
+import { getRandomId } from 'source/common/math/random.js'
+import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { toString as arrayBufferToString, fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer.js'
+import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 
-import { toArrayBuffer, calcHash } from 'source/node/data/Buffer'
-import { quickRunletFromStream } from 'source/node/data/Stream'
-import { createPathPrefixLock } from 'source/node/file/Path'
-import { createDirectory } from 'source/node/file/Directory'
-import { modifyDelete, modifyDeleteForce } from 'source/node/file/Modify'
+import { toArrayBuffer, calcHash } from 'source/node/data/Buffer.js'
+import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { createPathPrefixLock } from 'source/node/file/Path.js'
+import { createDirectory } from 'source/node/file/Directory.js'
+import { modifyDelete, modifyDeleteForce } from 'source/node/file/Modify.js'
 
 // TODO: add `fileWebSocketUpload`
 

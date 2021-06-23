@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto'
 
-import { FRAME_CONFIG, OPCODE_TYPE, BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function'
+import { FRAME_CONFIG, OPCODE_TYPE, BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function.js'
 
 const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 

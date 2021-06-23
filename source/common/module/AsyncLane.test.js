@@ -1,14 +1,14 @@
-import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { ASYNC_TASK_KEY_MAP, runAsyncTask } from './AsyncTask'
-import { createAsyncFuncQueue } from './AsyncFuncQueue'
+import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { ASYNC_TASK_KEY_MAP, runAsyncTask } from './AsyncTask.js'
+import { createAsyncFuncQueue } from './AsyncFuncQueue.js'
 import {
   createAsyncLane,
   extendAutoSelectLane, selectMinLoadLane,
   // extendLaneValueList,
   // extendLaneValueMap
   extendAutoSelectByTagLane, selectByTagOrMinLoadLane
-} from './AsyncLane'
+} from './AsyncLane.js'
 
 const { describe, it } = global
 

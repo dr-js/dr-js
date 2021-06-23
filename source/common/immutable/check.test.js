@@ -1,9 +1,9 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   isObjectShallowEqual,
   isArrayShallowEqual,
   isCompactArrayShallowEqual
-} from './check'
+} from './check.js'
 
 const { describe, it } = global
 

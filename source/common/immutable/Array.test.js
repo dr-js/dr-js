@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual, notStringifyEqual } from 'source/common/verify'
+import { strictEqual, stringifyEqual, notStringifyEqual } from 'source/common/verify.js'
 import {
   arraySet,
   arrayDelete,
@@ -18,7 +18,7 @@ import {
   arrayFindSetOrPush,
   arrayFindOrPush,
   arraySplitChunk
-} from './Array'
+} from './Array.js'
 
 const { describe, it } = global
 
