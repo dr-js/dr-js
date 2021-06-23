@@ -1,41 +1,32 @@
-name: ci-test
+name: ci-test-push
 
 on:
-  push:
-    branches:
-      - '**'
+  push: { branches: [ "**" ] }
 
 env:
-  cache-version: 20201129
-  # for allow reset npm cache path on win32, revert: https://github.com/actions/virtual-environments/blob/win19/20201116.1/images/win/scripts/Installers/Install-NodeLts.ps1#L21
-  npm_config_cache: '' # wait for fix: https://github.com/actions/virtual-environments/pull/2153
+  cache-version: 20210623
 
 jobs:
-  build:
+  test-push:
     strategy:
       fail-fast: false # allow all test to run to the end
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version: [ 12.x, 14.x, 15.x ]
+        node-version: [ 12.x ]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Setup Git repo
-        uses: actions/checkout@v2 # https://github.com/actions/checkout
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1 # https://github.com/actions/setup-node
-        with:
-          node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v2 # https://github.com/actions/checkout
+      - uses: actions/setup-node@v1 # https://github.com/actions/setup-node
+        with: { node-version: "${{ matrix.node-version }}" }
 
       - name: Patch & log CI info
         run: |
           npx @dr-js/dev@0.4 -eI .github/ci-patch.js
           dr-dev -c .github/cache/config.js --cache-step setup
 
-      - name: Cache JS
-        uses: actions/cache@v2 # https://github.com/actions/cache
+      - uses: actions/cache@v2 # https://github.com/actions/cache
         with:
           key: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}
           restore-keys: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-
@@ -46,7 +37,6 @@ jobs:
       - run: dr-dev -c .github/cache/config.js --cache-step mark
 
       - run: npm ci # TODO: wait for npm@7 adoption and try npm install + cache for faster puppeteer install
-
       - run: npm test
 
       - run: dr-dev -c .github/cache/config.js --cache-step prune
