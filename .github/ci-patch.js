@@ -1,5 +1,5 @@
-const { commonInfoPatchCombo } = require('@dr-js/dev/library/ci')
-const { runMain } = require('@dr-js/dev/library/main')
+const { commonInfoPatchCombo } = require('@dr-js/dev/library/ci.js')
+const { runMain } = require('@dr-js/dev/library/main.js')
 
 runMain(async (logger) => {
   const { RUN, fromHome, config: { COMMAND_SUDO_NPM } } = commonInfoPatchCombo(logger)

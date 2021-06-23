@@ -22,7 +22,7 @@ import { fetchWithJump } from 'source/node/net.js'
 //   `.../npm/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../npm/node_modules/` // allow this and related module to resolve
 //   `.../.npm/_npx/####/lib/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../.npm/_npx/####/lib/node_modules/` // allow this and related module to resolve
 // NOTE:
-//   currently for the `output-gitignore` code, output of `require('@dr-js/core/package').version` will be
+//   currently for the `output-gitignore` code, output of `require('@dr-js/core/package.json').version` will be
 //   the version from `./node_modules/@dr-js/core/package.json`, since it's higher in the path list,
 //   and the '../../../../' will result in an invalid path
 const modulePathHack = (newPath) => {

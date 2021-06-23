@@ -1,6 +1,6 @@
-const { describe, binary } = require('@dr-js/core/library/common/format')
+const { describe, binary } = require('@dr-js/core/library/common/format.js')
 
-const { main } = require('./scriptFileSub')
+const { main } = require('./scriptFileSub.js')
 
 console.log(`[process.argv.length] ${process.argv.length}`)
 

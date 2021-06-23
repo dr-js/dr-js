@@ -1,5 +1,5 @@
-// const { setTimeoutAsync } = require('../../output-gitignore/library/common/time')
-const { createWSClient } = require('../../output-gitignore/library/node/server/WS/Client')
+// const { setTimeoutAsync } = require('../../output-gitignore/library/common/time.js')
+const { createWSClient } = require('../../output-gitignore/library/node/server/WS/Client.js')
 
 const BIG_STRING = '0123456789abcdef'.repeat(1024)
 const BIG_BUFFER = Buffer.allocUnsafe(1024 * 1024)

@@ -1,5 +1,5 @@
-const { describeRunOutcome, run } = require('../../output-gitignore/library/node/run')
-const { describeSystemStatus } = require('../../output-gitignore/library/node/system/Status')
+const { describeRunOutcome, run } = require('../../output-gitignore/library/node/run.js')
+const { describeSystemStatus } = require('../../output-gitignore/library/node/system/Status.js')
 
 const main = async () => {
   console.log('== status ======================')
