@@ -133,6 +133,8 @@
   - `compareSemVer`, `parseSemVer`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
++ 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
+  - `calcDate`, `packTimerTag`, `parseTimerTag`
 + 📄 [source/common/module/TupleHasherDev.js](source/common/module/TupleHasherDev.js)
   - `createTupleHasher`
 + 📄 [source/common/module/UpdateLoop.js](source/common/module/UpdateLoop.js)
@@ -351,6 +353,8 @@
       - `compareSemVer`, `parseSemVer`
     - **TimedLookup**
       - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+    - **TimerTag**
+      - `calcDate`, `packTimerTag`, `parseTimerTag`
     - **TupleHasherDev**
       - `createTupleHasher`
     - **UpdateLoop**
