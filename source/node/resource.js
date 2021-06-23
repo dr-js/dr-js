@@ -26,4 +26,4 @@ export {
   loadRemoteJSON, loadLocalJSON, loadJSON // TODO: DEPRECATE: move to `@dr-js/node`
 }
 
-export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from 'source/node/server/commonHTML.js' // TODO: DEPRECATE
+export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from 'source/node/server/function.js' // TODO: DEPRECATE

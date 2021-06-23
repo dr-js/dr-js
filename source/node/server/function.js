@@ -1,5 +1,19 @@
+import { readFileSync } from 'fs'
 import { createServer as createNetServer } from 'net'
 import { catchAsync } from 'source/common/error.js'
+import { tryRequireResolve } from 'source/env/tryRequire.js'
+
+const DR_BROWSER_FILE_PATH = () => [
+  './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`
+  '../Dr.browser.js', // relative to `source/env/tryRequire`
+  '@dr-js/core/library/Dr.browser.js' // within normal node_module structure
+].reduce((o, path) => o || tryRequireResolve(path), null)
+
+let cache = ''
+const DR_BROWSER_SCRIPT_TAG = () => {
+  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  return cache
+}
 
 const parseCookieString = (cookieString) => cookieString // TODO: DEPRECATE: move to `@dr-js/node`
   .split(';')
@@ -31,6 +45,8 @@ const autoTestServerPort = async (expectPortList, hostname) => {
 }
 
 export {
+  DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG,
+
   parseCookieString, // TODO: DEPRECATE: move to `@dr-js/node`
   getUnusedPort,
   autoTestServerPort

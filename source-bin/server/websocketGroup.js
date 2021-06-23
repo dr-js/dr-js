@@ -1,4 +1,5 @@
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/common/module/HTML.js'
 
 import { packBufferPacket, parseBufferPacket } from 'source/node/data/BufferPacket.js'
 import { createResponderLog, responderEndWithRedirect } from 'source/node/server/Responder/Common.js'
@@ -6,7 +7,7 @@ import { responderSendBufferCompress, prepareBufferData } from 'source/node/serv
 import { createResponderRouter, createRouteMap, getRouteParamAny } from 'source/node/server/Responder/Router.js'
 import { OPCODE_TYPE } from 'source/node/server/WS/function.js'
 import { enableWSServer, createUpgradeRequestListener } from 'source/node/server/WS/Server.js'
-import { DR_BROWSER_SCRIPT_TAG, COMMON_LAYOUT, COMMON_STYLE, COMMON_SCRIPT } from 'source/node/server/commonHTML.js'
+import { DR_BROWSER_SCRIPT_TAG } from 'source/node/server/function.js'
 
 const TYPE_CLOSE = '#CLOSE'
 const TYPE_INFO_GROUP = '#INFO_GROUP'

@@ -4,6 +4,7 @@ import { compareStringWithNumber } from 'source/common/compare.js'
 import { binary, time } from 'source/common/format.js'
 import { escapeHTML, lazyEncodeURI } from 'source/common/string.js'
 import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { COMMON_LAYOUT, COMMON_STYLE } from 'source/common/module/HTML.js'
 
 import { getPathStat, toPosixPath, createPathPrefixLock } from 'source/node/file/Path.js'
 import { getDirInfoList } from 'source/node/file/Directory.js'
@@ -11,7 +12,6 @@ import { responderEndWithRedirect } from 'source/node/server/Responder/Common.js
 import { responderSendBufferCompress } from 'source/node/server/Responder/Send.js'
 import { getRouteParamAny } from 'source/node/server/Responder/Router.js'
 import { createResponderServeStatic } from 'source/node/server/Responder/ServeStatic.js'
-import { COMMON_LAYOUT, COMMON_STYLE } from 'source/node/server/commonHTML.js'
 
 const configure = ({
   routePrefix,
