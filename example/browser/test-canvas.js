@@ -1,3 +1,5 @@
+import { applyPointerEventListener, applyEnhancedPointerEventListener } from '../../output-gitignore/module/browser/input/PointerEvent.js'
+
 window.addContent('', `
 <div class="flex-column" style="overflow: auto; width: 100vw; align-items: center; font-family: monospace;">
   <div class="flex-row box">
@@ -15,12 +17,8 @@ window.addContent('', `
 `, () => {
   const {
     document,
-    qS, log, updateLoop,
-    Dr: {
-      Browser: {
-        Input: { PointerEvent: { applyPointerEventListener, applyEnhancedPointerEventListener } }
-      }
-    }
+    qS,
+    log, updateLoop // from test-base.js
   } = window
 
   const devicePixelRatio = window.devicePixelRatio || 1
