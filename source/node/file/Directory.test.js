@@ -1,5 +1,6 @@
 import { join as joinPath, dirname, resolve, sep } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify'
+import { writeFileSync } from 'fs'
+import { strictEqual, stringifyEqual, doThrowAsync } from 'source/common/verify'
 import { getSample } from 'source/common/math/sample'
 import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
 import {
@@ -16,7 +17,7 @@ import {
 
   createDirectory,
   // copyDirectory,
-  deleteDirectory,
+  deleteDirectory, resetDirectory,
 
   getFileList
 } from './Directory'
@@ -60,13 +61,8 @@ after(async () => {
 
 describe('Node.File.Directory', () => {
   it('getDirInfoList()', async () => {
-    let getExpectedError = false
-    try { await getDirInfoList(invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirInfoList(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    await doThrowAsync(() => getDirInfoList(invalidPath))
+    await doThrowAsync(() => getDirInfoList(SOURCE_FILE))
 
     await getDirInfoList(SOURCE_DIRECTORY)
     await getDirInfoList(SOURCE_DIRECTORY_UPPER)
@@ -74,20 +70,14 @@ describe('Node.File.Directory', () => {
   })
 
   it('getDirInfoTree()', async () => {
-    let getExpectedError = false
-    try { await getDirInfoTree(invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirInfoTree(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    await doThrowAsync(() => getDirInfoTree(invalidPath))
+    await doThrowAsync(() => getDirInfoTree(SOURCE_FILE))
 
     await getDirInfoTree(SOURCE_DIRECTORY)
     await getDirInfoTree(SOURCE_DIRECTORY_UPPER)
+
     const dirInfoTree = await getDirInfoTree(TEST_ROOT)
-
     // console.log(dirInfoTree)
-
     strictEqual(dirInfoTree.root + sep, TEST_ROOT)
     strictEqual(dirInfoTree.dirInfoListMap.get(dirInfoTree.root).length, 5)
     strictEqual(dirInfoTree.dirInfoListMap.size, 26)
@@ -171,6 +161,25 @@ describe('Node.File.Directory', () => {
     let getExpectedError = false
     try { await createDirectory(SOURCE_FILE) } catch (error) { getExpectedError = true }
     strictEqual(getExpectedError, true)
+  })
+
+  it('resetDirectory()', async () => {
+    await createDirectory(resolve(TEST_ROOT, 'reset/'))
+
+    writeFileSync(resolve(TEST_ROOT, 'reset/file-to-dir'), 'data')
+    await resetDirectory(resolve(TEST_ROOT, 'reset/file-to-dir'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/file-to-dir'))).length, 0)
+
+    await createDirectory(resolve(TEST_ROOT, 'reset/dir-empty/'))
+    await resetDirectory(resolve(TEST_ROOT, 'reset/dir-empty/'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir-empty/'))).length, 0)
+
+    await createDirectory(resolve(TEST_ROOT, 'reset/dir/q/w/e/r/t/y/'))
+    writeFileSync(resolve(TEST_ROOT, 'reset/dir/q/w/e/file'), 'data')
+    await resetDirectory(resolve(TEST_ROOT, 'reset/dir/'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir/'))).length, 0)
+
+    await deleteDirectory(resolve(TEST_ROOT, 'reset/'))
   })
 
   describe('getFileList()', () => {
