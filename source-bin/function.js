@@ -82,7 +82,7 @@ const sharedOption = async (optionData, modeName) => {
   }
 }
 
-// NOTE: for `@dr-js/node` to reuse & extend
+// NOTE: for `@dr-js/dev` to reuse & extend
 const sharedMode = async ({
   // sharedPack
   optionData, modeName,
@@ -91,7 +91,7 @@ const sharedMode = async ({
   // patchModulePath overwrite, so more patch path can be added
   patchMP = patchModulePath,
 
-  // fetch overwrite for `@dr-js/node` to add http-proxy support
+  // fetch overwrite for `@dr-js/dev` to add http-proxy support
   fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
   fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
 }) => {
