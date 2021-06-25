@@ -208,8 +208,7 @@ const mainScriptInit = () => {
       },
       Browser: {
         Data: { BlobPacket: { packBlobPacket, parseBlobPacket } },
-        Resource: { createDownloadWithBlob },
-        DOM: { applyReceiveFileListListener },
+        DOM: { applyReceiveFileListListener, createDownloadWithBlob },
         Input: { KeyCommand: { createKeyCommandHub } }
       }
     }
