@@ -57,9 +57,9 @@ runMain(async (logger) => {
   Object.entries(generateIndexScript({ sourceRouteMap }))
     .forEach(([ path, data ]) => writeTempFile(path, data))
   writeTempFile(fromRoot('source/Dr.browser.js'), [
-    'import * as Env from "source/env"',
-    'import * as Common from "source/common"',
-    'import * as Browser from "source/browser"',
+    'import * as Env from "source/env/index.js"',
+    'import * as Common from "source/common/index.js"',
+    'import * as Browser from "source/browser/index.js"',
     'export { Env, Common, Browser }'
   ].join('\n'))
   writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))

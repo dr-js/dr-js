@@ -11,14 +11,14 @@ jobs:
     strategy:
       fail-fast: false # allow all test to run to the end
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        node-version: [ 12.x, 14.x, 16.x ]
+        os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
+        node-version: [ "12.x", "14.x", "16.x" ]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: "${{ matrix.os }}"
 
     steps:
       - uses: actions/checkout@v2 # https://github.com/actions/checkout
-      - uses: actions/setup-node@v1 # https://github.com/actions/setup-node
+      - uses: actions/setup-node@v2 # https://github.com/actions/setup-node
         with: { node-version: "${{ matrix.node-version }}" }
 
       - name: Patch & log CI info
@@ -28,8 +28,8 @@ jobs:
 
       - uses: actions/cache@v2 # https://github.com/actions/cache
         with:
-          key: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}
-          restore-keys: ${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-
+          key: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}"
+          restore-keys: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-"
           path: |
             .github/cache/persist-gitignore/
             ~/.npm/
