@@ -12,14 +12,14 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
 const gitString = (...args) => spawnString([ ...verify(), ...args ])
 const squeeze = (string) => string.replace(/\s/g, '')
 
-const getGitBranch = () => squeeze(
+const getGitBranch = () => squeeze( // TODO: DEPRECATE: move to `@dr-js/dev`
   gitString('symbolic-ref', '--short', 'HEAD') ||
   `detached-HEAD/${gitString('rev-parse', '--short', 'HEAD')}` // NOTE: fallback if no branch, mostly in CI tag build
 )
-const getGitCommitHash = (revisionRange = 'HEAD') => squeeze(gitString('log', '-1', '--format=%H', revisionRange))
-const getGitCommitMessage = (revisionRange = 'HEAD') => gitString('log', '-1', '--format=%B', revisionRange)
+const getGitCommitHash = (revisionRange = 'HEAD') => squeeze(gitString('log', '-1', '--format=%H', revisionRange)) // TODO: DEPRECATE: move to `@dr-js/dev`
+const getGitCommitMessage = (revisionRange = 'HEAD') => gitString('log', '-1', '--format=%B', revisionRange) // TODO: DEPRECATE: move to `@dr-js/dev`
 
 export {
   getArgs, setArgs, check, verify,
-  getGitBranch, getGitCommitHash, getGitCommitMessage // TODO: NOTE: sync only, expect cwd under git repo
+  getGitBranch, getGitCommitHash, getGitCommitMessage // TODO: DEPRECATE: move to `@dr-js/dev` // TODO: NOTE: sync only, expect cwd under git repo
 }
