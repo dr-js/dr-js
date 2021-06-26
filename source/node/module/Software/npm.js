@@ -3,7 +3,7 @@ import { statSync, realpathSync } from 'fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
-import { run } from 'source/node/run.js'
+import { runStdout } from 'source/node/run.js'
 import { spawnString } from '../function.js'
 
 const parsePackageNameAndVersion = (nameAndVersion) => {
@@ -101,9 +101,10 @@ const hasRepoVersion = async ( // NOTE: `npm view` can not return the pakument, 
   cwd = process.cwd() // set cwd to load ".npmrc" for auth
 ) => {
   try {
-    const { promise, stdoutPromise } = run([ getPathNpmExecutable(), 'view', `${packageName}@${packageVersion}`, 'versions', '--json' ], { cwd, quiet: true })
-    await promise
-    return JSON.parse(String(await stdoutPromise)).includes(packageVersion)
+    return JSON.parse(String(await runStdout(
+      [ getPathNpmExecutable(), 'view', `${packageName}@${packageVersion}`, 'versions', '--json' ],
+      { cwd }
+    ))).includes(packageVersion)
   } catch (error) { return false }
 }
 

@@ -176,7 +176,7 @@
 + 📄 [source/node/resource.js](source/node/resource.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/run.js](source/node/run.js)
-  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runSync`
+  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runStdout`, `runStdoutSync`, `runSync`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
   - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
@@ -657,7 +657,7 @@
   - **Resource**
     - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
   - **Run**
-    - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runSync`
+    - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runStdout`, `runStdoutSync`, `runSync`
 
 #### Bin Option Format
 📄 [source-bin/option.js](source-bin/option.js)

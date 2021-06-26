@@ -88,7 +88,16 @@ const runDetached = ([ command, ...argList ], {
   return { subProcess }
 }
 
+const runStdout = async (argList = [], option) => {
+  const { promise, stdoutPromise } = run(argList, { quiet: true, ...option })
+  await promise
+  return stdoutPromise
+}
+const runStdoutSync = (argList = [], option) => runSync(argList, { quiet: true, ...option }).stdout // TODO: NOTE: maybe not as useful as `String(spawnSync(cmd, [], {}).stdout || '')`
+
 export {
   describeRunOutcome, describeRunOutcomeSync,
-  run, runSync, runDetached
+  run, runStdout,
+  runSync, runStdoutSync,
+  runDetached
 }

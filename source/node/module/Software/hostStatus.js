@@ -1,6 +1,6 @@
 import { binary } from 'source/common/format.js'
 import { isString, isBasicFunction } from 'source/common/check.js'
-import { run } from 'source/node/run.js'
+import { runStdout } from 'source/node/run.js'
 import { describeSystemStatus } from 'source/node/system/Status.js'
 
 // TODO: allow user change || overwrite commands
@@ -12,7 +12,7 @@ const COMMON_HOST_STATUS_COMMAND_LIST = [
   // [ title, ...tryList ]
   [ 'Disk', async (rootPath) => {
     if (IS_WIN32) { // win32 alternative, sample stdout: `27 Dir(s)  147,794,321,408 bytes free`
-      const freeByteString = (await runQuick('dir | find "bytes free"', rootPath))
+      const freeByteString = (await runQuick('dir | find "bytes free"', rootPath)) // TODO: this needs shell (cmd.exe) change to `cmd.exe /C dir`?
         .match(/([\d,]+) bytes/)[ 1 ]
         .replace(/\D/g, '')
       return `${binary(Number(freeByteString))}B free storage`
@@ -27,11 +27,7 @@ const COMMON_HOST_STATUS_COMMAND_LIST = [
   [ 'Time', () => new Date().toISOString() ]
 ].filter(Boolean)
 
-const runQuick = async (command, rootPath) => {
-  const { promise, stdoutPromise } = run([ command ], { cwd: rootPath, shell: true, quiet: true })
-  await promise
-  return String(await stdoutPromise)
-}
+const runQuick = async (command, rootPath) => String(await runStdout([ command ], { cwd: rootPath, shell: true }))
 
 const runStatusCommand = async (statusCommand, rootPath) => {
   let output = ''
