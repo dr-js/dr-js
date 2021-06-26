@@ -1,3 +1,4 @@
+import { run, runSync } from 'source/node/run.js'
 import { spawnString, probeSync, createArgListPack } from '../function.js'
 
 // $ git --version
@@ -8,6 +9,8 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
     : undefined,
   'expect "git" in PATH'
 )
+const runGit = (argList = [], option) => run([ ...verify(), ...argList ], option)
+const runGitSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
 
 const gitString = (...args) => spawnString([ ...verify(), ...args ])
 const squeeze = (string) => string.replace(/\s/g, '')
@@ -21,5 +24,7 @@ const getGitCommitMessage = (revisionRange = 'HEAD') => gitString('log', '-1', '
 
 export {
   getArgs, setArgs, check, verify,
+  runGit, runGitSync,
+
   getGitBranch, getGitCommitHash, getGitCommitMessage // TODO: DEPRECATE: move to `@dr-js/dev` // TODO: NOTE: sync only, expect cwd under git repo
 }

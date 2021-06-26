@@ -1,3 +1,4 @@
+import { run, runSync } from 'source/node/run.js'
 import { probeSync, createArgListPack } from '../function.js'
 
 // $ docker version --format "{{.Server.Version}}"
@@ -33,6 +34,8 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
       : undefined,
   'expect "docker" in PATH, with server up'
 )
+const runDocker = (argList = [], option) => run([ ...verify(), ...argList ], option)
+const runDockerSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
 
 const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, verify: verifyCompose } = createArgListPack(
   () => {
@@ -42,8 +45,13 @@ const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, v
   },
   'expect both "docker-compose" and "docker" in PATH, with server up'
 )
+const runCompose = (argList = [], option) => run([ ...verifyCompose(), ...argList ], option)
+const runComposeSync = (argList = [], option) => runSync([ ...verifyCompose(), ...argList ], option)
 
 export {
   getArgs, setArgs, check, verify,
-  getArgsCompose, setArgsCompose, checkCompose, verifyCompose
+  runDocker, runDockerSync,
+
+  getArgsCompose, setArgsCompose, checkCompose, verifyCompose,
+  runCompose, runComposeSync
 }
