@@ -12,8 +12,8 @@ const COMMON_HOST_STATUS_COMMAND_LIST = [
   // [ title, ...tryList ]
   [ 'Disk', async (rootPath) => {
     if (IS_WIN32) { // win32 alternative, sample stdout: `27 Dir(s)  147,794,321,408 bytes free`
-      const freeByteString = (await runQuick('dir | find "bytes free"', rootPath)) // TODO: this needs shell (cmd.exe) change to `cmd.exe /C dir`?
-        .match(/([\d,]+) bytes/)[ 1 ]
+      const freeByteString = (await runQuick('cmd.exe /C dir', rootPath))
+        .match(/ ([\d,]+) bytes free/)[ 1 ]
         .replace(/\D/g, '')
       return `${binary(Number(freeByteString))}B free storage`
     } else {
@@ -23,11 +23,16 @@ const COMMON_HOST_STATUS_COMMAND_LIST = [
     }
   } ],
   !IS_WIN32 && [ 'Network', 'vnstat -s' ],
-  [ 'System', IS_DARWIN ? 'top -l1 -n0' : 'top -bn1 | head -n5', () => describeSystemStatus() ],
+  [ 'System',
+    IS_DARWIN
+      ? 'top -l1 -n0'
+      : async (rootPath) => (await runQuick('top -bn1', rootPath)).split('\n').slice(0, 5).join('\n'),
+    () => describeSystemStatus()
+  ],
   [ 'Time', () => new Date().toISOString() ]
 ].filter(Boolean)
 
-const runQuick = async (command, rootPath) => String(await runStdout([ command ], { cwd: rootPath, shell: true }))
+const runQuick = async (command, rootPath) => String(await runStdout(command.split(' '), { cwd: rootPath }))
 
 const runStatusCommand = async (statusCommand, rootPath) => {
   let output = ''
