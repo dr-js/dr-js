@@ -722,6 +722,8 @@
 >       use system default app to open uri or path: $0=uriOrPath/cwd, $1=isDetached/false
 >   --which --w -w [OPTIONAL] [ARGUMENT=1]
 >       resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath
+>   --run [OPTIONAL] [ARGUMENT=0+]
+>       run command: $0=...argsList
 >   --detach --bg [OPTIONAL] [ARGUMENT=0+]
 >       run command detached: -O=logFile/ignore, $0=...argsList
 >   --process-status --ps [OPTIONAL] [ARGUMENT=0-1]
@@ -771,6 +773,7 @@
 >     export DR_JS_STATUS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_OPEN="[OPTIONAL] [ARGUMENT=0-2]"
 >     export DR_JS_WHICH="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_RUN="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_DETACH="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_BG]"
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
@@ -811,6 +814,7 @@
 >     "status": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "open": [ "[OPTIONAL] [ARGUMENT=0-2]" ],
 >     "which": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "run": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "detach": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=bg]" ],
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],

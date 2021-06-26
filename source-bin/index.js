@@ -19,7 +19,7 @@ import { createServerExot } from 'source/node/server/Server.js'
 import { createTCPProxyListener } from 'source/node/server/Proxy.js'
 import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen.js'
 import { resolveCommand } from 'source/node/system/ResolveCommand.js'
-import { runSync, runDetached } from 'source/node/run.js'
+import { run, runSync, runDetached } from 'source/node/run.js'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process.js'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
 
@@ -109,6 +109,10 @@ const runMode = async (optionData, modeName) => {
       const resultCommand = resolveCommand(commandNameOrPath, root)
       if (!resultCommand) throw new Error(`failed to resolve command: ${commandNameOrPath}`)
       return log(resultCommand)
+    }
+    case 'run': {
+      const commandNameOrPath = argumentList[ 0 ]
+      return run([ resolveCommand(commandNameOrPath, root), ...argumentList.slice(1) ]).promise
     }
     case 'detach': {
       const commandNameOrPath = argumentList[ 0 ]
