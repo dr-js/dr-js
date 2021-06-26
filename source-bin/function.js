@@ -10,7 +10,7 @@ import { throttle } from 'source/common/function.js'
 
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
 import { configurePid } from 'source/node/module/Pid.js'
-import { fetchWithJump } from 'source/node/net.js'
+import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620
@@ -93,7 +93,7 @@ const sharedMode = async ({
 
   // fetch overwrite for `@dr-js/dev` to add http-proxy support
   fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
-  fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
+  fetchUA = fetchUserAgent
 }) => {
   switch (modeName) {
     case 'eval': {
@@ -116,7 +116,7 @@ const sharedMode = async ({
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
       const body = inputFile ? await fsAsync.readFile(inputFile) : null
       let isDone = false
-      const response = await fetchWJ(initialUrl, {
+      const response = await fetchWithJumpProxy(initialUrl, {
         method, timeout, jumpMax, body,
         headers: { 'accept': '*/*', 'user-agent': fetchUA }, // patch for sites require a UA, like GitHub
         onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),

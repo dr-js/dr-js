@@ -695,7 +695,7 @@
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0-1]
 >       start node REPL
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
->       fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
+>       fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
 >       wait specified time, in msec: $0=waitTime/2*1000
 >   --echo [OPTIONAL] [ARGUMENT=0+]
