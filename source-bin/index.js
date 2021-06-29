@@ -43,7 +43,7 @@ const getVersion = () => ({
 })
 
 const runMode = async (optionData, modeName) => {
-  const sharedPack = await sharedOption(optionData, modeName)
+  const sharedPack = sharedOption(optionData, modeName)
   const { tryGetFirst, getToggle } = optionData
   const { argumentList, log, inputFile, outputFile } = sharedPack
 

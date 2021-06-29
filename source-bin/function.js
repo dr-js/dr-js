@@ -54,7 +54,7 @@ const logAuto = (...args) => console.log(
   `(+${time(stepper())})`
 )
 
-const sharedOption = async (optionData, modeName) => {
+const sharedOption = (optionData, modeName) => {
   const { tryGet, tryGetFirst, getToggle } = optionData
 
   const log = getToggle('quiet') ? () => {} : logAuto
@@ -63,7 +63,7 @@ const sharedOption = async (optionData, modeName) => {
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
 
-  await configurePid({ filePid: tryGetFirst('pid-file') })
+  configurePid({ filePid: tryGetFirst('pid-file') })
 
   const toBuffer = (value) => Buffer.isBuffer(value) ? value
     : isObjectAlike(value) ? JSON.stringify(value, null, 2)

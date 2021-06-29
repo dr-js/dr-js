@@ -1,5 +1,5 @@
 import { createSecureContext } from 'tls'
-import { promises as fsAsync } from 'fs'
+import { readFileSync } from 'fs'
 import { objectMap } from 'source/common/immutable/Object.js'
 import { createExotGroup } from 'source/common/module/Exot.js'
 
@@ -20,13 +20,13 @@ __DEV__ && console.log('SAMPLE_TLS_SNI_CONFIG: multi', {
   '1.domain.domain': { key: Buffer || String, cert: Buffer || String, ca: Buffer || String || undefined } // buffer or load from file
 })
 
-const configureServerExot = async ({
+const configureServerExot = ({
   protocol = 'http:', hostname = '127.0.0.1', port,
   TLSSNIConfig, TLSDHParam, // accept Buffer or String (absolute path)
   ...extraOption
 }) => createServerExot({
   protocol, hostname, port,
-  ...(protocol === 'https:' && await loadTLS(TLSSNIConfig, TLSDHParam)),
+  ...(protocol === 'https:' && loadTLS(TLSSNIConfig, TLSDHParam)),
   ...extraOption
 })
 
@@ -34,19 +34,19 @@ const configureServerExot = async ({
 //   https://nodejs.org/dist/latest/docs/api/tls.html#tls_tls_connect_options_callback
 //   https://en.wikipedia.org/wiki/Server_Name_Indication
 //   https://github.com/nodejs/node/issues/17567
-const loadTLS = async (
+const loadTLS = (
   TLSSNIConfig,
   TLSDHParam // Diffie-Hellman Key Exchange, generate with `openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096`
 ) => {
   if (TLSSNIConfig.key) TLSSNIConfig = { default: TLSSNIConfig } // convert single config to multi config
   if (!TLSSNIConfig.default) TLSSNIConfig.default = Object.values(TLSSNIConfig)[ 0 ] // use the first as default, if not set
   if (!TLSSNIConfig.default) throw new Error('no default TLS config')
-  const dhparam = TLSDHParam && await autoBuffer(TLSDHParam)
-  const optionMap = await objectMapAsync(TLSSNIConfig, async ({ key, cert, ca }) => ({
+  const dhparam = TLSDHParam && autoLoadBuffer(TLSDHParam)
+  const optionMap = objectMap(TLSSNIConfig, ({ key, cert, ca }) => ({
     // for Let'sEncrypt/CertBot cert config check: https://community.letsencrypt.org/t/node-js-configuration/5175
-    key: await autoBuffer(key),
-    cert: await autoBuffer(cert),
-    ca: ca && await autoBuffer(ca),
+    key: autoLoadBuffer(key),
+    cert: autoLoadBuffer(cert),
+    ca: ca && autoLoadBuffer(ca),
     dhparam
   }))
   const secureContextMap = objectMap(optionMap, (option) => createSecureContext(option)) // pre-create and later reuse secureContext
@@ -55,12 +55,7 @@ const loadTLS = async (
     SNICallback: Object.keys(optionMap).length >= 2 ? (hostname, callback) => callback(null, secureContextMap[ hostname ] || secureContextMap.default) : undefined
   }
 }
-const autoBuffer = async (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferOrPath : fsAsync.readFile(bufferOrPath)
-const objectMapAsync = async (object, mapFuncAsync) => {
-  const result = {}
-  for (const [ key, value ] of Object.entries(object)) result[ key ] = await mapFuncAsync(value, key)
-  return result
-}
+const autoLoadBuffer = (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferOrPath : readFileSync(bufferOrPath)
 
 const configureFeature = ({
   serverExot, loggerExot,
@@ -178,9 +173,9 @@ const runServer = async (
   featureOption, // feature only
   serverInfoTitle = !featureOption.packageName ? undefined : `${featureOption.packageName}@${featureOption.packageVersion}`
 ) => {
-  await configurePid(serverOption)
-  const { loggerExot } = await configureLog(serverOption)
-  const serverExot = await configureServerExot(serverOption)
+  configurePid(serverOption)
+  const { loggerExot } = configureLog(serverOption)
+  const serverExot = configureServerExot(serverOption)
   const serverInfo = describeServerOption(serverExot.option, serverInfoTitle, featureOption)
 
   await configureServer({ serverExot, loggerExot, serverInfo, ...featureOption }) // do custom config here
