@@ -13,7 +13,7 @@ import {
   createOptionGetter
 } from './preset.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-preset-gitignore/')
 

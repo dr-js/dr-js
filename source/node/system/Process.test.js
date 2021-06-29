@@ -8,7 +8,7 @@ import {
   killProcessInfoAsync
 } from './Process.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.System.Process', () => {
   it('getProcessListAsync()', async () => {

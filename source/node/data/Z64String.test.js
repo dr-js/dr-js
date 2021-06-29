@@ -7,7 +7,7 @@ import {
   packBr64, unpackBr64
 } from './Z64String.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const TEST_STRING = JSON.stringify(require('../../../package.json'))
 

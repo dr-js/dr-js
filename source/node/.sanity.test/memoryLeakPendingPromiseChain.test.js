@@ -1,6 +1,6 @@
 import { createTestFunc, commonFunc } from './function.test.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 // for win32 it's `code: 134, signal: null`
 // for linux it's `code: null, signal: SIGABRT`

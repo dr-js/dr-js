@@ -5,7 +5,7 @@ import {
   getQuickContext2d
 } from './ImageData.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Graphic.ImageData', () => {
   it('getQuickCanvas()', async () => {

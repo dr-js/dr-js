@@ -9,7 +9,7 @@ import {
   createTreeBottomUpSearchAsync
 } from './Tree.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Data.Tree', () => {
   describe('test Tree', () => {

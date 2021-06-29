@@ -3,7 +3,7 @@ import { catchSync, catchPromise } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { describeRunOutcome, describeRunOutcomeSync, run, runSync } from './Run.js' // TODO: DEPRECATE: old test
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const [ TEST_COMMAND, ...TEST_ARG_LIST ] = (process.platform === 'win32' ? 'CMD.exe /S /C dir' : 'ls -l').split(' ')
 

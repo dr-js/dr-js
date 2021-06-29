@@ -8,7 +8,7 @@ import {
   getRouteParam
 } from './Router.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Server.Responder.Router', () => {
   it('appendRouteMap()', () => {

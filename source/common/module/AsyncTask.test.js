@@ -8,7 +8,7 @@ import {
   resetAsyncTask
 } from './AsyncTask.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const { IDLE, RUN, DONE } = ASYNC_TASK_PHASE_MAP
 const { PLAN, PLAN_PROMISE, QUERY, PROMISE, OUTPUT } = ASYNC_TASK_KEY_MAP

@@ -15,7 +15,7 @@ import {
   uploadFileByChunk
 } from './FileChunkUpload.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-file-chunk-upload-gitignore/')
 const TEST_SOURCE = resolve(__dirname, './FileChunkUpload.js')

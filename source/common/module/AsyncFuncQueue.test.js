@@ -4,7 +4,7 @@ import { catchPromise } from 'source/common/error.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { createAsyncFuncQueue } from './AsyncFuncQueue.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('source/common/module/AsyncFuncQueue', () => {
   it('basic usage', async () => {

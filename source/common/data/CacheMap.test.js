@@ -1,7 +1,7 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { createCacheMap } from './CacheMap.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const getTestData = (valueSizeSumMax) => {
   const cacheMap = createCacheMap({ valueSizeSumMax })

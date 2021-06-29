@@ -5,7 +5,7 @@ import { dumpAsync } from './RuntimeDump.js'
 
 const TEST_ROOT = resolve(__dirname, 'runtime-dump-gitignore/')
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 before(() => resetDirectory(TEST_ROOT))
 after(() => modifyDelete(TEST_ROOT))

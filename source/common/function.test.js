@@ -14,7 +14,7 @@ import {
 } from './function.js'
 import { setTimeoutAsync } from './time.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs watcher event seems to be both batched and late than linux/win32, so just wait longer
 

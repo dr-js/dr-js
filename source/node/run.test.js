@@ -7,7 +7,7 @@ import {
   run, runSync, runDetached
 } from './run.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const TEST_ARG_LIST_EXIT_0 = [ 'node', '-e', 'console.log("TEST_ARG_LIST_EXIT_0", process.version); process.exitCode = 0' ]
 const TEST_ARG_LIST_EXIT_42 = [ 'node', '-e', 'console.log("TEST_ARG_LIST_EXIT_42", process.version); process.exitCode = 42' ]

@@ -2,7 +2,7 @@ import { strictEqual, notStrictEqual, doThrow, doNotThrow } from 'source/common/
 import { getGlobal, getEnvironment } from './global.js'
 import { getEndianness, assert } from './function.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const wrapMuteConsoleError = (func) => () => {
   const consoleError = console.error

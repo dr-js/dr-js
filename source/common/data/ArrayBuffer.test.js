@@ -9,7 +9,7 @@ import {
   toString
 } from './ArrayBuffer.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Common.Data.ArrayBuffer', () => {
   // test full 16bit range, both odd and even

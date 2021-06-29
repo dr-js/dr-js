@@ -6,7 +6,7 @@ import {
   getRandomArrayBuffer
 } from './random.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Math.Random', () => {
   it('getRandomInt()', () => {

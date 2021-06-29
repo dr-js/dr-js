@@ -11,7 +11,7 @@ import {
   parseDataArrayBuffer
 } from './TimedLookup.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.TimedLookup', () => {
   const defaultOption = verifyOption({})

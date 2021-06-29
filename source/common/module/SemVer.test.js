@@ -1,7 +1,7 @@
 import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify.js'
 import { parseSemVer, compareSemVer } from './SemVer.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.SemVer', () => {
   it('parseSemVer()', () => {

@@ -1,6 +1,6 @@
 import { configureTerminalColor } from './TerminalColor.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.TerminalColor', () => {
   it('configureTerminalColor()', async () => {

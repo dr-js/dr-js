@@ -4,7 +4,7 @@ import {
   getGitBranch, getGitCommitHash, getGitCommitMessage
 } from './git.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.git', () => {
   it('check()', () => strictEqual(check(), true))

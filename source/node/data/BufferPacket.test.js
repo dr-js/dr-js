@@ -3,7 +3,7 @@ import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
 import { toArrayBuffer } from './Buffer.js'
 import { packBufferPacket, parseBufferPacket } from './BufferPacket.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Data.BufferPacket', () => {
   const headerString = 'headerString'

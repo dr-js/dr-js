@@ -5,7 +5,7 @@ const RANDOM_INT = (from, to) => Math.floor(Math.random() * (to - from + 1) + fr
 
 const tryGetRandomArrayBuffer = () => {
   try { // browser
-    const { crypto } = global
+    const { crypto } = globalThis
     const getRandomArrayBuffer = (byteLength) => {
       const arrayBuffer = new ArrayBuffer(byteLength)
       for (let index = 0; index < byteLength; index += 65536) {

@@ -4,7 +4,7 @@ import { time } from 'source/common/format.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import { encode, decode } from './Base64.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const stringArrayBuffer = (string = '') => {
   const u8List = new Uint8Array(string.length)

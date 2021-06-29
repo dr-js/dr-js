@@ -20,7 +20,7 @@ import {
   createPathPrefixLock
 } from './Path.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-file-gitignore/') + sep
 const SOURCE_FILE = resolve(__dirname, './Path.js')

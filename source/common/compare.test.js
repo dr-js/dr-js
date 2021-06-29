@@ -5,7 +5,7 @@ import {
   compareStringWithNumber
 } from './compare.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const createTestCompare = (title, compareFunc) => (a, b, result) => strictEqual(
   compareFunc(a, b),

@@ -5,7 +5,7 @@ import {
   getValueByKeyList
 } from './function.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const SAMPLE_ARRAY = []
 const OBJECT_DATA = { a: 1, A: SAMPLE_ARRAY }

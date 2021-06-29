@@ -2,7 +2,7 @@ import { strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { createInsideOutPromise } from 'source/common/function.js'
 import { getEnvironment } from 'source/env/global.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const { isNode } = getEnvironment()
 

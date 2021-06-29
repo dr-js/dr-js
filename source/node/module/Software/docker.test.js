@@ -6,7 +6,7 @@ import {
   checkCompose, verifyCompose
 } from './docker.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.Docker', () => {
   __DEV__ && info(`DOCKER_BIN_PATH: ${resolveCommandName('docker')}`)

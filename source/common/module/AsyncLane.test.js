@@ -10,7 +10,7 @@ import {
   extendAutoSelectByTagLane, selectByTagOrMinLoadLane
 } from './AsyncLane.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const { PLAN, PLAN_PROMISE, QUERY, OUTPUT } = ASYNC_TASK_KEY_MAP
 

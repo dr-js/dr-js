@@ -5,7 +5,7 @@ import { OPCODE_TYPE, WEBSOCKET_EVENT } from './function.js'
 import { enableWebSocketServer } from './WebSocketServer.js'
 import { createWebSocketClient } from './WebSocketClient.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TEST_PROTOCOL_LIST = [ 'protocol-a', 'protocol-b' ]
 const TEST_STRING = 'TEST STRING'

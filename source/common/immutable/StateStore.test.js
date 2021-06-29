@@ -3,7 +3,7 @@ import { createInsideOutPromise } from 'source/common/function.js'
 import { objectMerge } from './Object.js'
 import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const verifyBasicStateGetSet = (store, initialState) => {
   strictEqual(typeof (store.getState), 'function')

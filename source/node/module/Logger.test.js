@@ -8,7 +8,7 @@ import { modifyDelete } from 'source/node/fs/Modify.js'
 
 import { createSimpleLoggerExot, createLoggerExot } from './Logger.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-logger-gitignore/')
 

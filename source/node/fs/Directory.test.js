@@ -22,7 +22,7 @@ import {
   getFileList
 } from './Directory.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/') + sep
 const SOURCE_FILE = resolve(__dirname, './Directory.js') + sep

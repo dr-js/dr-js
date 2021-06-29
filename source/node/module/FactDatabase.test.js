@@ -8,7 +8,7 @@ import {
   tryDeleteExtraCache
 } from './FactDatabase.js'
 
-const { describe, it, after } = global
+const { describe, it, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-fact-database-gitignore/')
 

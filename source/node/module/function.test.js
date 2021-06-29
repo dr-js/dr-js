@@ -2,7 +2,7 @@ import { strictEqual, doThrow } from 'source/common/verify.js'
 
 import { probeSync, createArgListPack } from './function.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Module.function', () => {
   it('probeSync()', () => {

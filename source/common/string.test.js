@@ -25,7 +25,7 @@ import {
   forEachLine
 } from './string.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Common.String', () => {
   it('escapeHTML/unescapeHTML()', () => {

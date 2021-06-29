@@ -6,7 +6,7 @@ import { OPCODE_TYPE } from './function.js'
 import { createWSClient } from './Client.js'
 import { enableWSServer } from './Server.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TEST_PROTOCOL_LIST = [ 'protocol-a', 'protocol-b' ]
 const TEST_STRING = 'TEST STRING'

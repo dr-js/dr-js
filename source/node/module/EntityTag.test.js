@@ -5,7 +5,7 @@ import {
   getWeakEntityTagByStat
 } from './EntityTag.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Module.EntityTag', () => {
   it('getEntityTagByContentHash()', () => {

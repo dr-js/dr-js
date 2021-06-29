@@ -3,7 +3,7 @@ import {
   getCommonHostStatus
 } from './hostStatus.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.hostStatus', () => {
   it('getCommonHostStatus()', async () => {

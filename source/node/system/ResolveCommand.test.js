@@ -4,7 +4,7 @@ import {
   resolveCommandNameAsync
 } from './ResolveCommand.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.ResolveCommand', () => {
   const COMMAND_NAME_LIST = [

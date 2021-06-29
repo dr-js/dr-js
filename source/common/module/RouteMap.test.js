@@ -9,7 +9,7 @@ import {
   getRouteParam
 } from './RouteMap.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.RouteMap', () => {
   it('parseRouteToMap(), findRouteFromMap()', () => {

@@ -9,7 +9,7 @@ import {
   modifyDelete
 } from './Modify.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-modify-gitignore/') + sep
 const SOURCE_FILE = resolve(__dirname, './Modify.js')

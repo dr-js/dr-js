@@ -30,7 +30,7 @@ import {
   quickRunletFromStream
 } from './Stream.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const FILE_NOT_EXIST = resolve(__dirname, 'not-exist.txt')
 const FILE_NOT_WRITABLE = resolve(__dirname, 'no-directory/no-directory/not-writable.txt')

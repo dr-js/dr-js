@@ -9,7 +9,7 @@ import {
   compressArgs, extractArgs
 } from './tar.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const TEST_TEMP = fromRoot(`test-${basename(__filename)}`)
 const fromTemp = (...args) => resolve(TEST_TEMP, ...args)

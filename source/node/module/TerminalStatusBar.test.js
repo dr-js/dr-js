@@ -1,7 +1,7 @@
 import { setTimeoutAsync } from 'source/common/time.js'
 import { createStatusBar } from './TerminalStatusBar.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const timeScale = __DEV__ ? 50 : 1
 

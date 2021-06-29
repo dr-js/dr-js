@@ -3,7 +3,7 @@ import {
   pingStatUrlList
 } from './PingRace.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const TEST_URL_LIST = [
   // TODO: NOTE: the noop dns lookup may take ~10sec on win32 and block node exit, but there's no API to stop dns lookup, check: https://github.com/nodejs/node/issues/7231

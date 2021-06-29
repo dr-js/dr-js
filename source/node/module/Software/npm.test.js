@@ -10,7 +10,7 @@ import {
   hasRepoVersion
 } from './npm.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.npm', () => {
   it('parsePackageNameAndVersion()', () => {

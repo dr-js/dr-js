@@ -7,7 +7,7 @@ import { modifyDelete } from 'source/node/fs/Modify.js'
 
 import { createSafeWriteStream } from './SafeWrite.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-safe-write-gitignore/')
 

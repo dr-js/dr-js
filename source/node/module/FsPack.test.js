@@ -16,7 +16,7 @@ import {
   unpackToPath
 } from './FsPack.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-fs-pack-gitignore/')
 const fromRoot = (...args) => resolve(TEST_ROOT, ...args)

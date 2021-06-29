@@ -14,7 +14,7 @@ import {
 } from './Responder/Send.js'
 import { createRouteMap, createResponderRouter, getRouteParamAny, getRouteParam } from './Responder/Router.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TEST_BUFFER_TEXT = 'TEST BUFFER!'.repeat(32)
 const TEST_BUFFER = Buffer.from(TEST_BUFFER_TEXT)

@@ -4,7 +4,7 @@ import { percent } from 'source/common/format.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import { fetchLikeRequest } from './net.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 // TODO: NOTE: this test depend on the server from `script/testBrowser.js`
 

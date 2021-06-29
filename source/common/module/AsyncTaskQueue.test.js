@@ -7,7 +7,7 @@ import {
   createFilterStaleAsyncTask
 } from './AsyncTaskQueue.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const { IDLE, RUN, DONE } = ASYNC_TASK_PHASE_MAP
 const { PLAN, PLAN_PROMISE, QUERY, PROMISE, OUTPUT, STATUS } = ASYNC_TASK_QUEUE_KEY_MAP

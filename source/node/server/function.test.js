@@ -6,7 +6,7 @@ import {
   getWSProtocolListParam, packWSProtocolListParam
 } from './function.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Server.function', () => {
   it('getUnusedPort() single', async () => {

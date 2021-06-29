@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import { withTempDirectory } from '@dr-js/dev/module/node/file.js'
 import { run } from 'source/node/run.js'
 
-const { info = console.log } = global
+const { info = console.log } = globalThis
 
 const PATH_TEMP = resolve(__dirname, 'temp-gitignore/')
 

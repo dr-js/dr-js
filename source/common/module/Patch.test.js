@@ -6,7 +6,7 @@ import {
   toArrayWithKeyPatchKit
 } from './Patch.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('source/common/module/Patch', () => {
   const patchKit = createPatchKit({

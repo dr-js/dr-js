@@ -5,7 +5,7 @@ import {
   createLockStepAsyncIter
 } from './Iter.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const ITEM_0 = { a: 1 }
 const ITEM_1 = { b: 2 }

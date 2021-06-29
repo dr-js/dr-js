@@ -5,7 +5,7 @@ import {
   getSampleRate
 } from './sample.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Math.Sample', () => {
   it('getSample()', () => {

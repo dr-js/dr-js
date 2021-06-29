@@ -8,7 +8,7 @@ import {
   parseBlobAsArrayBuffer
 } from './Blob.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 const { btoa } = window
 
 const TEST_TEXT = '123 abc !@#'

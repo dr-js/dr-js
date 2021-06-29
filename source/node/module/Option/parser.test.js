@@ -1,7 +1,7 @@
 import { includes, strictEqual } from 'source/common/verify.js'
 import { createOptionParser } from './parser.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Module.Option.Parser', () => {
   const optionData = {

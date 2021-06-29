@@ -11,7 +11,7 @@ import {
   prettyStringifyJSON, prettyStringifyConfigObject
 } from './format.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Format', () => {
   it('typeNameOf()', () => {

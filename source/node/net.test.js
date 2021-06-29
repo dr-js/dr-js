@@ -9,7 +9,7 @@ import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { ping, fetchLikeRequest } from './net.js'
 import { BUFFER_SCRIPT, withTestServer } from './testServer.test.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 

@@ -1,6 +1,6 @@
 import { typeNameOf } from 'source/common/format.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const TEST_FUNC_LIST = [
   // anonymous function

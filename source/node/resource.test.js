@@ -9,7 +9,7 @@ import {
   loadRemoteJSON, loadLocalJSON, loadJSON
 } from './resource.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const BUFFER_SCRIPT = Buffer.from(`{
   // Simple script file, used for js test

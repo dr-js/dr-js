@@ -1,7 +1,7 @@
 import { notStrictEqual, stringifyEqual } from 'source/common/verify.js'
 import { clock, requestFrameUpdate, setAwaitAsync } from './time.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Time', () => {
   it('clock() should get msec precision', async () => {

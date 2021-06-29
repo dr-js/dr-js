@@ -20,7 +20,7 @@ import {
   arraySplitChunk
 } from './Array.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const SAMPLE_ARRAY = []
 

@@ -22,7 +22,7 @@ import {
   createENDRegulatorChip
 } from './RunletChip.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Common.Module.Runlet', () => {
   const poolKey = 'default'

@@ -4,7 +4,7 @@ import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import { encode as encodeBase64 } from './Base64.js'
 import { encode, decode } from './DataUri.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const SAMPLE_ARRAY_BUFFER = Uint8Array.from(getSampleRange(0, 511)).buffer
 const SAMPLE_LIST = [

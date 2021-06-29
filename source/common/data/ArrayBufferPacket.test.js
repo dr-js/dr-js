@@ -8,7 +8,7 @@ import {
   parseChainArrayBufferPacket
 } from './ArrayBufferPacket.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Data.ArrayBufferPacket', () => {
   const headerString = 'header-array-buffer'

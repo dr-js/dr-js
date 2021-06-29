@@ -7,7 +7,7 @@ import { createDirectory } from './Directory.js'
 import { modifyDelete } from './Modify.js'
 import { createFileWatcherExot } from './Watch.js'
 
-const { describe, it, after, info = console.log } = global
+const { describe, it, after, info = console.log } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-watch-gitignore/')
 

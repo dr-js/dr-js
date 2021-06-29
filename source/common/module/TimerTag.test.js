@@ -1,7 +1,7 @@
 import { strictEqual, doThrow } from 'source/common/verify.js'
 import { parseTimerTag, packTimerTag, calcDate } from './TimerTag.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.TimerTag', () => {
   it('parseTimerTag() & packTimerTag()', () => {
