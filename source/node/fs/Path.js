@@ -58,6 +58,7 @@ const deletePath = async (path, pathStat) => {
     ? fsAsync.rmdir(path) // resolve to nothing
     : fsAsync.unlink(path) // resolve to nothing
 }
+const deletePathForce = async (path, pathStat) => deletePath(path, pathStat).catch((error) => { __DEV__ && console.log('[deletePathForce]', path, error) })
 
 const existPath = async (path) => ErrorNotExist !== await fsAsync.access(path).catch(existFail) // this checks `fs.constants.F_OK`
 const existFail = () => ErrorNotExist
@@ -98,7 +99,7 @@ export {
 
   copyPath,
   renamePath,
-  deletePath,
+  deletePath, deletePathForce,
 
   existPath, nearestExistPath,
   toPosixPath, dropTrailingSep,

@@ -1,5 +1,5 @@
-import { join as joinPath } from 'path'
-import { createReadStream, promises as fsAsync } from 'fs'
+import { join } from 'path'
+import { createReadStream } from 'fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { lossyAsync } from 'source/common/function.js'
@@ -7,8 +7,10 @@ import { tryParseJSONObject } from 'source/common/data/function.js'
 import { createStateStore } from 'source/common/immutable/StateStore.js'
 
 import { readlineOfStreamAsync } from 'source/node/data/Stream.js'
+import { readText, writeJSON } from 'source/node/fs/File.js'
 import { getDirInfoList } from 'source/node/fs/Directory.js'
 import { createLoggerExot } from 'source/node/module/Logger.js'
+import { deletePathForce } from '../fs/Path.js'
 
 // lightweight log-based database
 //
@@ -82,16 +84,14 @@ const createFactDatabaseExot = ({
 
       let prevFactCacheFile = initialFactInfo.factCacheFile || ''
       lossySaveFactCache = lossyAsync(async () => {
-        const factCacheFile = joinPath(pathFactDirectory, `${nameFactCacheFile}.${factId}.json`)
+        const factCacheFile = join(pathFactDirectory, `${nameFactCacheFile}.${factId}.json`)
         if (prevFactCacheFile === factCacheFile) return // skip save
 
-        const fileContent = JSON.stringify({ factId, factState: getState() })
-
         __DEV__ && console.log('[saveFactCache] saving fact state:', factCacheFile)
-        await fsAsync.writeFile(factCacheFile, fileContent) // may not always finish on progress exit
+        await writeJSON(factCacheFile, { factId, factState: getState() }) // may not always finish on progress exit
 
         __DEV__ && prevFactCacheFile && console.log('[saveFactCache] dropping prev fact state:', prevFactCacheFile)
-        prevFactCacheFile && await fsAsync.unlink(prevFactCacheFile).catch((error) => { __DEV__ && console.warn('[saveFactCache] clear failed:', prevFactCacheFile, error) })
+        prevFactCacheFile && await deletePathForce(prevFactCacheFile)
 
         __DEV__ && console.log('[saveFactCache] done save fact state')
         prevFactCacheFile = factCacheFile
@@ -157,7 +157,7 @@ const tryLoadFactInfoFromCache = async (factInfo, { factCacheFileList }) => { //
   factCacheFileList.sort((a, b) => b.fileId - a.fileId) // bigger id first
   for (const { name, path } of factCacheFileList) {
     __DEV__ && console.log('try cached fact state file:', name)
-    const { factId, factState } = tryParseJSONObject(await fsAsync.readFile(path))
+    const { factId, factState } = tryParseJSONObject(await readText(path))
     __DEV__ && console.log('load cached fact state with factId:', factId, name)
     if (factId) return { ...factInfo, factId, factState, factCacheFile: path }
   }
@@ -208,8 +208,7 @@ const tryDeleteExtraCache = async ({
       continue
     }
     __DEV__ && console.log('[DeleteExtraCache] delete:', name)
-    const { error } = await catchAsync(fsAsync.unlink, path)
-    __DEV__ && error && console.warn('[DeleteExtraCache] failed to delete:', name, error)
+    await deletePathForce(path)
   }
 }
 

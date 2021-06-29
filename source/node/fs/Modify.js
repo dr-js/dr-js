@@ -27,6 +27,5 @@ const modifyDeleteForce = async (path, pathStat) => modifyDelete(path, pathStat)
 export {
   modifyCopy,
   modifyRename,
-  modifyDelete,
-  modifyDeleteForce
+  modifyDelete, modifyDeleteForce
 }
