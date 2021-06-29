@@ -1,5 +1,5 @@
 const { resolve } = require('path')
-const { promises: fsAsync } = require('fs')
+const { writeText } = require('../../output-gitignore/library/node/fs/File.js')
 const { createFileWatcherExot } = require('../../output-gitignore/library/node/fs/Watch.js')
 const { createDirectory } = require('../../output-gitignore/library/node/fs/Directory.js')
 const { modifyDeleteForce } = require('../../output-gitignore/library/node/fs/Modify.js')
@@ -16,11 +16,11 @@ const main = async () => {
 
   await modifyDeleteForce(TEMP_PATH)
   await createDirectory(resolve(TEMP_PATH, 'a/b/c/d/e'))
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/file'), 'FILE')
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/file'), 'FILE')
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/file'), 'FILE')
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE')
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE')
+  await writeText(resolve(TEMP_PATH, 'a/file'), 'FILE')
+  await writeText(resolve(TEMP_PATH, 'a/b/file'), 'FILE')
+  await writeText(resolve(TEMP_PATH, 'a/b/c/file'), 'FILE')
+  await writeText(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE')
+  await writeText(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE')
 
   await up()
 
@@ -29,13 +29,13 @@ const main = async () => {
   // await renameAsync(resolve(TEMP_PATH, 'a/b'), resolve(TEMP_PATH, 'a/b-rename'))
   // await renameAsync(resolve(TEMP_PATH, 'a/b/c'), resolve(TEMP_PATH, 'a/b/c-rename'))
 
-  await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/file-add'), 'FILE-ADDED')
+  await writeText(resolve(TEMP_PATH, 'a/b/file-add'), 'FILE-ADDED')
 
-  // await fsAsync.writeFile(resolve(TEMP_PATH, 'a/file'), 'FILE-CHANGED')
-  // await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/file'), 'FILE-CHANGED')
-  // await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/file'), 'FILE-CHANGED')
-  // await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE-CHANGED')
-  // await fsAsync.writeFile(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE-CHANGED')
+  // await appendText(resolve(TEMP_PATH, 'a/file'), 'FILE-CHANGED')
+  // await appendText(resolve(TEMP_PATH, 'a/b/file'), 'FILE-CHANGED')
+  // await appendText(resolve(TEMP_PATH, 'a/b/c/file'), 'FILE-CHANGED')
+  // await appendText(resolve(TEMP_PATH, 'a/b/c/d/file'), 'FILE-CHANGED')
+  // await appendText(resolve(TEMP_PATH, 'a/b/c/d/e/file'), 'FILE-CHANGED')
 }
 
 main().catch(console.error)

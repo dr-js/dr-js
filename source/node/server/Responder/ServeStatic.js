@@ -1,6 +1,7 @@
-import { createReadStream, promises as fsAsync } from 'fs'
+import { createReadStream } from 'fs'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME.js'
+import { readBuffer } from 'source/node/fs/File.js'
 import { getPathStat } from 'source/node/fs/Path.js'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag.js'
 import { responderEndWithStatusCode } from './Common.js'
@@ -94,7 +95,7 @@ const createResponderServeStatic = ({
       __DEV__ && console.log(`[BAIL] CACHE: ${filePathServe}`)
       await responderSendStream(store, { stream: createReadStream(filePathServe), entityTag, type, length })
     } else { // right size, send & cache
-      const bufferData = { buffer: await fsAsync.readFile(filePathServe), entityTag, type, length }
+      const bufferData = { buffer: await readBuffer(filePathServe), entityTag, type, length }
       serveCacheMap.set(filePathServe, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePathServe}`)
       await responderSendBuffer(store, bufferData)

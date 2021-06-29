@@ -3,6 +3,7 @@ import { promises as fsAsync } from 'fs'
 import { stringifyEqual } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { catchAsync } from 'source/common/error.js'
+import { writeText } from './File.js'
 import { createDirectory } from './Directory.js'
 import { modifyDelete } from './Modify.js'
 import { createFileWatcherExot } from './Watch.js'
@@ -23,8 +24,8 @@ const createWatcherTest = (tag, path, func) => async () => {
   const watcherExot = createFileWatcherExot({ path, wait: 10 * TIME_WAIT_SCALE })
 
   await createDirectory(fromTest('folder'))
-  await fsAsync.writeFile(fromTest('file'), `${tag}|file`)
-  await fsAsync.writeFile(fromTest('folder/folder-file'), `${tag}|folder-file`)
+  await writeText(fromTest('file'), `${tag}|file`)
+  await writeText(fromTest('folder/folder-file'), `${tag}|folder-file`)
 
   __DEV__ && console.log('[createWatcherTest] pre test')
   const { error } = await catchAsync(func, { fromTest, path, watcherExot })
@@ -48,7 +49,7 @@ describe('Node.Fs.Watch', () => {
       })
       await watcherExot.up()
 
-      await fsAsync.writeFile(path, 'file|changed')
+      await writeText(path, 'file|changed')
       await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
     }))
@@ -63,13 +64,13 @@ describe('Node.Fs.Watch', () => {
       await watcherExot.up()
       __DEV__ && console.log('watcherExot.up')
 
-      await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
+      await writeText(fromTest('folder/add-file'), 'file|added')
       __DEV__ && console.log('file|added')
       await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: false })
 
       resultChangeState = undefined
-      await fsAsync.writeFile(fromTest('folder/add-file'), 'file|added')
+      await writeText(fromTest('folder/add-file'), 'file|added')
       __DEV__ && console.log('file|added')
       await fsAsync.rename(fromTest('folder/add-file'), fromTest('folder/rename-add-file'))
       __DEV__ && console.log('file|rename')
@@ -178,7 +179,7 @@ describe('Node.Fs.Watch', () => {
       })
       await watcherExot.up()
 
-      await fsAsync.writeFile(path, 'file|created')
+      await writeText(path, 'file|created')
       await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))
@@ -213,7 +214,7 @@ describe('Node.Fs.Watch', () => {
       stringifyEqual(resultChangeState, { path, hasStat: false, hasChange: true })
 
       resultChangeState = undefined
-      await fsAsync.writeFile(path, 'file|recreated')
+      await writeText(path, 'file|recreated')
       await setTimeoutAsync(40 * TIME_WAIT_SCALE)
       stringifyEqual(resultChangeState, { path, hasStat: true, hasChange: true })
     }))

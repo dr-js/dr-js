@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { createGzip, createGunzip, gzipSync } from 'zlib'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { createReadStream, createWriteStream } from 'fs'
 import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stream'
 import { strictEqual } from 'source/common/verify.js'
 import { createStepper } from 'source/common/time.js'
@@ -12,6 +12,7 @@ import {
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet.js'
+import { readBuffer, appendBuffer } from 'source/node/fs/File.js'
 import { resetDirectory } from 'source/node/fs/Directory.js'
 import { modifyDelete } from 'source/node/fs/Modify.js'
 
@@ -54,10 +55,10 @@ const TEST_OUTPUT = resolve(TEST_ROOT, './output')
 
 before(async () => {
   await resetDirectory(TEST_ROOT)
-  const sourceBuffer = await fsAsync.readFile(TEST_SOURCE)
+  const sourceBuffer = await readBuffer(TEST_SOURCE)
   const concatBuffer = Buffer.concat(getSample(() => sourceBuffer, 2 ** 6)) // TODO: NOTE: GitHub CI darwin fs is slow, 4096 small append will hit the default timeout 42sec, so pre-concat for now
   let loopCount = Math.ceil((32 * 1024 * 1024) / concatBuffer.length) // will produce ~32MiB file
-  while ((loopCount -= 1) !== 0) await fsAsync.appendFile(TEST_INPUT, concatBuffer)
+  while ((loopCount -= 1) !== 0) await appendBuffer(TEST_INPUT, concatBuffer)
 })
 after(async () => {
   await modifyDelete(TEST_ROOT)
@@ -214,9 +215,9 @@ describe('Node.Data.Stream', () => {
       info(`done: ${time(stepper())}`)
     }
 
-    const outputBuffer = await fsAsync.readFile(TEST_OUTPUT)
+    const outputBuffer = await readBuffer(TEST_OUTPUT)
     __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
-    strictEqual(outputBuffer.compare(await fsAsync.readFile(TEST_OUTPUT + '-REF')), 0)
+    strictEqual(outputBuffer.compare(await readBuffer(TEST_OUTPUT + '-REF')), 0)
   })
 
   it('quickRunletFromStream', async () => {
@@ -231,11 +232,11 @@ describe('Node.Data.Stream', () => {
     info(`done: ${time(stepper())}`)
     __DEV__ && console.log(result)
 
-    const outputBuffer = await fsAsync.readFile(TEST_OUTPUT + '-QUICK')
+    const outputBuffer = await readBuffer(TEST_OUTPUT + '-QUICK')
     __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
 
     stepper()
-    const refBuffer = gzipSync(gzipSync(await fsAsync.readFile(TEST_INPUT)))
+    const refBuffer = gzipSync(gzipSync(await readBuffer(TEST_INPUT)))
     info(`prepare refBuffer done: ${time(stepper())}`)
     strictEqual(outputBuffer.compare(refBuffer), 0)
   })

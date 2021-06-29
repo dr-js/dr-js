@@ -4,8 +4,9 @@ import { existsSync } from 'fs'
 import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
 import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
 import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown.js'
-import { runMain, commonCombo, writeFileSync } from '@dr-js/dev/module/main.js'
+import { runMain, commonCombo } from '@dr-js/dev/module/main.js'
 
+import { writeJSON, writeText } from 'source/node/fs/File.js'
 import { formatUsage } from 'source-bin/option.js'
 
 const [
@@ -30,7 +31,7 @@ runMain(async (logger) => {
   logger.padLog('output: SPEC.md')
   const initRouteList = fromRoot('source').split(sep)
 
-  writeFileSync(fromRoot('SPEC.md'), [
+  await writeText(fromRoot('SPEC.md'), [
     '# Specification',
     '',
     ...renderMarkdownAutoAppendHeaderLink(
@@ -49,18 +50,17 @@ runMain(async (logger) => {
 
   logger.padLog(`output: ${PATH_FILE_DELETE_CONFIG_RAW}`)
   const tempFileList = []
-  const writeTempFile = (path, data) => {
+  const writeTempFile = async (path, data) => {
     logger.devLog(`[tempFile] ${path}`)
-    writeFileSync(path, data)
+    await writeText(path, data)
     tempFileList.push(path)
   }
-  Object.entries(generateIndexScript({ sourceRouteMap }))
-    .forEach(([ path, data ]) => writeTempFile(path, data))
-  writeTempFile(fromRoot('source/Dr.browser.js'), [
+  for (const [ path, data ] of Object.entries(generateIndexScript({ sourceRouteMap }))) await writeTempFile(path, data)
+  await writeTempFile(fromRoot('source/Dr.browser.js'), [
     'import * as Env from "source/env/index.js"',
     'import * as Common from "source/common/index.js"',
     'import * as Browser from "source/browser/index.js"',
     'export { Env, Common, Browser }'
   ].join('\n'))
-  writeFileSync(PATH_FILE_DELETE_CONFIG, JSON.stringify({ modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] }))
+  await writeJSON(PATH_FILE_DELETE_CONFIG, { modifyDelete: [ ...tempFileList, PATH_FILE_DELETE_CONFIG ] })
 }, 'generate-spec')

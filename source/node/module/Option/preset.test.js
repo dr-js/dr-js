@@ -1,8 +1,8 @@
-import { writeFileSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { includes, strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { objectSortKey } from 'source/common/mutable/Object.js'
 import { packGz64, packBr64 } from 'source/node/data/Z64String.js'
+import { writeJSON } from 'source/node/fs/File.js'
 import { resetDirectory } from 'source/node/fs/Directory.js'
 import { modifyDelete } from 'source/node/fs/Modify.js'
 import { createOptionParser } from './parser.js'
@@ -236,14 +236,14 @@ describe('Node.Module.Option.preset', () => {
       })
       it('test CONFIG', async () => {
         const pathConfig = resolve(TEST_ROOT, 'test-config.json')
-        writeFileSync(pathConfig, JSON.stringify({
+        await writeJSON(pathConfig, {
           optionToggle: true,
           // optionToggleMissing: true,
           optionToggleTruthy: true,
           optionToggleFalsy: 'FALSE', // not case-sensitive
           optionString: 'ABC',
           optionPath: 'A/B/C/file'
-        }))
+        })
         const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [

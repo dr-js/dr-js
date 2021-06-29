@@ -1,5 +1,4 @@
 import { resolve } from 'path'
-import { writeFileSync } from 'fs'
 import {
   cachedDataVersionTag,
   getHeapSpaceStatistics,
@@ -10,6 +9,7 @@ import {
 } from 'v8'
 
 import { getRandomId } from 'source/common/math/random.js'
+import { writeJSON } from 'source/node/fs/File.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 
 const getV8Extra = () => ({
@@ -28,7 +28,7 @@ const dumpAsync = async (path) => {
   const tag = getRandomId()
   // all sync may cause main thread block
   writeV8HeapSnapshot(resolve(path, `runtime-dump-${tag}.heapsnapshot`))
-  writeFileSync(resolve(path, `runtime-dump-${tag}.extra.json`), JSON.stringify(getV8Extra()))
+  await writeJSON(resolve(path, `runtime-dump-${tag}.extra.json`), getV8Extra())
 }
 
 const setupSIGUSR2 = (outputPath) => { // linux only

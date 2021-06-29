@@ -1,5 +1,5 @@
 import { resolve, dirname } from 'path'
-import { createWriteStream, promises as fsAsync } from 'fs'
+import { createWriteStream } from 'fs'
 import { start as startREPL } from 'repl'
 
 import { percent, time, binary, prettyStringifyJSON } from 'source/common/format.js'
@@ -9,6 +9,7 @@ import { basicArray } from 'source/common/verify.js'
 import { throttle } from 'source/common/function.js'
 
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
+import { readBuffer, writeBuffer, readText } from 'source/node/fs/File.js'
 import { configurePid } from 'source/node/module/Pid.js'
 import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 
@@ -65,12 +66,12 @@ const sharedOption = (optionData, modeName) => {
 
   configurePid({ filePid: tryGetFirst('pid-file') })
 
-  const toBuffer = (value) => Buffer.isBuffer(value) ? value
-    : isObjectAlike(value) ? JSON.stringify(value, null, 2)
-      : Buffer.from(value) // should be String
+  const autoBuffer = (value) => Buffer.isBuffer(value) ? value
+    : isObjectAlike(value) ? JSON.stringify(value, null, 2) // JSON String
+      : value // should be String
   const outputValueAuto = async (value) => outputFile
-    ? fsAsync.writeFile(outputFile, toBuffer(value))
-    : writeBufferToStreamAsync(process.stdout, toBuffer(value))
+    ? writeBuffer(outputFile, autoBuffer(value))
+    : writeBufferToStreamAsync(process.stdout, autoBuffer(value))
   const outputStream = (stream) => quickRunletFromStream(
     stream,
     outputFile ? createWriteStream(outputFile) : process.stdout
@@ -99,7 +100,7 @@ const sharedMode = async ({
     case 'eval': {
       await patchMP()
       const result = await evalScript(
-        inputFile ? String(await fsAsync.readFile(inputFile)) : argumentList[ 0 ],
+        inputFile ? await readText(inputFile) : argumentList[ 0 ],
         inputFile || resolve('__SCRIPT_STRING__'),
         inputFile ? argumentList : argumentList.slice(1),
         optionData
@@ -114,7 +115,7 @@ const sharedMode = async ({
       let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
-      const body = inputFile ? await fsAsync.readFile(inputFile) : null
+      const body = inputFile ? await readBuffer(inputFile) : null
       let isDone = false
       const response = await fetchWithJumpProxy(initialUrl, {
         method, timeout, jumpMax, body,

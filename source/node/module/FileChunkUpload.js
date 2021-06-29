@@ -10,6 +10,7 @@ import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 
 import { toArrayBuffer, calcHash } from 'source/node/data/Buffer.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { writeBuffer } from 'source/node/fs/File.js'
 import { createPathPrefixLock } from 'source/node/fs/Path.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { modifyDelete, modifyDeleteForce } from 'source/node/fs/Modify.js'
@@ -74,7 +75,7 @@ const createOnFileChunkUpload = async ({
     }
 
     const chunkPath = resolve(chunkData.tempPath, `chunk-${chunkIndex}-${chunkTotal}`)
-    await fsAsync.writeFile(chunkPath, chunkBuffer)
+    await writeBuffer(chunkPath, chunkBuffer)
     chunkData.chunkList[ chunkIndex ] = { chunkIndex, chunkByteLength, chunkPath }
     __DEV__ && console.log('[save chunk]', chunkData.chunkList[ chunkIndex ])
     onUploadChunk && await onUploadChunk(chunkData, chunkIndex)
@@ -83,7 +84,7 @@ const createOnFileChunkUpload = async ({
     if (chunkCacheCount === chunkTotal) { // all chunk ready
       __DEV__ && console.log('[merge chunk to file]', chunkData.filePath)
       await createDirectory(dirname(chunkData.filePath))
-      await fsAsync.writeFile(chunkData.filePath, '') // reset old file
+      await writeBuffer(chunkData.filePath, '') // reset old file
       for (const { chunkPath } of chunkData.chunkList) { // merge all chunks to file
         await quickRunletFromStream(
           createReadStream(chunkPath),

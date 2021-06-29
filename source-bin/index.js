@@ -2,7 +2,7 @@
 
 import { cpus } from 'os'
 import { normalize } from 'path'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { createReadStream, createWriteStream } from 'fs'
 
 import { getEndianness } from 'source/env/function.js'
 
@@ -12,6 +12,7 @@ import { setTimeoutAsync } from 'source/common/time.js'
 import { isBasicFunction } from 'source/common/check.js'
 
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { readText, writeText, readJSON } from 'source/node/fs/File.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort } from 'source/node/server/function.js'
@@ -137,13 +138,13 @@ const runMode = async (optionData, modeName) => {
       return log(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
     }
     case 'process-signal': {
-      if (inputFile) argumentList.unshift(String(await fsAsync.readFile(inputFile)))
+      if (inputFile) argumentList.unshift(await readText(inputFile))
       const [ pidString, signal = 'SIGTERM' ] = argumentList
       return process.kill(Number(pidString), signal)
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      return fsAsync.writeFile(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(await fsAsync.readFile(inputFile))), unfoldLevel))
+      return writeText(outputFile || inputFile, prettyStringifyJSON(await readJSON(inputFile), unfoldLevel))
     }
 
     case 'server-serve-static':
