@@ -66,7 +66,7 @@ describe('Common.Module.TimedLookup', () => {
     notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.timeGap))[ 2 ])
 
     notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(generateLookupData(defaultOption), 0))[ 2 ], 'should generate random one')
-    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ], 'should not loop with time')
+    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ], `should not loop with time: 0 - ${defaultOption.size * defaultOption.timeGap}`)
   })
 
   it('verifyCheckCode()', () => {
