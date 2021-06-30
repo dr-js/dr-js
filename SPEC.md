@@ -79,6 +79,8 @@
   - `createDoublyLinkedList`, `createNode`
 + 📄 [source/common/data/ListMap.js](source/common/data/ListMap.js)
   - `createListMap`
++ 📄 [source/common/data/LoopIndex.js](source/common/data/LoopIndex.js)
+  - `createLoopIndex`
 + 📄 [source/common/data/MapMap.js](source/common/data/MapMap.js)
   - `createMapMap`, `getInvertMapMap`
 + 📄 [source/common/data/SaveQueue.js](source/common/data/SaveQueue.js)
@@ -422,6 +424,8 @@
       - `createDoublyLinkedList`, `createNode`
     - **ListMap**
       - `createListMap`
+    - **LoopIndex**
+      - `createLoopIndex`
     - **MapMap**
       - `createMapMap`, `getInvertMapMap`
     - **SaveQueue**
