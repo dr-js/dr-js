@@ -2,10 +2,12 @@ import { strictEqual } from 'source/common/verify.js'
 import { time } from 'source/common/format.js'
 import { createStepper } from 'source/common/time.js'
 import { getSampleRange, getSample } from 'source/common/math/sample.js'
+import { encode } from './Base64.js'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
-  fromU16String, toU16String
+  fromU16String, toU16String,
+  calcSHA256ArrayBuffer
 } from './ArrayBuffer.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -61,5 +63,11 @@ describe('Common.Data.ArrayBuffer', () => {
     const arrayBufferOutput = fromU16String(string)
     info('fromU16String data', time(stepper()))
     strictEqual(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig), true)
+  })
+
+  it('calcSHA256ArrayBuffer()', async () => {
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(0))), '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(8))), 'r1Vw9aGBC3r3jK9LxwpmDw31HkK6+R1N5bIyjeDoPfw=')
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(64))), '9aX9QtFqIDAnmO9u0wmXm0MAPSMg2fDo6pgxqSdZ+0s=')
   })
 })

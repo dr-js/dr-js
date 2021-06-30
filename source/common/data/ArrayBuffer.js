@@ -1,3 +1,5 @@
+import { tryRequire } from 'source/env/tryRequire.js'
+
 const isEqualArrayBuffer = (a, b) => {
   if (a === b) return true
   if (a.byteLength !== b.byteLength) return false
@@ -73,12 +75,36 @@ const fromNodejsBuffer = (nodejsBuffer) => {
     : arrayBuffer.slice(byteOffset, byteOffset + byteLength)
 }
 
+const tryCalcSHA256ArrayBuffer = () => {
+  try { // browser // TODO: non-https site can not access window.crypto.subtle
+    const { crypto, isSecureContext } = globalThis
+    const calcSHA256ArrayBuffer = async (arrayBuffer) => crypto.subtle.digest('SHA-256', arrayBuffer)
+    if (isSecureContext && crypto.subtle.digest) return calcSHA256ArrayBuffer
+  } catch (error) { __DEV__ && console.log('[tryCalcSHA256ArrayBuffer] browser', error) }
+
+  try { // node
+    const { createHash } = tryRequire('crypto')
+    const calcSHA256ArrayBuffer = async (arrayBuffer) => { // the code is actually sync
+      const buffer = createHash('sha256').update(Buffer.from(arrayBuffer)).digest()
+      return fromNodejsBuffer(buffer)
+    }
+    if (createHash && createHash('sha256')) return calcSHA256ArrayBuffer
+  } catch (error) { __DEV__ && console.log('[tryCalcSHA256ArrayBuffer] node', error) }
+
+  return async (arrayBuffer) => { // last fallback
+    throw new Error('not supported')
+  }
+}
+
+const calcSHA256ArrayBuffer = tryCalcSHA256ArrayBuffer()
+
 export {
   isEqualArrayBuffer,
   concatArrayBuffer,
   deconcatArrayBuffer,
   fromU16String, toU16String,
   fromNodejsBuffer,
+  calcSHA256ArrayBuffer,
 
   fromU16String as fromString, toU16String as toString // TODO: DEPRECATE
 }
