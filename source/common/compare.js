@@ -1,11 +1,11 @@
 // function that accepts 2 same typed value and returns -1, 0, 1
 
-// faster, a != A
+// faster, ASCII order, a/97 > A/65, A<AA<a<aa
 const compareString = (a, b) => (a < b) ? -1
   : (a > b) ? 1
     : 0
 
-// slower, a == A
+// slower, dir listing order, a < A, a<A<aa<AA
 const compareStringLocale = (a, b) => a.localeCompare(b)
 
 // TODO: wait for support and just use Intl like: `'a10'.localeCompare('a2', undefined, { numeric: true })`
