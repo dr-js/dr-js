@@ -1,4 +1,5 @@
 import { resolve, sep } from 'path'
+import { homedir } from 'os'
 import { strictEqual, doThrow } from 'source/common/verify.js'
 import { resetDirectory } from './Directory.js'
 
@@ -15,6 +16,7 @@ import {
 
   existPath, nearestExistPath,
   toPosixPath, dropTrailingSep,
+  expandHome, resolveHome,
   createPathPrefixLock
 } from './Path.js'
 
@@ -146,6 +148,24 @@ describe('Node.Fs.Path', () => {
   it('dropTrailingSep()', async () => {
     strictEqual(dropTrailingSep(TEST_ROOT + sep) + sep, TEST_ROOT)
     strictEqual(dropTrailingSep(TEST_ROOT + sep + sep) + sep, TEST_ROOT)
+  })
+
+  it('expandHome()', async () => {
+    strictEqual(expandHome('aaa'), 'aaa')
+    strictEqual(expandHome(''), '')
+    strictEqual(expandHome('~a'), '~a')
+    strictEqual(expandHome('~.'), '~.')
+    strictEqual(expandHome('~'), homedir())
+    strictEqual(expandHome('~/'), homedir() + '/')
+    strictEqual(expandHome('~\\'), homedir() + '\\')
+    strictEqual(expandHome('~/aaaa/bbb'), homedir() + '/aaaa/bbb')
+    strictEqual(expandHome('~\\aaaa/bbb'), homedir() + '\\aaaa/bbb')
+  })
+
+  it('resolveHome()', async () => {
+    strictEqual(resolveHome('~', 'a', 'b'), resolve(homedir(), 'a/b'))
+    strictEqual(resolveHome('/a', '~/a', '~/b'), resolve(homedir(), 'b'))
+    strictEqual(resolveHome('~/a', '/b'), resolve(homedir(), '/b')) // NOTE: on win32 will get output like: "C:\\b"
   })
 
   it('createPathPrefixLock()', () => {

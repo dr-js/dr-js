@@ -1,5 +1,6 @@
 import { Stats, promises as fsAsync } from 'fs'
 import { join, resolve, dirname } from 'path'
+import { homedir } from 'os'
 
 // NOTE: default will not follow symlink, and some symlink may form a loop
 
@@ -72,6 +73,13 @@ const REGEXP_PATH_SEP_WIN32 = /\\/g
 
 const dropTrailingSep = (path) => join(path, '.') // `a/b/c/` -> `a/b/c`
 
+const expandHome = (path) => path === '~' ? homedir()
+  : REGEXP_HOME_PREFIX.test(path) ? `${homedir()}${path.slice(1)}`
+    : path
+const REGEXP_HOME_PREFIX = /^~[/\\]/
+
+const resolveHome = (...argList) => resolve(...argList.map(expandHome))
+
 const createPathPrefixLock = (rootPath) => {
   rootPath = resolve(rootPath)
   return (relativePath) => { // TODO: will silently drop path when used like `ppl('img', 'a.png')`, should add fool-proof error/check?
@@ -94,5 +102,6 @@ export {
 
   existPath, nearestExistPath,
   toPosixPath, dropTrailingSep,
+  expandHome, resolveHome,
   createPathPrefixLock
 }
