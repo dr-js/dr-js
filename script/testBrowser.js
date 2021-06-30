@@ -5,14 +5,13 @@ import { testWithPuppeteer, wrapTestScriptStringToHTML } from '@dr-js/dev/module
 import { fromPathCombo } from '@dr-js/dev/module/output.js'
 import { runMain, resolve } from '@dr-js/dev/module/main.js'
 
-import { readText } from 'source/node/fs/File.js'
+import { readText, writeText } from 'source/node/fs/File.js'
 import { withTestServer } from 'source/node/testServer.test.js'
 
 const NAME_TEST_BROWSER = 'test-browser'
+
 runMain(async (logger) => {
   const { fromRoot, fromTemp } = fromPathCombo({ PATH_TEMP: resolve(__dirname, '../.temp-gitignore') })
-
-  const PATH_TEST_BROWSER_JS = fromTemp(`${NAME_TEST_BROWSER}.js`)
 
   const mode = 'production'
   const isWatch = false
@@ -26,6 +25,10 @@ runMain(async (logger) => {
         'source/common',
         'source/browser'
       ], fromRoot, FILTER_TEST_JS_FILE)
+    },
+    extraDefine: { // remove node specific `process.*` from test
+      'process.platform': JSON.stringify('browser'),
+      'process.env': {}
     }
   })
 
@@ -33,12 +36,15 @@ runMain(async (logger) => {
   await compileWithWebpack({ config, isWatch, logger })
 
   const testTag = `DR_BROWSER_TEST[${new Date().toISOString()}]`
-  const testAsync = withTestServer(
+  const testHTML = await wrapTestScriptStringToHTML({
+    testScriptString: await readText(fromTemp(`${NAME_TEST_BROWSER}.js`)),
+    testTag
+  })
+  await writeText(fromTemp(`${NAME_TEST_BROWSER}.html`), testHTML)
+
+  const testAsync = withTestServer( // NOTE: need a server for web fetch test
     async ({ testUrl }) => testWithPuppeteer({ testUrl, testTag, logger }),
-    async () => wrapTestScriptStringToHTML({
-      testScriptString: await readText(PATH_TEST_BROWSER_JS),
-      testTag
-    })
+    async (baseUrl) => testHTML
   )
 
   await testAsync()
