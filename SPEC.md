@@ -133,6 +133,8 @@
   - `ASYNC_TASK_QUEUE_KEY_MAP`, `createAsyncTaskQueue`, `createFilterStaleAsyncTask`
 + 📄 [source/common/module/BlockChart.js](source/common/module/BlockChart.js)
   - `getBlockBar`, `getBlockChart`
++ 📄 [source/common/module/ChunkUpload.js](source/common/module/ChunkUpload.js)
+  - `packArrayBufferChunk`, `parseArrayBufferChunk`, `uploadArrayBufferByChunk`
 + 📄 [source/common/module/Event.js](source/common/module/Event.js)
   - `createEventEmitter`, `createEventTarget`, `createHub`
 + 📄 [source/common/module/Exot.js](source/common/module/Exot.js)
@@ -472,6 +474,8 @@
       - `ASYNC_TASK_QUEUE_KEY_MAP`, `createAsyncTaskQueue`, `createFilterStaleAsyncTask`
     - **BlockChart**
       - `getBlockBar`, `getBlockChart`
+    - **ChunkUpload**
+      - `packArrayBufferChunk`, `parseArrayBufferChunk`, `uploadArrayBufferByChunk`
     - **Event**
       - `createEventEmitter`, `createEventTarget`, `createHub`
     - **Exot**

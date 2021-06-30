@@ -4,11 +4,10 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { rethrowError } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
-import { fromU16String, toU16String, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
-import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
+import { parseArrayBufferChunk, uploadArrayBufferByChunk } from 'source/common/module/ChunkUpload.js'
 
-import { calcHash } from 'source/node/data/Buffer.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { writeBuffer } from 'source/node/fs/File.js'
 import { createPathPrefixLock } from 'source/node/fs/Path.js'
@@ -50,19 +49,7 @@ const createOnFileChunkUpload = async ({
     onUploadChunk, // (chunkData, chunkIndex) => {} // after chunk saved
     onUploadEnd // (chunkData) => {} // after merged file created
   }) => {
-    const [ headerArrayBuffer, chunkHashArrayBuffer, chunkArrayBuffer ] = parseChainArrayBufferPacket(fromNodejsBuffer(bufferPacket))
-    const { key, chunkByteLength, chunkIndex, chunkTotal } = JSON.parse(toU16String(headerArrayBuffer))
-    const chunkBuffer = Buffer.from(chunkArrayBuffer)
-
-    if (chunkByteLength !== chunkBuffer.length) throw new Error(`chunk length mismatch, get: ${chunkBuffer.length}, expect ${chunkByteLength}`)
-
-    if (chunkHashArrayBuffer.byteLength) {
-      const chunkHashBuffer = Buffer.from(chunkHashArrayBuffer)
-      const verifyChunkHashBuffer = calcHash(chunkBuffer, 'sha256', 'buffer')
-      if ((Buffer.compare(chunkHashBuffer, verifyChunkHashBuffer) !== 0)) {
-        throw new Error(`chunk ${chunkIndex} of ${key} hash mismatch, get: ${verifyChunkHashBuffer.toString('base64')}, expect ${chunkHashBuffer.toString('base64')}`)
-      }
-    } else if (!allowSkipHashVerify) throw new Error(`missing chunk ${chunkIndex} of ${key} hash to verify`)
+    const { chunkArrayBuffer, key, chunkIndex, chunkTotal } = await parseArrayBufferChunk(fromNodejsBuffer(bufferPacket), allowSkipHashVerify)
 
     const cacheKey = `${cacheKeyPrefix}-${key}-${chunkTotal}`
     let chunkData = chunkCacheMap.get(cacheKey)
@@ -75,8 +62,8 @@ const createOnFileChunkUpload = async ({
     }
 
     const chunkPath = resolve(chunkData.tempPath, `chunk-${chunkIndex}-${chunkTotal}`)
-    await writeBuffer(chunkPath, chunkBuffer)
-    chunkData.chunkList[ chunkIndex ] = { chunkIndex, chunkByteLength, chunkPath }
+    await writeBuffer(chunkPath, Buffer.from(chunkArrayBuffer))
+    chunkData.chunkList[ chunkIndex ] = { chunkIndex, chunkPath }
     __DEV__ && console.log('[save chunk]', chunkData.chunkList[ chunkIndex ])
     onUploadChunk && await onUploadChunk(chunkData, chunkIndex)
 
@@ -105,42 +92,30 @@ const createOnFileChunkUpload = async ({
   }
 }
 
-const CHUNK_SIZE_MAX = 1024 * 1024 // 1MB max
-
 const uploadFileByChunk = async ({
   fileBuffer, filePath, // use path for larger file
   fileSize, // optional
-  key,
-  chunkSizeMax = CHUNK_SIZE_MAX,
-  onProgress, // (uploadedSize, totalSize) => {}
-  uploadFileChunk // (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => {}
+  key, chunkSizeMax,
+  uploadFileChunk, // TODO: DEPRECATE
+  uploadChunk = uploadFileChunk, // = async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
+  onProgress // (uploadedSize, totalSize) => {}
 }) => {
   if (fileSize === undefined) fileSize = fileBuffer ? fileBuffer.length : (await fsAsync.stat(filePath)).size
-  let chunkIndex = 0
-  const chunkTotal = Math.ceil(fileSize / chunkSizeMax) || 1
-  while (chunkIndex < chunkTotal) {
-    onProgress && onProgress(chunkIndex * chunkSizeMax, fileSize)
-    const chunkSize = (chunkIndex < chunkTotal - 1)
-      ? chunkSizeMax
-      : fileSize % chunkSizeMax
-    let chunkBuffer
-    if (fileBuffer) chunkBuffer = fileBuffer.slice(chunkIndex * chunkSizeMax, chunkIndex * chunkSizeMax + chunkSize)
-    else {
-      const fileHandle = await fsAsync.open(filePath)
-      await fileHandle.read((chunkBuffer = Buffer.allocUnsafe(chunkSize)), 0, chunkSize, chunkIndex * chunkSizeMax) //  buffer, bufferOffset, readLength, readStartPosition
-      await fileHandle.close()
+  const fileHandle = fileBuffer ? undefined : await fsAsync.open(filePath)
+  const getChunk = fileBuffer
+    ? (index, chunkSize) => fromNodejsBuffer(fileBuffer.slice(index, index + chunkSize))
+    : async (index, chunkSize) => {
+      const buffer = Buffer.allocUnsafe(chunkSize)
+      await fileHandle.read(buffer, 0, chunkSize, index) //  buffer, bufferOffset, readLength, readStartPosition
+      return fromNodejsBuffer(buffer)
     }
-    const chunkArrayBuffer = fromNodejsBuffer(chunkBuffer)
-    const chunkByteLength = chunkArrayBuffer.byteLength
-    const chainArrayBufferPacket = packChainArrayBufferPacket([
-      fromU16String(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
-      fromNodejsBuffer(calcHash(chunkBuffer, 'sha256', 'buffer')), // verifyChunkHashBuffer
-      chunkArrayBuffer
-    ])
-    await uploadFileChunk(chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal })
-    chunkIndex++
-  }
-  onProgress && onProgress(fileSize, fileSize)
+  await uploadArrayBufferByChunk({
+    size: fileSize, getChunk,
+    key, chunkSizeMax,
+    uploadChunk, // = async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
+    onProgress // optional // = async (uploadedSize, totalSize) => {},
+  })
+  fileHandle && fileHandle.close()
 }
 
 export {

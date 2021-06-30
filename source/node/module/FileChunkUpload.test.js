@@ -68,9 +68,9 @@ describe('Node.Module.FileChunkUpload', () => {
       key,
       chunkSizeMax: 8 * 1024,
       onProgress: (uploadedSize, totalSize) => __DEV__ && info(` ${uploadedSize}/${totalSize}`),
-      uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: chainArrayBufferPacket })
+      uploadChunk: async (arrayBufferPacket, { key, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: arrayBufferPacket })
         .catch((error) => {
-          const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, size: ${chunkByteLength}`
+          const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, packet size: ${arrayBufferPacket.byteLength}`
           info(message, error)
           throw new Error(message)
         })
@@ -86,9 +86,9 @@ describe('Node.Module.FileChunkUpload', () => {
       key,
       chunkSizeMax: 8 * 1024,
       onProgress: (uploadedSize, totalSize) => __DEV__ && info(` ${uploadedSize}/${totalSize}`),
-      uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: chainArrayBufferPacket })
+      uploadChunk: async (arrayBufferPacket, { key, chunkIndex, chunkTotal }) => fetchLikeRequest(testFileChunkUploadUrl, { method: 'POST', body: arrayBufferPacket })
         .catch((error) => {
-          const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, size: ${chunkByteLength}`
+          const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, packet size: ${arrayBufferPacket.byteLength}`
           info(message, error)
           throw new Error(message)
         })

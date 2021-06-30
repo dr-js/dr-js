@@ -37,8 +37,8 @@ const initUploader = (
         fileBlob,
         key,
         onProgress,
-        uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => withRetryAsync(
-          async () => authFetch(URL_FILE_UPLOAD, { method: 'POST', body: chainArrayBufferPacket }),
+        uploadChunk: async (arrayBufferPacket, { key, chunkIndex, chunkTotal }) => withRetryAsync(
+          async () => authFetch(URL_FILE_UPLOAD, { method: 'POST', body: arrayBufferPacket }),
           4, // maxRetry,
           1000 // wait
         )

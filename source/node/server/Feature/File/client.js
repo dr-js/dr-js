@@ -30,9 +30,9 @@ const fileUpload = async ({
     fileBuffer, filePath, fileSize,
     key,
     onProgress,
-    uploadFileChunk: async (chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal }) => withRetryAsync(
-      async () => authFetch(urlFileUpload, { method: 'POST', body: chainArrayBufferPacket, timeout }).catch((error) => {
-        const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, size: ${chunkByteLength}`
+    uploadChunk: async (arrayBufferPacket, { key, chunkIndex, chunkTotal }) => withRetryAsync(
+      async () => authFetch(urlFileUpload, { method: 'POST', body: arrayBufferPacket, timeout }).catch((error) => {
+        const message = `[ERROR][Upload] upload chunk ${chunkIndex}/${chunkTotal} of ${key}, packet size: ${arrayBufferPacket.byteLength}`
         log && log(message, error)
         throw new Error(message)
       }),
