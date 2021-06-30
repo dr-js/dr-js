@@ -4,7 +4,7 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { rethrowError } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
-import { toString as arrayBufferToString, fromString as arrayBufferFromString, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
+import { fromU16String, toU16String, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
 import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 
@@ -51,7 +51,7 @@ const createOnFileChunkUpload = async ({
     onUploadEnd // (chunkData) => {} // after merged file created
   }) => {
     const [ headerArrayBuffer, chunkHashArrayBuffer, chunkArrayBuffer ] = parseChainArrayBufferPacket(fromNodejsBuffer(bufferPacket))
-    const { key, chunkByteLength, chunkIndex, chunkTotal } = JSON.parse(arrayBufferToString(headerArrayBuffer))
+    const { key, chunkByteLength, chunkIndex, chunkTotal } = JSON.parse(toU16String(headerArrayBuffer))
     const chunkBuffer = Buffer.from(chunkArrayBuffer)
 
     if (chunkByteLength !== chunkBuffer.length) throw new Error(`chunk length mismatch, get: ${chunkBuffer.length}, expect ${chunkByteLength}`)
@@ -133,7 +133,7 @@ const uploadFileByChunk = async ({
     const chunkArrayBuffer = fromNodejsBuffer(chunkBuffer)
     const chunkByteLength = chunkArrayBuffer.byteLength
     const chainArrayBufferPacket = packChainArrayBufferPacket([
-      arrayBufferFromString(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
+      fromU16String(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
       fromNodejsBuffer(calcHash(chunkBuffer, 'sha256', 'buffer')), // verifyChunkHashBuffer
       chunkArrayBuffer
     ])

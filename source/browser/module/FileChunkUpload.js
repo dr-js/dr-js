@@ -1,4 +1,4 @@
-import { fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer.js'
+import { fromU16String } from 'source/common/data/ArrayBuffer.js'
 import { packChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
 import { parseBlobAsArrayBuffer } from 'source/browser/data/Blob.js'
 
@@ -24,7 +24,7 @@ const uploadFileByChunk = async ({
     const chunkArrayBuffer = await parseBlobAsArrayBuffer(fileBlob.slice(chunkIndex * chunkSizeMax, chunkIndex * chunkSizeMax + chunkSize))
     const chunkByteLength = chunkArrayBuffer.byteLength
     const chainArrayBufferPacket = packChainArrayBufferPacket([
-      arrayBufferFromString(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
+      fromU16String(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
       isSecureContext ? await crypto.subtle.digest('SHA-256', chunkArrayBuffer) : new ArrayBuffer(0), // verifyChunkHashBuffer // TODO: non-https site can not access window.crypto.subtle
       chunkArrayBuffer
     ])

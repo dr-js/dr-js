@@ -26,13 +26,11 @@ const deconcatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0
   return arrayBuffer
 })
 
-// NOTE: not safe for localStorage (OK in Chrome, but Firefox will filter as UTF-16 on save, and load with altered bits)
-// NOTE: string is considered as Uint16ArrayBuffer
-// targeted usage:
-//  - change data form and later read back, like during network transmitting
-//  - do not send the string though UTF-16 filter
+// NOTE: not safe for localStorage (OK in Chrome, but Firefox will filter string as UTF-16 on save, and load with different result)
+// NOTE: unknown origin U16String should be considered as Uint16ArrayBuffer
+// targeted usage: change data form and later read back, like during network transmitting (JSON -> ArrayBuffer -> binary packet)
 // string to arrayBuffer will use more space (in string unicode encode use 8bit instead of 16bit for char like [a-z])
-// but invalid UTF-16 char does not get changed (like 57236 -> 65533 in TextEncoder/TextDecoder/Buffer.toString)
+// invalid UTF-16 char will be kept in output U16String, unlike the 57236 -> 65533 mapping in `TextEncoder/TextDecoder/Buffer.toString`
 const PREFIX_ODD = Uint8Array.of(0x00)
 const PREFIX_EVEN = Uint8Array.of(0xff, 0xff)
 const CHUNK_SIZE = 3 * 4 * 1024 // use chunk to compress array to string early, to save memory
@@ -41,7 +39,7 @@ const encodeU16Chunk = (dataView, index, indexMax) => {
   for (; index < indexMax; index++) charCodeList.push(String.fromCharCode(dataView.getUint16(index * 2, false)))
   return charCodeList.join('')
 }
-const toString = (arrayBuffer) => {
+const toU16String = (arrayBuffer) => { // NOTE: if the source string is not UTF-16, caution not send the string though API with UTF-16 filter
   const packArrayBuffer = concatArrayBuffer([
     arrayBuffer.byteLength % 2 ? PREFIX_ODD : PREFIX_EVEN,
     arrayBuffer
@@ -54,7 +52,7 @@ const toString = (arrayBuffer) => {
   return stringList.join('')
 }
 
-const fromString = (string = '') => {
+const fromU16String = (string = '') => {
   const dataView = new DataView(new ArrayBuffer(string.length * 2))
   for (let index = 0, indexMax = string.length; index < indexMax; index++) {
     dataView.setUint16(index * 2, string.charCodeAt(index), false)
@@ -79,6 +77,8 @@ export {
   isEqualArrayBuffer,
   concatArrayBuffer,
   deconcatArrayBuffer,
-  fromString, toString,
-  fromNodejsBuffer
+  fromU16String, toU16String,
+  fromNodejsBuffer,
+
+  fromU16String as fromString, toU16String as toString // TODO: DEPRECATE
 }

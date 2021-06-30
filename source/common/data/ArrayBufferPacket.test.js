@@ -1,5 +1,5 @@
 import { strictEqual } from 'source/common/verify.js'
-import { isEqualArrayBuffer, fromString } from './ArrayBuffer.js'
+import { isEqualArrayBuffer, fromU16String } from './ArrayBuffer.js'
 import {
   HEADER_BYTE_SIZE,
   packArrayBufferPacket,
@@ -13,13 +13,13 @@ const { describe, it } = globalThis
 describe('Common.Data.ArrayBufferPacket', () => {
   const headerString = 'header-array-buffer'
   const payloadString = 'payload-array-buffer'
-  const headerArrayBuffer = fromString(headerString)
-  const payloadArrayBuffer = fromString(payloadString)
+  const headerArrayBuffer = fromU16String(headerString)
+  const payloadArrayBuffer = fromU16String(payloadString)
   const arrayBufferList = [
-    fromString('0'),
-    fromString('1'),
-    fromString('AAA'),
-    fromString('BBB')
+    fromU16String('0'),
+    fromU16String('1'),
+    fromU16String('AAA'),
+    fromU16String('BBB')
   ]
 
   it('packArrayBufferPacket()', () => {
@@ -35,14 +35,14 @@ describe('Common.Data.ArrayBufferPacket', () => {
 
   it('parseArrayBufferPacket()', () => {
     {
-      const [ parsedHeaderString, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString))
-      strictEqual(headerString, parsedHeaderString)
+      const [ headerU16String, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString))
+      strictEqual(headerString, headerU16String)
       strictEqual(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload), true)
     }
 
     {
-      const [ parsedHeaderString, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString, payloadArrayBuffer))
-      strictEqual(headerString, parsedHeaderString)
+      const [ headerU16String, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString, payloadArrayBuffer))
+      strictEqual(headerString, headerU16String)
       strictEqual(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload), true)
     }
   })

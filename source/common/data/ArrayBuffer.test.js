@@ -5,7 +5,7 @@ import { getSampleRange, getSample } from 'source/common/math/sample.js'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
-  fromString, toString
+  fromU16String, toU16String
 } from './ArrayBuffer.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -45,21 +45,21 @@ describe('Common.Data.ArrayBuffer', () => {
     ), true)
   })
 
-  it('fromString(),toString()', () => {
-    strictEqual(string0, toString(fromString(string0)))
-    strictEqual(string1, toString(fromString(string1)))
+  it('fromU16String(),toU16String()', () => {
+    strictEqual(string0, toU16String(fromU16String(string0)))
+    strictEqual(string1, toU16String(fromU16String(string1)))
 
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromU16String(toU16String(arrayBuffer0))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromU16String(toU16String(arrayBuffer1))), true)
   })
-  it('[stress] fromString(),toString()', () => {
+  it('[stress] fromU16String(),toU16String()', () => {
     const stepper = createStepper()
     const arrayBufferBig = concatArrayBuffer(getSample(() => arrayBuffer0, 1024)) // 1024 * 65536 = 64MiB
     info('done build data', time(stepper()))
-    const string = toString(arrayBufferBig)
-    info('toString data', time(stepper()))
-    const arrayBufferOutput = fromString(string)
-    info('fromString data', time(stepper()))
+    const string = toU16String(arrayBufferBig)
+    info('toU16String data', time(stepper()))
+    const arrayBufferOutput = fromU16String(string)
+    info('fromU16String data', time(stepper()))
     strictEqual(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig), true)
   })
 })
