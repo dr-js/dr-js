@@ -1,5 +1,5 @@
 import { promises as fsAsync } from 'fs'
-import { toArrayBuffer } from 'source/node/data/Buffer.js'
+import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 
 const readBuffer = async (path) => fsAsync.readFile(path)
 const writeBuffer = async (path, bufferAlike) => fsAsync.writeFile(path, bufferAlike)
@@ -10,7 +10,7 @@ const editBuffer = async (
   pathTo = pathFrom // for in-place edit
 ) => writeBuffer(pathTo, await editFunc(await readBuffer(pathFrom)))
 
-const readArrayBuffer = async (path) => toArrayBuffer(await readBuffer(path))
+const readArrayBuffer = async (path) => fromNodejsBuffer(await readBuffer(path))
 const writeArrayBuffer = async (path, arrayBuffer) => writeBuffer
 const appendArrayBuffer = async (path, arrayBuffer) => appendBuffer
 const editArrayBuffer = async (

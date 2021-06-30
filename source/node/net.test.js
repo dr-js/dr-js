@@ -3,8 +3,7 @@ import { unlinkSync, writeFileSync, createReadStream } from 'fs'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { percent } from 'source/common/format.js'
 import { stringifyEqual, strictEqual } from 'source/common/verify.js'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
-import { toArrayBuffer } from 'source/node/data/Buffer.js'
+import { isEqualArrayBuffer, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { ping, fetchLikeRequest } from './net.js'
 import { BUFFER_SCRIPT, withTestServer } from './testServer.test.js'
@@ -65,7 +64,7 @@ describe('Node.Net', () => {
     ), 0)
     strictEqual(isEqualArrayBuffer(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).arrayBuffer(),
-      toArrayBuffer(Buffer.from('TEST BUFFER'))
+      fromNodejsBuffer(Buffer.from('TEST BUFFER'))
     ), true)
     strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).text(),
@@ -107,7 +106,7 @@ describe('Node.Net', () => {
   it('fetchLikeRequest() post', withTestServer(async ({ baseUrl }) => {
     const BODY_STRING = '[test-post-body]'.repeat(64)
     const BODY_BUFFER = Buffer.from(BODY_STRING)
-    const BODY_ARRAY_BUFFER = toArrayBuffer(Buffer.from(BODY_STRING))
+    const BODY_ARRAY_BUFFER = fromNodejsBuffer(Buffer.from(BODY_STRING))
 
     stringifyEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: BODY_STRING, onProgressUpload: onProgress })).json(),

@@ -65,10 +65,20 @@ const fromString = (string = '') => {
   )
 }
 
+// NOTE: why check & slice: in Node.js most small Buffers are views on a bigger shared ArrayBuffer.
+// https://nodejs.org/api/buffer.html#buffer_buf_buffer
+// https://github.com/nodejs/node/issues/3580
+const fromNodejsBuffer = (nodejsBuffer) => {
+  const { buffer: arrayBuffer, byteOffset, byteLength } = nodejsBuffer
+  return arrayBuffer.byteLength === byteLength
+    ? arrayBuffer
+    : arrayBuffer.slice(byteOffset, byteOffset + byteLength)
+}
+
 export {
   isEqualArrayBuffer,
   concatArrayBuffer,
   deconcatArrayBuffer,
-  fromString,
-  toString
+  fromString, toString,
+  fromNodejsBuffer
 }

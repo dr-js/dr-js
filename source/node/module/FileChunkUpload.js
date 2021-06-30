@@ -4,11 +4,11 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { rethrowError } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
-import { toString as arrayBufferToString, fromString as arrayBufferFromString } from 'source/common/data/ArrayBuffer.js'
+import { toString as arrayBufferToString, fromString as arrayBufferFromString, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { packChainArrayBufferPacket, parseChainArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
 import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 
-import { toArrayBuffer, calcHash } from 'source/node/data/Buffer.js'
+import { calcHash } from 'source/node/data/Buffer.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { writeBuffer } from 'source/node/fs/File.js'
 import { createPathPrefixLock } from 'source/node/fs/Path.js'
@@ -50,7 +50,7 @@ const createOnFileChunkUpload = async ({
     onUploadChunk, // (chunkData, chunkIndex) => {} // after chunk saved
     onUploadEnd // (chunkData) => {} // after merged file created
   }) => {
-    const [ headerArrayBuffer, chunkHashArrayBuffer, chunkArrayBuffer ] = parseChainArrayBufferPacket(toArrayBuffer(bufferPacket))
+    const [ headerArrayBuffer, chunkHashArrayBuffer, chunkArrayBuffer ] = parseChainArrayBufferPacket(fromNodejsBuffer(bufferPacket))
     const { key, chunkByteLength, chunkIndex, chunkTotal } = JSON.parse(arrayBufferToString(headerArrayBuffer))
     const chunkBuffer = Buffer.from(chunkArrayBuffer)
 
@@ -130,11 +130,11 @@ const uploadFileByChunk = async ({
       await fileHandle.read((chunkBuffer = Buffer.allocUnsafe(chunkSize)), 0, chunkSize, chunkIndex * chunkSizeMax) //  buffer, bufferOffset, readLength, readStartPosition
       await fileHandle.close()
     }
-    const chunkArrayBuffer = toArrayBuffer(chunkBuffer)
+    const chunkArrayBuffer = fromNodejsBuffer(chunkBuffer)
     const chunkByteLength = chunkArrayBuffer.byteLength
     const chainArrayBufferPacket = packChainArrayBufferPacket([
       arrayBufferFromString(JSON.stringify({ key, chunkByteLength, chunkIndex, chunkTotal })), // headerArrayBuffer
-      toArrayBuffer(calcHash(chunkBuffer, 'sha256', 'buffer')), // verifyChunkHashBuffer
+      fromNodejsBuffer(calcHash(chunkBuffer, 'sha256', 'buffer')), // verifyChunkHashBuffer
       chunkArrayBuffer
     ])
     await uploadFileChunk(chainArrayBufferPacket, { key, chunkByteLength, chunkIndex, chunkTotal })

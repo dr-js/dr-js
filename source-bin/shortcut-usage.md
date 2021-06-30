@@ -52,10 +52,10 @@ And some helpful quick composed shell scripts:
   > ```shell script
   > dr-js -e "$(cat <<- 'EOM'
   >   const { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } = require('@dr-js/core/library/common/module/TimedLookup')
-  >   const { toArrayBuffer } = require('@dr-js/core/library/node/data/Buffer')
+  >   const { fromNodejsBuffer } = require('@dr-js/core/library/common/data/ArrayBuffer')
   >   const { readFileSync } = require('fs')
   >   const [ mode, ...extraArgv ] = evalArgv
-  >   const loadTimedLookup = () => parseDataArrayBuffer(toArrayBuffer(readFileSync(evalOption.getFirst('root'))))
+  >   const loadTimedLookup = () => parseDataArrayBuffer(fromNodejsBuffer(readFileSync(evalOption.getFirst('root'))))
   >   switch (mode) {
   >     case 'file-generate': case 'fg': {
   >       const [ tag, size, tokenSize, timeGap, info = null ] = extraArgv

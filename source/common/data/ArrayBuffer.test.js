@@ -5,8 +5,7 @@ import { getSampleRange, getSample } from 'source/common/math/sample.js'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
-  fromString,
-  toString
+  fromString, toString
 } from './ArrayBuffer.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -46,15 +45,14 @@ describe('Common.Data.ArrayBuffer', () => {
     ), true)
   })
 
-  it('StringArrayBuffer', () => {
+  it('fromString(),toString()', () => {
     strictEqual(string0, toString(fromString(string0)))
     strictEqual(string1, toString(fromString(string1)))
 
     strictEqual(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
     strictEqual(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
   })
-
-  it('stress', () => {
+  it('[stress] fromString(),toString()', () => {
     const stepper = createStepper()
     const arrayBufferBig = concatArrayBuffer(getSample(() => arrayBuffer0, 1024)) // 1024 * 65536 = 64MiB
     info('done build data', time(stepper()))
