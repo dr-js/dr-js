@@ -3,8 +3,8 @@ import { resolve, dirname } from 'path'
 import { includes, strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { objectSortKey } from 'source/common/mutable/Object.js'
 import { packGz64, packBr64 } from 'source/node/data/Z64String.js'
-import { resetDirectory } from 'source/node/file/Directory.js'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 import { createOptionParser } from './parser.js'
 
 import {

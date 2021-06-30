@@ -2,9 +2,9 @@ import { resolve, relative } from 'path'
 import { promises as fsAsync } from 'fs'
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { compareString } from 'source/common/compare.js'
-import { PATH_TYPE, getPathLstat, toPosixPath } from 'source/node/file/Path.js'
-import { createDirectory, getDirInfoTree, resetDirectory } from 'source/node/file/Directory.js'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { PATH_TYPE, getPathLstat, toPosixPath } from 'source/node/fs/Path.js'
+import { createDirectory, getDirInfoTree, resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 
 const TEST_ROOT = resolve(__dirname, 'test-root-gitignore/')
 const fromRoot = (...args) => resolve(TEST_ROOT, ...args)

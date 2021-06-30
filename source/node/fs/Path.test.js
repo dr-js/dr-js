@@ -53,7 +53,7 @@ after(async () => {
   await deletePath(TEST_ROOT)
 })
 
-describe('Node.File.Path', () => {
+describe('Node.Fs.Path', () => {
   it('getPathLstat()', async () => {
     strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_FILE)), PATH_TYPE.File)
     strictEqual(getPathTypeFromStat(await getPathLstat(SOURCE_DIRECTORY)), PATH_TYPE.Directory)

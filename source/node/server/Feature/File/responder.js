@@ -1,4 +1,4 @@
-import { createPathPrefixLock } from 'source/node/file/Path.js'
+import { createPathPrefixLock } from 'source/node/fs/Path.js'
 import { responderEndWithStatusCode } from 'source/node/server/Responder/Common.js'
 import { createResponderServeStatic } from 'source/node/server/Responder/ServeStatic.js'
 

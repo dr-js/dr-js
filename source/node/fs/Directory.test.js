@@ -59,7 +59,7 @@ after(async () => {
   await deleteDirectory(TEST_ROOT)
 })
 
-describe('Node.File.Directory', () => {
+describe('Node.Fs.Directory', () => {
   it('getDirInfoList()', async () => {
     await doThrowAsync(() => getDirInfoList(invalidPath))
     await doThrowAsync(() => getDirInfoList(SOURCE_FILE))

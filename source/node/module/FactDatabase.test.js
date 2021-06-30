@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
-import { getFileList } from 'source/node/file/Directory.js'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { getFileList } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 
 import {
   createFactDatabaseExot,

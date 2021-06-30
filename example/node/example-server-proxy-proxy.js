@@ -1,7 +1,7 @@
 const { resolve } = require('path')
 const { createServer: createHttpServer } = require('http')
 
-const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path.js')
+const { createPathPrefixLock } = require('../../output-gitignore/library/node/fs/Path.js')
 const { requestHttp } = require('../../output-gitignore/library/node/net.js')
 const { readableStreamToBufferAsync } = require('../../output-gitignore/library/node/data/Stream.js')
 const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server.js')

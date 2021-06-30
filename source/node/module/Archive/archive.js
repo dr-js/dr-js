@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'path'
 import { promises as fsAsync } from 'fs'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 
 import { check as check7z, verify as verify7z, compressArgs, extractArgs } from './7z.js'

@@ -4,7 +4,7 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { constants, createGzip, createGunzip, createBrotliCompress, createBrotliDecompress } from 'zlib'
 import { getRandomId } from 'source/common/math/random.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
-import { createDirectory, deleteDirectory } from 'source/node/file/Directory.js'
+import { createDirectory, deleteDirectory } from 'source/node/fs/Directory.js'
 
 const REGEXP_TGZ = /\.t(?:ar\.)?gz$/
 const REGEXP_TBR = /\.t(?:ar\.)?br$/

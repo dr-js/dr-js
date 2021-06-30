@@ -10,9 +10,9 @@ import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 
 import { toArrayBuffer, calcHash } from 'source/node/data/Buffer.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
-import { createPathPrefixLock } from 'source/node/file/Path.js'
-import { createDirectory } from 'source/node/file/Directory.js'
-import { modifyDelete, modifyDeleteForce } from 'source/node/file/Modify.js'
+import { createPathPrefixLock } from 'source/node/fs/Path.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete, modifyDeleteForce } from 'source/node/fs/Modify.js'
 
 // TODO: add `fileWebSocketUpload`
 

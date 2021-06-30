@@ -5,7 +5,7 @@ import { withRetryAsync } from 'source/common/function.js'
 import { percent, binary } from 'source/common/format.js'
 import { lazyEncodeURI } from 'source/common/string.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 
 import { uploadFileByChunk } from 'source/node/module/FileChunkUpload.js'
 

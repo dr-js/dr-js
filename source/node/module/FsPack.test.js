@@ -4,8 +4,8 @@ import { createGzip } from 'zlib'
 import { stringifyEqual } from 'source/common/verify.js'
 import { getSampleRange } from 'source/common/math/sample.js'
 import { compareString } from 'source/common/compare.js'
-import { createDirectory, resetDirectory } from 'source/node/file/Directory.js'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { createDirectory, resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 
 import {

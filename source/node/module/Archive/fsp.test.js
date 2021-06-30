@@ -1,5 +1,5 @@
 import { resolve, basename } from 'path'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 
 import {
   fromRoot, setupRoot, clearRoot,

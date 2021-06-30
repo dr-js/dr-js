@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 import { resetDirectory } from '@dr-js/dev/module/node/file.js'
 import { dumpAsync } from './RuntimeDump.js'
 

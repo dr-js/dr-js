@@ -12,8 +12,8 @@ import {
   ChipSyncBasic,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet.js'
-import { resetDirectory } from 'source/node/file/Directory.js'
-import { modifyDelete } from 'source/node/file/Modify.js'
+import { resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 
 import {
   isReadableStream, isWritableStream,

@@ -7,7 +7,7 @@ import { tryParseJSONObject } from 'source/common/data/function.js'
 import { createStateStore } from 'source/common/immutable/StateStore.js'
 
 import { readlineOfStreamAsync } from 'source/node/data/Stream.js'
-import { getDirInfoList } from 'source/node/file/Directory.js'
+import { getDirInfoList } from 'source/node/fs/Directory.js'
 import { createLoggerExot } from 'source/node/module/Logger.js'
 
 // lightweight log-based database

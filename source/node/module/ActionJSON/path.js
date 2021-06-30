@@ -3,9 +3,9 @@ import { promises as fsAsync } from 'fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { objectMap } from 'source/common/immutable/Object.js'
-import { PATH_TYPE, getPathStat, existPath, toPosixPath, createPathPrefixLock } from 'source/node/file/Path.js'
-import { getDirInfoList, getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/file/Directory.js'
-import { modifyRename, modifyCopy, modifyDelete } from 'source/node/file/Modify.js'
+import { PATH_TYPE, getPathStat, existPath, toPosixPath, createPathPrefixLock } from 'source/node/fs/Path.js'
+import { getDirInfoList, getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/fs/Directory.js'
+import { modifyRename, modifyCopy, modifyDelete } from 'source/node/fs/Modify.js'
 
 const PATH_VISIBLE = 'path.visible'
 const PATH_STAT = 'path.stat'

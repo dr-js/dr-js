@@ -10,7 +10,7 @@ import {
 } from 'v8'
 
 import { getRandomId } from 'source/common/math/random.js'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 
 const getV8Extra = () => ({
   date: new Date().toISOString(),

@@ -1,6 +1,6 @@
 import { resolve, basename } from 'path'
 import { strictEqual } from 'source/common/verify.js'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
 

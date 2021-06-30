@@ -31,7 +31,7 @@ after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 
-describe('Node.File.Modify', () => {
+describe('Node.Fs.Modify', () => {
   it('copy/rename/delete File', async () => {
     await modifyCopy(SOURCE_FILE, filePath0)
     strictEqual(getPathTypeFromStat(await getPathLstat(filePath0)), PATH_TYPE.File)

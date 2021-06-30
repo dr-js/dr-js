@@ -3,8 +3,8 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { bufferToReadableStream, quickRunletFromStream } from 'source/node/data/Stream.js'
-import { PATH_TYPE, toPosixPath } from 'source/node/file/Path.js'
-import { getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/file/Directory.js'
+import { PATH_TYPE, toPosixPath } from 'source/node/fs/Path.js'
+import { getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/fs/Directory.js'
 
 // TODO: block symlink with error on win32 since it by default cannot be created?
 

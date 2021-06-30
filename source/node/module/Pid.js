@@ -2,7 +2,7 @@ import { dirname } from 'path'
 import { unlinkSync, readFileSync, writeFileSync } from 'fs'
 import { catchSync } from 'source/common/error.js'
 
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 import { addExitListenerSync } from 'source/node/system/ExitListener.js'
 import { isPidExist } from 'source/node/system/Process.js'
 

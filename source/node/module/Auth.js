@@ -12,7 +12,7 @@ import { getEntityTagByContentHash } from 'source/node/module/EntityTag.js'
 
 import { fetchLikeRequest } from 'source/node/net.js'
 import { toArrayBuffer } from 'source/node/data/Buffer.js'
-import { createPathPrefixLock } from 'source/node/file/Path.js'
+import { createPathPrefixLock } from 'source/node/fs/Path.js'
 
 const saveAuthFile = (pathFile, timedLookupData) => fsAsync.writeFile(pathFile, Buffer.from(packDataArrayBuffer(timedLookupData)))
 const loadAuthFile = async (pathFile) => parseDataArrayBuffer(toArrayBuffer(await fsAsync.readFile(pathFile)))

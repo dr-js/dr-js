@@ -1,8 +1,8 @@
 const { resolve } = require('path')
 const { promises: fsAsync } = require('fs')
-const { createFileWatcherExot } = require('../../output-gitignore/library/node/file/Watch.js')
-const { createDirectory } = require('../../output-gitignore/library/node/file/Directory.js')
-const { modifyDeleteForce } = require('../../output-gitignore/library/node/file/Modify.js')
+const { createFileWatcherExot } = require('../../output-gitignore/library/node/fs/Watch.js')
+const { createDirectory } = require('../../output-gitignore/library/node/fs/Directory.js')
+const { modifyDeleteForce } = require('../../output-gitignore/library/node/fs/Modify.js')
 
 const TEMP_PATH = resolve(__dirname, 'file-watcher-gitignore')
 

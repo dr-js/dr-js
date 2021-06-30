@@ -1,6 +1,6 @@
 const { resolve } = require('path')
 
-const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path.js')
+const { createPathPrefixLock } = require('../../output-gitignore/library/node/fs/Path.js')
 const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server.js')
 const { responderEnd, createResponderLog, createResponderLogEnd } = require('../../output-gitignore/library/node/server/Responder/Common.js')
 const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router.js')

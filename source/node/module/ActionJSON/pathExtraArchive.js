@@ -1,5 +1,5 @@
 import { dirname } from 'path'
-import { createDirectory } from 'source/node/file/Directory.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 
 import { check as checkAuto, compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'

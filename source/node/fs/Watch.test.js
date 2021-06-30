@@ -37,7 +37,7 @@ after(async () => {
   await modifyDelete(TEST_ROOT)
 })
 
-describe('Node.File.Watch', () => {
+describe('Node.Fs.Watch', () => {
   describe('createFileWatcher()', () => {
     it('file content change', createWatcherTest('file-content', './file', async ({ fromTest, path, watcherExot }) => {
       let resultChangeState
