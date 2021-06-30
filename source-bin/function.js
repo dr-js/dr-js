@@ -92,9 +92,8 @@ const sharedMode = async ({
   // patchModulePath overwrite, so more patch path can be added
   patchMP = patchModulePath,
 
-  // fetch overwrite for `@dr-js/dev` to add http-proxy support
-  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
-  fetchUA = fetchUserAgent
+  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: no need to share
+  fetchUA = fetchUserAgent // TODO: DEPRECATE: no need to share
 }) => {
   switch (modeName) {
     case 'eval': {
@@ -111,7 +110,7 @@ const sharedMode = async ({
       await patchMP()
       return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
 
-    case 'fetch': {
+    case 'fetch': { // TODO: DEPRECATE: no need to share
       let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
