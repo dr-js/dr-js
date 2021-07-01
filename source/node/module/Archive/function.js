@@ -49,8 +49,8 @@ const extractGzBrFileAsync = async (fileFrom, fileTo, isGzip = REGEXP_GZ.test(fi
   createWriteStream(fileTo)
 )
 
-const withTempPath = async (
-  pathTemp = resolve(tmpdir(), getRandomId('dr-node-')),
+const withTempPath = async ( // TODO: DEPRECATE: not suitable for other use
+  pathTemp = resolve(tmpdir(), getRandomId('dr-js-')),
   asyncFunc,
   pathFrom, pathTo
 ) => {
@@ -64,5 +64,5 @@ export {
   isBufferGzip, isFileGzip, createGzipMax, createBrotliCompressMax,
   REGEXP_GZ, REGEXP_BR, REGEXP_GZBR,
   compressGzBrFileAsync, extractGzBrFileAsync,
-  withTempPath
+  withTempPath // TODO: DEPRECATE: not suitable for other use
 }

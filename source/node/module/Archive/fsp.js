@@ -1,6 +1,7 @@
 import { resolve } from 'path'
+import { withTempDirectory } from 'source/node/fs/Directory.js'
 import { initFsPack, saveFsPack, loadFsPack, appendFromPath, unpackToPath } from 'source/node/module/FsPack.js'
-import { REGEXP_GZBR, compressGzBrFileAsync, extractGzBrFileAsync, withTempPath } from './function.js'
+import { REGEXP_GZBR, compressGzBrFileAsync, extractGzBrFileAsync } from './function.js'
 
 const REGEXP_FSP = /\.(?:fsp|fsp\.gz|fsp\.br)$/
 
@@ -14,14 +15,14 @@ const extractFspAsync = async (sourceFile, outputPath) => {
   await unpackToPath(fsPack, outputPath)
 }
 
-const compressFspGzBrAsync = async (sourceDirectory, outputFile, pathTemp) => withTempPath(pathTemp, async (sourceDirectory, outputFile, pathTemp) => {
+const compressFspGzBrAsync = async (sourceDirectory, outputFile, pathTemp) => withTempDirectory(async (pathTemp) => {
   await compressFspAsync(sourceDirectory, resolve(pathTemp, 'archive.fsp'))
   await compressGzBrFileAsync(resolve(pathTemp, 'archive.fsp'), outputFile)
-}, sourceDirectory, outputFile)
-const extractFspGzBrAsync = async (sourceFile, outputPath, pathTemp) => withTempPath(pathTemp, async (sourceFile, outputPath, pathTemp) => {
+}, pathTemp)
+const extractFspGzBrAsync = async (sourceFile, outputPath, pathTemp) => withTempDirectory(async (pathTemp) => {
   await extractGzBrFileAsync(sourceFile, resolve(pathTemp, 'archive.fsp'))
   await extractFspAsync(resolve(pathTemp, 'archive.fsp'), outputPath)
-}, sourceFile, outputPath)
+}, pathTemp)
 
 // for `.fsp|.fsp.gz|.fsp.br`
 const compressAsync = async (sourceDirectory, outputFile, pathTemp) => (REGEXP_GZBR.test(outputFile) ? compressFspGzBrAsync : compressFspAsync)(sourceDirectory, outputFile, pathTemp)
