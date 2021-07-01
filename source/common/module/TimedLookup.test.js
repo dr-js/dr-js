@@ -1,6 +1,7 @@
 import { strictEqual, notStrictEqual, doThrow } from 'source/common/verify.js'
 import { getTimestamp } from 'source/common/time.js'
 import { isObjectContain } from 'source/common/check.js'
+import { withRepeat } from 'source/common/function.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import {
   verifyOption,
@@ -66,7 +67,20 @@ describe('Common.Module.TimedLookup', () => {
     notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.timeGap))[ 2 ])
 
     notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(generateLookupData(defaultOption), 0))[ 2 ], 'should generate random one')
-    notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ], `should not loop with time: 0 - ${defaultOption.size * defaultOption.timeGap}`)
+
+    withRepeat((looped, count) => {
+      const defaultLookupData = generateLookupData(defaultOption)
+      notStrictEqual(
+        parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
+        parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ],
+        `should not loop with time: 0 - ${defaultOption.size * defaultOption.timeGap} [${looped}/${count}]`
+      )
+      notStrictEqual(
+        parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
+        parseCheckCode(generateCheckCode(defaultLookupData, (defaultOption.size - 32) * defaultOption.timeGap))[ 2 ],
+        `should not loop with time: 0 - ${(defaultOption.size - 32) * defaultOption.timeGap} [${looped}/${count}]`
+      )
+    }, 128)
   })
 
   it('verifyCheckCode()', () => {

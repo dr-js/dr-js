@@ -26,7 +26,7 @@ const calcCode = (size, tokenSize, dataView, seed = 0) => {
 
 const verifyOption = ({
   tag = getTimestamp().toString(36), // /^\w*$/ only, public visible, set a long tag will cause long checkCode
-  size = 64 * 1024, // in byte, 32 based, min 1024byte
+  size = 64 * 1024 + 32, // in byte, 32 based, min 1024byte // NOTE: add small offset so `calcCode` will be more random
   tokenSize = 8, // in byte, min 2byte, max 13byte (limited by calc step `Math.pow(16, tokenSize)`)
   timeGap = 30, // in sec, min 1sec, set amount of client-server time diff is accepted
   info = null // extra data, any JSON value, can be used for marking what this is for
