@@ -198,7 +198,7 @@
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcherExot`
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
-  - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
+  - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
   - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
@@ -550,7 +550,7 @@
       - `createFileWatcherExot`
   - **Fs**
     - **Directory**
-      - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
+      - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
     - **File**
       - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
     - **Modify**

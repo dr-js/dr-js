@@ -1,5 +1,8 @@
 import { join, dirname, basename } from 'path'
 import { promises as fsAsync } from 'fs'
+import { tmpdir } from 'os'
+import { catchAsync } from 'source/common/error.js'
+import { getRandomId } from 'source/common/math/random.js'
 import { createTreeBreadthFirstSearchAsync, createTreeBottomUpSearchAsync } from 'source/common/data/Tree.js'
 import { STAT_ERROR, PATH_TYPE, getPathStat, getPathTypeFromStat, copyPath, renamePath, deletePath, dropTrailingSep } from './Path.js'
 
@@ -89,6 +92,17 @@ const resetDirectory = async (path, pathStat) => {
   } else await deleteDirInfoTree(await getDirInfoTree(path, pathStat)) // delete all content
 }
 
+const withTempDirectory = async (
+  asyncFunc, // = async (pathTemp) => {}
+  pathTemp = join(tmpdir(), 'dr-js', getRandomId('temp-'))
+) => {
+  await resetDirectory(pathTemp) // reset existing content
+  const { result, error } = await catchAsync(asyncFunc, pathTemp)
+  await deleteDirectory(pathTemp)
+  if (error) throw error
+  return result
+}
+
 const getFileList = async (
   path,
   fileCollector = DEFAULT_FILE_COLLECTOR // (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
@@ -128,6 +142,7 @@ export {
   createDirectory,
   copyDirectory,
   deleteDirectory, resetDirectory,
+  withTempDirectory,
 
   getFileList
 }
