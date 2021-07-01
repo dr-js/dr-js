@@ -8,11 +8,11 @@ const retrySync = process.platform === 'linux'
   ? (func, ...args) => func(...args) // one chance should be enough for linux
   : (func, ...args) => { // +3 more chance, since some net/fs test is still flaky
     try { return func(...args) } catch (error) {
-      console.error('[retrySync|0]', error)
+      console.error('##[warning] [retrySync|0]', error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
       try { return func(...args) } catch (error) {
-        console.error('[retrySync|1]', error)
+        console.error('##[warning] [retrySync|1]', error)
         try { return func(...args) } catch (error) {
-          console.error('[retrySync|2]', error)
+          console.error('##[warning] [retrySync|2]', error)
           return func(...args)
         }
       }
