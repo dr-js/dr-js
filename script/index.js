@@ -41,8 +41,6 @@ runMain(async (logger) => {
   RUN('npm run script-generate-spec')
   logger.padLog('build library-webpack')
   RUN('npm run build-library-webpack')
-  logger.padLog('delete temp build file')
-  RUN('npm run script-delete-temp-build-file')
   logger.padLog('build library-babel')
   RUN('npm run build-library-babel')
   logger.padLog('build module')
