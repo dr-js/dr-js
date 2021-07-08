@@ -19,14 +19,7 @@ const tryRequireResolve = (name = '') => {
   } catch (error) { __DEV__ && console.log(`[tryRequireResolve] failed for ${name}`, error) }
 }
 
-const isMainModule = () => {
-  try {
-    return eval('require.main === module') // eslint-disable-line no-eval
-  } catch (error) { return false }
-}
-
 export {
   tryRequire,
-  tryRequireResolve,
-  isMainModule
+  tryRequireResolve
 }

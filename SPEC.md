@@ -174,7 +174,7 @@
 + 📄 [source/env/global.js](source/env/global.js)
   - `getEnvironment`, `getGlobal`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
-  - `isMainModule`, `tryRequire`, `tryRequireResolve`
+  - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -528,7 +528,7 @@
   - **Verify**
     - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
 - **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `isMainModule`, `tryRequire`, `tryRequireResolve`
+  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `tryRequire`, `tryRequireResolve`
 - **Node**
   - **Data**
     - **Buffer**
