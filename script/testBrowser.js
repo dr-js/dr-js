@@ -3,7 +3,7 @@ import { getFileListFromPathList } from '@dr-js/dev/module/node/file.js'
 import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack.js'
 import { testWithPuppeteer, wrapTestScriptStringToHTML } from '@dr-js/dev/module/puppeteer.js'
 import { fromPathCombo } from '@dr-js/dev/module/output.js'
-import { runMain, resolve } from '@dr-js/dev/module/main.js'
+import { runMain } from '@dr-js/dev/module/main.js'
 
 import { readText, writeText } from 'source/node/fs/File.js'
 import { withTestServer } from 'source/node/testServer.test.js'
@@ -11,7 +11,7 @@ import { withTestServer } from 'source/node/testServer.test.js'
 const NAME_TEST_BROWSER = 'test-browser'
 
 runMain(async (logger) => {
-  const { fromRoot, fromTemp } = fromPathCombo({ PATH_TEMP: resolve(__dirname, '../.temp-gitignore') })
+  const { fromRoot, fromTemp } = fromPathCombo()
 
   const mode = 'production'
   const isWatch = false
