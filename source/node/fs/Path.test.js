@@ -15,16 +15,17 @@ import {
   deletePath,
 
   existPath, nearestExistPath,
-  toPosixPath, dropTrailingSep,
+  toPosixPath,
+  addTrailingSep, dropTrailingSep,
   expandHome, resolveHome,
   createPathPrefixLock
 } from './Path.js'
 
 const { describe, it, before, after } = globalThis
 
-const TEST_ROOT = resolve(__dirname, './test-file-gitignore/') + sep
+const TEST_ROOT = addTrailingSep(resolve(__dirname, './test-file-gitignore/'))
 const SOURCE_FILE = resolve(__dirname, './Path.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../module/') + sep
+const SOURCE_DIRECTORY = addTrailingSep(resolve(__dirname, '../module/'))
 const SOURCE_DIRECTORY_TRIM = resolve(__dirname, '../module/')
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
@@ -33,15 +34,15 @@ const filePath0 = resolve(TEST_ROOT, 'file0.js')
 const filePath1 = resolve(TEST_ROOT, 'file1.js')
 const filePath2 = resolve(TEST_ROOT, 'file2.js')
 
-const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/') + sep
-const directoryPath1 = resolve(TEST_ROOT, 'a/b/c/d/') + sep
-const directoryPath2 = resolve(TEST_ROOT, 'a/b/c/d/e/') + sep
+const directoryPath0 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/'))
+const directoryPath1 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/'))
+const directoryPath2 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/e/'))
 
-const directoryPath3 = resolve(TEST_ROOT, 'a/e0/') + sep
-const directoryPath4 = resolve(TEST_ROOT, 'a/e1/') + sep
+const directoryPath3 = addTrailingSep(resolve(TEST_ROOT, 'a/e0/'))
+const directoryPath4 = addTrailingSep(resolve(TEST_ROOT, 'a/e1/'))
 
-const directoryPath5 = resolve(TEST_ROOT, 'a/b/') + sep
-const directoryPath6 = resolve(TEST_ROOT, 'a/') + sep
+const directoryPath5 = addTrailingSep(resolve(TEST_ROOT, 'a/b/'))
+const directoryPath6 = addTrailingSep(resolve(TEST_ROOT, 'a/'))
 
 before(async () => {
   await resetDirectory(TEST_ROOT)
@@ -135,7 +136,7 @@ describe('Node.Fs.Path', () => {
     strictEqual(await nearestExistPath(__filename), __filename)
 
     strictEqual(await nearestExistPath(resolve(__filename, 'not-exist')), __filename)
-    strictEqual(await nearestExistPath(resolve(TEST_ROOT, '11/22/33/44/55')) + sep, TEST_ROOT)
+    strictEqual(addTrailingSep(await nearestExistPath(resolve(TEST_ROOT, '11/22/33/44/55'))), TEST_ROOT)
   })
 
   it('toPosixPath()', async () => {

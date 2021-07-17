@@ -1,5 +1,5 @@
 import { Stats, promises as fsAsync } from 'fs'
-import { join, resolve, dirname } from 'path'
+import { join, resolve, dirname, sep } from 'path'
 import { homedir } from 'os'
 
 // NOTE: default will not follow symlink, and some symlink may form a loop
@@ -72,6 +72,7 @@ const nearestExistPath = async (path) => { // use absolute path // NOTE: may be 
 const toPosixPath = (path) => path.replace(REGEXP_PATH_SEP_WIN32, '/')
 const REGEXP_PATH_SEP_WIN32 = /\\/g
 
+const addTrailingSep = (path) => join(path, sep)
 const dropTrailingSep = (path) => join(path, '.') // `a/b/c/` -> `a/b/c`
 
 const expandHome = (path) => path === '~' ? homedir()
@@ -102,7 +103,8 @@ export {
   deletePath, deletePathForce,
 
   existPath, nearestExistPath,
-  toPosixPath, dropTrailingSep,
+  toPosixPath,
+  addTrailingSep, dropTrailingSep,
   expandHome, resolveHome,
   createPathPrefixLock
 }

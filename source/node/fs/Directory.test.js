@@ -1,8 +1,8 @@
-import { join as joinPath, dirname, resolve, sep } from 'path'
+import { join as joinPath, dirname, resolve } from 'path'
 import { writeFileSync } from 'fs'
 import { strictEqual, stringifyEqual, doThrowAsync, includes } from 'source/common/verify.js'
 import { getSample } from 'source/common/math/sample.js'
-import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path.js'
+import { PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
 import {
   // getPathTypeFromDirent,
   getDirInfoList,
@@ -24,27 +24,27 @@ import {
 
 const { describe, it, before, after } = globalThis
 
-const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/') + sep
-const SOURCE_FILE = resolve(__dirname, './Directory.js') + sep
-const SOURCE_DIRECTORY = resolve(__dirname, '../data/') + sep
-const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../') + sep
+const TEST_ROOT = addTrailingSep(resolve(__dirname, './test-directory-gitignore/'))
+const SOURCE_FILE = addTrailingSep(resolve(__dirname, './Directory.js'))
+const SOURCE_DIRECTORY = addTrailingSep(resolve(__dirname, '../data/'))
+const SOURCE_DIRECTORY_UPPER = addTrailingSep(resolve(__dirname, '../'))
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
-const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/') + sep
-const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/') + sep
-const directoryPath2 = resolve(TEST_ROOT, '1/') + sep
+const directoryPath0 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/e/'))
+const directoryPath1 = addTrailingSep(resolve(TEST_ROOT, '1/2/3/4/5/'))
+const directoryPath2 = addTrailingSep(resolve(TEST_ROOT, '1/'))
 
-const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/') + sep
-const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/') + sep
-const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/') + sep
+const directoryPathCopy = addTrailingSep(resolve(TEST_ROOT, 'copy-source/b/c/d/e/'))
+const directoryPathCopySource = addTrailingSep(resolve(TEST_ROOT, 'copy-source/'))
+const directoryPathCopyTarget = addTrailingSep(resolve(TEST_ROOT, 'copy-target/'))
 
-const directoryPathRename = resolve(TEST_ROOT, 'rename-source/b/c/d/e/') + sep
-const directoryPathRenameSource = resolve(TEST_ROOT, 'rename-source/') + sep
-const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/') + sep
+const directoryPathRename = addTrailingSep(resolve(TEST_ROOT, 'rename-source/b/c/d/e/'))
+const directoryPathRenameSource = addTrailingSep(resolve(TEST_ROOT, 'rename-source/'))
+const directoryPathRenameTarget = addTrailingSep(resolve(TEST_ROOT, 'rename-target/'))
 
-const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/') + sep
-const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/') + sep
+const directoryPathDelete = addTrailingSep(resolve(TEST_ROOT, 'delete-source/b/c/d/e/'))
+const directoryPathDeleteSource = addTrailingSep(resolve(TEST_ROOT, 'delete-source/'))
 
 before(async () => {
   await createDirectory(TEST_ROOT)
@@ -78,7 +78,7 @@ describe('Node.Fs.Directory', () => {
 
     const dirInfoTree = await getDirInfoTree(TEST_ROOT)
     // console.log(dirInfoTree)
-    strictEqual(dirInfoTree.root + sep, TEST_ROOT)
+    strictEqual(addTrailingSep(dirInfoTree.root), TEST_ROOT)
     strictEqual(dirInfoTree.dirInfoListMap.get(dirInfoTree.root).length, 5)
     strictEqual(dirInfoTree.dirInfoListMap.size, 26)
     stringifyEqual(

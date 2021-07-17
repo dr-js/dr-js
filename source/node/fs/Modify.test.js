@@ -1,6 +1,6 @@
-import { resolve, sep } from 'path'
+import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify.js'
-import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path.js'
+import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
 import { resetDirectory } from './Directory.js'
 
 import {
@@ -11,16 +11,16 @@ import {
 
 const { describe, it, before, after } = globalThis
 
-const TEST_ROOT = resolve(__dirname, './test-modify-gitignore/') + sep
+const TEST_ROOT = addTrailingSep(resolve(__dirname, './test-modify-gitignore/'))
 const SOURCE_FILE = resolve(__dirname, './Modify.js')
-const SOURCE_DIRECTORY = resolve(__dirname, '../') + sep
+const SOURCE_DIRECTORY = addTrailingSep(resolve(__dirname, '../'))
 
 const filePath0 = resolve(TEST_ROOT, 'file0.js')
 const filePath1 = resolve(TEST_ROOT, 'file1.js')
 const filePath2 = resolve(TEST_ROOT, 'file2.js')
 
-const directoryPath0 = resolve(TEST_ROOT, 'directory0/') + sep
-const directoryPath1 = resolve(TEST_ROOT, 'directory1/') + sep
+const directoryPath0 = addTrailingSep(resolve(TEST_ROOT, 'directory0/'))
+const directoryPath1 = addTrailingSep(resolve(TEST_ROOT, 'directory1/'))
 
 before(async () => {
   await resetDirectory(TEST_ROOT)
