@@ -11,6 +11,8 @@ const indentList = (
   ...itemList.map((item) => indentLine(item, indentString, indentStringStart))
 ].join('\n')
 
+const filterJoin = (array, delimiter = '\n') => array.filter(Boolean).join(delimiter)
+
 const autoEllipsis = (string = '', limit = 64, head = 32, tail = 16) => string.length > limit
   ? `${string.slice(0, head)}...${tail > 0 ? string.slice(-tail) : ''} (+${string.length - head - tail})`
   : string
@@ -94,7 +96,7 @@ if (__DEV__) { // code to generate
 const ESCAPE_HTML_MAP = {
   '"': '&#34;',
   '&': '&#38;',
-  "'": '&#39;',
+  '\'': '&#39;',
   '<': '&#60;',
   '>': '&#62;'
 }
@@ -107,8 +109,8 @@ const UNESCAPE_HTML_MAP = {
   '&quot;': '"',
   '&#38;': '&',
   '&amp;': '&',
-  '&#39;': "'",
-  '&apos;': "'",
+  '&#39;': '\'',
+  '&apos;': '\'',
   '&#60;': '<',
   '&lt;': '<',
   '&#62;': '>',
@@ -145,8 +147,8 @@ const forEachLine = (string, func) => { // NOTE: this only split by `\n`, basica
 }
 
 export {
-  indentLine,
-  indentList,
+  indentLine, indentList,
+  filterJoin,
   autoEllipsis,
 
   splitCamelCase, joinCamelCase,

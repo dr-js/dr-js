@@ -1,15 +1,14 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync, createReadStream } from 'fs'
-import { setTimeoutAsync } from 'source/common/time'
-import { percent } from 'source/common/format'
-import { stringifyEqual, strictEqual } from 'source/common/verify'
-import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer'
-import { toArrayBuffer } from 'source/node/data/Buffer'
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { ping, fetchLikeRequest } from './net'
-import { BUFFER_SCRIPT, withTestServer } from './testServer.test'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { percent } from 'source/common/format.js'
+import { stringifyEqual, strictEqual } from 'source/common/verify.js'
+import { isEqualArrayBuffer, fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { ping, fetchLikeRequest } from './net.js'
+import { BUFFER_SCRIPT, withTestServer } from './testServer.test.js'
 
-const { describe, it, before, after, info = console.log } = global
+const { describe, it, before, after, info = console.log } = globalThis
 
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 
@@ -65,7 +64,7 @@ describe('Node.Net', () => {
     ), 0)
     strictEqual(isEqualArrayBuffer(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).arrayBuffer(),
-      toArrayBuffer(Buffer.from('TEST BUFFER'))
+      fromNodejsBuffer(Buffer.from('TEST BUFFER'))
     ), true)
     strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).text(),
@@ -107,7 +106,7 @@ describe('Node.Net', () => {
   it('fetchLikeRequest() post', withTestServer(async ({ baseUrl }) => {
     const BODY_STRING = '[test-post-body]'.repeat(64)
     const BODY_BUFFER = Buffer.from(BODY_STRING)
-    const BODY_ARRAY_BUFFER = toArrayBuffer(Buffer.from(BODY_STRING))
+    const BODY_ARRAY_BUFFER = fromNodejsBuffer(Buffer.from(BODY_STRING))
 
     stringifyEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-post`, { method: 'POST', body: BODY_STRING, onProgressUpload: onProgress })).json(),

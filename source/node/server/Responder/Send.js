@@ -1,8 +1,8 @@
 import { gzip, gzipSync, createGzip } from 'zlib'
 import { promisify } from 'util'
-import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
-import { getEntityTagByContentHash } from 'source/node/module/EntityTag'
+import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
+import { getEntityTagByContentHash } from 'source/node/module/EntityTag.js'
 
 const gzipAsync = promisify(gzip)
 

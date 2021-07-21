@@ -71,7 +71,7 @@ As a `Feature` in a server,
   optionally also serve some HTML,
   all this is called a `featurePack`.
 
-The basic code of `featurePack` should be like: (for more sample, check [@dr-js/node](https://github.com/dr-js/dr-node/tree/master/source/server/feature))
+The basic code of `featurePack` should be like: (for more sample, check [Feature/](./Feature/))
 ```js
 const setup = async ({
   option, // server option

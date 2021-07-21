@@ -1,7 +1,7 @@
-import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify'
-import { time, binary } from 'source/common/format'
-import { createStepper } from 'source/common/time'
-import { withRepeat } from 'source/common/function'
+import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify.js'
+import { time, binary } from 'source/common/format.js'
+import { createStepper } from 'source/common/time.js'
+import { withRepeat } from 'source/common/function.js'
 import {
   // indentLine,
   // indentList,
@@ -23,9 +23,9 @@ import {
 
   forEachRegExpExec,
   forEachLine
-} from './string'
+} from './string.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Common.String', () => {
   it('escapeHTML/unescapeHTML()', () => {

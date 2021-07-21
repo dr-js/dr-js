@@ -2,11 +2,11 @@ import { request as httpRequest } from 'http'
 import { request as httpsRequest } from 'https'
 import { createGunzip } from 'zlib'
 
-import { clock } from 'source/common/time'
-import { isString, isArrayBuffer } from 'source/common/check'
-import { createInsideOutPromise, withRetryAsync } from 'source/common/function'
-import { toArrayBuffer } from 'source/node/data/Buffer'
-import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream'
+import { clock } from 'source/common/time.js'
+import { isString, isArrayBuffer } from 'source/common/check.js'
+import { createInsideOutPromise, withRetryAsync } from 'source/common/function.js'
+import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
+import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 
 const requestHttp = (
   url, // URL/String
@@ -139,7 +139,7 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
       : response
   }
   const buffer = async () => readableStreamToBufferAsync(stream()) // use async to keep error inside promise
-  const arrayBuffer = () => buffer().then(toArrayBuffer)
+  const arrayBuffer = () => buffer().then(fromNodejsBuffer)
   const text = () => buffer().then(toText)
   const json = () => text().then(parseJSON)
   return { stream, buffer, arrayBuffer, text, json }

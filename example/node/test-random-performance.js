@@ -1,5 +1,5 @@
 const { randomBytes } = require('crypto')
-const { createStepper } = require('../../output-gitignore/library/common/time')
+const { createStepper } = require('../../output-gitignore/library/common/time.js')
 
 const logResult = (result) => {
   const size = result.length

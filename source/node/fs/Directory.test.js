@@ -1,7 +1,8 @@
-import { join as joinPath, dirname, resolve, sep } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { getSample } from 'source/common/math/sample'
-import { PATH_TYPE, getPathTypeFromStat, getPathLstat } from './Path'
+import { join as joinPath, dirname, resolve } from 'path'
+import { writeFileSync } from 'fs'
+import { strictEqual, stringifyEqual, doThrowAsync, includes } from 'source/common/verify.js'
+import { getSample } from 'source/common/math/sample.js'
+import { PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
 import {
   // getPathTypeFromDirent,
   getDirInfoList,
@@ -16,34 +17,34 @@ import {
 
   createDirectory,
   // copyDirectory,
-  deleteDirectory,
+  deleteDirectory, resetDirectory,
 
   getFileList
-} from './Directory'
+} from './Directory.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
-const TEST_ROOT = resolve(__dirname, './test-directory-gitignore/') + sep
-const SOURCE_FILE = resolve(__dirname, './Directory.js') + sep
-const SOURCE_DIRECTORY = resolve(__dirname, '../data/') + sep
-const SOURCE_DIRECTORY_UPPER = resolve(__dirname, '../') + sep
+const TEST_ROOT = addTrailingSep(resolve(__dirname, './test-directory-gitignore/'))
+const SOURCE_FILE = addTrailingSep(resolve(__dirname, './Directory.js'))
+const SOURCE_DIRECTORY = addTrailingSep(resolve(__dirname, '../data/'))
+const SOURCE_DIRECTORY_UPPER = addTrailingSep(resolve(__dirname, '../'))
 
 const invalidPath = '../../../../../../../../../../../../../../../../../../../../../../../../a/b/c/d/e/f/g'
 
-const directoryPath0 = resolve(TEST_ROOT, 'a/b/c/d/e/') + sep
-const directoryPath1 = resolve(TEST_ROOT, '1/2/3/4/5/') + sep
-const directoryPath2 = resolve(TEST_ROOT, '1/') + sep
+const directoryPath0 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/e/'))
+const directoryPath1 = addTrailingSep(resolve(TEST_ROOT, '1/2/3/4/5/'))
+const directoryPath2 = addTrailingSep(resolve(TEST_ROOT, '1/'))
 
-const directoryPathCopy = resolve(TEST_ROOT, 'copy-source/b/c/d/e/') + sep
-const directoryPathCopySource = resolve(TEST_ROOT, 'copy-source/') + sep
-const directoryPathCopyTarget = resolve(TEST_ROOT, 'copy-target/') + sep
+const directoryPathCopy = addTrailingSep(resolve(TEST_ROOT, 'copy-source/b/c/d/e/'))
+const directoryPathCopySource = addTrailingSep(resolve(TEST_ROOT, 'copy-source/'))
+const directoryPathCopyTarget = addTrailingSep(resolve(TEST_ROOT, 'copy-target/'))
 
-const directoryPathRename = resolve(TEST_ROOT, 'rename-source/b/c/d/e/') + sep
-const directoryPathRenameSource = resolve(TEST_ROOT, 'rename-source/') + sep
-const directoryPathRenameTarget = resolve(TEST_ROOT, 'rename-target/') + sep
+const directoryPathRename = addTrailingSep(resolve(TEST_ROOT, 'rename-source/b/c/d/e/'))
+const directoryPathRenameSource = addTrailingSep(resolve(TEST_ROOT, 'rename-source/'))
+const directoryPathRenameTarget = addTrailingSep(resolve(TEST_ROOT, 'rename-target/'))
 
-const directoryPathDelete = resolve(TEST_ROOT, 'delete-source/b/c/d/e/') + sep
-const directoryPathDeleteSource = resolve(TEST_ROOT, 'delete-source/') + sep
+const directoryPathDelete = addTrailingSep(resolve(TEST_ROOT, 'delete-source/b/c/d/e/'))
+const directoryPathDeleteSource = addTrailingSep(resolve(TEST_ROOT, 'delete-source/'))
 
 before(async () => {
   await createDirectory(TEST_ROOT)
@@ -58,15 +59,10 @@ after(async () => {
   await deleteDirectory(TEST_ROOT)
 })
 
-describe('Node.File.Directory', () => {
+describe('Node.Fs.Directory', () => {
   it('getDirInfoList()', async () => {
-    let getExpectedError = false
-    try { await getDirInfoList(invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirInfoList(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    await doThrowAsync(() => getDirInfoList(invalidPath))
+    await doThrowAsync(() => getDirInfoList(SOURCE_FILE))
 
     await getDirInfoList(SOURCE_DIRECTORY)
     await getDirInfoList(SOURCE_DIRECTORY_UPPER)
@@ -74,21 +70,15 @@ describe('Node.File.Directory', () => {
   })
 
   it('getDirInfoTree()', async () => {
-    let getExpectedError = false
-    try { await getDirInfoTree(invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
-
-    getExpectedError = false
-    try { await getDirInfoTree(SOURCE_FILE) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    await doThrowAsync(() => getDirInfoTree(invalidPath))
+    await doThrowAsync(() => getDirInfoTree(SOURCE_FILE))
 
     await getDirInfoTree(SOURCE_DIRECTORY)
     await getDirInfoTree(SOURCE_DIRECTORY_UPPER)
+
     const dirInfoTree = await getDirInfoTree(TEST_ROOT)
-
     // console.log(dirInfoTree)
-
-    strictEqual(dirInfoTree.root + sep, TEST_ROOT)
+    strictEqual(addTrailingSep(dirInfoTree.root), TEST_ROOT)
     strictEqual(dirInfoTree.dirInfoListMap.get(dirInfoTree.root).length, 5)
     strictEqual(dirInfoTree.dirInfoListMap.size, 26)
     stringifyEqual(
@@ -173,6 +163,25 @@ describe('Node.File.Directory', () => {
     strictEqual(getExpectedError, true)
   })
 
+  it('resetDirectory()', async () => {
+    await createDirectory(resolve(TEST_ROOT, 'reset/'))
+
+    writeFileSync(resolve(TEST_ROOT, 'reset/file-to-dir'), 'data')
+    await resetDirectory(resolve(TEST_ROOT, 'reset/file-to-dir'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/file-to-dir'))).length, 0)
+
+    await createDirectory(resolve(TEST_ROOT, 'reset/dir-empty/'))
+    await resetDirectory(resolve(TEST_ROOT, 'reset/dir-empty/'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir-empty/'))).length, 0)
+
+    await createDirectory(resolve(TEST_ROOT, 'reset/dir/q/w/e/r/t/y/'))
+    writeFileSync(resolve(TEST_ROOT, 'reset/dir/q/w/e/file'), 'data')
+    await resetDirectory(resolve(TEST_ROOT, 'reset/dir/'))
+    strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir/'))).length, 0)
+
+    await deleteDirectory(resolve(TEST_ROOT, 'reset/'))
+  })
+
   describe('getFileList()', () => {
     const LIST_FILE = resolve(__dirname, './Directory.js')
     const LIST_DIRECTORY = resolve(__dirname, '../')
@@ -191,7 +200,7 @@ describe('Node.File.Directory', () => {
     it('getFileList() Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY)
       strictEqual(fileList.length >= 2, true)
-      strictEqual(fileList.includes(LIST_FILE), true)
+      includes(fileList, LIST_FILE)
     })
 
     it('getFileList(createSuffixFilterFileCollector) File', async () => {
@@ -206,7 +215,7 @@ describe('Node.File.Directory', () => {
       const jsFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.js'))
       const abcdefghFileList = await getFileList(LIST_DIRECTORY, createSuffixFilterFileCollector('.abcdefgh'))
       strictEqual(jsFileList.length >= 2, true)
-      strictEqual(jsFileList.includes(LIST_FILE), true)
+      includes(jsFileList, LIST_FILE)
       strictEqual(abcdefghFileList.length, 0)
     })
 
@@ -214,13 +223,13 @@ describe('Node.File.Directory', () => {
       const fileList = await getFileList(LIST_FILE, createPrefixMapperFileCollector('PREFIX-'))
       strictEqual(fileList.length, 1)
       strictEqual(fileList[ 0 ][ 0 ], LIST_FILE)
-      strictEqual(fileList[ 0 ][ 1 ].includes('PREFIX-'), true)
+      includes(fileList[ 0 ][ 1 ], 'PREFIX-')
     })
 
     it('getFileList(createPrefixMapperFileCollector) Directory', async () => {
       const fileList = await getFileList(LIST_DIRECTORY, createPrefixMapperFileCollector('PREFIX-'))
       strictEqual(fileList.length >= 2, true)
-      strictEqual(fileList.map((v) => v[ 0 ]).includes(LIST_FILE), true)
+      includes(fileList.map((v) => v[ 0 ]), LIST_FILE)
       strictEqual(fileList.every((v) => v[ 1 ].includes('PREFIX-')), true)
     })
   })

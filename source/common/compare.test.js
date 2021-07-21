@@ -1,17 +1,28 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   compareString,
   compareStringLocale,
   compareStringWithNumber
-} from './compare'
+} from './compare.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const createTestCompare = (title, compareFunc) => (a, b, result) => strictEqual(
   compareFunc(a, b),
   result,
   `[${title}] compare '${a}' to '${b}'`
 )
+
+const TEST_LIST = [
+  ' ', '+', '?', '[', '{',
+  '0', '01', '1', '2', '10', '010', '19', '20',
+  'a', 'A', 'b', 'B',
+  'a0', 'a2', 'a10', 'a010',
+  'A0', 'A2', 'A10', 'A010',
+  'aB', 'ab', 'Ab', 'AB',
+  'aa', 'bb', 'AA', 'BB',
+  'c'
+]
 
 describe('Common.Compare', () => {
   it('compareString()', () => {
@@ -29,6 +40,11 @@ describe('Common.Compare', () => {
 
     test('2-a', '1-a', 1)
     test('2-a', '10-a', 1) // not aware of number
+
+    test('a', 'A', 1) // ASCII order
+    test('a', 'B', 1) // ASCII order
+
+    strictEqual(TEST_LIST.sort(compareString).join(','), ' ,+,0,01,010,1,10,19,2,20,?,A,A0,A010,A10,A2,AA,AB,Ab,B,BB,[,a,a0,a010,a10,a2,aB,aa,ab,b,bb,c,{')
   })
 
   it('compareStringLocale()', () => {
@@ -46,6 +62,11 @@ describe('Common.Compare', () => {
 
     test('2-a', '1-a', 1)
     test('2-a', '10-a', 1) // not aware of number
+
+    test('a', 'A', -1) // dir listing order
+    test('a', 'B', -1) // dir listing order
+
+    strictEqual(TEST_LIST.sort(compareStringLocale).join(','), ' ,?,[,{,+,0,01,010,1,10,19,2,20,a,A,a0,A0,a010,A010,a10,A10,a2,A2,aa,AA,ab,aB,Ab,AB,b,B,bb,BB,c')
   })
 
   it('compareStringWithNumber()', () => {
@@ -63,5 +84,7 @@ describe('Common.Compare', () => {
 
     test('2-a', '1-a', 1)
     test('2-a', '10-a', -8) // aware of number
+
+    strictEqual(TEST_LIST.sort(compareStringWithNumber).join(','), ' ,+,0,01,1,2,010,10,19,20,?,A,A0,A2,A010,A10,AA,AB,Ab,B,BB,[,a,a0,a2,a010,a10,aB,aa,ab,b,bb,c,{')
   })
 })

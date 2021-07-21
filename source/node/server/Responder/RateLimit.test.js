@@ -1,8 +1,8 @@
-import { strictEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { createResponderRateLimit, createResponderCheckRateLimit } from './RateLimit'
+import { strictEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { createResponderRateLimit, createResponderCheckRateLimit } from './RateLimit.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Server.Responder.RateLimit', () => {
   it('createResponderRateLimit()', async () => {

@@ -1,5 +1,5 @@
-import { createBufferRefragPool } from 'source/node/data/Buffer'
-import { BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function'
+import { createBufferRefragPool } from 'source/node/data/Buffer.js'
+import { BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function.js'
 
 const NULL_ERROR = (error) => { __DEV__ && error && console.log('[NULL_ERROR] get error', error) }
 

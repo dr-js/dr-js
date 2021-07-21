@@ -1,17 +1,17 @@
-import { createInsideOutPromise } from 'source/common/function'
-import { setWeakTimeout } from 'source/common/time'
-import { wrapAsync, createLockStepAsyncIter } from 'source/common/data/Iter'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { setWeakTimeout } from 'source/common/time.js'
+import { wrapAsync, createLockStepAsyncIter } from 'source/common/data/Iter.js'
 import { createAsyncFuncQueue } from 'source/common/module/AsyncFuncQueue.js'
 import {
   createRunlet,
   createCountPool, PoolIO,
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-} from 'source/common/module/Runlet'
-import { createAsyncIterInputChip, createAsyncIterOutputChip } from 'source/common/module/RunletChip'
-import { createReadableStreamInputChip, createWritableStreamOutputChip } from 'source/node/data/Stream'
+} from 'source/common/module/Runlet.js'
+import { createAsyncIterInputChip, createAsyncIterOutputChip } from 'source/common/module/RunletChip.js'
+import { createReadableStreamInputChip, createWritableStreamOutputChip } from 'source/node/data/Stream.js'
 
-import { createFrameDecodeChip } from './frameDecode'
-import { createFrameEncodeChip, encodeTextFramePack, encodeBinaryFramePack, createCloseFramePack, encodePingFramePack, encodePongFramePack } from './frameEncode'
+import { createFrameDecodeChip } from './frameDecode.js'
+import { createFrameEncodeChip, encodeTextFramePack, encodeBinaryFramePack, createCloseFramePack, encodePingFramePack, encodePongFramePack } from './frameEncode.js'
 
 const WS_PING_PONG_TIMEOUT = __DEV__ ? 5 * 1000 : 60 * 1000 // in msec, 60sec
 const WS_CLOSE_TIMEOUT = __DEV__ ? 0.5 * 1000 : 5 * 1000 // in msec, 5sec

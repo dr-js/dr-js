@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   typeNameOf,
   describe as describeValue,
@@ -9,9 +9,9 @@ import {
   binary,
   padTable,
   prettyStringifyJSON, prettyStringifyConfigObject
-} from './format'
+} from './format.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Format', () => {
   it('typeNameOf()', () => {

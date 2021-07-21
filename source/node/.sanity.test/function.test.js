@@ -1,23 +1,21 @@
 import { resolve } from 'path'
-import { withTempDirectory } from '@dr-js/dev/module/node/file'
-import { run } from 'source/node/run'
+import { withTempDirectory } from 'source/node/fs/Directory.js'
+import { run } from 'source/node/run.js'
 
-const { info = console.log } = global
-
-const PATH_TEMP = resolve(__dirname, 'temp-gitignore/')
+const { info = console.log } = globalThis
 
 const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
-  PATH_TEMP,
-  async () => run([
+  async (pathTemp) => run([
     process.execPath,
     '--expose-gc', // allow `global.gc()` call
     '--max-old-space-size=32', // limit max memory usage for faster OOM
     '--eval', `(${funcList.reduce((o, func) => `(${func})(global.gc, ${o})`, 'undefined')})`
   ], {
     maxBuffer: 8 * 1024 * 1024,
-    cwd: PATH_TEMP, // generate OOM report under temp path
+    cwd: pathTemp, // generate OOM report under temp path
     quiet: !__DEV__
-  }).promise.catch((error) => error)
+  }).promise.catch((error) => error),
+  resolve(__dirname, 'temp-gitignore/')
 )
 
 const createTestFunc = (expectExitCode = 0, ...funcList) => async () => {

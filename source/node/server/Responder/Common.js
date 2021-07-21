@@ -1,4 +1,4 @@
-import { clock } from 'source/common/time'
+import { clock } from 'source/common/time.js'
 
 // TODO: add responderEndRandomErrorStatus?
 

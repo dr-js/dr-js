@@ -1,11 +1,11 @@
-import { tryRequire } from 'source/env/tryRequire'
+import { tryRequire } from 'source/env/tryRequire.js'
 
 // range [from, to] // this will not auto swap, meaning <from> should be smaller than <to>
 const RANDOM_INT = (from, to) => Math.floor(Math.random() * (to - from + 1) + from)
 
 const tryGetRandomArrayBuffer = () => {
   try { // browser
-    const { crypto } = global
+    const { crypto } = globalThis
     const getRandomArrayBuffer = (byteLength) => {
       const arrayBuffer = new ArrayBuffer(byteLength)
       for (let index = 0; index < byteLength; index += 65536) {
@@ -56,7 +56,7 @@ const getRandomIntList = (a, b, count) => {
 
 const getRandomId = (prefix = '') => `${prefix}${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 
-const getRandomArrayBuffer = tryGetRandomArrayBuffer()
+const getRandomArrayBuffer = tryGetRandomArrayBuffer() // (byteLength) => arrayBuffer
 
 export {
   getRandomInt,

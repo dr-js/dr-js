@@ -1,17 +1,17 @@
 import { resolve } from 'path'
 
-import { runMain } from '@dr-js/dev/module/main'
+import { runMain } from '@dr-js/dev/module/main.js'
 
-import { strictEqual } from 'source/common/verify'
-import { run } from 'source/node/run'
-import { describeSystemPlatform } from 'source/node/system/Status'
+import { strictEqual } from 'source/common/verify.js'
+import { runStdout } from 'source/node/run.js'
+import { describeSystemPlatform } from 'source/node/system/Status.js'
 
 const PATH_ROOT = resolve(__dirname, '../../')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
 
 const SCRIPT_STRING = `
-const { describe } = require('@dr-js/core/library/common/format')
-const { describeSystemPlatform } = require('@dr-js/core/library/node/system/Status')
+const { describe } = require('@dr-js/core/library/common/format.js')
+const { describeSystemPlatform } = require('@dr-js/core/library/node/system/Status.js')
 
 console.log(\`[process.argv.length] \${process.argv.length}\`)
 
@@ -27,13 +27,12 @@ console.log(describeSystemPlatform())
 runMain(async (logger) => {
   {
     logger.padLog('test eval scriptFile')
-    const { promise, stdoutPromise } = run([
+    const stdoutString = String(await runStdout([
       process.execPath,
       'output-gitignore/bin',
       '--eval', '1', '2', '3 4',
       '-I', 'script/testBin/scriptFile.js'
-    ], { cwd: PATH_ROOT, quiet: true, describeError: true })
-    const stdoutString = String(await promise.then(() => stdoutPromise))
+    ], { cwd: PATH_ROOT }))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
       '[process.argv.length] 8',
@@ -51,12 +50,11 @@ runMain(async (logger) => {
 
   {
     logger.padLog('test eval scriptString')
-    const { promise, stdoutPromise } = run([
+    const stdoutString = String(await runStdout([
       process.execPath,
       'output-gitignore/bin',
       '--eval', SCRIPT_STRING, '1', '2', '3 4'
-    ], { cwd: PATH_ROOT, quiet: true, describeError: true })
-    const stdoutString = String(await promise.then(() => stdoutPromise))
+    ], { cwd: PATH_ROOT }))
     console.log({ stdoutString })
     strictEqual(stdoutString, [
       '[process.argv.length] 7',

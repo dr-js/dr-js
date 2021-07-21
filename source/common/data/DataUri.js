@@ -1,6 +1,6 @@
-import { isString } from 'source/common/check'
-import { objectFromEntries } from 'source/common/immutable/Object'
-import { encode as encodeBase64, decode as decodeBase64 } from './Base64'
+import { isString } from 'source/common/check.js'
+import { objectFromEntries } from 'source/common/immutable/Object.js'
+import { encode as encodeBase64, decode as decodeBase64 } from './Base64.js'
 
 // dataUri format `data:[<mediatype>][;base64],<data>`
 

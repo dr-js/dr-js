@@ -1,9 +1,9 @@
 import { resolve } from 'path'
-import { strictEqual } from 'source/common/verify'
-import { existPath } from 'source/node/file/Path'
-import { run } from 'source/node/run'
+import { strictEqual } from 'source/common/verify.js'
+import { existPath } from 'source/node/fs/Path.js'
+import { run } from 'source/node/run.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.System.ExitListener', () => {
   it('guardPromiseEarlyExit', async () => {

@@ -1,11 +1,11 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { getUnusedPort } from 'source/node/server/function'
-import { createServerExot } from 'source/node/server/Server'
-import { OPCODE_TYPE, WEBSOCKET_EVENT } from './function'
-import { enableWebSocketServer } from './WebSocketServer'
-import { createWebSocketClient } from './WebSocketClient'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { getUnusedPort } from 'source/node/server/function.js'
+import { createServerExot } from 'source/node/server/Server.js'
+import { OPCODE_TYPE, WEBSOCKET_EVENT } from './function.js'
+import { enableWebSocketServer } from './WebSocketServer.js'
+import { createWebSocketClient } from './WebSocketClient.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TEST_PROTOCOL_LIST = [ 'protocol-a', 'protocol-b' ]
 const TEST_STRING = 'TEST STRING'

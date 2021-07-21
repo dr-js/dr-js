@@ -5,13 +5,13 @@ import { createServer as createTLSServer } from 'tls'
 import { createServer as createHttpServer } from 'http'
 import { createServer as createHttpsServer } from 'https'
 
-import { clock } from 'source/common/time'
-import { isNumber, isBasicArray, isBasicObject } from 'source/common/check'
-import { prettyStringifyConfigObject } from 'source/common/format'
-import { createCacheMap } from 'source/common/data/CacheMap'
-import { createStateStoreLite } from 'source/common/immutable/StateStore'
-import { objectFromEntries } from 'source/common/immutable/Object'
-import { responderEnd } from './Responder/Common'
+import { clock } from 'source/common/time.js'
+import { isNumber, isBasicArray, isBasicObject } from 'source/common/check.js'
+import { prettyStringifyConfigObject } from 'source/common/format.js'
+import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
+import { objectFromEntries } from 'source/common/immutable/Object.js'
+import { responderEnd } from './Responder/Common.js'
 
 // TODO: add HTTP2 or just skip to HTTP3?
 

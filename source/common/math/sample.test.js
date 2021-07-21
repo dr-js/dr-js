@@ -1,11 +1,11 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
 import {
   getSample,
   getSampleRange,
   getSampleRate
-} from './sample'
+} from './sample.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Math.Sample', () => {
   it('getSample()', () => {

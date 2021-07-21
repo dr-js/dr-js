@@ -1,14 +1,15 @@
-import { notStrictEqual, stringifyEqual } from 'source/common/verify'
-import { clock, requestFrameUpdate, setAwaitAsync } from './time'
+import { notStrictEqual, stringifyEqual } from 'source/common/verify.js'
+import { clock, requestFrameUpdate, setAwaitAsync } from './time.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Time', () => {
   it('clock() should get msec precision', async () => {
     const timeStart = clock()
-    ' '.repeat(256).split('').forEach(() => clock()) // NOTE: increase loop if too fast for V8
-    const timeDiff = clock() - timeStart
-    notStrictEqual(timeDiff, 0)
+    ' '.repeat(512).split('').forEach(() => clock()) // NOTE: increase loop if too fast for V8
+    await setAwaitAsync(16) // should be enough
+    const timeEnd = clock()
+    notStrictEqual(timeEnd - timeStart, 0, `get ${timeStart}/${timeEnd}`)
   })
 
   it('requestFrameUpdate() should invoke under 500 msec', () => new Promise((resolve, reject) => {

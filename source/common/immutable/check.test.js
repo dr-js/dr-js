@@ -1,11 +1,11 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   isObjectShallowEqual,
   isArrayShallowEqual,
   isCompactArrayShallowEqual
-} from './check'
+} from './check.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const SAMPLE_OBJECT_0 = {}
 const SAMPLE_OBJECT_1 = { a: {}, b: 1, c: 'A', d: SAMPLE_OBJECT_0 }

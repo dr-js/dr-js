@@ -1,10 +1,10 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { catchPromise } from 'source/common/error'
-import { setTimeoutAsync } from 'source/common/time'
-import { createAsyncFuncQueue } from './AsyncFuncQueue'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { catchPromise } from 'source/common/error.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { createAsyncFuncQueue } from './AsyncFuncQueue.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('source/common/module/AsyncFuncQueue', () => {
   it('basic usage', async () => {

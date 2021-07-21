@@ -1,13 +1,14 @@
-import { createReadStream, promises as fsAsync } from 'fs'
-import { createCacheMap } from 'source/common/data/CacheMap'
-import { getMIMETypeFromFileName } from 'source/common/module/MIME'
-import { getPathStat } from 'source/node/file/Path'
-import { getWeakEntityTagByStat } from 'source/node/module/EntityTag'
-import { responderEndWithStatusCode } from './Common'
+import { createReadStream } from 'fs'
+import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { getMIMETypeFromFileName } from 'source/common/module/MIME.js'
+import { readBuffer } from 'source/node/fs/File.js'
+import { getPathStat } from 'source/node/fs/Path.js'
+import { getWeakEntityTagByStat } from 'source/node/module/EntityTag.js'
+import { responderEndWithStatusCode } from './Common.js'
 import {
   responderSendBuffer, responderSendBufferRange, responderSendBufferCompress,
   responderSendStream, responderSendStreamRange
-} from './Send'
+} from './Send.js'
 
 const DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX = 32 * 1024 * 1024 // in byte, 32MiB
 const DEFAULT_CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512KiB
@@ -94,7 +95,7 @@ const createResponderServeStatic = ({
       __DEV__ && console.log(`[BAIL] CACHE: ${filePathServe}`)
       await responderSendStream(store, { stream: createReadStream(filePathServe), entityTag, type, length })
     } else { // right size, send & cache
-      const bufferData = { buffer: await fsAsync.readFile(filePathServe), entityTag, type, length }
+      const bufferData = { buffer: await readBuffer(filePathServe), entityTag, type, length }
       serveCacheMap.set(filePathServe, bufferData, length, Date.now() + expireTime)
       __DEV__ && console.log(`[SET] CACHE: ${filePathServe}`)
       await responderSendBuffer(store, bufferData)

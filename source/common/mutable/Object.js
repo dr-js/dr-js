@@ -1,5 +1,5 @@
-import { isBasicObject } from 'source/common/check'
-import { compareStringLocale } from 'source/common/compare'
+import { isBasicObject } from 'source/common/check.js'
+import { compareStringLocale } from 'source/common/compare.js'
 
 const objectMergeDeep = (object, mergeObject) => {
   Object.entries(mergeObject).forEach(([ key, mergeValue ]) => {

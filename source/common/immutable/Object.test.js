@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual, notStringifyEqual } from 'source/common/verify'
+import { strictEqual, stringifyEqual, notStringifyEqual } from 'source/common/verify.js'
 import {
   objectSet,
   objectDelete,
@@ -7,9 +7,9 @@ import {
   objectPickKey,
   objectFindKey,
   objectFilter
-} from './Object'
+} from './Object.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const SAMPLE_ARRAY = []
 

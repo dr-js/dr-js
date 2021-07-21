@@ -1,11 +1,11 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
 import {
   wrapAsync,
   createLockStepAsyncIter
-} from './Iter'
+} from './Iter.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const ITEM_0 = { a: 1 }
 const ITEM_1 = { b: 2 }

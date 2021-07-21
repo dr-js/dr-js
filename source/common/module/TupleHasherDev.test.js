@@ -1,8 +1,8 @@
-import { strictEqual } from 'source/common/verify'
-import { getRandomInt } from 'source/common/math/random'
-import { createTupleHasher } from './TupleHasherDev'
+import { strictEqual } from 'source/common/verify.js'
+import { getRandomInt } from 'source/common/math/random.js'
+import { createTupleHasher } from './TupleHasherDev.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.TupleHasher', () => {
   const initialId = getRandomInt(2, 99)

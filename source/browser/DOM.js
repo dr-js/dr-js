@@ -1,4 +1,4 @@
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
 
 const { requestAnimationFrame, document, navigator, caches, URL, Blob, Request, Response } = window
 

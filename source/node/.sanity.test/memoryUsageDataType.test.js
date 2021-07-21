@@ -1,6 +1,6 @@
-import { createTestFunc, commonFunc } from './function.test'
+import { createTestFunc, commonFunc } from './function.test.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 process.env.TEST_SANITY && describe('Node.SanityTest.MemoryUsageDataType (very slow)', () => {
   it('basic data type', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig }) => runSubjectPredictionTestConfig({

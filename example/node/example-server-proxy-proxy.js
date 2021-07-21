@@ -1,18 +1,18 @@
 const { resolve } = require('path')
 const { createServer: createHttpServer } = require('http')
 
-const { createPathPrefixLock } = require('../../output-gitignore/library/node/file/Path')
-const { requestHttp } = require('../../output-gitignore/library/node/net')
-const { readableStreamToBufferAsync } = require('../../output-gitignore/library/node/data/Stream')
-const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server')
-const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send')
-const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router')
-const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic')
-const { createTCPProxyListener } = require('../../output-gitignore/library/node/server/Proxy')
-const { OPCODE_TYPE } = require('../../output-gitignore/library/node/server/WS/function')
-const { enableWSServer } = require('../../output-gitignore/library/node/server/WS/Server')
+const { createPathPrefixLock } = require('../../output-gitignore/library/node/fs/Path.js')
+const { requestHttp } = require('../../output-gitignore/library/node/net.js')
+const { readableStreamToBufferAsync } = require('../../output-gitignore/library/node/data/Stream.js')
+const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server.js')
+const { createResponderFavicon } = require('../../output-gitignore/library/node/server/Responder/Send.js')
+const { createResponderRouter, createRouteMap, getRouteParamAny } = require('../../output-gitignore/library/node/server/Responder/Router.js')
+const { createResponderServeStatic } = require('../../output-gitignore/library/node/server/Responder/ServeStatic.js')
+const { createTCPProxyListener } = require('../../output-gitignore/library/node/server/Proxy.js')
+const { OPCODE_TYPE } = require('../../output-gitignore/library/node/server/WS/function.js')
+const { enableWSServer } = require('../../output-gitignore/library/node/server/WS/Server.js')
 
-const { createExampleServerHTMLResponder } = require('./example-server-html')
+const { createExampleServerHTMLResponder } = require('./example-server-html.js')
 
 const ServerHostname = '127.0.0.1'
 const ServerPort = 3000

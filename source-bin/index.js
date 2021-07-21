@@ -2,33 +2,34 @@
 
 import { cpus } from 'os'
 import { normalize } from 'path'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { createReadStream, createWriteStream } from 'fs'
 
-import { getEndianness } from 'source/env/function'
+import { getEndianness } from 'source/env/function.js'
 
-import { prettyStringifyJSON } from 'source/common/format'
-import { indentList } from 'source/common/string'
-import { setTimeoutAsync } from 'source/common/time'
-import { isBasicFunction } from 'source/common/check'
+import { prettyStringifyJSON } from 'source/common/format.js'
+import { indentList } from 'source/common/string.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { isBasicFunction } from 'source/common/check.js'
 
-import { quickRunletFromStream } from 'source/node/data/Stream'
-import { createDirectory } from 'source/node/file/Directory'
-import { modifyCopy, modifyRename, modifyDelete } from 'source/node/file/Modify'
-import { autoTestServerPort } from 'source/node/server/function'
-import { createServerExot } from 'source/node/server/Server'
-import { createTCPProxyListener } from 'source/node/server/Proxy'
-import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen'
-import { resolveCommand } from 'source/node/system/ResolveCommand'
-import { runSync, runDetached } from 'source/node/run'
-import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process'
-import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status'
+import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { readText, writeText, readJSON } from 'source/node/fs/File.js'
+import { createDirectory } from 'source/node/fs/Directory.js'
+import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
+import { autoTestServerPort } from 'source/node/server/function.js'
+import { createServerExot } from 'source/node/server/Server.js'
+import { createTCPProxyListener } from 'source/node/server/Proxy.js'
+import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen.js'
+import { resolveCommand } from 'source/node/system/ResolveCommand.js'
+import { run, runSync, runDetached } from 'source/node/run.js'
+import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process.js'
+import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
 
-import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection'
-import { configure as configureServerServeStatic } from './server/serveStatic'
-import { configure as configureServerWebSocketGroup } from './server/websocketGroup'
+import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection.js'
+import { configure as configureServerServeStatic } from './server/serveStatic.js'
+import { configure as configureServerWebSocketGroup } from './server/websocketGroup.js'
 
-import { logAuto, sharedOption, sharedMode } from './function'
-import { MODE_NAME_LIST, parseOption, formatUsage } from './option'
+import { logAuto, sharedOption, sharedMode } from './function.js'
+import { MODE_NAME_LIST, parseOption, formatUsage } from './option.js'
 
 import { name as packageName, version as packageVersion } from '../package.json'
 
@@ -43,7 +44,7 @@ const getVersion = () => ({
 })
 
 const runMode = async (optionData, modeName) => {
-  const sharedPack = await sharedOption(optionData, modeName)
+  const sharedPack = sharedOption(optionData, modeName)
   const { tryGetFirst, getToggle } = optionData
   const { argumentList, log, inputFile, outputFile } = sharedPack
 
@@ -110,6 +111,10 @@ const runMode = async (optionData, modeName) => {
       if (!resultCommand) throw new Error(`failed to resolve command: ${commandNameOrPath}`)
       return log(resultCommand)
     }
+    case 'run': {
+      const commandNameOrPath = argumentList[ 0 ]
+      return run([ resolveCommand(commandNameOrPath, root), ...argumentList.slice(1) ]).promise
+    }
     case 'detach': {
       const commandNameOrPath = argumentList[ 0 ]
       return runDetached([ resolveCommand(commandNameOrPath, root), ...argumentList.slice(1) ], { stdoutFile: outputFile || undefined })
@@ -133,13 +138,13 @@ const runMode = async (optionData, modeName) => {
       return log(await (isOutputJSON ? getAllProcessStatusAsync : describeAllProcessStatusAsync)(outputMode))
     }
     case 'process-signal': {
-      if (inputFile) argumentList.unshift(String(await fsAsync.readFile(inputFile)))
+      if (inputFile) argumentList.unshift(await readText(inputFile))
       const [ pidString, signal = 'SIGTERM' ] = argumentList
       return process.kill(Number(pidString), signal)
     }
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
-      return fsAsync.writeFile(outputFile || inputFile, prettyStringifyJSON(JSON.parse(String(await fsAsync.readFile(inputFile))), unfoldLevel))
+      return writeText(outputFile || inputFile, prettyStringifyJSON(await readJSON(inputFile), unfoldLevel))
     }
 
     case 'server-serve-static':

@@ -1,16 +1,17 @@
 import { resolve, dirname } from 'path'
-import { createWriteStream, promises as fsAsync } from 'fs'
+import { createWriteStream } from 'fs'
 import { start as startREPL } from 'repl'
 
-import { percent, time, binary, prettyStringifyJSON } from 'source/common/format'
-import { createStepper } from 'source/common/time'
-import { isBasicObject } from 'source/common/check'
-import { basicArray } from 'source/common/verify'
-import { throttle } from 'source/common/function'
+import { percent, time, binary, prettyStringifyJSON } from 'source/common/format.js'
+import { createStepper } from 'source/common/time.js'
+import { isObjectAlike } from 'source/common/check.js'
+import { basicArray } from 'source/common/verify.js'
+import { throttle } from 'source/common/function.js'
 
-import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream'
-import { configurePid } from 'source/node/module/Pid'
-import { fetchWithJump } from 'source/node/net'
+import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
+import { readBuffer, writeBuffer, readText } from 'source/node/fs/File.js'
+import { configurePid } from 'source/node/module/Pid.js'
+import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620
@@ -22,7 +23,7 @@ import { fetchWithJump } from 'source/node/net'
 //   `.../npm/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../npm/node_modules/` // allow this and related module to resolve
 //   `.../.npm/_npx/####/lib/node_modules/@dr-js/*/bin/function.js` + `../../../../` = `.../.npm/_npx/####/lib/node_modules/` // allow this and related module to resolve
 // NOTE:
-//   currently for the `output-gitignore` code, output of `require('@dr-js/core/package').version` will be
+//   currently for the `output-gitignore` code, output of `require('@dr-js/core/package.json').version` will be
 //   the version from `./node_modules/@dr-js/core/package.json`, since it's higher in the path list,
 //   and the '../../../../' will result in an invalid path
 const modulePathHack = (newPath) => {
@@ -48,13 +49,13 @@ const evalScript = ( // NOTE: use eval not Function to derive local
 
 const stepper = createStepper()
 const logAuto = (...args) => console.log(
-  ...((args.length === 1 && isBasicObject(args[ 0 ]))
+  ...((args.length === 1 && isObjectAlike(args[ 0 ]))
     ? [ JSON.stringify(args[ 0 ], null, 2) ]
     : args),
   `(+${time(stepper())})`
 )
 
-const sharedOption = async (optionData, modeName) => {
+const sharedOption = (optionData, modeName) => {
   const { tryGet, tryGetFirst, getToggle } = optionData
 
   const log = getToggle('quiet') ? () => {} : logAuto
@@ -63,14 +64,14 @@ const sharedOption = async (optionData, modeName) => {
   const inputFile = tryGetFirst('input-file')
   const outputFile = tryGetFirst('output-file')
 
-  await configurePid({ filePid: tryGetFirst('pid-file') })
+  configurePid({ filePid: tryGetFirst('pid-file') })
 
-  const toBuffer = (value) => Buffer.isBuffer(value) ? value
-    : isBasicObject(value) ? JSON.stringify(value, null, 2)
-      : Buffer.from(value) // should be String
+  const autoBuffer = (value) => Buffer.isBuffer(value) ? value
+    : isObjectAlike(value) ? JSON.stringify(value, null, 2) // JSON String
+      : value // should be String
   const outputValueAuto = async (value) => outputFile
-    ? fsAsync.writeFile(outputFile, toBuffer(value))
-    : writeBufferToStreamAsync(process.stdout, toBuffer(value))
+    ? writeBuffer(outputFile, autoBuffer(value))
+    : writeBufferToStreamAsync(process.stdout, autoBuffer(value))
   const outputStream = (stream) => quickRunletFromStream(
     stream,
     outputFile ? createWriteStream(outputFile) : process.stdout
@@ -82,7 +83,7 @@ const sharedOption = async (optionData, modeName) => {
   }
 }
 
-// NOTE: for `@dr-js/node` to reuse & extend
+// NOTE: for `@dr-js/dev` to reuse & extend
 const sharedMode = async ({
   // sharedPack
   optionData, modeName,
@@ -91,15 +92,14 @@ const sharedMode = async ({
   // patchModulePath overwrite, so more patch path can be added
   patchMP = patchModulePath,
 
-  // fetch overwrite for `@dr-js/node` to add http-proxy support
-  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: use below option
-  fetchWJ = fetchWithJump, fetchUA = fetchUserAgent
+  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: no need to share
+  fetchUA = fetchUserAgent // TODO: DEPRECATE: no need to share
 }) => {
   switch (modeName) {
     case 'eval': {
       await patchMP()
       const result = await evalScript(
-        inputFile ? String(await fsAsync.readFile(inputFile)) : argumentList[ 0 ],
+        inputFile ? await readText(inputFile) : argumentList[ 0 ],
         inputFile || resolve('__SCRIPT_STRING__'),
         inputFile ? argumentList : argumentList.slice(1),
         optionData
@@ -110,13 +110,13 @@ const sharedMode = async ({
       await patchMP()
       return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
 
-    case 'fetch': {
+    case 'fetch': { // TODO: DEPRECATE: no need to share
       let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
       timeout = Number(timeout) || 0 // in msec, 0 for unlimited
-      const body = inputFile ? await fsAsync.readFile(inputFile) : null
+      const body = inputFile ? await readBuffer(inputFile) : null
       let isDone = false
-      const response = await fetchWJ(initialUrl, {
+      const response = await fetchWithJumpProxy(initialUrl, {
         method, timeout, jumpMax, body,
         headers: { 'accept': '*/*', 'user-agent': fetchUA }, // patch for sites require a UA, like GitHub
         onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),

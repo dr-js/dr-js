@@ -1,6 +1,6 @@
-import { clock } from 'source/common/time'
-import { getDist } from 'source/common/geometry/D2/Vector'
-import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/BoundingRect'
+import { clock } from 'source/common/time.js'
+import { getDist } from 'source/common/geometry/D2/Vector.js'
+import { isContainPoint as isBoundingRectContainPoint } from 'source/common/geometry/D2/BoundingRect.js'
 
 const { document, getComputedStyle, TouchEvent } = window
 

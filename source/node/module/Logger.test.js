@@ -1,14 +1,14 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
-import { strictEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { existPath } from 'source/node/file/Path'
-import { modifyDelete } from 'source/node/file/Modify'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { strictEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { existPath } from 'source/node/fs/Path.js'
+import { resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
 
-import { createSimpleLoggerExot, createLoggerExot } from './Logger'
+import { createSimpleLoggerExot, createLoggerExot } from './Logger.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-logger-gitignore/')
 

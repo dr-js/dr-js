@@ -1,4 +1,4 @@
-import { concatArrayBuffer, deconcatArrayBuffer, fromString, toString } from './ArrayBuffer'
+import { concatArrayBuffer, deconcatArrayBuffer, fromU16String, toU16String } from './ArrayBuffer.js'
 
 const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
 const HEADER_BYTE_SIZE = 4 // Math.ceil(Math.log2(MAX_PACKET_HEADER_SIZE) / 8)
@@ -21,14 +21,16 @@ const parseArrayBufferHeader = (arrayBufferPair) => {
   ]
 }
 
-const packArrayBufferPacket = (headerString, payloadArrayBuffer = EMPTY_ARRAY_BUFFER) => concatArrayBuffer([
-  ...packArrayBufferHeader(fromString(headerString)),
+const packArrayBufferPacket = (headerU16String, payloadArrayBuffer = EMPTY_ARRAY_BUFFER) => concatArrayBuffer([
+  ...packArrayBufferHeader(fromU16String(headerU16String)),
   payloadArrayBuffer
 ])
 
 const parseArrayBufferPacket = (arrayBufferPacket) => {
   const [ headerArrayBuffer, payloadOffset ] = parseArrayBufferHeader(arrayBufferPacket)
-  return [ toString(headerArrayBuffer), arrayBufferPacket.slice(payloadOffset) ]
+  const headerU16String = toU16String(headerArrayBuffer)
+  const payloadArrayBuffer = arrayBufferPacket.slice(payloadOffset)
+  return [ headerU16String, payloadArrayBuffer ]
 }
 
 const packChainArrayBufferPacket = (arrayBufferList = []) => {

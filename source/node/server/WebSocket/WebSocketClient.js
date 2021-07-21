@@ -1,8 +1,8 @@
 import { get as httpGet } from 'http'
 import { get as httpsGet } from 'https'
-import { catchSync } from 'source/common/error'
-import { WEBSOCKET_VERSION, getRequestKey, getRespondKey } from './function'
-import { createWebSocket } from './WebSocket'
+import { catchSync } from 'source/common/error.js'
+import { WEBSOCKET_VERSION, getRequestKey, getRespondKey } from './function.js'
+import { createWebSocket } from './WebSocket.js'
 
 const VALID_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])
 const SECURE_WEBSOCKET_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])

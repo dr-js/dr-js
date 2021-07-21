@@ -1,14 +1,14 @@
-import { strictEqual, doThrow, doNotThrow } from 'source/common/verify'
-import { createStateStoreLite } from 'source/common/immutable/StateStore'
+import { strictEqual, doThrow, doNotThrow } from 'source/common/verify.js'
+import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
 import {
   createRouteMap,
   createResponderRouter,
   appendRouteMap,
   getRouteParamAny,
   getRouteParam
-} from './Router'
+} from './Router.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Server.Responder.Router', () => {
   it('appendRouteMap()', () => {

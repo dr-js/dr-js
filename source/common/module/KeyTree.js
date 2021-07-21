@@ -1,5 +1,5 @@
-import { compareString } from 'source/common/compare'
-import { createTreeDepthFirstSearch } from 'source/common/data/Tree'
+import { compareString } from 'source/common/compare.js'
+import { createTreeDepthFirstSearch } from 'source/common/data/Tree.js'
 
 // NOTE:
 // - keyTreeJSON (source data):

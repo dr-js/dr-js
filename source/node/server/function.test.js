@@ -1,8 +1,12 @@
-import { strictEqual } from 'source/common/verify'
-import { getUnusedPort, autoTestServerPort } from './function'
-import { createServerExot } from './Server'
+import { strictEqual } from 'source/common/verify.js'
+import { createServerExot } from './Server.js'
 
-const { describe, it } = global
+import {
+  getUnusedPort, autoTestServerPort,
+  getWSProtocolListParam, packWSProtocolListParam
+} from './function.js'
+
+const { describe, it } = globalThis
 
 describe('Node.Server.function', () => {
   it('getUnusedPort() single', async () => {
@@ -64,5 +68,16 @@ describe('Node.Server.function', () => {
     await Promise.all(occupyPortServerList.map(({ down }) => down()))
 
     strictEqual(resultPort, expectPort, 'should pick detected unused port')
+  })
+
+  it('getWSProtocolListParam/packWSProtocolListParam', () => {
+    const key = '1234567890~`!@#$%^&*()_+-=[]{}:";\',.<>/?'
+    const value = '~`!@#$%^&*()_+-=[]{}:";\',.<>/?'
+    const param = packWSProtocolListParam(key, value)
+
+    strictEqual(
+      getWSProtocolListParam([ '', key, value, param ], key),
+      value
+    )
   })
 })

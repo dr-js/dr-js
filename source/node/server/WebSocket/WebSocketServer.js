@@ -1,6 +1,6 @@
-import { catchSync } from 'source/common/error'
-import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRespondKey } from './function'
-import { createWebSocket } from './WebSocket'
+import { catchSync } from 'source/common/error.js'
+import { WEBSOCKET_VERSION, WEBSOCKET_EVENT, getRespondKey } from './function.js'
+import { createWebSocket } from './WebSocket.js'
 
 const DEFAULT_ON_UPGRADE_REQUEST = (webSocket, request, bodyHeadBuffer) => webSocket.doCloseSocket() // DEFAULT will close socket
 

@@ -1,15 +1,15 @@
 import { resolve } from 'path'
 import { unlinkSync, writeFileSync } from 'fs'
-import { getUnusedPort } from 'source/node/server/function'
-import { createServerExot, createRequestListener } from 'source/node/server/Server'
-import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send'
-import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router'
+import { getUnusedPort } from 'source/node/server/function.js'
+import { createServerExot, createRequestListener } from 'source/node/server/Server.js'
+import { responderSendBuffer, responderSendJSON } from 'source/node/server/Responder/Send.js'
+import { createRouteMap, createResponderRouter } from 'source/node/server/Responder/Router.js'
 import {
   loadRemoteScript, loadLocalScript, loadScript,
   loadRemoteJSON, loadLocalJSON, loadJSON
-} from './resource'
+} from './resource.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const BUFFER_SCRIPT = Buffer.from(`{
   // Simple script file, used for js test

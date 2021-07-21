@@ -33,5 +33,5 @@ The limitation:
   check and test the result
 
 Code sample:
-- 📄 [commonHTML.js](./commonHTML.js)
+- 📄 [HTML.js](./HTML.js)
 - 📄 [source-bin/server/websocketGroup.js](../../../source-bin/server/websocketGroup.js)

@@ -1,7 +1,7 @@
-import { createInsideOutPromise } from 'source/common/function'
-import { requestHttp } from 'source/node/net'
-import { createWSBase } from './Base'
-import { WEBSOCKET_VERSION, getRequestKey, getRespondKey, packProtocolList } from './function'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { requestHttp } from 'source/node/net.js'
+import { createWSBase } from './Base.js'
+import { WEBSOCKET_VERSION, getRequestKey, getRespondKey, packProtocolList } from './function.js'
 
 const VALID_PROTOCOL_SET = new Set([ 'wss:', 'ws:', 'https:', 'http:' ])
 const SECURE_PROTOCOL_SET = new Set([ 'wss:', 'https:' ])

@@ -1,13 +1,13 @@
-import { stringifyEqual } from 'source/common/verify'
-import { percent } from 'source/common/format'
 import { deflateRawSync, inflateRawSync } from 'zlib'
+import { stringifyEqual } from 'source/common/verify.js'
+import { percent } from 'source/common/format.js'
 
 import {
   packGz64, unpackGz64,
   packBr64, unpackBr64
-} from './Z64String'
+} from './Z64String.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const TEST_STRING = JSON.stringify(require('../../../package.json'))
 

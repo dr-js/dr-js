@@ -1,6 +1,6 @@
-import { basicObject as verifyBasicObject, basicFunction as verifyBasicFunction } from 'source/common/verify'
-import { objectMerge } from './Object'
-import { arrayMatchPush, arrayMatchDelete } from './Array'
+import { basicObject as verifyBasicObject, basicFunction as verifyBasicFunction } from 'source/common/verify.js'
+import { objectMerge } from './Object.js'
+import { arrayMatchPush, arrayMatchDelete } from './Array.js'
 
 const createStateStore = (state) => {
   verifyBasicObject(state, 'initialState should be basic Object')

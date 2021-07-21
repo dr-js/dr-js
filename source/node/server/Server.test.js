@@ -1,8 +1,8 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { fetchLikeRequest } from 'source/node/net'
-import { bufferToReadableStream } from 'source/node/data/Stream'
-import { createServerExot, createRequestListener } from './Server'
-import { getUnusedPort } from './function'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { fetchLikeRequest } from 'source/node/net.js'
+import { bufferToReadableStream } from 'source/node/data/Stream.js'
+import { createServerExot, createRequestListener } from './Server.js'
+import { getUnusedPort } from './function.js'
 import {
   responderSendBuffer,
   responderSendBufferRange,
@@ -11,10 +11,10 @@ import {
   responderSendStreamRange,
   responderSendStreamCompress,
   responderSendJSON
-} from './Responder/Send'
-import { createRouteMap, createResponderRouter, getRouteParamAny, getRouteParam } from './Responder/Router'
+} from './Responder/Send.js'
+import { createRouteMap, createResponderRouter, getRouteParamAny, getRouteParam } from './Responder/Router.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const TEST_BUFFER_TEXT = 'TEST BUFFER!'.repeat(32)
 const TEST_BUFFER = Buffer.from(TEST_BUFFER_TEXT)

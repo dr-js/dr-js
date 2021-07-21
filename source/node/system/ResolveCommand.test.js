@@ -1,10 +1,10 @@
-import { strictEqual } from 'source/common/verify'
+import { strictEqual } from 'source/common/verify.js'
 import {
   resolveCommandName,
   resolveCommandNameAsync
-} from './ResolveCommand'
+} from './ResolveCommand.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.ResolveCommand', () => {
   const COMMAND_NAME_LIST = [

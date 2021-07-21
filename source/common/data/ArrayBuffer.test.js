@@ -1,15 +1,16 @@
-import { strictEqual } from 'source/common/verify'
-import { time } from 'source/common/format'
-import { createStepper } from 'source/common/time'
-import { getSampleRange, getSample } from 'source/common/math/sample'
+import { strictEqual } from 'source/common/verify.js'
+import { time } from 'source/common/format.js'
+import { createStepper } from 'source/common/time.js'
+import { getSampleRange, getSample } from 'source/common/math/sample.js'
+import { encode } from './Base64.js'
 import {
   isEqualArrayBuffer,
   concatArrayBuffer,
-  fromString,
-  toString
-} from './ArrayBuffer'
+  fromU16String, toU16String,
+  calcSHA256ArrayBuffer
+} from './ArrayBuffer.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('Common.Data.ArrayBuffer', () => {
   // test full 16bit range, both odd and even
@@ -46,22 +47,27 @@ describe('Common.Data.ArrayBuffer', () => {
     ), true)
   })
 
-  it('StringArrayBuffer', () => {
-    strictEqual(string0, toString(fromString(string0)))
-    strictEqual(string1, toString(fromString(string1)))
+  it('fromU16String(),toU16String()', () => {
+    strictEqual(string0, toU16String(fromU16String(string0)))
+    strictEqual(string1, toU16String(fromU16String(string1)))
 
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromString(toString(arrayBuffer0))), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromString(toString(arrayBuffer1))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromU16String(toU16String(arrayBuffer0))), true)
+    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromU16String(toU16String(arrayBuffer1))), true)
   })
-
-  it('stress', () => {
+  it('[stress] fromU16String(),toU16String()', () => {
     const stepper = createStepper()
     const arrayBufferBig = concatArrayBuffer(getSample(() => arrayBuffer0, 1024)) // 1024 * 65536 = 64MiB
     info('done build data', time(stepper()))
-    const string = toString(arrayBufferBig)
-    info('toString data', time(stepper()))
-    const arrayBufferOutput = fromString(string)
-    info('fromString data', time(stepper()))
+    const string = toU16String(arrayBufferBig)
+    info('toU16String data', time(stepper()))
+    const arrayBufferOutput = fromU16String(string)
+    info('fromU16String data', time(stepper()))
     strictEqual(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig), true)
+  })
+
+  it('calcSHA256ArrayBuffer()', async () => {
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(0))), '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(8))), 'r1Vw9aGBC3r3jK9LxwpmDw31HkK6+R1N5bIyjeDoPfw=')
+    strictEqual(encode(await calcSHA256ArrayBuffer(new ArrayBuffer(64))), '9aX9QtFqIDAnmO9u0wmXm0MAPSMg2fDo6pgxqSdZ+0s=')
   })
 })

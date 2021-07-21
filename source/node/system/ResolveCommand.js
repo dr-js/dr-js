@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process'
 import { resolve } from 'path'
-import { run } from 'source/node/run'
+import { runStdout } from 'source/node/run.js'
 
 const configureLinux = () => [
   'which', // do not search cwd // https://ss64.com/bash/which.html
@@ -35,8 +35,7 @@ const resolveCommandName = (commandName, cwd) => { // if not found, result in em
 }
 const resolveCommandNameAsync = async (commandName, cwd) => { // if not found, result in empty string: ""
   const [ checkCommand, processFunc ] = configureCached()
-  const { promise, stdoutPromise } = run([ checkCommand, commandName ], { cwd, quiet: true })
-  return processFunc(String(await promise.then(() => stdoutPromise, () => '')))
+  return processFunc(String(await runStdout([ checkCommand, commandName ], { cwd }).catch(() => '')))
 }
 
 // try resolve command, fast resolve if command itself contain path sep

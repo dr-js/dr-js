@@ -1,13 +1,13 @@
-import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify'
-import { setTimeoutAsync } from 'source/common/time'
-import { ASYNC_TASK_PHASE_MAP, getAsyncTaskPhase } from './AsyncTask'
+import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { ASYNC_TASK_PHASE_MAP, getAsyncTaskPhase } from './AsyncTask.js'
 import {
   ASYNC_TASK_QUEUE_KEY_MAP,
   createAsyncTaskQueue,
   createFilterStaleAsyncTask
-} from './AsyncTaskQueue'
+} from './AsyncTaskQueue.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const { IDLE, RUN, DONE } = ASYNC_TASK_PHASE_MAP
 const { PLAN, PLAN_PROMISE, QUERY, PROMISE, OUTPUT, STATUS } = ASYNC_TASK_QUEUE_KEY_MAP

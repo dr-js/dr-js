@@ -1,9 +1,9 @@
-import { strictEqual, stringifyEqual, notStrictEqual, notStringifyEqual, doThrow, doNotThrow } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { objectMerge } from './Object'
-import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore'
+import { strictEqual, stringifyEqual, notStrictEqual, notStringifyEqual, doThrow, doNotThrow } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { objectMerge } from './Object.js'
+import { createStateStore, createStateStoreEnhanced, createStateStoreLite } from './StateStore.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 const verifyBasicStateGetSet = (store, initialState) => {
   strictEqual(typeof (store.getState), 'function')

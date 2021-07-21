@@ -1,13 +1,13 @@
-import { setTimeoutAsync } from 'source/common/time'
-import { arraySplitChunk } from 'source/common/immutable/Array'
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { arraySplitChunk } from 'source/common/immutable/Array.js'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
 
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { createRequestListener, describeServerOption } from 'source/node/server/Server'
-import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from 'source/node/server/Responder/Common'
-import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from 'source/node/server/Responder/Send'
-import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'source/node/server/Responder/Router'
-import { addExitListenerLossyOnce } from 'source/node/system/ExitListener'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { createRequestListener, describeServerOption } from 'source/node/server/Server.js'
+import { responderEnd, responderEndWithStatusCode, createResponderLog, createResponderLogEnd } from 'source/node/server/Responder/Common.js'
+import { responderSendBuffer, responderSendBufferCompress, responderSendJSON, prepareBufferData, createResponderFavicon } from 'source/node/server/Responder/Send.js'
+import { METHOD_MAP, createResponderRouter, createRouteMap, getRouteParam, createResponderRouteListHTML } from 'source/node/server/Responder/Router.js'
+import { addExitListenerLossyOnce } from 'source/node/system/ExitListener.js'
 
 const commonServerUp = async ({
   serverExot: { up, server, option }, log, routePrefix,

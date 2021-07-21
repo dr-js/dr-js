@@ -1,12 +1,11 @@
-import { strictEqual, doThrow, doThrowAsync } from 'source/common/verify'
-import { createInsideOutPromise } from 'source/common/function'
-import { setTimeoutAsync } from 'source/common/time'
-import { getRandomId } from 'source/common/math/random'
-import { getGlobal } from 'source/env/global'
+import { strictEqual, doThrow, doThrowAsync } from 'source/common/verify.js'
+import { createInsideOutPromise } from 'source/common/function.js'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { getRandomId } from 'source/common/math/random.js'
 
-import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot'
+import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 describe('source/common/module/Exot', () => {
   it('isExot()', () => {
@@ -20,32 +19,32 @@ describe('source/common/module/Exot', () => {
 
   it('createSampleExot() basic', async () => {
     const { id, up, down, isUp, sampleAsync, sampleSync } = createSampleExot({ sampleConfig: { key: 'basic' } })
-    info(`[before up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
 
     const upPromise = up((error) => {
       info(`unexpected error: ${error}`)
       throw error
     })
-    info(`[during up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
+    info(`[during up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     await upPromise
-    info(`[after up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), true)
+    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), true)
 
     await sampleAsync('pass')
     sampleSync('pass')
 
     const downPromise = down()
-    info(`[during down] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
+    info(`[during down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     await downPromise
-    info(`[after down] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
   })
 
   it('createSampleExot() error async', async () => {
     const { id, up, down, isUp, sampleAsync } = createSampleExot({ sampleConfig: { key: 'trouble async' } })
-    info(`[before up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
 
     const { promise, resolve, reject } = createInsideOutPromise()
 
@@ -57,8 +56,8 @@ describe('source/common/module/Exot', () => {
       info('get expected error')
       down().then(resolve)
     })
-    info(`[after up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), true)
+    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), true)
 
     // pass|late-check-error|exot-error
     await sampleAsync('pass')
@@ -73,12 +72,12 @@ describe('source/common/module/Exot', () => {
       info('should not be here, either')
       process.exit(-3)
     })
-    info(`[during async func] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), true)
+    info(`[during async func] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), true)
 
     await promise
-    info(`[after async func ExotError] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[after async func ExotError] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
 
     info('## already downed: async ExotError -> onExotError (should do nothing)')
     sampleAsync('exot-error').then(() => {
@@ -91,21 +90,21 @@ describe('source/common/module/Exot', () => {
 
     // allow down again
     await down()
-    info(`[after down (again)] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
   })
 
   it('createSampleExot() error sync', async () => {
     const { id, up, down, isUp, sampleSync } = createSampleExot({ sampleConfig: { key: 'trouble async' } })
-    info(`[before up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
 
     await up((error) => {
       info(`should not be here, error: ${error}`)
       process.exit(-4)
     })
-    info(`[after up] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), true)
+    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), true)
 
     // pass|late-check-error|exot-error
     sampleSync('pass')
@@ -115,20 +114,20 @@ describe('source/common/module/Exot', () => {
     info('## sync ExotError -> throw -> down')
     doThrow(() => sampleSync('exot-error'))
 
-    info(`[after sync func Error] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), true)
+    info(`[after sync func Error] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), true)
 
     await down() // manually
-    info(`[after down] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
 
     info('## already downed: sync ExotError -> throw')
     doThrow(() => sampleSync('exot-error'))
 
     // allow down again
     await down()
-    info(`[after down (again)] isUp: ${isUp()}, global[ id ]: ${global[ id ]}`)
-    strictEqual(Boolean(global[ id ]), false)
+    info(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    strictEqual(Boolean(globalThis[ id ]), false)
   })
 
   // TODO: it('createExotGroup()', async () => {})
@@ -150,7 +149,7 @@ const createSampleExot = ({ // most Exot create func should be just sync, and mo
     if (_isUp) throw new Error('already up')
     if (!onExotError) throw new Error('expect onExotError to receive ExotError notice')
     await setTimeoutAsync(10) // pretend WORKING
-    getGlobal()[ id ] = { id, sampleConfig }
+    globalThis[ id ] = { id, sampleConfig }
     _onExotError = onExotError
     _isUp = true // late set (call up again during up should be a bug, a check here is optional, but not required)
   }
@@ -160,7 +159,7 @@ const createSampleExot = ({ // most Exot create func should be just sync, and mo
     _onExotError = undefined
     _isUp = false // early set (since this should not throw)
     await setTimeoutAsync(10) // pretend WORKING
-    delete getGlobal()[ id ]
+    delete globalThis[ id ]
   }
 
   // NOTE: not extend state to `up.../up/down.../down` to keep the pattern simple, and when lifecycle code is separated and in one place, prevent double calling is easier

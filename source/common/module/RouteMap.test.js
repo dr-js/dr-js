@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual, doThrow, doNotThrow } from 'source/common/verify'
+import { strictEqual, stringifyEqual, doThrow, doNotThrow } from 'source/common/verify.js'
 import {
   parseRouteToMap,
   findRouteFromMap,
@@ -7,9 +7,9 @@ import {
   parseRouteUrl,
   getRouteParamAny,
   getRouteParam
-} from './RouteMap'
+} from './RouteMap.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Module.RouteMap', () => {
   it('parseRouteToMap(), findRouteFromMap()', () => {

@@ -1,6 +1,6 @@
-import { END, SKIP, REDO, createPack } from 'source/common/module/Runlet'
-import { createBufferRefragPool } from 'source/node/data/Buffer'
-import { OPCODE_TYPE, BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function'
+import { END, SKIP, REDO, createPack } from 'source/common/module/Runlet.js'
+import { createBufferRefragPool } from 'source/node/data/Buffer.js'
+import { OPCODE_TYPE, BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function.js'
 
 const DECODE_STAGE_INITIAL_OCTET = 0
 const DECODE_STAGE_EXTEND_DATA_LENGTH_2 = 1

@@ -1,12 +1,12 @@
-import { strictEqual } from 'source/common/verify'
+import { includes, strictEqual } from 'source/common/verify.js'
 import {
   getRandomInt,
   getRandomIntList,
   getRandomId,
   getRandomArrayBuffer
-} from './random'
+} from './random.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Common.Math.Random', () => {
   it('getRandomInt()', () => {
@@ -26,7 +26,7 @@ describe('Common.Math.Random', () => {
 
   it('getRandomId()', () => {
     strictEqual(getRandomId('[abc]').startsWith('[abc]'), true)
-    strictEqual(getRandomId().includes('-'), true)
+    includes(getRandomId(), '-')
   })
 
   it('getRandomArrayBuffer()', () => {

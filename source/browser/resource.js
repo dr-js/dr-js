@@ -1,16 +1,16 @@
-import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME'
-import { createElement } from './DOM'
+import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
+import { createElement } from './DOM.js'
 
 const { document, fetch } = window
 
-const loadText = async (uri) => (await fetch(uri)).text() // TODO: DEPRECATE: move to `@dr-js/browser`
-const loadImage = (uri) => new Promise((resolve, reject) => createElement('img', { // TODO: DEPRECATE: move to `@dr-js/browser`
+const loadText = async (uri) => (await fetch(uri)).text() // TODO: DEPRECATE: moved to `@dr-js/dev`
+const loadImage = (uri) => new Promise((resolve, reject) => createElement('img', { // TODO: DEPRECATE: moved to `@dr-js/dev`
   src: uri,
   onerror: reject,
   onload: (event) => resolve(event.currentTarget)
 }))
 // TODO: document.body can be null if script is running from <head> tag and page is not fully loaded
-const loadScript = (uri) => new Promise((resolve, reject) => document.body.appendChild(createElement('script', { // TODO: DEPRECATE: move to `@dr-js/browser`
+const loadScript = (uri) => new Promise((resolve, reject) => document.body.appendChild(createElement('script', { // TODO: DEPRECATE: moved to `@dr-js/dev`
   src: uri,
   async: false,
   type: BASIC_EXTENSION_MAP.js,
@@ -19,9 +19,9 @@ const loadScript = (uri) => new Promise((resolve, reject) => document.body.appen
 })))
 
 export {
-  loadText, // TODO: DEPRECATE: move to `@dr-js/browser`
-  loadImage, // TODO: DEPRECATE: move to `@dr-js/browser`
-  loadScript // TODO: DEPRECATE: move to `@dr-js/browser`
+  loadText, // TODO: DEPRECATE: moved to `@dr-js/dev`
+  loadImage, // TODO: DEPRECATE: moved to `@dr-js/dev`
+  loadScript // TODO: DEPRECATE: moved to `@dr-js/dev`
 }
 
 export {
@@ -33,4 +33,4 @@ export {
   saveArrayBufferCache, // TODO: DEPRECATE:
   loadArrayBufferCache, // TODO: DEPRECATE:
   deleteArrayBufferCache // TODO: DEPRECATE:
-} from './DOM'
+} from './DOM.js'

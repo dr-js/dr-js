@@ -1,6 +1,6 @@
 import { resolve } from 'path'
-import { createDirectory } from 'source/node/file/Directory'
-import { createSafeWriteStream } from './SafeWrite'
+import { createDirectory } from 'source/node/fs/Directory.js'
+import { createSafeWriteStream } from './SafeWrite.js'
 
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 

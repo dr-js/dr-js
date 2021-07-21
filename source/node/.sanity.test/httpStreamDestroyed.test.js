@@ -1,10 +1,10 @@
 import { createServer, request } from 'http'
-import { setTimeoutAsync } from 'source/common/time'
-import { strictEqual } from 'source/common/verify'
-import { readableStreamToBufferAsync } from 'source/node/data/Stream'
-import { getUnusedPort } from 'source/node/server/function'
+import { setTimeoutAsync } from 'source/common/time.js'
+import { strictEqual } from 'source/common/verify.js'
+import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { getUnusedPort } from 'source/node/server/function.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 process.env.TEST_SANITY && describe('Node.SanityTest.HttpStreamDestroyed', () => {
   it('test inspired by the HTTP `stream.destroyed` change in nodejs v15.5.0', async () => { // check: https://github.com/nodejs/node/issues/36617

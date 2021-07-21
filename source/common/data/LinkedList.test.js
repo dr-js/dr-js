@@ -1,9 +1,9 @@
-import { strictEqual } from 'source/common/verify'
-import { getSampleRange } from 'source/common/math/sample'
-import { getRandomId, getRandomInt, getRandomIntList } from 'source/common/math/random'
-import { createDoublyLinkedList, createNode } from './LinkedList'
+import { strictEqual } from 'source/common/verify.js'
+import { getSampleRange } from 'source/common/math/sample.js'
+import { getRandomId, getRandomInt, getRandomIntList } from 'source/common/math/random.js'
+import { createDoublyLinkedList, createNode } from './LinkedList.js'
 
-const { describe, it, info = console.log } = global
+const { describe, it, info = console.log } = globalThis
 
 const getTestData = (length = getRandomInt(4, 16)) => {
   const linkedList = createDoublyLinkedList()

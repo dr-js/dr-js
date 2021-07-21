@@ -1,5 +1,5 @@
-import { clock } from 'source/common/time'
-import { createStateStoreLite } from 'source/common/immutable/StateStore'
+import { clock } from 'source/common/time.js'
+import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
 
 const DEFAULT_RESPONDER_ERROR = (store, error) => {
   store.webSocket.doCloseSocket(error)

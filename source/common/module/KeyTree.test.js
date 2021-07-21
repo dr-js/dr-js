@@ -1,8 +1,8 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { getRandomId } from 'source/common/math/random'
-import { createKeyTreeEnhanced } from './KeyTree'
+import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { getRandomId } from 'source/common/math/random.js'
+import { createKeyTreeEnhanced } from './KeyTree.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('source/common/module/KeyTree', () => {
   const NAME_KEY = getRandomId('key').replace(/\W/g, '')

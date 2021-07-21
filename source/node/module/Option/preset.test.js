@@ -1,19 +1,19 @@
-import { writeFileSync } from 'fs'
 import { resolve, dirname } from 'path'
-import { strictEqual, stringifyEqual } from 'source/common/verify'
-import { objectSortKey } from 'source/common/mutable/Object'
-import { packGz64, packBr64 } from 'source/node/data/Z64String'
-import { modifyDelete } from 'source/node/file/Modify'
-import { createOptionParser } from './parser'
-import { resetDirectory } from '@dr-js/dev/module/node/file'
+import { includes, strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { objectSortKey } from 'source/common/mutable/Object.js'
+import { packGz64, packBr64 } from 'source/node/data/Z64String.js'
+import { writeJSON } from 'source/node/fs/File.js'
+import { resetDirectory } from 'source/node/fs/Directory.js'
+import { modifyDelete } from 'source/node/fs/Modify.js'
+import { createOptionParser } from './parser.js'
 
 import {
   Preset,
   parseOptionMap,
   createOptionGetter
-} from './preset'
+} from './preset.js'
 
-const { describe, it, before, after } = global
+const { describe, it, before, after } = globalThis
 
 const TEST_ROOT = resolve(__dirname, './test-preset-gitignore/')
 
@@ -66,8 +66,8 @@ describe('Node.Module.Option.preset', () => {
     describe('formatUsage', () => {
       const message = 'TEST_MESSAGE'
       it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-      it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-      it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+      it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+      it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
     })
 
     describe('parseCLI', () => {
@@ -171,8 +171,8 @@ describe('Node.Module.Option.preset', () => {
 
       const message = 'TEST_MESSAGE'
       it('should pass formatUsage()', () => strictEqual(formatUsage().length > 0, true))
-      it('should pass formatUsage(message)', () => strictEqual(formatUsage(message).includes(message), true))
-      it('should pass formatUsage(error)', () => strictEqual(formatUsage(new Error(message)).includes(message), true))
+      it('should pass formatUsage(message)', () => includes(formatUsage(message), message))
+      it('should pass formatUsage(error)', () => includes(formatUsage(new Error(message)), message))
 
       it('should pass processOptionMap use nameCONFIG', () => processOptionMap(optionMap))
     })
@@ -236,14 +236,14 @@ describe('Node.Module.Option.preset', () => {
       })
       it('test CONFIG', async () => {
         const pathConfig = resolve(TEST_ROOT, 'test-config.json')
-        writeFileSync(pathConfig, JSON.stringify({
+        await writeJSON(pathConfig, {
           optionToggle: true,
           // optionToggleMissing: true,
           optionToggleTruthy: true,
           optionToggleFalsy: 'FALSE', // not case-sensitive
           optionString: 'ABC',
           optionPath: 'A/B/C/file'
-        }))
+        })
         const { getFirst, tryGetFirst, pwd } = createOptionGetter(await parseOptionMap({
           parseCLI, parseENV, parseCONFIG, processOptionMap,
           optionCLI: [

@@ -1,4 +1,4 @@
-import { Preset, prepareOption } from 'source/node/module/Option/preset'
+import { Preset, prepareOption } from 'source/node/module/Option/preset.js'
 
 const parseList = (...args) => args.map((compactFormat) => Preset.parseCompact(compactFormat, {
   optional: true // set all optional
@@ -24,7 +24,7 @@ const COMMON_FORMAT_LIST = parseList(
 const MODE_FORMAT_LIST = parseList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
   'repl,i/T|start node REPL',
-  'fetch,f//1-4|fetch url: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0',
+  'fetch,f//1-4|fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0',
 
   'wait/AI/0-1|wait specified time, in msec: $0=waitTime/2*1000',
   'echo/A|show args: $@=...args',
@@ -40,6 +40,7 @@ const MODE_FORMAT_LIST = parseList(
   'status,s/T|basic system status: -J=isOutputJSON',
   'open,o//0-2|use system default app to open uri or path: $0=uriOrPath/cwd, $1=isDetached/false',
   'which,w//1|resolve to full executable path: -R=resolveRoot/cwd, $0=commandNameOrPath',
+  'run/A|run command: $0=...argsList', // mostly for test OS exec
   'detach,bg/A|run command detached: -O=logFile/ignore, $0=...argsList',
   'process-status,ps//0-1|show system process status: -J=isOutputJSON, $0=outputMode/"pid--"',
   'process-signal,sig//0-2|send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"',

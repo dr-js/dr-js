@@ -1,9 +1,9 @@
-import { strictEqual } from 'source/common/verify'
-import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket'
-import { toArrayBuffer } from './Buffer'
-import { packBufferPacket, parseBufferPacket } from './BufferPacket'
+import { strictEqual } from 'source/common/verify.js'
+import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
+import { packArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { packBufferPacket, parseBufferPacket } from './BufferPacket.js'
 
-const { describe, it } = global
+const { describe, it } = globalThis
 
 describe('Node.Data.BufferPacket', () => {
   const headerString = 'headerString'
@@ -11,7 +11,7 @@ describe('Node.Data.BufferPacket', () => {
 
   it('packBufferPacket()', () => {
     const packet = packBufferPacket(headerString, payloadBuffer)
-    strictEqual(packet.length, packArrayBufferPacket(headerString, toArrayBuffer(payloadBuffer)).byteLength)
+    strictEqual(packet.length, packArrayBufferPacket(headerString, fromNodejsBuffer(payloadBuffer)).byteLength)
   })
 
   it('parseBufferPacket()', () => {
