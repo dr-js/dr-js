@@ -115,7 +115,7 @@ const uploadFileByChunk = async ({
     uploadChunk, // = async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
     onProgress // optional // = async (uploadedSize, totalSize) => {},
   })
-  fileHandle && fileHandle.close()
+  fileHandle && await fileHandle.close()
 }
 
 export {
