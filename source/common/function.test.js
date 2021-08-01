@@ -2,14 +2,13 @@ import { doThrow, stringifyEqual, strictEqual } from 'source/common/verify.js'
 import {
   debounce,
   throttle,
+  // once,
   lossyAsync,
+  withCache, withCacheAsync,
   withDelayArgvQueue,
-  withRepeat,
-  withRepeatAsync,
-  withRetry,
-  withRetryAsync,
-  withTimeoutAsync,
-  withTimeoutPromise,
+  withRepeat, withRepeatAsync,
+  withRetry, withRetryAsync,
+  withTimeoutAsync, withTimeoutPromise,
   createInsideOutPromise
 } from './function.js'
 import { setTimeoutAsync } from './time.js'
@@ -173,6 +172,14 @@ describe('Common.Function', () => {
     await test() // 2nd try
     resolve() // done
     return promise
+  })
+
+  it('withCache/withCacheAsync()', async () => {
+    const TEST_VALUE = {}
+    const getValue = withCache(() => TEST_VALUE)
+    strictEqual(getValue(), TEST_VALUE)
+    const getValueAsync = withCacheAsync(async () => TEST_VALUE)
+    strictEqual(await getValueAsync(), TEST_VALUE)
   })
 
   it('withDelayArgvQueue() debounce', async () => {
