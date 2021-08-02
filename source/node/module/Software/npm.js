@@ -3,7 +3,7 @@ import { statSync, realpathSync } from 'fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
-import { run, runSync, runStdout } from 'source/node/run.js'
+import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { spawnString } from '../function.js'
 
 const parsePackageNameAndVersion = (nameAndVersion) => {
@@ -66,9 +66,13 @@ const getPathNpmExecutable = () => {
 const getSudoArgs = () => process.platform === 'win32' ? [ getPathNpmExecutable() ] : [ 'sudo', getPathNpmExecutable() ]
 
 const runNpm = (argList = [], option) => run([ getPathNpmExecutable(), ...argList ], option)
+const runNpmStdout = (argList = [], option) => runStdout([ getPathNpmExecutable(), ...argList ], option)
 const runNpmSync = (argList = [], option) => runSync([ getPathNpmExecutable(), ...argList ], option)
+const runNpmStdoutSync = (argList = [], option) => runStdoutSync([ getPathNpmExecutable(), ...argList ], option)
 const runSudoNpm = (argList = [], option) => run([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmStdout = (argList = [], option) => runStdout([ ...getSudoArgs(), ...argList ], option)
 const runSudoNpmSync = (argList = [], option) => runSync([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmStdoutSync = (argList = [], option) => runStdoutSync([ ...getSudoArgs(), ...argList ], option)
 
 let cachePathNpmGlobalRoot // npm global package install path
 const getPathNpmGlobalRoot = () => {
@@ -130,8 +134,8 @@ export {
   toPackageTgzName,
 
   getPathNpmExecutable, getSudoArgs,
-  runNpm, runNpmSync,
-  runSudoNpm, runSudoNpmSync,
+  runNpm, runNpmStdout, runNpmSync, runNpmStdoutSync,
+  runSudoNpm, runSudoNpmStdout, runSudoNpmSync, runSudoNpmStdoutSync,
 
   getPathNpmGlobalRoot, fromGlobalNodeModules,
   getPathNpm, fromNpmNodeModules,
