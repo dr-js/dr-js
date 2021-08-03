@@ -3,10 +3,10 @@ import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 
 import {
   check, verify,
-  runDocker, runDockerSync,
+  runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
 
   checkCompose, verifyCompose,
-  runCompose, runComposeSync
+  runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
 } from './docker.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -24,22 +24,26 @@ describe('Node.Module.Software.Docker', () => {
       const { promise, stdoutPromise } = runDocker([ 'version' ], { quiet: true })
       await promise
       info(String(await stdoutPromise))
+      info(String(await runDockerStdout([ 'version' ])))
     })
 
-    it('runDockerSync()', async () => {
+    it('runDockerSync()', () => {
       const { stdout } = runDockerSync([ 'version' ], { quiet: true })
       info(String(stdout))
+      info(String(runDockerStdoutSync([ 'version' ])))
     })
 
     it('runCompose()', async () => {
       const { promise, stdoutPromise } = runCompose([ 'version' ], { quiet: true })
       await promise
       info(String(await stdoutPromise))
+      info(String(await runComposeStdout([ 'version' ])))
     })
 
-    it('runComposeSync()', async () => {
+    it('runComposeSync()', () => {
       const { stdout } = runComposeSync([ 'version' ], { quiet: true })
       info(String(stdout))
+      info(String(runComposeStdoutSync([ 'version' ])))
     })
   } else { // no docker installed (GitHub CI Macos)
     info('no docker installed')

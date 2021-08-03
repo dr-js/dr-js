@@ -35,7 +35,7 @@ const throttle = (func, wait = 250, isLeadingEdge = false) => {
   }
 }
 
-const once = (func) => {
+const once = (func) => { // NOTE: also support asyncFunc
   let isCalled = false
   return (...args) => {
     if (isCalled === true) return
@@ -63,6 +63,22 @@ const lossyAsync = (asyncFunc, onError = rethrowError) => {
       } catch (error) { onReject(error) }
     },
     getRunningPromise: () => runningPromise
+  }
+}
+
+// getter, delay heavy/long init till first use
+const withCache = (func) => {
+  let cache
+  return () => {
+    if (cache === undefined) cache = func()
+    return cache
+  }
+}
+const withCacheAsync = (asyncFunc) => {
+  let cache
+  return async () => {
+    if (cache === undefined) cache = await asyncFunc()
+    return cache
   }
 }
 
@@ -206,12 +222,10 @@ export {
   throttle,
   once,
   lossyAsync,
+  withCache, withCacheAsync,
   withDelayArgvQueue,
-  withRepeat,
-  withRepeatAsync,
-  withRetry,
-  withRetryAsync,
-  withTimeoutAsync,
-  withTimeoutPromise,
+  withRepeat, withRepeatAsync,
+  withRetry, withRetryAsync,
+  withTimeoutAsync, withTimeoutPromise,
   createInsideOutPromise
 }

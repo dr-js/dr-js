@@ -1,9 +1,10 @@
 import { resolve } from 'path'
 import { statSync, realpathSync } from 'fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
+import { compareSemVer } from 'source/common/module/SemVer.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
-import { runStdout } from 'source/node/run.js'
+import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { spawnString } from '../function.js'
 
 const parsePackageNameAndVersion = (nameAndVersion) => {
@@ -65,6 +66,15 @@ const getPathNpmExecutable = () => {
 }
 const getSudoArgs = () => process.platform === 'win32' ? [ getPathNpmExecutable() ] : [ 'sudo', getPathNpmExecutable() ]
 
+const runNpm = (argList = [], option) => run([ getPathNpmExecutable(), ...argList ], option)
+const runNpmStdout = (argList = [], option) => runStdout([ getPathNpmExecutable(), ...argList ], option)
+const runNpmSync = (argList = [], option) => runSync([ getPathNpmExecutable(), ...argList ], option)
+const runNpmStdoutSync = (argList = [], option) => runStdoutSync([ getPathNpmExecutable(), ...argList ], option)
+const runSudoNpm = (argList = [], option) => run([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmStdout = (argList = [], option) => runStdout([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmSync = (argList = [], option) => runSync([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmStdoutSync = (argList = [], option) => runStdoutSync([ ...getSudoArgs(), ...argList ], option)
+
 let cachePathNpmGlobalRoot // npm global package install path
 const getPathNpmGlobalRoot = () => {
   if (cachePathNpmGlobalRoot === undefined) cachePathNpmGlobalRoot = getPathNpmExecutable() && spawnString([ getPathNpmExecutable(), 'root', '-g' ]).trim()
@@ -113,7 +123,14 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
   tryRequire('https').request.__agent_base_https_request_patched__ = true // HACK: to counter HACK part1/2: https://github.com/TooTallNate/node-agent-base/commit/33af5450
   return fetchLikeRequest(url, {
     ...option,
-    agent: tryRequire(fromNpmNodeModules('make-fetch-happen/agent'))(url, option), // https://github.com/npm/make-fetch-happen/blob/v8.0.10/index.js#L270
+    agent: tryRequire(fromNpmNodeModules( // change from 7.16.0: https://github.com/npm/cli/commit/e92b5f2b
+      compareSemVer(tryRequire(fromNpmNodeModules('../package.json')).version, '7.16.0') < 0
+        // make-fetch-happen@5: https://github.com/npm/cli/blob/v6.14.14/node_modules/make-fetch-happen/index.js#L310
+        // make-fetch-happen@8: https://github.com/npm/cli/blob/v7.15.1/node_modules/make-fetch-happen/index.js#L267
+        ? 'make-fetch-happen/agent'
+        // make-fetch-happen@9: https://github.com/npm/cli/blob/v7.20.3/node_modules/make-fetch-happen/lib/remote.js#L31
+        : 'make-fetch-happen/lib/agent'
+    ))(url, option),
     secureEndpoint: new URL(url).protocol === 'https:' // HACK: to counter HACK part2/2
   })
 }
@@ -125,6 +142,9 @@ export {
   toPackageTgzName,
 
   getPathNpmExecutable, getSudoArgs,
+  runNpm, runNpmStdout, runNpmSync, runNpmStdoutSync,
+  runSudoNpm, runSudoNpmStdout, runSudoNpmSync, runSudoNpmStdoutSync,
+
   getPathNpmGlobalRoot, fromGlobalNodeModules,
   getPathNpm, fromNpmNodeModules,
 

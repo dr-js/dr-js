@@ -56,7 +56,7 @@
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
+  - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
   - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -260,13 +260,13 @@
 + 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
   - `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/Software/docker.js](source/node/module/Software/docker.js)
-  - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeSync`, `runDocker`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`
+  - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`
 + 📄 [source/node/module/Software/git.js](source/node/module/Software/git.js)
-  - `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitSync`, `setArgs`, `verify`
+  - `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`
 + 📄 [source/node/module/Software/hostStatus.js](source/node/module/Software/hostStatus.js)
   - `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`
 + 📄 [source/node/module/Software/npm.js](source/node/module/Software/npm.js)
-  - `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `toPackageTgzName`
+  - `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
 + 📄 [source/node/server/Proxy.js](source/node/server/Proxy.js)
   - `createTCPProxyListener`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
@@ -520,7 +520,7 @@
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
-    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
+    - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
     - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Time**
@@ -567,7 +567,7 @@
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **Software**
-      - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeSync`, `runDocker`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `toPackageTgzName`
+      - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
     - **Auth**
       - `AUTH_FILE`, `AUTH_FILE_GROUP`, `AUTH_SKIP`, `DEFAULT_AUTH_KEY`, `configureAuth`, `configureAuthFile`, `configureAuthFileGroup`, `configureAuthSkip`, `describeAuthFile`, `generateAuthCheckCode`, `generateAuthFile`, `loadAuthFile`, `saveAuthFile`, `verifyAuthCheckCode`
     - **EntityTag**
