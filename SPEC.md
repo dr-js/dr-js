@@ -151,6 +151,8 @@
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
   - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
++ 📄 [source/common/module/PackageJSON.js](source/common/module/PackageJSON.js)
+  - `collectDependency`, `getFirstBinPath`, `packPackageJSON`, `parsePackageNameAndVersion`, `sortPackageJSON`, `toPackageInfo`, `toPackageTgzName`
 + 📄 [source/common/module/Patch.js](source/common/module/Patch.js)
   - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
@@ -160,7 +162,7 @@
 + 📄 [source/common/module/RunletChip.js](source/common/module/RunletChip.js)
   - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
-  - `compareSemVer`, `parseSemVer`
+  - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
@@ -223,6 +225,8 @@
   - `configureLog`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLoggerExot`, `createSimpleLoggerExot`
++ 📄 [source/node/module/PackageJSON.js](source/node/module/PackageJSON.js)
+  - `editPackageJSON`, `loadPackageCombo`, `loadPackageInfo`, `loadPackageInfoList`, `savePackageInfo`, `toPackageJSONPath`, `toPackageRootPath`, `writePackageJSON`
 + 📄 [source/node/module/Permission.js](source/node/module/Permission.js)
   - `configurePermission`
 + 📄 [source/node/module/Pid.js](source/node/module/Pid.js)
@@ -492,6 +496,8 @@
       - `getLevenshteinDistance`
     - **MIME**
       - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
+    - **PackageJSON**
+      - `collectDependency`, `getFirstBinPath`, `packPackageJSON`, `parsePackageNameAndVersion`, `sortPackageJSON`, `toPackageInfo`, `toPackageTgzName`
     - **Patch**
       - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
     - **RouteMap**
@@ -501,7 +507,7 @@
     - **RunletChip**
       - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
     - **SemVer**
-      - `compareSemVer`, `parseSemVer`
+      - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
     - **TimedLookup**
       - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **TimerTag**
@@ -586,6 +592,8 @@
       - `configureLog`
     - **Logger**
       - `createLoggerExot`, `createSimpleLoggerExot`
+    - **PackageJSON**
+      - `editPackageJSON`, `loadPackageCombo`, `loadPackageInfo`, `loadPackageInfoList`, `savePackageInfo`, `toPackageJSONPath`, `toPackageRootPath`, `writePackageJSON`
     - **Permission**
       - `configurePermission`
     - **Pid**

@@ -7,15 +7,6 @@ import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
 import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { spawnString } from '../function.js'
 
-const parsePackageNameAndVersion = (nameAndVersion) => {
-  const nameAndVersionList = nameAndVersion.split('@')
-  if (nameAndVersionList.length < 2) return []
-  const version = nameAndVersionList.pop()
-  const name = nameAndVersionList.join('@')
-  if (!name || !version) return []
-  return [ name, version ]
-}
-
 const findUpPackageRoot = (path = __dirname) => {
   path = resolve(path) // normalize
   let prevPath
@@ -25,13 +16,6 @@ const findUpPackageRoot = (path = __dirname) => {
     path = resolve(path, '..')
   }
 }
-
-// check: https://github.com/npm/cli/blob/v6.14.5/lib/pack.js#L67-L71
-const toPackageTgzName = (name, version) => `${
-  name[ 0 ] === '@' ? name.substr(1).replace(/\//g, '-') : name
-}-${
-  version
-}.tgz`
 
 // TODO: NOTE:
 //   the location for npm itself and npm global install can be different normally, with `npm list -g --depth=0` we see npm it self get listed
@@ -137,9 +121,7 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
 const fetchWithJumpProxy = (initialUrl, option) => fetchWithJump(initialUrl, { fetch: fetchLikeRequestWithProxy, ...option })
 
 export {
-  parsePackageNameAndVersion,
   findUpPackageRoot,
-  toPackageTgzName,
 
   getPathNpmExecutable, getSudoArgs,
   runNpm, runNpmStdout, runNpmSync, runNpmStdoutSync,
@@ -152,3 +134,8 @@ export {
 
   fetchLikeRequestWithProxy, fetchWithJumpProxy
 }
+
+export {
+  parsePackageNameAndVersion, // TODO: DEPRECATE
+  toPackageTgzName // TODO: DEPRECATE
+} from 'source/common/module/PackageJSON.js'

@@ -1,8 +1,7 @@
 import { resolve } from 'path'
-import { strictEqual, stringifyEqual, doNotThrow } from 'source/common/verify.js'
+import { strictEqual, doNotThrow } from 'source/common/verify.js'
 
 import {
-  parsePackageNameAndVersion,
   findUpPackageRoot,
   getPathNpmExecutable, getSudoArgs,
   getPathNpmGlobalRoot, fromGlobalNodeModules,
@@ -13,16 +12,6 @@ import {
 const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.npm', () => {
-  it('parsePackageNameAndVersion()', () => {
-    stringifyEqual(parsePackageNameAndVersion('aaa@0.0.0'), [ 'aaa', '0.0.0' ])
-    stringifyEqual(parsePackageNameAndVersion('aaa@'), [])
-    stringifyEqual(parsePackageNameAndVersion('aaa'), [])
-
-    stringifyEqual(parsePackageNameAndVersion('@aaa/aaa@0.0.0'), [ '@aaa/aaa', '0.0.0' ])
-    stringifyEqual(parsePackageNameAndVersion('@aaa/aaa@'), [])
-    stringifyEqual(parsePackageNameAndVersion('@aaa/aaa'), [])
-  })
-
   it('findUpPackageRoot()', () => {
     strictEqual(
       findUpPackageRoot(__dirname),
