@@ -1,5 +1,7 @@
 import { promises as fsAsync } from 'fs'
+import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
+import { dupJSON } from 'source/common/data/function.js'
 
 const readBuffer = async (path) => fsAsync.readFile(path)
 const writeBuffer = async (path, bufferAlike) => fsAsync.writeFile(path, bufferAlike)
@@ -29,6 +31,10 @@ const editText = async (
 ) => writeText(pathTo, await editFunc(await readText(pathFrom)))
 
 const readJSON = async (path) => JSON.parse(await readText(path))
+const readJSONAlike = (path) => {
+  delete require.cache[ tryRequireResolve(path) ] // clear existing cache
+  return dupJSON(tryRequire(path)) // can be .js or .json, copy to prevent mutate module cache
+}
 const writeJSON = async (path, value) => writeBuffer(path, JSON.stringify(value))
 const writeJSONPretty = async (path, value) => writeBuffer(path, JSON.stringify(value, null, 2))
 const editJSON = async (
@@ -46,5 +52,5 @@ export {
   readBuffer, writeBuffer, appendBuffer, editBuffer,
   readArrayBuffer, writeArrayBuffer, appendArrayBuffer, editArrayBuffer,
   readText, writeText, appendText, editText,
-  readJSON, writeJSON, writeJSONPretty, editJSON, editJSONPretty
+  readJSON, readJSONAlike, writeJSON, writeJSONPretty, editJSON, editJSONPretty
 }
