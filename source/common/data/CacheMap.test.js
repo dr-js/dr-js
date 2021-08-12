@@ -1,4 +1,5 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { dupJSON } from './function.js'
 import { createCacheMap } from './CacheMap.js'
 
 const { describe, it } = globalThis
@@ -69,7 +70,7 @@ describe('Common.Data.CacheMap', () => {
     const packDataList = cacheMap.saveCacheList()
     // console.log('packDataList', packDataList)
 
-    const reloadPackDataList = JSON.parse(JSON.stringify(packDataList))
+    const reloadPackDataList = dupJSON(packDataList)
     stringifyEqual(reloadPackDataList, packDataList)
 
     cacheMap.loadCacheList(reloadPackDataList) // should skip all, since cache data is same
