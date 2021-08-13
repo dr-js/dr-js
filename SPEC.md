@@ -179,6 +179,8 @@
   - `getEnvironment`, `getGlobal`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
++ 📄 [source/node/kit.js](source/node/kit.js)
+  - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -697,6 +699,8 @@
       - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - **Kit**
+    - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
   - **Resource**
