@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 
 import {
@@ -31,12 +31,9 @@ describe('Browser.Data.Blob', () => {
   })
 
   it('parseBlobAsArrayBuffer()', async () => {
-    strictEqual(
-      isEqualArrayBuffer(
-        await parseBlobAsArrayBuffer(TEST_BLOB),
-        new TextEncoder().encode('123 abc !@#').buffer
-      ),
-      true
-    )
+    truthy(isEqualArrayBuffer(
+      await parseBlobAsArrayBuffer(TEST_BLOB),
+      new TextEncoder().encode('123 abc !@#').buffer
+    ))
   })
 })

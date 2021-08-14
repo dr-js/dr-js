@@ -1,6 +1,6 @@
 import { resolve, basename } from 'path'
 import { createReadStream, createWriteStream } from 'fs'
-import { strictEqual, doThrowAsync } from 'source/common/verify.js'
+import { doThrowAsync, truthy } from 'source/common/verify.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
@@ -20,8 +20,8 @@ before(setupRoot)
 after(clearRoot)
 
 describe('Node.Module.Archive.NpmTar', () => {
-  it('getNpmTar()', () => strictEqual(Boolean(getNpmTar()), true))
-  it('check()', () => strictEqual(check(), true))
+  it('getNpmTar()', () => truthy(Boolean(getNpmTar())))
+  it('check()', () => truthy(check()))
   it('verify()', verify)
 
   it('createCompressStream() & createExtractStream()', async () => {

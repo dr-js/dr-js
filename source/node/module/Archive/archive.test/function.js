@@ -1,6 +1,6 @@
 import { resolve, relative } from 'path'
 import { promises as fsAsync } from 'fs'
-import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { strictEqual, stringifyEqual, truthy } from 'source/common/verify.js'
 import { compareString } from 'source/common/compare.js'
 import { PATH_TYPE, getPathLstat, toPosixPath } from 'source/node/fs/Path.js'
 import { createDirectory, getDirInfoTree, resetDirectory } from 'source/node/fs/Directory.js'
@@ -91,10 +91,10 @@ const verifyOutputDirectory = async (path, isSkipMode600 = false) => {
     strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-755'))).mode.toString(8), 0o100755.toString(8))
 
     // TODO: NOTE: don't check file mode, currently it's 777 for ubuntu, and 755 for darwin
-    !isSkipMode600 && strictEqual((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-600'))).isSymbolicLink(), true)
-    strictEqual((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-644'))).isSymbolicLink(), true)
-    strictEqual((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-755'))).isSymbolicLink(), true)
-    strictEqual((await fsAsync.lstat(fromRoot(path, 'link-noop'))).isSymbolicLink(), true)
+    !isSkipMode600 && truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-600'))).isSymbolicLink())
+    truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-644'))).isSymbolicLink())
+    truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-755'))).isSymbolicLink())
+    truthy((await fsAsync.lstat(fromRoot(path, 'link-noop'))).isSymbolicLink())
   }
 }
 

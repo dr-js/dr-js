@@ -1,6 +1,6 @@
 import { resolve, sep } from 'path'
 import { homedir } from 'os'
-import { strictEqual, doThrow } from 'source/common/verify.js'
+import { strictEqual, doThrow, truthy } from 'source/common/verify.js'
 import { resetDirectory } from './Directory.js'
 
 import {
@@ -81,7 +81,7 @@ describe('Node.Fs.Path', () => {
 
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await copyPath(SOURCE_FILE, filePath1)
     await copyPath(SOURCE_FILE, filePath1)
@@ -96,7 +96,7 @@ describe('Node.Fs.Path', () => {
   it('renamePath()', async () => {
     let getExpectedError = false
     try { await renamePath(invalidPath, TEST_ROOT) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await renamePath(filePath1, filePath2)
     await renamePath(directoryPath3, directoryPath4)
@@ -110,7 +110,7 @@ describe('Node.Fs.Path', () => {
   it('deletePath()', async () => {
     let getExpectedError = false
     try { await deletePath(TEST_ROOT) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await deletePath(directoryPath2)
     await deletePath(directoryPath1)
@@ -121,13 +121,13 @@ describe('Node.Fs.Path', () => {
   })
 
   it('existPath()', async () => {
-    strictEqual(await existPath(TEST_ROOT), true)
-    strictEqual(await existPath(__dirname), true)
-    strictEqual(await existPath(__filename), true)
+    truthy(await existPath(TEST_ROOT))
+    truthy(await existPath(__dirname))
+    truthy(await existPath(__filename))
 
-    strictEqual(await existPath(invalidPath), false)
-    strictEqual(await existPath(resolve(__filename, 'not-exist')), false)
-    strictEqual(await existPath(resolve(TEST_ROOT, '11/22/33/44/55')), false)
+    truthy(!await existPath(invalidPath))
+    truthy(!await existPath(resolve(__filename, 'not-exist')))
+    truthy(!await existPath(resolve(TEST_ROOT, '11/22/33/44/55')))
   })
 
   it('nearestExistPath()', async () => {

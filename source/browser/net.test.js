@@ -1,4 +1,4 @@
-import { stringifyEqual, strictEqual } from 'source/common/verify.js'
+import { stringifyEqual, strictEqual, truthy } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { percent } from 'source/common/format.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
@@ -44,10 +44,10 @@ describe('Browser.Net', () => {
   })
 
   it('fetchLikeRequest(): arrayBuffer(), text(), json()', async () => {
-    strictEqual(isEqualArrayBuffer(
+    truthy(isEqualArrayBuffer(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).arrayBuffer(),
       new TextEncoder().encode('TEST BUFFER').buffer
-    ), true)
+    ))
     strictEqual(
       await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { timeout: 50 })).text(),
       'TEST BUFFER'
@@ -63,7 +63,7 @@ describe('Browser.Net', () => {
     const payloadPromise0 = response.arrayBuffer()
     const payloadPromise1 = response.arrayBuffer().catch(() => 'error')
     const payloadPromise2 = response.text().catch(() => 'error')
-    strictEqual(isEqualArrayBuffer(await payloadPromise0, new TextEncoder().encode('TEST BUFFER').buffer), true)
+    truthy(isEqualArrayBuffer(await payloadPromise0, new TextEncoder().encode('TEST BUFFER').buffer))
     strictEqual(await payloadPromise1, 'error') // again
     strictEqual(await payloadPromise2, 'error') // and again
   })

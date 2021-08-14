@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { truthy } from 'source/common/verify.js'
 import {
   isObjectShallowEqual,
   isArrayShallowEqual,
@@ -25,85 +25,85 @@ SAMPLE_ARRAY_4[ 50 ] = ''
 describe('Common.Immutable.Check', () => {
   describe('isObjectShallowEqual()', () => {
     it('self', () => {
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_0, SAMPLE_OBJECT_0), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_1), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1E, SAMPLE_OBJECT_1E), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_2, SAMPLE_OBJECT_2), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_3, SAMPLE_OBJECT_3), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_4, SAMPLE_OBJECT_4), true)
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_0, SAMPLE_OBJECT_0))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_1))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_1E, SAMPLE_OBJECT_1E))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_2, SAMPLE_OBJECT_2))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_3, SAMPLE_OBJECT_3))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_4, SAMPLE_OBJECT_4))
     })
     it('true', () => {
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_1E), true)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1E, SAMPLE_OBJECT_1), true)
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_1E))
+      truthy(isObjectShallowEqual(SAMPLE_OBJECT_1E, SAMPLE_OBJECT_1))
     })
     it('false', () => {
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_0, SAMPLE_OBJECT_1), false)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_0), false)
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_0, SAMPLE_OBJECT_1))
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_0))
 
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_2), false)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_2, SAMPLE_OBJECT_1), false)
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_2))
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_2, SAMPLE_OBJECT_1))
 
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_3), false)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_3, SAMPLE_OBJECT_1), false)
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_3))
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_3, SAMPLE_OBJECT_1))
 
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_4), false)
-      strictEqual(isObjectShallowEqual(SAMPLE_OBJECT_4, SAMPLE_OBJECT_1), false)
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_1, SAMPLE_OBJECT_4))
+      truthy(!isObjectShallowEqual(SAMPLE_OBJECT_4, SAMPLE_OBJECT_1))
     })
   })
 
   describe('isArrayShallowEqual()', () => {
     it('self', () => {
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_0), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1E), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_2), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_3), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_4), true)
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_0))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1E))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_2))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_3))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_4))
     })
     it('true', () => {
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1E), true)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1), true)
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1E))
+      truthy(isArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1))
     })
     it('false', () => {
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_1), false)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_0), false)
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_1))
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_0))
 
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_2), false)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_1), false)
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_2))
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_1))
 
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_3), false)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_1), false)
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_3))
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_1))
 
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_4), false)
-      strictEqual(isArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_1), false)
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_4))
+      truthy(!isArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_1))
     })
   })
 
   describe('isCompactArrayShallowEqual()', () => {
     it('self', () => {
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_0), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1E), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_2), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_3), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_4), true)
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_0))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1E))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_2))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_3))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_4))
     })
     it('true', () => {
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1E), true)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1), true)
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_1E))
+      truthy(isCompactArrayShallowEqual(SAMPLE_ARRAY_1E, SAMPLE_ARRAY_1))
     })
     it('false', () => {
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_1), false)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_0), false)
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_0, SAMPLE_ARRAY_1))
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_0))
 
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_2), false)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_1), false)
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_2))
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_2, SAMPLE_ARRAY_1))
 
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_3), false)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_1), false)
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_3))
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_3, SAMPLE_ARRAY_1))
 
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_4), false)
-      strictEqual(isCompactArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_1), false)
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_1, SAMPLE_ARRAY_4))
+      truthy(!isCompactArrayShallowEqual(SAMPLE_ARRAY_4, SAMPLE_ARRAY_1))
     })
   })
 })

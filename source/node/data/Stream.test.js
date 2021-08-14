@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import { createGzip, createGunzip, gzipSync } from 'zlib'
 import { createReadStream, createWriteStream } from 'fs'
 import { Stream, Readable, Writable, Duplex, PassThrough, Transform } from 'stream'
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { createStepper } from 'source/common/time.js'
 import { time, binary } from 'source/common/format.js'
 import { getSample } from 'source/common/math/sample.js'
@@ -66,25 +66,25 @@ after(async () => {
 
 describe('Node.Data.Stream', () => {
   it('isReadableStream', () => {
-    strictEqual(isReadableStream(new Stream()), false)
-    strictEqual(isReadableStream(new Readable()), true)
-    strictEqual(isReadableStream(new Writable()), false)
-    strictEqual(isReadableStream(new Duplex()), true)
-    strictEqual(isReadableStream(new PassThrough()), true)
-    strictEqual(isReadableStream(new Transform()), true)
-    strictEqual(isReadableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))), true)
-    strictEqual(isReadableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))), false)
+    truthy(!isReadableStream(new Stream()))
+    truthy(isReadableStream(new Readable()))
+    truthy(!isReadableStream(new Writable()))
+    truthy(isReadableStream(new Duplex()))
+    truthy(isReadableStream(new PassThrough()))
+    truthy(isReadableStream(new Transform()))
+    truthy(isReadableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))))
+    truthy(!isReadableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))))
   })
 
   it('isWritableStream', () => {
-    strictEqual(isWritableStream(new Stream()), false)
-    strictEqual(isWritableStream(new Readable()), false)
-    strictEqual(isWritableStream(new Writable()), true)
-    strictEqual(isWritableStream(new Duplex()), true)
-    strictEqual(isWritableStream(new PassThrough()), true)
-    strictEqual(isWritableStream(new Transform()), true)
-    strictEqual(isWritableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))), false)
-    strictEqual(isWritableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))), true)
+    truthy(!isWritableStream(new Stream()))
+    truthy(!isWritableStream(new Readable()))
+    truthy(isWritableStream(new Writable()))
+    truthy(isWritableStream(new Duplex()))
+    truthy(isWritableStream(new PassThrough()))
+    truthy(isWritableStream(new Transform()))
+    truthy(!isWritableStream(muteStreamError(createReadStream(FILE_NOT_EXIST))))
+    truthy(isWritableStream(muteStreamError(createWriteStream(FILE_NOT_WRITABLE))))
   })
 
   it('createReadStream error', async () => waitStreamStopAsync(
@@ -265,12 +265,12 @@ describe('Node.Data.Stream', () => {
       bufferToReadableStream(Buffer.from('\nPING\n')),
       process.stdout
     )
-    strictEqual(process.stdout.writable, true)
+    truthy(process.stdout.writable)
 
     await quickRunletFromStream(
       bufferToReadableStream(Buffer.from('\nPONG\n')),
       process.stdout
     )
-    strictEqual(process.stdout.writable, true)
+    truthy(process.stdout.writable)
   })
 })

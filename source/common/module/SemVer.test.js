@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual, doThrow } from 'source/common/verify.js'
+import { strictEqual, stringifyEqual, doThrow, truthy } from 'source/common/verify.js'
 import {
   parseSemVer, compareSemVer,
 
@@ -94,8 +94,8 @@ describe('Common.Module.SemVer', () => {
       return version
     }
     for (const [ version, versionSmaller ] of TEST_LIST.map(([ a, b ]) => [ versionFix(a), versionFix(b) ])) {
-      strictEqual(compareSemVer(version, versionSmaller) > 0, true, `"${version}" should be bigger than "${versionSmaller}"`)
-      strictEqual(compareSemVer(versionSmaller, version) < 0, true, `"${versionSmaller}" should be smaller than "${version}"`)
+      truthy(compareSemVer(version, versionSmaller) > 0, `"${version}" should be bigger than "${versionSmaller}"`)
+      truthy(compareSemVer(versionSmaller, version) < 0, `"${versionSmaller}" should be smaller than "${version}"`)
     }
   })
 

@@ -1,5 +1,5 @@
 import { resolve, basename } from 'path'
-import { strictEqual } from 'source/common/verify.js'
+import { truthy } from 'source/common/verify.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
 
 import {
@@ -19,7 +19,7 @@ before(setupRoot)
 after(clearRoot)
 
 describe('Node.Module.Archive.Archive', () => {
-  it('check()', () => strictEqual(check(), true))
+  it('check()', () => truthy(check()))
   it('verify()', verify)
 
   it('compressT7zAsync() & extractT7zAsync()', async () => {

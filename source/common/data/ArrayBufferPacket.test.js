@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { isEqualArrayBuffer, fromU16String } from './ArrayBuffer.js'
 import {
   HEADER_BYTE_SIZE,
@@ -37,22 +37,21 @@ describe('Common.Data.ArrayBufferPacket', () => {
     {
       const [ headerU16String, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString))
       strictEqual(headerString, headerU16String)
-      strictEqual(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload), true)
+      truthy(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload))
     }
 
     {
       const [ headerU16String, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString, payloadArrayBuffer))
       strictEqual(headerString, headerU16String)
-      strictEqual(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload), true)
+      truthy(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload))
     }
   })
 
   it('ChainArrayBufferPacket', () => {
     const chainArrayBufferPacket = packChainArrayBufferPacket(arrayBufferList)
     const parsedArrayBufferList = parseChainArrayBufferPacket(chainArrayBufferPacket)
-    arrayBufferList.forEach((arrayBuffer, index) => strictEqual(
+    arrayBufferList.forEach((arrayBuffer, index) => truthy(
       isEqualArrayBuffer(arrayBuffer, parsedArrayBufferList[ index ]),
-      true,
       `check strictEqual arrayBufferList[${index}]`
     ))
   })

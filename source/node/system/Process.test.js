@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { padTable } from 'source/common/format.js'
 import { run } from 'source/node/run.js'
 
@@ -24,8 +24,8 @@ describe('Node.System.Process', () => {
     const subProcessItem = result.find(({ ppid }) => ppid === process.pid)
     __DEV__ && console.log({ processItem, subProcessItem })
 
-    strictEqual(Boolean(processItem), true, 'should have this node process')
-    strictEqual(Boolean(subProcessItem), true, 'should have the sub process for list-process')
+    truthy(Boolean(processItem), 'should have this node process')
+    truthy(Boolean(subProcessItem), 'should have the sub process for list-process')
   })
 
   it('getProcessList() sub-process', async () => {
@@ -44,7 +44,7 @@ describe('Node.System.Process', () => {
     ))
     __DEV__ && console.log({ subProcessItem })
 
-    strictEqual(Boolean(subProcessItem), true, 'should have sub-process in list')
+    truthy(Boolean(subProcessItem), 'should have sub-process in list')
   })
 
   it('toProcessTree()', async () => {
@@ -54,8 +54,8 @@ describe('Node.System.Process', () => {
     const subProcessItem = processList.find(({ ppid }) => ppid === process.pid)
     __DEV__ && console.log({ processItem, subProcessItem })
 
-    strictEqual(Boolean(rootProcess), true, 'should have rootProcess')
-    strictEqual(Boolean(processItem.subTree), true, 'should have subTree in this node process')
+    truthy(Boolean(rootProcess), 'should have rootProcess')
+    truthy(Boolean(processItem.subTree), 'should have subTree in this node process')
     strictEqual(processItem.subTree[ subProcessItem.pid ], subProcessItem, 'should have in subTree the sub process for list-process')
   })
 })

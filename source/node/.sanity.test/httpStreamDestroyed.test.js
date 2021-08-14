@@ -1,6 +1,6 @@
 import { createServer, request } from 'http'
 import { setTimeoutAsync } from 'source/common/time.js'
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { getUnusedPort } from 'source/node/server/function.js'
 
@@ -26,13 +26,13 @@ process.env.TEST_SANITY && describe('Node.SanityTest.HttpStreamDestroyed', () =>
         info('[httpServer] requestBuffer.length', requestBuffer.length)
         await setTimeoutAsync(128)
         info('[httpServer] soc/req/res.destroyed wait128', request.socket.destroyed, request.destroyed, response.destroyed)
-        strictEqual(request.socket.destroyed, false, 'should not destroy before the response is sent')
+        truthy(!request.socket.destroyed, 'should not destroy before the response is sent')
         response.end(requestBuffer, () => {
           info('[httpServer] soc/req/res.destroyed end sent', request.socket.destroyed, request.destroyed, response.destroyed)
         })
         info('[httpServer] soc/req/res.destroyed end', request.socket.destroyed, request.destroyed, response.destroyed)
         httpServer.close(() => {
-          strictEqual(request.socket.destroyed, true, 'should destroy after server close')
+          truthy(request.socket.destroyed, 'should destroy after server close')
           info('[httpServer] soc/req/res.destroyed close', request.socket.destroyed, request.destroyed, response.destroyed)
           resolve()
         })
@@ -47,7 +47,7 @@ process.env.TEST_SANITY && describe('Node.SanityTest.HttpStreamDestroyed', () =>
         const responseBuffer = await readableStreamToBufferAsync(httpResponse)
         info('- [httpRequest] soc/req/res.destroyed read', httpRequest.socket.destroyed, httpRequest.destroyed, httpResponse.destroyed)
         info('- [httpRequest] responseBuffer.length', responseBuffer.length)
-        strictEqual(httpRequest.socket.destroyed, false, 'should not destroy before the response is sent')
+        truthy(!httpRequest.socket.destroyed, 'should not destroy before the response is sent')
       })
       httpRequest.end(PAYLOAD_BUFFER)
       info('- [httpRequest] created')
@@ -65,7 +65,7 @@ process.env.TEST_SANITY && describe('Node.SanityTest.HttpStreamDestroyed', () =>
         info('[httpServer] soc/req/res.destroyed read', request.socket.destroyed, request.destroyed, response.destroyed)
         info('[httpServer] requestBuffer.length', requestBuffer.length)
         await setTimeoutAsync(128)
-        strictEqual(httpRequest.socket.destroyed, true, 'should destroy since the client dropped')
+        truthy(httpRequest.socket.destroyed, 'should destroy since the client dropped')
         info('[httpServer] soc/req/res.destroyed wait128', request.socket.destroyed, request.destroyed, response.destroyed)
         response.end(requestBuffer)
         info('[httpServer] soc/req/res.destroyed end', request.socket.destroyed, request.destroyed, response.destroyed)

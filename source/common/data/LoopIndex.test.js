@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { truthy } from 'source/common/verify.js'
 import { createLoopIndex } from './LoopIndex.js'
 
 const { describe, it } = globalThis
@@ -7,21 +7,21 @@ describe('Common.Data.LoopIndex', () => {
   it('isReached()', () => {
     const { LOOP_INDEX_MAX, isReached } = createLoopIndex()
 
-    strictEqual(isReached(1, 0), true)
-    strictEqual(isReached(1, 1), true)
-    strictEqual(isReached(1, 2), false)
+    truthy(isReached(1, 0))
+    truthy(isReached(1, 1))
+    truthy(!isReached(1, 2))
 
-    strictEqual(isReached(2, 1), true)
-    strictEqual(isReached(2, 2), true)
-    strictEqual(isReached(2, LOOP_INDEX_MAX), true)
+    truthy(isReached(2, 1))
+    truthy(isReached(2, 2))
+    truthy(isReached(2, LOOP_INDEX_MAX))
 
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX - 2), true)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX - 1), true)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX), false)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, 0), false)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX + 1), false)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, 1), false)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX + 2), false)
-    strictEqual(isReached(LOOP_INDEX_MAX - 1, 2), false)
+    truthy(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX - 2))
+    truthy(isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX - 1))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, 0))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX + 1))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, 1))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, LOOP_INDEX_MAX + 2))
+    truthy(!isReached(LOOP_INDEX_MAX - 1, 2))
   })
 })

@@ -1,4 +1,4 @@
-import { strictEqual, doThrow } from 'source/common/verify.js'
+import { strictEqual, doThrow, truthy } from 'source/common/verify.js'
 
 import { probeSync, createArgListPack } from './function.js'
 
@@ -6,8 +6,8 @@ const { describe, it } = globalThis
 
 describe('Node.Module.function', () => {
   it('probeSync()', () => {
-    strictEqual(probeSync([ 'node', '--help' ], 'node'), true)
-    strictEqual(probeSync([ 'qwertyuiop1234567890', '--version' ], 'qwertyuiop1234567890'), false)
+    truthy(probeSync([ 'node', '--help' ], 'node'))
+    truthy(!probeSync([ 'qwertyuiop1234567890', '--version' ], 'qwertyuiop1234567890'))
   })
 
   it('createArgListPack() exist', () => {
@@ -16,7 +16,7 @@ describe('Node.Module.function', () => {
       () => probeSync([ 'node', '--help' ], 'node') ? args : undefined,
       'node should exist'
     )
-    strictEqual(check(), true)
+    truthy(check())
     strictEqual(verify(), args)
   })
 
@@ -25,7 +25,7 @@ describe('Node.Module.function', () => {
       () => probeSync([ 'qwertyuiop1234567890', '--version' ], 'qwertyuiop1234567890') ? [ 'non-exist' ] : undefined,
       'qwertyuiop1234567890 should not exist'
     )
-    strictEqual(check(), false)
+    truthy(!check())
     doThrow(verify)
   })
 })

@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { strictEqual, doNotThrow } from 'source/common/verify.js'
+import { strictEqual, doNotThrow, truthy } from 'source/common/verify.js'
 
 import {
   findUpPackageRoot,
@@ -63,15 +63,15 @@ describe('Node.Module.Software.npm', () => {
 
     { // test sample usage: https://www.npmjs.com/package/semver
       const semver = require(fromNpmNodeModules('semver'))
-      strictEqual(semver.satisfies('1.2.3', '1.x || >=2.5.0 || 5.0.0 - 7.2.3'), true)
+      truthy(semver.satisfies('1.2.3', '1.x || >=2.5.0 || 5.0.0 - 7.2.3'))
       strictEqual(semver.valid(semver.coerce('v2')), '2.0.0')
       strictEqual(semver.valid(semver.coerce('42.6.7.9.3-alpha')), '42.6.7')
     }
   })
 
   it('hasRepoVersion', async () => { // TODO: kinda slow
-    strictEqual(await hasRepoVersion('@dr-js/core', '0.4.0'), true)
-    strictEqual(await hasRepoVersion('@dr-js/core', '0.4.0-version-should-not-exist'), false)
-    strictEqual(await hasRepoVersion('@dr-js/package-should-not-exist', '0.4.0'), false)
+    truthy(await hasRepoVersion('@dr-js/core', '0.4.0'))
+    truthy(!await hasRepoVersion('@dr-js/core', '0.4.0-version-should-not-exist'))
+    truthy(!await hasRepoVersion('@dr-js/package-should-not-exist', '0.4.0'))
   })
 })

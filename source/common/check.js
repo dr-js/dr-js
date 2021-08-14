@@ -52,7 +52,6 @@ const isStringifyEqual = (value, target) => {
   else return false
 }
 
-
 export {
   isString,
   isBoolean, isTruthy,

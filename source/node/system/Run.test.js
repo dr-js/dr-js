@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { catchSync, catchPromise } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { describeRunOutcome, describeRunOutcomeSync, run, runSync } from './Run.js' // TODO: DEPRECATE: old test
@@ -28,8 +28,8 @@ describe('Node.System.Run', () => {
     const outcome = await promise
     info(TITLE_DESCRIBE + await describeRunOutcome(outcome))
     const stdoutString = String(await stdoutPromise)
-    strictEqual(stdoutString.includes('Run.test.js'), true)
-    strictEqual(stdoutString.includes('Run.js'), true)
+    truthy(stdoutString.includes('Run.test.js'))
+    truthy(stdoutString.includes('Run.js'))
 
     const { error } = await catchPromise(run({ command: TEST_BAD_COMMAND, argList: TEST_BAD_ARG_LIST, quiet: true }).promise)
     info(TITLE_DESCRIBE + await describeRunOutcome(error))
@@ -50,8 +50,8 @@ describe('Node.System.Run', () => {
     const outcome = runSync({ command: TEST_COMMAND, argList: TEST_ARG_LIST, option: { cwd: __dirname }, quiet: true })
     info(describeRunOutcomeSync(outcome))
     const stdoutString = String(outcome.stdout)
-    strictEqual(stdoutString.includes('Run.test.js'), true)
-    strictEqual(stdoutString.includes('Run.js'), true)
+    truthy(stdoutString.includes('Run.test.js'))
+    truthy(stdoutString.includes('Run.js'))
 
     const { error } = catchSync(runSync, { command: TEST_BAD_COMMAND, argList: TEST_BAD_ARG_LIST, quiet: true })
     info(TITLE_DESCRIBE + describeRunOutcomeSync(error)) // should be sync

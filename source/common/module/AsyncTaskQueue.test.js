@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual, stringifyEqual } from 'source/common/verify.js'
+import { strictEqual, notStrictEqual, stringifyEqual, truthy } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { ASYNC_TASK_PHASE_MAP, getAsyncTaskPhase } from './AsyncTask.js'
 import {
@@ -112,9 +112,9 @@ describe('source/common/module/AsyncTaskQueue', () => {
       1
     )
 
-    strictEqual(filterStaleAsyncTask({ [ OUTPUT ]: undefined, [ STATUS ]: { doneAt: undefined } }), true) // not done
-    strictEqual(filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 2 } }), true) // done but not stale
-    strictEqual(filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 1 } }), false) // just stale
-    strictEqual(filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 0 } }), false) // stale
+    truthy(filterStaleAsyncTask({ [ OUTPUT ]: undefined, [ STATUS ]: { doneAt: undefined } })) // not done
+    truthy(filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 2 } })) // done but not stale
+    truthy(!filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 1 } })) // just stale
+    truthy(!filterStaleAsyncTask({ [ OUTPUT ]: {}, [ STATUS ]: { doneAt: 0 } })) // stale
   })
 })

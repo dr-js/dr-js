@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { truthy } from 'source/common/verify.js'
 import {
   check, verify,
   getGitBranch, getGitCommitHash, getGitCommitMessage
@@ -7,7 +7,7 @@ import {
 const { describe, it, info = console.log } = globalThis
 
 describe('Node.Module.Software.git', () => {
-  it('check()', () => strictEqual(check(), true))
+  it('check()', () => truthy(check()))
   it('verify()', verify)
 
   it('getGitBranch()', () => info(`getGitBranch: ${getGitBranch()}`))
