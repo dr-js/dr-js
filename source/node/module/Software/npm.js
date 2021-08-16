@@ -51,12 +51,12 @@ const getPathNpmExecutable = () => {
 const getSudoArgs = () => process.platform === 'win32' ? [ getPathNpmExecutable() ] : [ 'sudo', getPathNpmExecutable() ]
 
 const runNpm = (argList = [], option) => run([ getPathNpmExecutable(), ...argList ], option)
-const runNpmStdout = (argList = [], option) => runStdout([ getPathNpmExecutable(), ...argList ], option)
 const runNpmSync = (argList = [], option) => runSync([ getPathNpmExecutable(), ...argList ], option)
+const runNpmStdout = (argList = [], option) => runStdout([ getPathNpmExecutable(), ...argList ], option)
 const runNpmStdoutSync = (argList = [], option) => runStdoutSync([ getPathNpmExecutable(), ...argList ], option)
 const runSudoNpm = (argList = [], option) => run([ ...getSudoArgs(), ...argList ], option)
-const runSudoNpmStdout = (argList = [], option) => runStdout([ ...getSudoArgs(), ...argList ], option)
 const runSudoNpmSync = (argList = [], option) => runSync([ ...getSudoArgs(), ...argList ], option)
+const runSudoNpmStdout = (argList = [], option) => runStdout([ ...getSudoArgs(), ...argList ], option)
 const runSudoNpmStdoutSync = (argList = [], option) => runStdoutSync([ ...getSudoArgs(), ...argList ], option)
 
 let cachePathNpmGlobalRoot // npm global package install path
@@ -124,8 +124,10 @@ export {
   findUpPackageRoot,
 
   getPathNpmExecutable, getSudoArgs,
-  runNpm, runNpmStdout, runNpmSync, runNpmStdoutSync,
-  runSudoNpm, runSudoNpmStdout, runSudoNpmSync, runSudoNpmStdoutSync,
+  runNpm, runNpmSync,
+  runNpmStdout, runNpmStdoutSync,
+  runSudoNpm, runSudoNpmSync,
+  runSudoNpmStdout, runSudoNpmStdoutSync,
 
   getPathNpmGlobalRoot, fromGlobalNodeModules,
   getPathNpm, fromNpmNodeModules,

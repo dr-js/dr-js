@@ -13,8 +13,7 @@ import {
   toPoolMap, toChipMap, toLinearChipList, quickConfigPend
 } from 'source/common/module/Runlet.js'
 import { readBuffer, appendBuffer } from 'source/node/fs/File.js'
-import { resetDirectory } from 'source/node/fs/Directory.js'
-import { modifyDelete } from 'source/node/fs/Modify.js'
+import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 
 import {
   isReadableStream, isWritableStream,
@@ -61,7 +60,7 @@ before(async () => {
   while ((loopCount -= 1) !== 0) await appendBuffer(TEST_INPUT, concatBuffer)
 })
 after(async () => {
-  await modifyDelete(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Data.Stream', () => {

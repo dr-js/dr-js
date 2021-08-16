@@ -2,8 +2,7 @@ import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { appendBuffer, readBuffer } from 'source/node/fs/File.js'
-import { resetDirectory } from 'source/node/fs/Directory.js'
-import { modifyDelete } from 'source/node/fs/Modify.js'
+import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import { getUnusedPort } from 'source/node/server/function.js'
 import { createServerExot, createRequestListener } from 'source/node/server/Server.js'
 import { responderEndWithStatusCode } from 'source/node/server/Responder/Common.js'
@@ -56,7 +55,7 @@ before(async () => {
   while ((loopCount -= 1) !== 0) await appendBuffer(TEST_FILE, sourceBuffer)
 })
 after(async () => {
-  await modifyDelete(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Module.FileChunkUpload', () => {

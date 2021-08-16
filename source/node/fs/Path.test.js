@@ -1,7 +1,7 @@
 import { resolve, sep } from 'path'
 import { homedir } from 'os'
 import { strictEqual, doThrow, truthy } from 'source/common/verify.js'
-import { resetDirectory } from './Directory.js'
+import { deleteDirectory, resetDirectory } from './Directory.js'
 
 import {
   STAT_ERROR,
@@ -41,19 +41,12 @@ const directoryPath2 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/e/'))
 const directoryPath3 = addTrailingSep(resolve(TEST_ROOT, 'a/e0/'))
 const directoryPath4 = addTrailingSep(resolve(TEST_ROOT, 'a/e1/'))
 
-const directoryPath5 = addTrailingSep(resolve(TEST_ROOT, 'a/b/'))
-const directoryPath6 = addTrailingSep(resolve(TEST_ROOT, 'a/'))
-
 before(async () => {
   await resetDirectory(TEST_ROOT)
 })
 
 after(async () => {
-  await deletePath(filePath2)
-  await deletePath(directoryPath4)
-  await deletePath(directoryPath5)
-  await deletePath(directoryPath6)
-  await deletePath(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Fs.Path', () => {

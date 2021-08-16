@@ -3,13 +3,15 @@ import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 
 import {
   check, verify,
-  runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
+  runDocker, runDockerSync,
+  runDockerStdout, runDockerStdoutSync,
 
   // checkLocalImage, pullImage, checkPullImage,
   getContainerLsList, // patchContainerLsListStartedAt, matchContainerLsList,
 
   checkCompose, verifyCompose,
-  runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
+  runCompose, runComposeSync,
+  runComposeStdout, runComposeStdoutSync
 } from './docker.js'
 
 const { describe, it, info = console.log } = globalThis

@@ -57,9 +57,9 @@ const createLoggerExot = ({
   splitInterval = SPLIT_INTERVAL,
   ...simpleLoggerOption
 }) => {
-  const createLoggerExot = () => createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
+  const getLoggerExot = () => createSimpleLoggerExot({ ...simpleLoggerOption, pathOutputFile: resolve(pathLogDirectory, getLogFileName()) })
 
-  let loggerExot = createLoggerExot()
+  let loggerExot = getLoggerExot()
   let saveToken
   let splitToken
 
@@ -79,7 +79,7 @@ const createLoggerExot = ({
     loggerExot.down()
     saveToken !== undefined && clearInterval(saveToken)
     splitToken !== undefined && clearTimeout(splitToken)
-    loggerExot = createLoggerExot()
+    loggerExot = getLoggerExot()
     saveToken = undefined
     splitToken = undefined
   }

@@ -4,7 +4,7 @@ import { stringifyEqual } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { catchAsync } from 'source/common/error.js'
 import { writeText } from './File.js'
-import { createDirectory } from './Directory.js'
+import { createDirectory, deleteDirectory } from './Directory.js'
 import { modifyDelete } from './Modify.js'
 import { createFileWatcherExot } from './Watch.js'
 
@@ -35,7 +35,7 @@ const createWatcherTest = (tag, path, func) => async () => {
 }
 
 after(async () => {
-  await modifyDelete(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Fs.Watch', () => {

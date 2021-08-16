@@ -36,8 +36,8 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
   'expect "docker" in PATH, with server up'
 )
 const runDocker = (argList = [], option) => run([ ...verify(), ...argList ], option)
-const runDockerStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runDockerSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
+const runDockerStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runDockerStdoutSync = (argList = [], option) => runStdoutSync([ ...verify(), ...argList ], option)
 
 const checkLocalImage = async (imageRepo, imageTag) => {
@@ -92,17 +92,19 @@ const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, v
   'expect both "docker-compose" and "docker" in PATH, with server up'
 )
 const runCompose = (argList = [], option) => run([ ...verifyCompose(), ...argList ], option)
-const runComposeStdout = (argList = [], option) => runStdout([ ...verifyCompose(), ...argList ], option)
 const runComposeSync = (argList = [], option) => runSync([ ...verifyCompose(), ...argList ], option)
+const runComposeStdout = (argList = [], option) => runStdout([ ...verifyCompose(), ...argList ], option)
 const runComposeStdoutSync = (argList = [], option) => runStdoutSync([ ...verifyCompose(), ...argList ], option)
 
 export {
   getArgs, setArgs, check, verify,
-  runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
+  runDocker, runDockerSync,
+  runDockerStdout, runDockerStdoutSync,
 
   checkLocalImage, pullImage, checkPullImage,
   getContainerLsList, patchContainerLsListStartedAt, matchContainerLsList,
 
   getArgsCompose, setArgsCompose, checkCompose, verifyCompose,
-  runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
+  runCompose, runComposeSync,
+  runComposeStdout, runComposeStdoutSync
 }
