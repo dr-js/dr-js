@@ -87,6 +87,40 @@ const describeSystemStatus = ({ platform, processor, memory, network, activity }
   activity: describeSystemActivity(activity)
 }).map(([ k, v ]) => `[${k}]\n${indentLine(v)}`).join('\n')
 
+const getSystemInfo = () => {
+  const toGiB = (byte) => Math.round(byte / (2 ** 30))
+  const toPercent = (total, free) => total ? `${(100 * (1 - free / total)).toFixed(0)}%` : '-'
+
+  const { total, free, swapTotal, swapFree } = getSystemMemory()
+  const nCPU = cpus().length
+  const nMEM = toGiB(total)
+  const nSWAP = toGiB(swapTotal)
+  const loadAvgList = loadavg() // 1, 5, and 15 minute load averages
+
+  const systemStatus = [ // single line for logging
+    !swapTotal
+      ? `[${nCPU}CPU|${nMEM}G]`
+      : `[${nCPU}CPU|${nMEM}+${nSWAP}G]`,
+    !swapTotal
+      ? `mem=${toPercent(total, free)}`
+      : `mem/swap=${toPercent(total, free)}/${toPercent(swapTotal, swapFree)}`,
+    `loadavg=${loadAvgList.map((v) => v.toFixed(1)).join('|')}`,
+    `uptime=${time(uptime() * 1000)}`
+  ].join(' ')
+
+  const [ load1Min, load5Min, load15Min ] = loadAvgList
+  const loadStatus = (load15Min > nCPU * 1.1 && load5Min > nCPU * 0.7 && load1Min > nCPU * 0.7) ? '15MIN' // stress
+    : (load5Min > nCPU * 1.3 && load1Min > nCPU * 0.7) ? '5MIN' // stress
+      : (load5Min > nCPU * 0.7 && load1Min > nCPU * 1.7) ? '1MIN' // spike
+        : ''
+
+  return {
+    nCPU, nMEM, nSWAP,
+    systemStatus,
+    loadStatus
+  }
+}
+
 export {
   getSystemPlatform,
   getSystemProcessor,
@@ -100,5 +134,7 @@ export {
   describeSystemMemory,
   describeSystemNetwork,
   describeSystemActivity,
-  describeSystemStatus
+  describeSystemStatus,
+
+  getSystemInfo
 }

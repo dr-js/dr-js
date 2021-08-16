@@ -378,7 +378,7 @@
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
 
 #### Export Tree
 - **Browser**
@@ -700,7 +700,7 @@
     - **Run**
       - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
   - **Kit**
     - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
