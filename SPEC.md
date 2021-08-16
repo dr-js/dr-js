@@ -379,6 +379,8 @@
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
   - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
++ 📄 [source/node/system/WatchLoop.js](source/node/system/WatchLoop.js)
+  - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
 
 #### Export Tree
 - **Browser**
@@ -701,6 +703,8 @@
       - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
       - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+    - **WatchLoop**
+      - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
   - **Kit**
     - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
