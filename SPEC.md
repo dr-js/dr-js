@@ -180,7 +180,7 @@
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/kit.js](source/node/kit.js)
-  - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
+  - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -706,7 +706,7 @@
     - **WatchLoop**
       - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
   - **Kit**
-    - `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
+    - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
   - **Resource**

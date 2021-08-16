@@ -28,9 +28,12 @@ const syncEnvKey = (key, defaultValue) => {
 
 const argvFlag = (...checkFlagList) => process.argv.find((flag) => checkFlagList.includes(flag))
 
+const ENV_KEY_LOGGER = '__DRJS_KIT_LOGGER__'
+const ENV_KEY_VERBOSE = '__DRJS_KIT_VERBOSE__'
+
 const getKitLogger = ({
   title = 'kit',
-  isVerbose = syncEnvKey('__DRJS_KIT_VERBOSE__', Boolean(argvFlag('verbose') || process.env.KIT_VERBOSE)),
+  isVerbose = syncEnvKey(ENV_KEY_VERBOSE, Boolean(argvFlag('verbose') || process.env.KIT_VERBOSE)),
   isQuiet = Boolean(argvFlag('quiet') || process.env.KIT_QUIET),
   padWidth = clamp(process.env.KIT_LOGGER_WIDTH || (process.stdout.isTTY && process.stdout.columns) || 80, 32, 240),
   TerminalColor = configureTerminalColor(),
@@ -41,8 +44,8 @@ const getKitLogger = ({
 } = {}) => {
   const startTime = clock()
 
-  const envKit = loadEnvKey('__DRJS_KIT_LOGGER__') || { titleList: [], startTime }
-  saveEnvKey('__DRJS_KIT_LOGGER__', { ...envKit, titleList: [ title, ...envKit.titleList ] })
+  const envKit = loadEnvKey(ENV_KEY_LOGGER) || { titleList: [], startTime }
+  saveEnvKey(ENV_KEY_LOGGER, { ...envKit, titleList: [ title, ...envKit.titleList ] })
   title = [ title, ...envKit.titleList.map((v) => v.slice(0, clamp(Math.floor(padWidth / 20), 3, 9))) ].join('|')
 
   let prevTime = clock()
@@ -120,7 +123,7 @@ const getKit = (option) => {
 }
 
 const runKit = (asyncFunc, {
-  title = process.argv.slice(2).join('+'),
+  title = process.argv.slice(2).join('+') || undefined,
   kit = getKit({ title })
 } = {}) => {
   const startTime = clock()
@@ -137,6 +140,7 @@ const runKit = (asyncFunc, {
 export {
   loadEnvKey, saveEnvKey, syncEnvKey,
   argvFlag,
+  ENV_KEY_LOGGER, ENV_KEY_VERBOSE,
   getKitLogger, getKitPathCombo, getKitRun, getKit,
   runKit
 }
