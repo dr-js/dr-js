@@ -5,6 +5,9 @@ import {
   check, verify,
   runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
 
+  // checkLocalImage, pullImage, checkPullImage,
+  getContainerLsList, // patchContainerLsListStartedAt, matchContainerLsList,
+
   checkCompose, verifyCompose,
   runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
 } from './docker.js'
@@ -44,6 +47,10 @@ describe('Node.Module.Software.Docker', () => {
       const { stdout } = runComposeSync([ 'version' ], { quiet: true })
       info(String(stdout))
       info(String(runComposeStdoutSync([ 'version' ])))
+    })
+
+    it('getContainerLsList()', async () => {
+      info(JSON.stringify(await getContainerLsList(), null, 2))
     })
   } else { // no docker installed (GitHub CI Macos)
     info('no docker installed')
