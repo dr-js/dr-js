@@ -33,7 +33,8 @@ const ENV_KEY_VERBOSE = '__DRJS_KIT_VERBOSE__'
 
 const getKitLogger = ({
   title = 'kit',
-  isVerbose = syncEnvKey(ENV_KEY_VERBOSE, Boolean(argvFlag('verbose') || process.env.KIT_VERBOSE)),
+  isNoEnvKey = false, // to stop change to "process.env"
+  isVerbose = Boolean(loadEnvKey(ENV_KEY_VERBOSE) || argvFlag('verbose') || process.env.KIT_VERBOSE),
   isQuiet = Boolean(argvFlag('quiet') || process.env.KIT_QUIET),
   padWidth = clamp(process.env.KIT_LOGGER_WIDTH || (process.stdout.isTTY && process.stdout.columns) || 80, 32, 240),
   TerminalColor = configureTerminalColor(),
@@ -44,8 +45,10 @@ const getKitLogger = ({
 } = {}) => {
   const startTime = clock()
 
-  const envKit = loadEnvKey(ENV_KEY_LOGGER) || { titleList: [], startTime }
-  saveEnvKey(ENV_KEY_LOGGER, { ...envKit, titleList: [ title, ...envKit.titleList ] })
+  !isNoEnvKey && saveEnvKey(ENV_KEY_VERBOSE, Boolean(isVerbose))
+
+  const envKit = loadEnvKey(ENV_KEY_LOGGER) || { titleList: [], startTime, pid: null }
+  !isNoEnvKey && envKit.pid !== process.pid && saveEnvKey(ENV_KEY_LOGGER, { ...envKit, titleList: [ title, ...envKit.titleList ], pid: process.pid })
   title = [ title, ...envKit.titleList.map((v) => v.slice(0, clamp(Math.floor(padWidth / 20), 3, 9))) ].join('|')
 
   let prevTime = clock()
