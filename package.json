@@ -29,8 +29,6 @@
     "// test ========================": "",
     "test-T": "dr-dev --EE 'BABEL_ENV=dev&TEST_SANITY=true' -E -- dr-dev --TR @babel/register -T",
     "test-dev": "npm run test-T -- source/node/module/Software/hostStatus.test.js",
-    "test-runlet": "npm run test-T -- source/common/module/Runlet.test.js",
-    "test-sanity": "npm run test-T -- source/node/.sanity.test/memoryLeakPendingPromiseChain.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-source-bin": "dr-dev --TR @babel/register -T source-bin/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
