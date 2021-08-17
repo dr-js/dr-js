@@ -10,10 +10,12 @@ import { prettyStringifyJSON } from 'source/common/format.js'
 import { indentList } from 'source/common/string.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { isBasicFunction } from 'source/common/check.js'
+import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { PATH_TYPE } from 'source/node/fs/Path.js'
 import { readText, writeText, readJSON } from 'source/node/fs/File.js'
-import { createDirectory } from 'source/node/fs/Directory.js'
+import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort } from 'source/node/server/function.js'
 import { createServerExot } from 'source/node/server/Server.js'
@@ -23,6 +25,9 @@ import { resolveCommand } from 'source/node/system/ResolveCommand.js'
 import { run, runSync, runDetached } from 'source/node/run.js'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process.js'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
+import { compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'
+import { pingRaceUrlList, pingStatUrlList } from 'source/node/module/PingRace.js'
+import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCheckCode } from 'source/node/module/Auth.js'
 
 import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection.js'
 import { configure as configureServerServeStatic } from './server/serveStatic.js'
@@ -46,7 +51,7 @@ const getVersion = () => ({
 const runMode = async (optionData, modeName) => {
   const sharedPack = sharedOption(optionData, modeName)
   const { tryGetFirst, getToggle } = optionData
-  const { argumentList, log, inputFile, outputFile } = sharedPack
+  const { argumentList, log, inputFile, outputFile, outputValueAuto } = sharedPack
 
   const isOutputJSON = getToggle('json')
   const root = tryGetFirst('root') || process.cwd()
@@ -146,6 +151,57 @@ const runMode = async (optionData, modeName) => {
       const [ unfoldLevel = 2 ] = argumentList
       return writeText(outputFile || inputFile, prettyStringifyJSON(await readJSON(inputFile), unfoldLevel))
     }
+
+    case 'file-list':
+    case 'file-list-all':
+    case 'file-tree': {
+      const prettyStringifyFileTree = async (rootPath) => {
+        const { dirInfoListMap } = await getDirInfoTree(rootPath)
+        const resultList = []
+        prettyStringifyTreeNode(
+          ([ [ path ], level /* , hasMore */ ]) => dirInfoListMap.get(path)?.map(
+            ({ name, path: subPath }, subIndex, { length }) => [ [ subPath, name ], level + 1, subIndex !== length - 1 ]
+          ),
+          [ [ rootPath, 'NAME' ], -1, false ],
+          (prefix, [ , name ]) => resultList.push(`${prefix}${name}`)
+        )
+        return resultList.join('\n')
+      }
+      const collectFile = async (modeName, rootPath) => modeName === 'file-list' ? (await getDirInfoList(rootPath)).map(({ type, name }) => type === PATH_TYPE.Directory ? `${name}/` : name)
+        : modeName === 'file-list-all' ? getFileList(rootPath)
+          : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
+            : ''
+      return outputValueAuto(await collectFile(modeName, argumentList[ 0 ] || process.cwd()))
+    }
+
+    case 'compress':
+      return compressAutoAsync(inputFile, outputFile)
+    case 'extract':
+      return extractAutoAsync(inputFile, outputFile)
+
+    case 'auth-file-describe':
+      return outputValueAuto(await describeAuthFile(inputFile))
+    case 'auth-check-code-generate':
+      return outputValueAuto(await generateAuthCheckCode(inputFile, argumentList[ 0 ])) // timestamp
+    case 'auth-check-code-verify':
+      await verifyAuthCheckCode(inputFile, argumentList[ 0 ], argumentList[ 1 ] && Number(argumentList[ 1 ])) // checkCode, timestamp
+      return outputValueAuto('pass verify')
+    case 'auth-gen-tag':
+      await generateAuthFile(outputFile, {
+        tag: argumentList[ 0 ],
+        size: tryGetFirst('auth-gen-size'),
+        tokenSize: tryGetFirst('auth-gen-token-size'),
+        timeGap: tryGetFirst('auth-gen-time-gap'),
+        info: tryGetFirst('auth-gen-info')
+      })
+      return log(await describeAuthFile(outputFile))
+
+    case 'ping-race':
+    case 'ping-stat':
+      return outputValueAuto(await (modeName === 'ping-race' ? pingRaceUrlList : pingStatUrlList)(
+        argumentList,
+        { timeout: tryGetFirst('timeout') || 5000 }
+      ))
 
     case 'server-serve-static':
     case 'server-serve-static-simple': {

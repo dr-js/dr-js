@@ -44,6 +44,26 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
 
   'json-format,jf/AI,O/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
+  'file-list,ls/AP,O/0-1|list file: $0=path/cwd',
+  'file-list-all,ls-R,lla/AP,O/0-1|list all file: $0=path/cwd',
+  'file-tree,tree/AP,O/0-1|list all file in tree: $0=path/cwd',
+
+  'compress,a/T|compress to archive: -I=inputDirectory, -O=outputFile',
+  'extract,x/T|extract from archive: -I=inputFile, -O=outputPath',
+
+  'auth-file-describe/T|describe auth file: -I=authFile',
+  'auth-check-code-generate/AI,O/0-1|generate checkCode from auth file: -I=authFile, $0=timestamp/now',
+  'auth-check-code-verify/AS,O/1-2|verify checkCode with auth file: -I=authFile, $@=checkCode,timestamp/now',
+  [ 'auth-gen-tag/SS,O|generate auth file: -O=outputFile', Preset.parseCompactList(
+    'auth-gen-size/SI,O',
+    'auth-gen-token-size/SI,O',
+    'auth-gen-time-gap/SI,O',
+    'auth-gen-info/O/1'
+  ) ],
+
+  'ping-race/AS,O|tcp-ping list of url to find the fastest: -T=timeout/5000, $@=...urlList',
+  'ping-stat/AS,O|tcp-ping list of url and print result: -T=timeout/5000, $@=...urlList',
+
   'server-serve-static,sss/O/0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-serve-static-simple,ssss/O/0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-websocket-group,swg/O|websocket chat server: -H=hostname:port',

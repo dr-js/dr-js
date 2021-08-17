@@ -789,6 +789,32 @@
 >       send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
+>   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
+>       list file: $0=path/cwd
+>   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
+>       list all file: $0=path/cwd
+>   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
+>       list all file in tree: $0=path/cwd
+>   --compress --a -a [OPTIONAL] [ARGUMENT=0-1]
+>       compress to archive: -I=inputDirectory, -O=outputFile
+>   --extract --x -x [OPTIONAL] [ARGUMENT=0-1]
+>       extract from archive: -I=inputFile, -O=outputPath
+>   --auth-file-describe [OPTIONAL] [ARGUMENT=0-1]
+>       describe auth file: -I=authFile
+>   --auth-check-code-generate [OPTIONAL] [ARGUMENT=0-1]
+>       generate checkCode from auth file: -I=authFile, $0=timestamp/now
+>   --auth-check-code-verify [OPTIONAL] [ARGUMENT=1-2]
+>       verify checkCode with auth file: -I=authFile, $@=checkCode,timestamp/now
+>   --auth-gen-tag [OPTIONAL] [ARGUMENT=1]
+>       generate auth file: -O=outputFile
+>     --auth-gen-size [ARGUMENT=1]
+>     --auth-gen-token-size [ARGUMENT=1]
+>     --auth-gen-time-gap [ARGUMENT=1]
+>     --auth-gen-info [ARGUMENT=1]
+>   --ping-race [OPTIONAL] [ARGUMENT=1+]
+>       tcp-ping list of url to find the fastest: -T=timeout/5000, $@=...urlList
+>   --ping-stat [OPTIONAL] [ARGUMENT=1+]
+>       tcp-ping list of url and print result: -T=timeout/5000, $@=...urlList
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
 >       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
@@ -836,6 +862,21 @@
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
+>     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS]"
+>     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS_R,DR_JS_LLA]"
+>     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
+>     export DR_JS_COMPRESS="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_EXTRACT="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_FILE_DESCRIBE="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
+>     export DR_JS_AUTH_GEN_TAG="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_SIZE="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_TOKEN_SIZE="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_TIME_GAP="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_INFO="[ARGUMENT=1]"
+>     export DR_JS_PING_RACE="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_PING_STAT="[OPTIONAL] [ARGUMENT=1+]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
@@ -878,6 +919,21 @@
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
+>     "fileList": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ls]" ],
+>     "fileListAll": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=lsR,lla]" ],
+>     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],
+>     "compress": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "extract": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authFileDescribe": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
+>     "authGenTag": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "authGenSize": [ "[ARGUMENT=1]" ],
+>     "authGenTokenSize": [ "[ARGUMENT=1]" ],
+>     "authGenTimeGap": [ "[ARGUMENT=1]" ],
+>     "authGenInfo": [ "[ARGUMENT=1]" ],
+>     "pingRace": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "pingStat": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
