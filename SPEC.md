@@ -744,7 +744,7 @@
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=path/cwd
 >   --timeout --T -T [OPTIONAL] [ARGUMENT=1]
->       common option: $0=msec
+>       common option, 0 for unlimited: $0=msec/undefined
 >   --json --J -J [OPTIONAL] [ARGUMENT=0-1]
 >       output JSON, if supported
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]

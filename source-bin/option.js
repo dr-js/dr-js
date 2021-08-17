@@ -13,7 +13,7 @@ const COMMON_FORMAT_LIST = Preset.parseCompactList(
   'host,H/SS,O|common option: $0=hostname:port (hostname default to 0.0.0.0)',
   'route-prefix,RP/SS,O|common option: $0=routePrefix (default to "", set like "/prefix")',
   'root,R/SP,O|common option: $0=path/cwd',
-  'timeout,T/SI,O|common option: $0=msec',
+  'timeout,T/SI,O|common option, 0 for unlimited: $0=msec/undefined',
 
   'json,J/T|output JSON, if supported'
 )

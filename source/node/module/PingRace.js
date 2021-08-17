@@ -60,7 +60,7 @@ const batchRequestUrlList = (onResponse, urlList, option, body) => {
 }
 
 const pingRaceUrlList = async (urlList = [], {
-  timeout = DEFAULT_PING_TIMEOUT, // in msec
+  timeout = DEFAULT_PING_TIMEOUT, // in msec, 0 for unlimited
   body = null,
   ...option
 } = {}) => {
@@ -80,7 +80,7 @@ const pingRaceUrlList = async (urlList = [], {
 // result in url-stat map
 const PING_STAT_ERROR = null
 const pingStatUrlList = async (urlList = [], {
-  timeout = DEFAULT_PING_TIMEOUT, // in msec
+  timeout = DEFAULT_PING_TIMEOUT, // in msec, 0 for unlimited
   body = null,
   ...option
 } = {}) => {
