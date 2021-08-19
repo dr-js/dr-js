@@ -79,13 +79,18 @@ const versionBumpByGitBranch = (version, {
 //   1.0.0 -> 1.0.1-TEST.0
 //   1.0.0-dev.0 -> 1.0.0-TEST.0
 //   1.0.0-TEST.0 -> 1.0.0-TEST.1
+//   1.0.0-TEST.0.local.0 -> 1.0.0-TEST.1
+//   1.0.0-TEST.0ABC -> 1.0.1-TEST.0
 const versionBumpToIdentifier = (version, {
   identifier = 'TEST'
 }) => {
-  const { major, minor, patch, label } = parseSemVer(version)
+  let { major, minor, patch, label } = parseSemVer(version)
   if (label.startsWith(`-${identifier}.`)) {
-    const revString = label.slice(`-${identifier}.`.length)
-    if (/\d+/.test(revString)) return versionBumpLastNumber(version)
+    const extraString = label.slice(`-${identifier}.`.length)
+    if (/^\d+$/.test(extraString)) return versionBumpLastNumber(version)
+    const extraStringFirstIdentifier = extraString.split('.')[ 0 ]
+    if (/^\d+$/.test(extraStringFirstIdentifier)) return `${major}.${minor}.${patch}-${identifier}.${parseInt(extraStringFirstIdentifier) + 1}` // drop extra identifier
+    label = '' // bump patch
   }
   return `${major}.${minor}.${label ? patch : patch + 1}-${identifier}.0`
 }

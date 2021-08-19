@@ -112,6 +112,8 @@ describe('Common.Module.SemVer', () => {
     strictEqual(versionBumpToIdentifier('1.0.0', { identifier: 'TEST' }), '1.0.1-TEST.0')
     strictEqual(versionBumpToIdentifier('1.0.0-dev.0', { identifier: 'TEST' }), '1.0.0-TEST.0')
     strictEqual(versionBumpToIdentifier('1.0.0-TEST.0', { identifier: 'TEST' }), '1.0.0-TEST.1')
+    strictEqual(versionBumpToIdentifier('1.0.0-TEST.0.local.0', { identifier: 'TEST' }), '1.0.0-TEST.1')
+    strictEqual(versionBumpToIdentifier('1.0.0-TEST.0AAA', { identifier: 'TEST' }), '1.0.1-TEST.0')
   })
 
   it('versionBumpLastNumber()', () => {
