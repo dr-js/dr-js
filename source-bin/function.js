@@ -67,8 +67,8 @@ const sharedOption = (optionData, modeName) => {
   configurePid({ filePid: tryGetFirst('pid-file') })
 
   const autoBuffer = (value) => Buffer.isBuffer(value) ? value
-    : isObjectAlike(value) ? JSON.stringify(value, null, 2) // JSON String
-      : value // should be String
+    : isObjectAlike(value) ? JSON.stringify(value, null, 2) + '\n' // JSON String
+      : `${value}\n` // should be String
   const outputValueAuto = async (value) => outputFile
     ? writeBuffer(outputFile, autoBuffer(value))
     : writeBufferToStreamAsync(process.stdout, autoBuffer(value))
@@ -113,7 +113,8 @@ const sharedMode = async ({
     case 'fetch': { // TODO: DEPRECATE: no need to share
       let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
       jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
-      timeout = Number(timeout) || 0 // in msec, 0 for unlimited
+      timeout = Number(timeout || optionData.tryGetFirst('timeout')) || 0 // in msec, 0 for unlimited // TODO: DEPRECATE: timeout from argumentList
+      log(`[fetch] jumpMax: ${jumpMax}, timeout: ${timeout || 'none'}`)
       const body = inputFile ? await readBuffer(inputFile) : null
       let isDone = false
       const response = await fetchWithJumpProxy(initialUrl, {

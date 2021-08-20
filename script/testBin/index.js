@@ -1,10 +1,9 @@
 import { resolve } from 'path'
 
-import { runMain } from '@dr-js/dev/module/main.js'
-
 import { strictEqual } from 'source/common/verify.js'
 import { runStdout } from 'source/node/run.js'
 import { describeSystemPlatform } from 'source/node/system/Status.js'
+import { runKit } from 'source/node/kit.js'
 
 const PATH_ROOT = resolve(__dirname, '../../')
 const fromRoot = (...args) => resolve(PATH_ROOT, ...args)
@@ -24,9 +23,9 @@ console.log(\`[__dirname] \${describe(__dirname)}\`)
 console.log(describeSystemPlatform())
 `
 
-runMain(async (logger) => {
+runKit(async (kit) => {
   {
-    logger.padLog('test eval scriptFile')
+    kit.padLog('test eval scriptFile')
     const stdoutString = String(await runStdout([
       process.execPath,
       'output-gitignore/bin',
@@ -49,7 +48,7 @@ runMain(async (logger) => {
   }
 
   {
-    logger.padLog('test eval scriptString')
+    kit.padLog('test eval scriptString')
     const stdoutString = String(await runStdout([
       process.execPath,
       'output-gitignore/bin',
@@ -66,4 +65,4 @@ runMain(async (logger) => {
       ''
     ].join('\n'))
   }
-}, 'test-bin')
+}, { title: 'test-bin' })

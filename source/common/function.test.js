@@ -1,4 +1,4 @@
-import { doThrow, stringifyEqual, strictEqual } from 'source/common/verify.js'
+import { doThrow, stringifyEqual, strictEqual, truthy } from 'source/common/verify.js'
 import {
   debounce,
   throttle,
@@ -401,9 +401,8 @@ describe('Common.Function', () => {
       () => { throw new Error('should reject with timeout') },
       (error) => {
         // __DEV__ && console.log(`error.stack: ${error.stack}`)
-        strictEqual(
+        truthy(
           String(error.stack).split('\n').length >= 6, // testing line count, check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/stack
-          true,
           `error from "withTimeoutPromise()" should have longer stack trace, get: ${error.stack}`
         )
         return 'Good Error'

@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { getRandomArrayBuffer, getRandomId } from 'source/common/math/random.js'
 import { getSample } from 'source/common/math/sample.js'
 import { isEqualArrayBuffer, concatArrayBuffer } from 'source/common/data/ArrayBuffer.js'
@@ -18,7 +18,7 @@ describe('Common.Module.ChunkUpload', () => {
     const testPacket = await packArrayBufferChunk(testChunkInfo, true)
     const resultChunkInfo = await parseArrayBufferChunk(testPacket, true)
 
-    strictEqual(isEqualArrayBuffer(testChunkInfo.chunkArrayBuffer, resultChunkInfo.chunkArrayBuffer), true)
+    truthy(isEqualArrayBuffer(testChunkInfo.chunkArrayBuffer, resultChunkInfo.chunkArrayBuffer))
     strictEqual(testChunkInfo.key, resultChunkInfo.key)
     strictEqual(testChunkInfo.chunkIndex, resultChunkInfo.chunkIndex)
     strictEqual(testChunkInfo.chunkTotal, resultChunkInfo.chunkTotal)
@@ -40,6 +40,6 @@ describe('Common.Module.ChunkUpload', () => {
     const resultArrayBuffer = concatArrayBuffer(resultChunkInfoList.map(({ chunkArrayBuffer }) => chunkArrayBuffer))
 
     strictEqual(resultArrayBuffer.byteLength, 1234 * 1234 * 5)
-    strictEqual(isEqualArrayBuffer(testArrayBuffer, resultArrayBuffer), true)
+    truthy(isEqualArrayBuffer(testArrayBuffer, resultArrayBuffer))
   })
 })

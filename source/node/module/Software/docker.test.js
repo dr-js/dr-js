@@ -1,12 +1,17 @@
-import { strictEqual, doThrow } from 'source/common/verify.js'
+import { doThrow, truthy } from 'source/common/verify.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 
 import {
   check, verify,
-  runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
+  runDocker, runDockerSync,
+  runDockerStdout, runDockerStdoutSync,
+
+  // checkLocalImage, pullImage, checkPullImage,
+  getContainerLsList, // patchContainerLsListStartedAt, matchContainerLsList,
 
   checkCompose, verifyCompose,
-  runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
+  runCompose, runComposeSync,
+  runComposeStdout, runComposeStdoutSync
 } from './docker.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -15,9 +20,9 @@ describe('Node.Module.Software.Docker', () => {
   __DEV__ && info(`DOCKER_BIN_PATH: ${resolveCommandName('docker')}`)
 
   if (resolveCommandName('docker')) {
-    it('check()', () => strictEqual(check(), true))
+    it('check()', () => truthy(check()))
     it('verify()', verify)
-    it('checkCompose()', () => strictEqual(checkCompose(), true)) // NOTE: often should have both
+    it('checkCompose()', () => truthy(checkCompose())) // NOTE: often should have both
     it('verifyCompose()', verifyCompose) // NOTE: often should have both
 
     it('runDocker()', async () => {
@@ -45,11 +50,15 @@ describe('Node.Module.Software.Docker', () => {
       info(String(stdout))
       info(String(runComposeStdoutSync([ 'version' ])))
     })
+
+    it('getContainerLsList()', async () => {
+      info(JSON.stringify(await getContainerLsList(), null, 2))
+    })
   } else { // no docker installed (GitHub CI Macos)
     info('no docker installed')
-    it('check()', () => strictEqual(check(), false))
+    it('check()', () => truthy(!check()))
     it('verify()', () => doThrow(verify))
-    it('checkCompose()', () => strictEqual(checkCompose(), false))
+    it('checkCompose()', () => truthy(!checkCompose()))
     it('verifyCompose()', () => doThrow(verifyCompose))
   }
 })

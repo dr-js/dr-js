@@ -1,4 +1,4 @@
-import { includes, strictEqual } from 'source/common/verify.js'
+import { includes, strictEqual, truthy } from 'source/common/verify.js'
 import { catchSync, catchPromise } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { setTimeoutAsync } from 'source/common/time.js'
@@ -96,7 +96,7 @@ describe('Node.Run', () => {
     {
       const { subProcess } = runDetached(TEST_ARG_LIST_EXIT_0)
       log(subProcess)
-      strictEqual(subProcess.pid > 0, true)
+      truthy(subProcess.pid > 0)
       strictEqual(subProcess.exitCode, null)
       await setTimeoutAsync(200)
       log(subProcess)
@@ -105,7 +105,7 @@ describe('Node.Run', () => {
     {
       const { subProcess } = runDetached(TEST_ARG_LIST_EXIT_42)
       log(subProcess)
-      strictEqual(subProcess.pid > 0, true)
+      truthy(subProcess.pid > 0)
       strictEqual(subProcess.exitCode, null)
       await setTimeoutAsync(200)
       log(subProcess)
@@ -114,11 +114,11 @@ describe('Node.Run', () => {
     {
       const { subProcess } = runDetached(TEST_ARG_LIST_BAD)
       log(subProcess)
-      strictEqual(subProcess.pid > 0, false) // not a number
+      truthy(!(subProcess.pid > 0)) // not a number
       strictEqual(subProcess.exitCode, null)
       await setTimeoutAsync(200)
       log(subProcess)
-      strictEqual(subProcess.exitCode !== 0, true)
+      truthy(subProcess.exitCode !== 0)
     }
   })
 })

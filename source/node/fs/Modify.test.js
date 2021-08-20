@@ -1,7 +1,7 @@
 import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify.js'
 import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
-import { resetDirectory } from './Directory.js'
+import { deleteDirectory, resetDirectory } from './Directory.js'
 
 import {
   modifyCopy,
@@ -28,7 +28,7 @@ before(async () => {
 })
 
 after(async () => {
-  await modifyDelete(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Fs.Modify', () => {

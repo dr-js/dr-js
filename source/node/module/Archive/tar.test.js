@@ -1,5 +1,5 @@
 import { resolve, basename } from 'path'
-import { strictEqual } from 'source/common/verify.js'
+import { truthy } from 'source/common/verify.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
@@ -18,7 +18,7 @@ before(setupRoot)
 after(clearRoot)
 
 describe('Node.Module.Archive.Tar', () => {
-  it('check()', () => strictEqual(check(), true))
+  it('check()', () => truthy(check()))
   it('verify()', verify)
 
   it('compressArgs() & extractArgs()', async () => {

@@ -5,9 +5,9 @@
 const createLoopIndex = (
   LOOP_INDEX_MAX = 2000000000 // smaller than max 32Bit signed (2147483647), so most calc should work
 ) => {
-  const normalize = (indexAlike) => indexAlike % LOOP_INDEX_MAX // loop if needed
+  const normalize = (indexAlike) => indexAlike % LOOP_INDEX_MAX // loop if needed, no negative integer support
 
-  const step = (index, stepCount = 1) => normalize(index + stepCount)
+  const step = (index, stepCount = 1) => normalize(index + stepCount) // NOTE: only support increase
 
   // use to check if previous index is reached, should work for:
   // - not yet: (1, 2)

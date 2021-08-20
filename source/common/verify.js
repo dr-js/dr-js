@@ -1,6 +1,6 @@
 import {
   isString,
-  isBoolean,
+  isBoolean, isTruthy,
   isNumber,
   isInteger,
   isRegExp,
@@ -24,6 +24,7 @@ const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) 
 
 const string = createVerify('String', isString)
 const boolean = createVerify('Boolean', isBoolean)
+const truthy = createVerify('Truthy', isTruthy)
 const number = createVerify('Number', isNumber)
 const integer = createVerify('Integer', isInteger)
 const regexp = createVerify('RegExp', isRegExp)
@@ -65,7 +66,7 @@ const notIncludes = (actual, expect, message) => (actual && actual.includes && !
 
 export {
   string,
-  boolean,
+  boolean, truthy,
   number,
   integer,
   regexp,

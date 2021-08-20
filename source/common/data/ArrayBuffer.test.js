@@ -1,4 +1,4 @@
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { time } from 'source/common/format.js'
 import { createStepper } from 'source/common/time.js'
 import { getSampleRange, getSample } from 'source/common/math/sample.js'
@@ -27,32 +27,32 @@ describe('Common.Data.ArrayBuffer', () => {
   const string1 = byteList1.map((v) => String.fromCharCode(v)).join('')
 
   it('isEqualArrayBuffer()', () => {
-    strictEqual(isEqualArrayBuffer(new ArrayBuffer(0), new ArrayBuffer(0)), true)
-    strictEqual(isEqualArrayBuffer(new ArrayBuffer(64), new ArrayBuffer(64)), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, arrayBuffer0), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer1, arrayBuffer1), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, arrayBuffer1), false)
-    strictEqual(isEqualArrayBuffer(arrayBuffer1, arrayBuffer0), false)
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, new ArrayBuffer(0)), false)
+    truthy(isEqualArrayBuffer(new ArrayBuffer(0), new ArrayBuffer(0)))
+    truthy(isEqualArrayBuffer(new ArrayBuffer(64), new ArrayBuffer(64)))
+    truthy(isEqualArrayBuffer(arrayBuffer0, arrayBuffer0))
+    truthy(isEqualArrayBuffer(arrayBuffer1, arrayBuffer1))
+    truthy(!isEqualArrayBuffer(arrayBuffer0, arrayBuffer1))
+    truthy(!isEqualArrayBuffer(arrayBuffer1, arrayBuffer0))
+    truthy(!isEqualArrayBuffer(arrayBuffer0, new ArrayBuffer(0)))
   })
 
   it('concatArrayBuffer()', () => {
-    strictEqual(isEqualArrayBuffer(
+    truthy(isEqualArrayBuffer(
       concatArrayBuffer([ arrayBuffer1, new ArrayBuffer(0), arrayBuffer1 ]),
       Uint8Array.from([ ...byteList1, ...byteList1 ]).buffer
-    ), true)
-    strictEqual(isEqualArrayBuffer(
+    ))
+    truthy(isEqualArrayBuffer(
       concatArrayBuffer([ arrayBuffer1, arrayBuffer0, arrayBuffer1 ]),
       Uint8Array.from([ ...byteList1, ...byteList0, ...byteList1 ]).buffer
-    ), true)
+    ))
   })
 
   it('fromU16String(),toU16String()', () => {
     strictEqual(string0, toU16String(fromU16String(string0)))
     strictEqual(string1, toU16String(fromU16String(string1)))
 
-    strictEqual(isEqualArrayBuffer(arrayBuffer0, fromU16String(toU16String(arrayBuffer0))), true)
-    strictEqual(isEqualArrayBuffer(arrayBuffer1, fromU16String(toU16String(arrayBuffer1))), true)
+    truthy(isEqualArrayBuffer(arrayBuffer0, fromU16String(toU16String(arrayBuffer0))))
+    truthy(isEqualArrayBuffer(arrayBuffer1, fromU16String(toU16String(arrayBuffer1))))
   })
   it('[stress] fromU16String(),toU16String()', () => {
     const stepper = createStepper()
@@ -62,7 +62,7 @@ describe('Common.Data.ArrayBuffer', () => {
     info('toU16String data', time(stepper()))
     const arrayBufferOutput = fromU16String(string)
     info('fromU16String data', time(stepper()))
-    strictEqual(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig), true)
+    truthy(isEqualArrayBuffer(arrayBufferOutput, arrayBufferBig))
   })
 
   it('calcSHA256ArrayBuffer()', async () => {

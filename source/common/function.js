@@ -178,8 +178,9 @@ const withTimeoutAsync = (func, timeout) => withTimeoutPromise(func(), timeout)
 
 const withTimeoutPromise = (
   promise,
-  timeout // in msec
+  timeout // in msec, 0 for unlimited
 ) => {
+  if (timeout === 0) return promise // no timeout
   let timeoutToken = null
   return Promise.race([
     promise,

@@ -1,7 +1,7 @@
 import { resolve, sep } from 'path'
 import { homedir } from 'os'
-import { strictEqual, doThrow } from 'source/common/verify.js'
-import { resetDirectory } from './Directory.js'
+import { strictEqual, doThrow, truthy } from 'source/common/verify.js'
+import { deleteDirectory, resetDirectory } from './Directory.js'
 
 import {
   STAT_ERROR,
@@ -41,19 +41,12 @@ const directoryPath2 = addTrailingSep(resolve(TEST_ROOT, 'a/b/c/d/e/'))
 const directoryPath3 = addTrailingSep(resolve(TEST_ROOT, 'a/e0/'))
 const directoryPath4 = addTrailingSep(resolve(TEST_ROOT, 'a/e1/'))
 
-const directoryPath5 = addTrailingSep(resolve(TEST_ROOT, 'a/b/'))
-const directoryPath6 = addTrailingSep(resolve(TEST_ROOT, 'a/'))
-
 before(async () => {
   await resetDirectory(TEST_ROOT)
 })
 
 after(async () => {
-  await deletePath(filePath2)
-  await deletePath(directoryPath4)
-  await deletePath(directoryPath5)
-  await deletePath(directoryPath6)
-  await deletePath(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 describe('Node.Fs.Path', () => {
@@ -81,7 +74,7 @@ describe('Node.Fs.Path', () => {
 
     let getExpectedError = false
     try { await copyPath(TEST_ROOT, invalidPath) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await copyPath(SOURCE_FILE, filePath1)
     await copyPath(SOURCE_FILE, filePath1)
@@ -96,7 +89,7 @@ describe('Node.Fs.Path', () => {
   it('renamePath()', async () => {
     let getExpectedError = false
     try { await renamePath(invalidPath, TEST_ROOT) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await renamePath(filePath1, filePath2)
     await renamePath(directoryPath3, directoryPath4)
@@ -110,7 +103,7 @@ describe('Node.Fs.Path', () => {
   it('deletePath()', async () => {
     let getExpectedError = false
     try { await deletePath(TEST_ROOT) } catch (error) { getExpectedError = true }
-    strictEqual(getExpectedError, true)
+    truthy(getExpectedError)
 
     await deletePath(directoryPath2)
     await deletePath(directoryPath1)
@@ -121,13 +114,13 @@ describe('Node.Fs.Path', () => {
   })
 
   it('existPath()', async () => {
-    strictEqual(await existPath(TEST_ROOT), true)
-    strictEqual(await existPath(__dirname), true)
-    strictEqual(await existPath(__filename), true)
+    truthy(await existPath(TEST_ROOT))
+    truthy(await existPath(__dirname))
+    truthy(await existPath(__filename))
 
-    strictEqual(await existPath(invalidPath), false)
-    strictEqual(await existPath(resolve(__filename, 'not-exist')), false)
-    strictEqual(await existPath(resolve(TEST_ROOT, '11/22/33/44/55')), false)
+    truthy(!await existPath(invalidPath))
+    truthy(!await existPath(resolve(__filename, 'not-exist')))
+    truthy(!await existPath(resolve(TEST_ROOT, '11/22/33/44/55')))
   })
 
   it('nearestExistPath()', async () => {

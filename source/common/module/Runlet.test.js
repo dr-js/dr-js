@@ -1,4 +1,4 @@
-import { strictEqual, stringifyEqual } from 'source/common/verify.js'
+import { strictEqual, stringifyEqual, truthy } from 'source/common/verify.js'
 import { createInsideOutPromise } from 'source/common/function.js'
 import { compareStringWithNumber } from 'source/common/compare.js'
 import { setTimeoutAsync, createStepper } from 'source/common/time.js'
@@ -80,7 +80,7 @@ describe('Common.Module.Runlet', () => {
     const stepper = createStepper()
     trigger()
     info(`done: ${time(stepper())}`)
-    strictEqual(isEND, true, 'should end now when all Chip is sync')
+    truthy(isEND, 'should end now when all Chip is sync')
     const result = await promise
     __DEV__ && console.log(result)
     __DEV__ && info('==== runlet.describe ====')
@@ -258,10 +258,10 @@ describe('Common.Module.Runlet', () => {
     trigger()
     await setTimeoutAsync(10)
 
-    strictEqual(getIsValid(), true)
+    truthy(getIsValid())
     const detachedData = detach()
     __DEV__ && console.log(detachedData)
-    strictEqual(getIsValid(), false)
+    truthy(!getIsValid())
 
     await setTimeoutAsync(6) // wait remaining process to finish
     const describeDetach0 = describe()
@@ -306,12 +306,12 @@ describe('Common.Module.Runlet', () => {
     __DEV__ && info('==== runlet.describe ====')
     __DEV__ && info(describe().join('\n'))
 
-    strictEqual(getIsValid(), true)
+    truthy(getIsValid())
 
     const { result, error } = await catchPromise(IOP.promise) // runlet should not reach the end
     strictEqual(result, undefined)
     strictEqual(error, bombError)
-    strictEqual(getIsValid(), false)
+    truthy(!getIsValid())
 
     // now you can still detach and examine the "mess"
     const detachedData = detach()
@@ -445,8 +445,8 @@ describe('Common.Module.Runlet', () => {
 
     const pendInput = createPendInput(poolKey, 'pend:in')
     const pendOutput = createPendOutput(poolKey, 'pend:out')
-    strictEqual(pendInput.canPush(), true)
-    strictEqual(pendOutput.canPull(), false)
+    truthy(pendInput.canPush())
+    truthy(!pendOutput.canPull())
 
     pendInput.push(createPack(1, undefined))
     __DEV__ && info('==== runlet.describe ====')
@@ -543,8 +543,8 @@ describe('Common.Module.Runlet', () => {
     __DEV__ && console.log('result0', JSON.stringify(result0))
     __DEV__ && console.log('result1', JSON.stringify(result1))
     strictEqual(result0.length + result1.length, 10)
-    strictEqual(result0.length > 0, true)
-    strictEqual(result1.length > 0, true)
+    truthy(result0.length > 0)
+    truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
     __DEV__ && info('==== runlet.describe ====')
@@ -609,8 +609,8 @@ describe('Common.Module.Runlet', () => {
     __DEV__ && console.log('result0', JSON.stringify(result0))
     __DEV__ && console.log('result1', JSON.stringify(result1))
     strictEqual(result0.length + result1.length, 10)
-    strictEqual(result0.length > 0, true)
-    strictEqual(result1.length > 0, true)
+    truthy(result0.length > 0)
+    truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
     __DEV__ && info('==== runlet.describe ====')
@@ -680,8 +680,8 @@ describe('Common.Module.Runlet', () => {
     __DEV__ && console.log('result0', JSON.stringify(result0))
     __DEV__ && console.log('result1', JSON.stringify(result1))
     strictEqual(result0.length + result1.length, 10)
-    strictEqual(result0.length > 0, true)
-    strictEqual(result1.length > 0, true)
+    truthy(result0.length > 0)
+    truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
     __DEV__ && info('==== runlet.describe ====')

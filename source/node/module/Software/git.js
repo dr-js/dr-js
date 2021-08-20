@@ -10,8 +10,8 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
   'expect "git" in PATH'
 )
 const runGit = (argList = [], option) => run([ ...verify(), ...argList ], option)
-const runGitStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runGitSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
+const runGitStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runGitStdoutSync = (argList = [], option) => runStdoutSync([ ...verify(), ...argList ], option)
 
 const gitString = (...args) => spawnString([ ...verify(), ...args ])
@@ -26,7 +26,8 @@ const getGitCommitMessage = (revisionRange = 'HEAD') => gitString('log', '-1', '
 
 export {
   getArgs, setArgs, check, verify,
-  runGit, runGitStdout, runGitSync, runGitStdoutSync,
+  runGit, runGitSync,
+  runGitStdout, runGitStdoutSync,
 
   getGitBranch, getGitCommitHash, getGitCommitMessage // TODO: DEPRECATE: move to `@dr-js/dev` // TODO: NOTE: sync only, expect cwd under git repo
 }

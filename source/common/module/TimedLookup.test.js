@@ -1,4 +1,4 @@
-import { strictEqual, notStrictEqual, doThrow } from 'source/common/verify.js'
+import { strictEqual, notStrictEqual, doThrow, truthy } from 'source/common/verify.js'
 import { getTimestamp } from 'source/common/time.js'
 import { isObjectContain } from 'source/common/check.js'
 import { withRepeat } from 'source/common/function.js'
@@ -33,27 +33,27 @@ describe('Common.Module.TimedLookup', () => {
     doThrow(() => verifyOption({ timeGap: 0 }), 'should throw on invalid timeGap')
     doThrow(() => verifyOption({ timeGap: 2.5 }), 'should throw on invalid timeGap')
 
-    strictEqual(isObjectContain(verifyOption({}), defaultCheckOption), true)
-    strictEqual(isObjectContain(verifyOption(defaultCheckOption), defaultCheckOption), true)
+    truthy(isObjectContain(verifyOption({}), defaultCheckOption))
+    truthy(isObjectContain(verifyOption(defaultCheckOption), defaultCheckOption))
 
-    strictEqual(isObjectContain(verifyOption({ tag: '' }), { ...defaultCheckOption, tag: '' }), true)
-    strictEqual(isObjectContain(verifyOption({ tag: 'aA1_zZ0' }), { ...defaultCheckOption, tag: 'aA1_zZ0' }), true)
+    truthy(isObjectContain(verifyOption({ tag: '' }), { ...defaultCheckOption, tag: '' }))
+    truthy(isObjectContain(verifyOption({ tag: 'aA1_zZ0' }), { ...defaultCheckOption, tag: 'aA1_zZ0' }))
 
-    strictEqual(isObjectContain(verifyOption({ size: 1024 + 32 }), { ...defaultCheckOption, size: 1024 + 32 }), true)
-    strictEqual(isObjectContain(verifyOption({ size: 1024 * 1024 }), { ...defaultCheckOption, size: 1024 * 1024 }), true)
+    truthy(isObjectContain(verifyOption({ size: 1024 + 32 }), { ...defaultCheckOption, size: 1024 + 32 }))
+    truthy(isObjectContain(verifyOption({ size: 1024 * 1024 }), { ...defaultCheckOption, size: 1024 * 1024 }))
 
-    strictEqual(isObjectContain(verifyOption({ tokenSize: 2 }), { ...defaultCheckOption, tokenSize: 2 }), true)
-    strictEqual(isObjectContain(verifyOption({ tokenSize: 9 }), { ...defaultCheckOption, tokenSize: 9 }), true)
-    strictEqual(isObjectContain(verifyOption({ tokenSize: 13 }), { ...defaultCheckOption, tokenSize: 13 }), true)
+    truthy(isObjectContain(verifyOption({ tokenSize: 2 }), { ...defaultCheckOption, tokenSize: 2 }))
+    truthy(isObjectContain(verifyOption({ tokenSize: 9 }), { ...defaultCheckOption, tokenSize: 9 }))
+    truthy(isObjectContain(verifyOption({ tokenSize: 13 }), { ...defaultCheckOption, tokenSize: 13 }))
 
-    strictEqual(isObjectContain(verifyOption({ timeGap: 1 }), { ...defaultCheckOption, timeGap: 1 }), true)
-    strictEqual(isObjectContain(verifyOption({ timeGap: 10 }), { ...defaultCheckOption, timeGap: 10 }), true)
-    strictEqual(isObjectContain(verifyOption({ timeGap: 3600 }), { ...defaultCheckOption, timeGap: 3600 }), true)
+    truthy(isObjectContain(verifyOption({ timeGap: 1 }), { ...defaultCheckOption, timeGap: 1 }))
+    truthy(isObjectContain(verifyOption({ timeGap: 10 }), { ...defaultCheckOption, timeGap: 10 }))
+    truthy(isObjectContain(verifyOption({ timeGap: 3600 }), { ...defaultCheckOption, timeGap: 3600 }))
   })
 
   it('generateLookupData()', () => {
-    strictEqual(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer), true)
-    strictEqual(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer), true)
+    truthy(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer))
+    truthy(!isEqualArrayBuffer(defaultLookupData.dataView.buffer, generateLookupData(defaultOption).dataView.buffer))
   })
 
   it('generateCheckCode()', () => {
@@ -115,11 +115,11 @@ describe('Common.Module.TimedLookup', () => {
     const arrayBufferPacket = packDataArrayBuffer(defaultLookupData)
     const { dataView: parsedDataView, ...parsedOption } = parseDataArrayBuffer(arrayBufferPacket)
 
-    strictEqual(isObjectContain(defaultLookupData, parsedOption), true)
-    strictEqual(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer), true)
+    truthy(isObjectContain(defaultLookupData, parsedOption))
+    truthy(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer))
 
     const repackedArrayBufferPacket = packDataArrayBuffer({ dataView: parsedDataView, ...parsedOption })
 
-    strictEqual(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket), true)
+    truthy(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket))
   })
 })

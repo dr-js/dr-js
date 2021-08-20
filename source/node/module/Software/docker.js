@@ -1,3 +1,4 @@
+import { catchAsync } from 'source/common/error.js'
 import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { probeSync, createArgListPack } from '../function.js'
 
@@ -35,9 +36,52 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
   'expect "docker" in PATH, with server up'
 )
 const runDocker = (argList = [], option) => run([ ...verify(), ...argList ], option)
-const runDockerStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runDockerSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
+const runDockerStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runDockerStdoutSync = (argList = [], option) => runStdoutSync([ ...verify(), ...argList ], option)
+
+const checkLocalImage = async (imageRepo, imageTag) => {
+  const stdoutString = String(await runDockerStdout([ 'image', 'ls', `${imageRepo}:${imageTag}` ]))
+  return stdoutString.includes(imageRepo) && stdoutString.includes(imageTag)
+}
+const pullImage = async (imageRepo, imageTag) => runDockerStdout([ 'pull', `${imageRepo}:${imageTag}` ])
+
+const checkPullImage = async (imageRepo, imageTag) => {
+  if (await checkLocalImage(imageRepo, imageTag)) return true
+  await catchAsync(pullImage, imageRepo, imageTag) // try pull remote
+  return checkLocalImage(imageRepo, imageTag) // check local again
+}
+
+const getContainerLsList = async (isListAll = false) => String(await runDockerStdout([ 'container', 'ls',
+  '--format', '{{.ID}}|{{.Image}}|{{.Names}}',
+  isListAll && '--all'
+].filter(Boolean))).trim().split('\n').filter(Boolean).map((string) => {
+  const [ id, image, names ] = string.split('|')
+  return { id, image, names }
+})
+
+const patchContainerLsListStartedAt = async (
+  containerLsList = [] // will mutate and added `startedAt: Date` to containerLsList
+) => {
+  const idList = containerLsList.map(({ id }) => id)
+  String(await runDockerStdout([ 'container', 'inspect',
+    '--format', '{{.Id}}|{{.State.StartedAt}}', // https://unix.stackexchange.com/questions/492279/convert-docker-container-dates-to-milliseconds-since-epoch/492291#492291
+    ...idList
+  ])).trim().split('\n').filter(Boolean).forEach((string) => {
+    const [ id, startedAtString ] = string.split('|') // the full id & ISO time string
+    const item = containerLsList[ idList.findIndex((v) => id.startsWith(v)) ]
+    if (item) item.startedAt = new Date(startedAtString)
+  })
+}
+
+const matchContainerLsList = (
+  containerLsList = [], // will mutate and added `pid: Number` to containerLsList
+  processList = [] // from `await getProcessListAsync()`
+) => {
+  containerLsList.forEach((item) => {
+    item.pid = (processList.find(({ command }) => command.includes(item.id)) || {}).pid // NOTE: this pid is host pid, not the pid in container
+  })
+}
 
 const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, verify: verifyCompose } = createArgListPack(
   () => {
@@ -48,14 +92,19 @@ const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, v
   'expect both "docker-compose" and "docker" in PATH, with server up'
 )
 const runCompose = (argList = [], option) => run([ ...verifyCompose(), ...argList ], option)
-const runComposeStdout = (argList = [], option) => runStdout([ ...verifyCompose(), ...argList ], option)
 const runComposeSync = (argList = [], option) => runSync([ ...verifyCompose(), ...argList ], option)
+const runComposeStdout = (argList = [], option) => runStdout([ ...verifyCompose(), ...argList ], option)
 const runComposeStdoutSync = (argList = [], option) => runStdoutSync([ ...verifyCompose(), ...argList ], option)
 
 export {
   getArgs, setArgs, check, verify,
-  runDocker, runDockerStdout, runDockerSync, runDockerStdoutSync,
+  runDocker, runDockerSync,
+  runDockerStdout, runDockerStdoutSync,
+
+  checkLocalImage, pullImage, checkPullImage,
+  getContainerLsList, patchContainerLsListStartedAt, matchContainerLsList,
 
   getArgsCompose, setArgsCompose, checkCompose, verifyCompose,
-  runCompose, runComposeStdout, runComposeSync, runComposeStdoutSync
+  runCompose, runComposeSync,
+  runComposeStdout, runComposeStdoutSync
 }

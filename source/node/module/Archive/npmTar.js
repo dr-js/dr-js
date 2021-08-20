@@ -44,7 +44,7 @@ const extractAsync = async (sourceFile, outputPath) => quickRunletFromStream.app
 ].filter(Boolean))
 
 const REGEXP_PACKAGE_JSON = /^[^/]+\/package\.json$/
-const extractPackageJson = async (sourceFile) => { // https://github.com/npm/node-tar/issues/181#issuecomment-492756116
+const extractPackageJSON = async (sourceFile) => { // https://github.com/npm/node-tar/issues/181#issuecomment-492756116
   const chunkList = []
   await getNpmTar().list({
     file: sourceFile,
@@ -58,5 +58,7 @@ export {
   REGEXP_NPM_TAR, getNpmTar, check, verify,
   createCompressStream, createExtractStream,
   compressAsync, extractAsync, // NOTE: will not auto create output path
-  extractPackageJson
+  extractPackageJSON,
+
+  extractPackageJSON as extractPackageJson // TODO: DEPRECATE
 }

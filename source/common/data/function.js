@@ -22,6 +22,8 @@ const swapObfuscateString = (string = '') => {
   return result.join('')
 }
 
+const dupJSON = (packageJSON) => JSON.parse(JSON.stringify(packageJSON))
+
 // always return a object/array, use this with object destructuring
 const tryParseJSONObject = (text, defaultResult = {}) => {
   try {
@@ -43,6 +45,7 @@ export {
   hashStringToNumber,
   reverseString,
   swapObfuscateString,
+  dupJSON,
   tryParseJSONObject,
   getValueByKeyList
 }

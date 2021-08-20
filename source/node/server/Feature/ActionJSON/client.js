@@ -1,6 +1,6 @@
 const DEFAULT_TIMEOUT = 30 * 1000 // 30sec
 
-const actionJson = async ({
+const actionJSON = async ({
   actionType, actionPayload,
   urlActionJSON,
 
@@ -21,4 +21,8 @@ const actionJson = async ({
   return result // should check errorList
 }
 
-export { actionJson }
+export {
+  actionJSON,
+
+  actionJSON as actionJson // TODO: DEPRECATE
+}

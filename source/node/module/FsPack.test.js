@@ -4,8 +4,7 @@ import { createGzip } from 'zlib'
 import { stringifyEqual } from 'source/common/verify.js'
 import { getSampleRange } from 'source/common/math/sample.js'
 import { compareString } from 'source/common/compare.js'
-import { createDirectory, resetDirectory } from 'source/node/fs/Directory.js'
-import { modifyDelete } from 'source/node/fs/Modify.js'
+import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 
 import {
@@ -23,26 +22,26 @@ const fromRoot = (...args) => resolve(TEST_ROOT, ...args)
 
 before(async () => {
   await resetDirectory(TEST_ROOT)
-  await createDirectory(fromRoot('input'))
+  await resetDirectory(fromRoot('input'))
   await fsAsync.writeFile(fromRoot('input/empty'), '')
   await fsAsync.writeFile(fromRoot('input/text'), 'input/text')
   await fsAsync.writeFile(fromRoot('input/binary-small'), Buffer.from(getSampleRange(0, 64 - 1)))
   await fsAsync.writeFile(fromRoot('input/binary-big'), Buffer.from(getSampleRange(0, 128 * 1024 - 1)))
-  await createDirectory(fromRoot('input/dir0'))
+  await resetDirectory(fromRoot('input/dir0'))
   await fsAsync.writeFile(fromRoot('input/dir0/empty'), '')
   await fsAsync.writeFile(fromRoot('input/dir0/text'), 'input/dir0/text')
   await fsAsync.writeFile(fromRoot('input/dir0/binary-small'), Buffer.from(getSampleRange(0, 64 - 1)))
   await fsAsync.writeFile(fromRoot('input/dir0/binary-big'), Buffer.from(getSampleRange(0, 128 * 1024 - 1)))
-  await createDirectory(fromRoot('input/dir1'))
+  await resetDirectory(fromRoot('input/dir1'))
   if (process.platform !== 'win32') {
-    await createDirectory(fromRoot('input/dir2'))
+    await resetDirectory(fromRoot('input/dir2'))
     await fsAsync.writeFile(fromRoot('input/dir2/file-executable'), 'input/dir2/file-executable', { mode: 0o755 })
     await fsAsync.symlink('relative/path', fromRoot('input/dir2/symlink-relative'))
     await fsAsync.symlink('/absolute/path', fromRoot('input/dir2/symlink-absolute'))
   }
 })
 after(async () => {
-  await modifyDelete(TEST_ROOT)
+  await deleteDirectory(TEST_ROOT)
 })
 
 const HEADER_JSON_INPUT = {

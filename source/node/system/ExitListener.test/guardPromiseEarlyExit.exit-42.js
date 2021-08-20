@@ -1,15 +1,15 @@
-import { runMain } from '@dr-js/dev/module/main.js'
+import { runKit } from 'source/node/kit.js'
 import { guardPromiseEarlyExit } from '../ExitListener.js'
 
-runMain(async () => {
+runKit(async (kit) => {
   const promiseBroken = new Promise(() => {})
 
-  console.log('test guard hit, should exit with code 42')
+  kit.log('test guard hit, should exit with code 42')
   await guardPromiseEarlyExit(() => {
-    console.log('guard hit, should exit with code 42')
+    kit.log('guard hit, should exit with code 42')
     process.exitCode = 42
   }, promiseBroken)
 
-  console.log('should not pass guard')
+  kit.log('should not pass guard')
   process.exitCode = 255
 })

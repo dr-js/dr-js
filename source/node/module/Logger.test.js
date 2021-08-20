@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
-import { strictEqual } from 'source/common/verify.js'
+import { strictEqual, truthy } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { existPath } from 'source/node/fs/Path.js'
 import { resetDirectory } from 'source/node/fs/Directory.js'
@@ -25,10 +25,10 @@ describe('Node.Module.Logger', () => {
     // support `add()` before `up()`
     add('1')
     add('2')
-    strictEqual(await existPath(pathOutputFile), false, 'should hold log in buffer')
+    truthy(!await existPath(pathOutputFile), 'should hold log in buffer')
 
     up()
-    strictEqual(await existPath(pathOutputFile), true, 'should create log file but not write')
+    truthy(await existPath(pathOutputFile), 'should create log file but not write')
 
     add('3')
     add('4')
@@ -67,10 +67,10 @@ describe('Node.Module.Logger', () => {
     // support `add()` before `up()`
     add('1', 1)
     add('2')
-    strictEqual(await existPath(getCurrentLogPath()), false, 'should hold log in buffer')
+    truthy(!await existPath(getCurrentLogPath()), 'should hold log in buffer')
 
     await up()
-    strictEqual(await existPath(getCurrentLogPath()), true, 'should create log file but not write')
+    truthy(await existPath(getCurrentLogPath()), 'should create log file but not write')
 
     add('3')
     add('4')

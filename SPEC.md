@@ -48,7 +48,7 @@
 + 📄 [source/browser/module/MotionAutoTimer.js](source/browser/module/MotionAutoTimer.js)
   - `createInterpolationAutoTimer`, `createVectorAccumulator`
 + 📄 [source/common/check.js](source/common/check.js)
-  - `isArrayBuffer`, `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`
+  - `isArrayBuffer`, `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`, `isTruthy`
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
@@ -59,10 +59,12 @@
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
   - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
++ 📄 [source/common/test.js](source/common/test.js)
+  - `createTest`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
 + 📄 [source/common/verify.js](source/common/verify.js)
-  - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
+  - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromString`, `fromU16String`, `isEqualArrayBuffer`, `toString`, `toU16String`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
@@ -92,7 +94,7 @@
 + 📄 [source/common/data/Tree.js](source/common/data/Tree.js)
   - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTreeNode`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
-  - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
+  - `dupJSON`, `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
   - `DEGREE_TO_RADIAN`, `RADIAN_TO_DEGREE`, `fromDegree`, `getDegree`
 + 📄 [source/common/geometry/D2/BoundingRect.js](source/common/geometry/D2/BoundingRect.js)
@@ -149,6 +151,8 @@
   - `getLevenshteinDistance`
 + 📄 [source/common/module/MIME.js](source/common/module/MIME.js)
   - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
++ 📄 [source/common/module/PackageJSON.js](source/common/module/PackageJSON.js)
+  - `collectDependency`, `getFirstBinPath`, `packPackageJSON`, `parsePackageNameAndVersion`, `sortPackageJSON`, `toPackageInfo`, `toPackageTgzName`
 + 📄 [source/common/module/Patch.js](source/common/module/Patch.js)
   - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
@@ -158,7 +162,7 @@
 + 📄 [source/common/module/RunletChip.js](source/common/module/RunletChip.js)
   - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
-  - `compareSemVer`, `parseSemVer`
+  - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
@@ -175,6 +179,8 @@
   - `getEnvironment`, `getGlobal`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
++ 📄 [source/node/kit.js](source/node/kit.js)
+  - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
 + 📄 [source/node/resource.js](source/node/resource.js)
@@ -197,10 +203,12 @@
   - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `dropTrailingSep`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
 + 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
   - `createFileWatcherExot`
++ 📄 [source/node/fs/Checksum.js](source/node/fs/Checksum.js)
+  - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
-  - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
+  - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readJSONAlike`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
   - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
 + 📄 [source/node/fs/Path.js](source/node/fs/Path.js)
@@ -221,6 +229,8 @@
   - `configureLog`
 + 📄 [source/node/module/Logger.js](source/node/module/Logger.js)
   - `createLoggerExot`, `createSimpleLoggerExot`
++ 📄 [source/node/module/PackageJSON.js](source/node/module/PackageJSON.js)
+  - `editPackageJSON`, `loadPackageCombo`, `loadPackageInfo`, `loadPackageInfoList`, `savePackageInfo`, `toPackageJSONPath`, `toPackageRootPath`, `writePackageJSON`
 + 📄 [source/node/module/Permission.js](source/node/module/Permission.js)
   - `configurePermission`
 + 📄 [source/node/module/Pid.js](source/node/module/Pid.js)
@@ -252,15 +262,17 @@
 + 📄 [source/node/module/Archive/function.js](source/node/module/Archive/function.js)
   - `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `withTempPath`
 + 📄 [source/node/module/Archive/npmTar.js](source/node/module/Archive/npmTar.js)
-  - `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJson`, `getNpmTar`, `verify`
+  - `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `extractPackageJson`, `getNpmTar`, `verify`
 + 📄 [source/node/module/Archive/tar.js](source/node/module/Archive/tar.js)
   - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
   - `createOptionParser`
 + 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
   - `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
++ 📄 [source/node/module/Software/bash.js](source/node/module/Software/bash.js)
+  - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`
 + 📄 [source/node/module/Software/docker.js](source/node/module/Software/docker.js)
-  - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`
+  - `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`
 + 📄 [source/node/module/Software/git.js](source/node/module/Software/git.js)
   - `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`
 + 📄 [source/node/module/Software/hostStatus.js](source/node/module/Software/hostStatus.js)
@@ -284,7 +296,7 @@
 + 📄 [source/node/server/Feature/@/HTML/Modal.js](source/node/server/Feature/@/HTML/Modal.js)
   - `initModal`
 + 📄 [source/node/server/Feature/ActionJSON/client.js](source/node/server/Feature/ActionJSON/client.js)
-  - `actionJson`
+  - `actionJSON`, `actionJson`
 + 📄 [source/node/server/Feature/ActionJSON/setup.js](source/node/server/Feature/ActionJSON/setup.js)
   - `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
 + 📄 [source/node/server/Feature/Auth/HTML.js](source/node/server/Feature/Auth/HTML.js)
@@ -366,7 +378,9 @@
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
++ 📄 [source/node/system/WatchLoop.js](source/node/system/WatchLoop.js)
+  - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
 
 #### Export Tree
 - **Browser**
@@ -438,7 +452,7 @@
       - `createToggle`
     - **Tree**
       - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTreeNode`
-    - `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
+    - `dupJSON`, `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
   - **Geometry**
     - **D2**
       - **BoundingRect**
@@ -490,6 +504,8 @@
       - `getLevenshteinDistance`
     - **MIME**
       - `BASIC_EXTENSION_MAP`, `DEFAULT_MIME`, `getMIMETypeFromFileName`
+    - **PackageJSON**
+      - `collectDependency`, `getFirstBinPath`, `packPackageJSON`, `parsePackageNameAndVersion`, `sortPackageJSON`, `toPackageInfo`, `toPackageTgzName`
     - **Patch**
       - `createPatchKit`, `toArrayWithKeyPatchKit`, `toObjectPatchKit`
     - **RouteMap**
@@ -499,7 +515,7 @@
     - **RunletChip**
       - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
     - **SemVer**
-      - `compareSemVer`, `parseSemVer`
+      - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
     - **TimedLookup**
       - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **TimerTag**
@@ -512,7 +528,7 @@
     - **Object**
       - `objectMergeDeep`, `objectSortKey`
   - **Check**
-    - `isArrayBuffer`, `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`
+    - `isArrayBuffer`, `isArrayLength`, `isBasicArray`, `isBasicFunction`, `isBasicObject`, `isBoolean`, `isFunctionThrow`, `isFunctionThrowAsync`, `isInteger`, `isNumber`, `isObjectAlike`, `isObjectContain`, `isObjectKey`, `isOneOf`, `isPromiseAlike`, `isRegExp`, `isStrictEqual`, `isString`, `isStringifyEqual`, `isTruthy`
   - **Compare**
     - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
@@ -523,10 +539,12 @@
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
     - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+  - **Test**
+    - `createTest`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
   - **Verify**
-    - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`
+    - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 - **Env**
   - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `tryRequire`, `tryRequireResolve`
 - **Node**
@@ -549,10 +567,12 @@
     - **Watch**
       - `createFileWatcherExot`
   - **Fs**
+    - **Checksum**
+      - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
     - **File**
-      - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
+      - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readJSONAlike`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
     - **Modify**
       - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
     - **Path**
@@ -563,11 +583,11 @@
     - **ActionJSON**
       - `ACTION_CORE_MAP`, `ACTION_TYPE`, `setupActionMap`, `ACTION_CORE_MAP`, `ACTION_TYPE`, `ACTION_CORE_MAP`, `ACTION_TYPE`, `setupActionMap`
     - **Archive**
-      - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`, `REGEXP_AUTO`, `check`, `compress7zAsync`, `compressAutoAsync`, `compressT7zAsync`, `extract7zAsync`, `extractAutoAsync`, `extractT7zAsync`, `repackAsync`, `repackTarAsync`, `verify`, `REGEXP_FSP`, `compressAsync`, `compressFspAsync`, `compressFspGzBrAsync`, `extractAsync`, `extractFspAsync`, `extractFspGzBrAsync`, `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `withTempPath`, `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJson`, `getNpmTar`, `verify`, `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
+      - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`, `REGEXP_AUTO`, `check`, `compress7zAsync`, `compressAutoAsync`, `compressT7zAsync`, `extract7zAsync`, `extractAutoAsync`, `extractT7zAsync`, `repackAsync`, `repackTarAsync`, `verify`, `REGEXP_FSP`, `compressAsync`, `compressFspAsync`, `compressFspGzBrAsync`, `extractAsync`, `extractFspAsync`, `extractFspGzBrAsync`, `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `withTempPath`, `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `extractPackageJson`, `getNpmTar`, `verify`, `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **Software**
-      - `check`, `checkCompose`, `getArgs`, `getArgsCompose`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
+      - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`, `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
     - **Auth**
       - `AUTH_FILE`, `AUTH_FILE_GROUP`, `AUTH_SKIP`, `DEFAULT_AUTH_KEY`, `configureAuth`, `configureAuthFile`, `configureAuthFileGroup`, `configureAuthSkip`, `describeAuthFile`, `generateAuthCheckCode`, `generateAuthFile`, `loadAuthFile`, `saveAuthFile`, `verifyAuthCheckCode`
     - **EntityTag**
@@ -582,6 +602,8 @@
       - `configureLog`
     - **Logger**
       - `createLoggerExot`, `createSimpleLoggerExot`
+    - **PackageJSON**
+      - `editPackageJSON`, `loadPackageCombo`, `loadPackageInfo`, `loadPackageInfoList`, `savePackageInfo`, `toPackageJSONPath`, `toPackageRootPath`, `writePackageJSON`
     - **Permission**
       - `configurePermission`
     - **Pid**
@@ -611,7 +633,7 @@
         - **Option**
           - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
       - **ActionJSON**
-        - `actionJson`, `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
+        - `actionJSON`, `actionJson`, `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
       - **Auth**
         - **HTML**
           - `initAuthMask`
@@ -680,7 +702,11 @@
     - **Run**
       - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+    - **WatchLoop**
+      - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
+  - **Kit**
+    - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
   - **Resource**
@@ -701,7 +727,7 @@
 >       show full help
 >   --version --v -v [OPTIONAL] [ARGUMENT=0-1]
 >       show version
->   --note --N -N [OPTIONAL] [ARGUMENT=1+]
+>   --note --N -N [OPTIONAL]
 >       noop, tag for ps/htop
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]
 >       less log
@@ -717,6 +743,8 @@
 >       common option: $0=routePrefix (default to "", set like "/prefix")
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=path/cwd
+>   --timeout --T -T [OPTIONAL] [ARGUMENT=1]
+>       common option, 0 for unlimited: $0=msec/undefined
 >   --json --J -J [OPTIONAL] [ARGUMENT=0-1]
 >       output JSON, if supported
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
@@ -724,7 +752,7 @@
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0-1]
 >       start node REPL
 >   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
->       fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, $@=initialUrl,method/GET,jumpMax/4,timeout/0
+>       fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, -T=timeout/0, $@=initialUrl,method/GET,jumpMax/4
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
 >       wait specified time, in msec: $0=waitTime/2*1000
 >   --echo [OPTIONAL] [ARGUMENT=0+]
@@ -761,6 +789,32 @@
 >       send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
+>   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
+>       list file: $0=path/cwd
+>   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
+>       list all file: $0=path/cwd
+>   --file-tree --tree [OPTIONAL] [ARGUMENT=0-1]
+>       list all file in tree: $0=path/cwd
+>   --compress --a -a [OPTIONAL] [ARGUMENT=0-1]
+>       compress to archive: -I=inputDirectory, -O=outputFile
+>   --extract --x -x [OPTIONAL] [ARGUMENT=0-1]
+>       extract from archive: -I=inputFile, -O=outputPath
+>   --auth-file-describe [OPTIONAL] [ARGUMENT=0-1]
+>       describe auth file: -I=authFile
+>   --auth-check-code-generate [OPTIONAL] [ARGUMENT=0-1]
+>       generate checkCode from auth file: -I=authFile, $0=timestamp/now
+>   --auth-check-code-verify [OPTIONAL] [ARGUMENT=1-2]
+>       verify checkCode with auth file: -I=authFile, $@=checkCode,timestamp/now
+>   --auth-gen-tag [OPTIONAL] [ARGUMENT=1]
+>       generate auth file: -O=outputFile
+>     --auth-gen-size [ARGUMENT=1]
+>     --auth-gen-token-size [ARGUMENT=1]
+>     --auth-gen-time-gap [ARGUMENT=1]
+>     --auth-gen-info [ARGUMENT=1]
+>   --ping-race [OPTIONAL] [ARGUMENT=1+]
+>       tcp-ping list of url to find the fastest: -T=timeout/5000, $@=...urlList
+>   --ping-stat [OPTIONAL] [ARGUMENT=1+]
+>       tcp-ping list of url and print result: -T=timeout/5000, $@=...urlList
 >   --server-serve-static --sss [OPTIONAL] [ARGUMENT=0-1]
 >       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
@@ -777,7 +831,7 @@
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_NOTE="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_NOTE="[OPTIONAL]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -785,6 +839,7 @@
 >     export DR_JS_HOST="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_RP]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_TIMEOUT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0-1]"
@@ -807,6 +862,21 @@
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
+>     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS]"
+>     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS_R,DR_JS_LLA]"
+>     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
+>     export DR_JS_COMPRESS="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_EXTRACT="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_FILE_DESCRIBE="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_AUTH_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
+>     export DR_JS_AUTH_GEN_TAG="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_SIZE="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_TOKEN_SIZE="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_TIME_GAP="[ARGUMENT=1]"
+>     export DR_JS_AUTH_GEN_INFO="[ARGUMENT=1]"
+>     export DR_JS_PING_RACE="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_PING_STAT="[OPTIONAL] [ARGUMENT=1+]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
@@ -818,7 +888,7 @@
 >     "config": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "help": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "version": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "note": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "note": [ "[OPTIONAL]" ],
 >     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
@@ -826,6 +896,7 @@
 >     "host": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=RP]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "timeout": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "repl": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
@@ -848,6 +919,21 @@
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
+>     "fileList": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ls]" ],
+>     "fileListAll": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=lsR,lla]" ],
+>     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],
+>     "compress": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "extract": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authFileDescribe": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "authCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
+>     "authGenTag": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "authGenSize": [ "[ARGUMENT=1]" ],
+>     "authGenTokenSize": [ "[ARGUMENT=1]" ],
+>     "authGenTimeGap": [ "[ARGUMENT=1]" ],
+>     "authGenInfo": [ "[ARGUMENT=1]" ],
+>     "pingRace": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "pingStat": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],

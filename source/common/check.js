@@ -2,6 +2,7 @@
 
 const isString = (value) => typeof (value) === 'string'
 const isBoolean = (value) => typeof (value) === 'boolean'
+const isTruthy = (value) => Boolean(value)
 const isNumber = (value) => typeof (value) === 'number'
 const isInteger = Number.isInteger
 const isRegExp = (value) => value instanceof RegExp
@@ -44,7 +45,7 @@ const isFunctionThrowAsync = async (func) => {
 // const funcNotThrow = () => false
 // const funcDoThrow = () => true
 
-const isStrictEqual = (value, target) => Object.is(value, target)
+const isStrictEqual = (value, target) => Object.is(value, target) // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
 const isStringifyEqual = (value, target) => {
   if (Object.is(value, target)) return true
   if (isObjectAlike(value) && isObjectAlike(target)) return JSON.stringify(value) === JSON.stringify(target)
@@ -53,7 +54,7 @@ const isStringifyEqual = (value, target) => {
 
 export {
   isString,
-  isBoolean,
+  isBoolean, isTruthy,
   isNumber,
   isInteger,
   isRegExp,
