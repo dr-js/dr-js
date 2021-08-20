@@ -40,6 +40,10 @@ const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
 const clock = tryClock() // return running/relative time in milliseconds
 const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
 
+// similar to output of `TZ=UTC0 date +%Y%m%d`, in `YYYYMMDD` format
+const getUTCDateTag = (date = new Date()) => [ date.getUTCFullYear(), pad00(date.getUTCMonth() + 1), pad00(date.getUTCDate()) ].join('')
+const pad00 = (number) => String(number).padStart(2, '0')
+
 const [ setWeakTimeout, setWeakInterval ] = tryWeakTimer() // NOTE: using this only make sense in common/node
 
 // NOTE: no way to cancel the timeout, may keep node running longer than expected
@@ -101,7 +105,7 @@ export {
   CLOCK_PER_SECOND,
   CLOCK_TO_SECOND,
   clock,
-  getTimestamp,
+  getTimestamp, getUTCDateTag,
   setWeakTimeout, setWeakInterval,
   setTimeoutAsync, setAwaitAsync,
   requestFrameUpdate,
