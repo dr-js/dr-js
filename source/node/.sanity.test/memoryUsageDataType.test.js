@@ -2,7 +2,7 @@ import { createTestFunc, commonFunc } from './function.test.js'
 
 const { describe, it } = globalThis
 
-process.env.TEST_SANITY && describe('Node.SanityTest.MemoryUsageDataType (very slow)', () => {
+process.env.TEST_SANITY && !process.env.IS_CI && describe('Node.SanityTest.MemoryUsageDataType (very slow)', () => {
   it('basic data type', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4

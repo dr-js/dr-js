@@ -5,6 +5,7 @@ on: # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow
 
 env:
   cache-version: 20210623
+  IS_CI: true
 
 jobs:
   test-tag:

@@ -5,6 +5,7 @@ on:
 
 env:
   cache-version: 20210623
+  IS_CI: true
 
 jobs:
   test-push:
