@@ -1,10 +1,10 @@
 import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset.js'
-import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, publishOutput } from '@dr-js/dev/module/output.js'
+import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, verifyPackageVersionStrict, publishPackage } from '@dr-js/dev/module/output.js'
 import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify.js'
 import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor.js'
-import { runMain, argvFlag, commonCombo } from '@dr-js/dev/module/main.js'
 
 import { withRetry } from 'source/common/function.js'
+import { runKit, argvFlag } from 'source/node/kit.js'
 
 const retryCount = process.platform === 'linux'
   ? 1 // one chance should be enough for linux
@@ -15,51 +15,51 @@ const retryTest = (func, ...args) => withRetry((failed, maxRetry) => {
   }
 }, retryCount, 1000)
 
-runMain(async (logger) => {
-  const { fromRoot, fromOutput, RUN } = commonCombo(logger)
-
-  const processOutput = async ({ logger }) => {
-    const fileListFull = await getSourceJsFileListFromPathList([ 'module', 'library', 'bin' ], fromOutput)
+runKit(async (kit) => {
+  const processOutput = async ({ kit }) => {
+    const fileListFull = await getSourceJsFileListFromPathList([ 'module', 'library', 'bin' ], kit.fromOutput)
     const fileListNoBrowser = fileListFull.filter((path) => !path.endsWith('Dr.browser.js'))
 
     let sizeReduce = 0
-    sizeReduce += await minifyFileListWithTerser({ fileList: fileListFull, option: getTerserOption({ isReadable: true }), rootPath: fromOutput(), logger })
-    sizeReduce += await processFileList({ fileList: fileListNoBrowser, processor: fileProcessorBabel, rootPath: fromOutput(), logger })
-    logger.padLog(`size reduce: ${sizeReduce}B`)
+    sizeReduce += await minifyFileListWithTerser({ fileList: fileListFull, option: getTerserOption({ isReadable: true }), kit })
+    sizeReduce += await processFileList({ fileList: fileListNoBrowser, processor: fileProcessorBabel, kit })
+    kit.padLog(`size reduce: ${sizeReduce}B`)
   }
 
-  await verifyNoGitignore({ path: fromRoot('source'), logger })
-  await verifyNoGitignore({ path: fromRoot('source-bin'), logger })
-  const packageJSON = await initOutput({ fromRoot, fromOutput, logger })
+  await verifyNoGitignore({ path: kit.fromRoot('source'), kit })
+  await verifyNoGitignore({ path: kit.fromRoot('source-bin'), kit })
+  const packageJSON = await initOutput({ kit })
   if (!argvFlag('pack')) return
 
-  logger.padLog('generate spec & index.js')
-  RUN('npm run script-generate-spec')
-  logger.padLog('build library-webpack')
-  RUN('npm run build-library-webpack')
-  logger.padLog('build library-babel')
-  RUN('npm run build-library-babel')
-  logger.padLog('build module')
-  RUN('npm run build-module')
-  logger.padLog('build bin')
-  RUN('npm run build-bin')
+  const isPublish = argvFlag('publish')
+  isPublish && verifyPackageVersionStrict(packageJSON.version)
+  kit.padLog('generate spec & index.js')
+  kit.RUN('npm run script-generate-spec')
+  kit.padLog('build library-webpack')
+  kit.RUN('npm run build-library-webpack')
+  kit.padLog('build library-babel')
+  kit.RUN('npm run build-library-babel')
+  kit.padLog('build module')
+  kit.RUN('npm run build-module')
+  kit.padLog('build bin')
+  kit.RUN('npm run build-bin')
 
-  await processOutput({ logger })
-  const isTest = argvFlag('test', 'publish', 'publish-dev')
-  isTest && logger.padLog('lint source')
-  isTest && RUN('npm run lint')
-  isTest && await processOutput({ logger }) // once more
-  isTest && logger.padLog('test output')
-  isTest && await retryTest(RUN, 'npm run test-output-library')
-  isTest && await retryTest(RUN, 'npm run test-output-module')
-  isTest && await retryTest(RUN, 'npm run test-output-bin')
-  isTest && logger.padLog('test browser')
-  isTest && await retryTest(RUN, 'npm run test-browser')
-  isTest && logger.padLog('test bin')
-  isTest && RUN('npm run test-bin')
-  await clearOutput({ fromOutput, logger })
-  await verifyOutputBin({ fromOutput, packageJSON, logger })
-  isTest && await verifyGitStatusClean({ fromRoot, logger })
-  const pathPackagePack = await packOutput({ fromRoot, fromOutput, logger })
-  await publishOutput({ packageJSON, pathPackagePack, logger })
+  await processOutput({ kit })
+  const isTest = argvFlag('test', 'publish')
+  isTest && kit.padLog('lint source')
+  isTest && kit.RUN('npm run lint')
+  isTest && await processOutput({ kit }) // once more
+  isTest && kit.padLog('test output')
+  isTest && await retryTest(kit.RUN, 'npm run test-output-library')
+  isTest && await retryTest(kit.RUN, 'npm run test-output-module')
+  isTest && await retryTest(kit.RUN, 'npm run test-output-bin')
+  isTest && kit.padLog('test browser')
+  isTest && await retryTest(kit.RUN, 'npm run test-browser')
+  isTest && kit.padLog('test bin')
+  isTest && kit.RUN('npm run test-bin')
+  await clearOutput({ kit })
+  await verifyOutputBin({ packageJSON, kit })
+  isTest && await verifyGitStatusClean({ kit })
+  const pathPackagePack = await packOutput({ kit })
+  isPublish && await publishPackage({ packageJSON, pathPackagePack, kit })
 })

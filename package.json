@@ -16,7 +16,6 @@
     "script-pack": "node -r @babel/register ./script/pack quiet pack",
     "script-pack-test": "node -r @babel/register ./script/pack verbose pack test",
     "script-publish": "dr-dev --EE TEST_SANITY=true -E -- node -r @babel/register ./script/pack pack publish",
-    "script-publish-dev": "dr-dev --EE TEST_SANITY=true -E -- node -r @babel/register ./script/pack pack publish-dev",
     "script-generate-spec": "node -r @babel/register ./script/generateSpec",
     "// build =======================": "",
     "build-bin": "dr-dev --EE BABEL_ENV=outputBin -E -- babel ./source-bin --out-dir ./output-gitignore/bin",
