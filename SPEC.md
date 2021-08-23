@@ -727,7 +727,7 @@
 >       show full help
 >   --version --v -v [OPTIONAL] [ARGUMENT=0-1]
 >       show version
->   --note --N -N [OPTIONAL]
+>   --note --N -N [OPTIONAL] [ARGUMENT=1+]
 >       noop, tag for ps/htop
 >   --quiet --q -q [OPTIONAL] [ARGUMENT=0-1]
 >       less log
@@ -831,7 +831,7 @@
 >     export DR_JS_CONFIG="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_HELP="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_VERSION="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_NOTE="[OPTIONAL]"
+>     export DR_JS_NOTE="[OPTIONAL] [ARGUMENT=1+]"
 >     export DR_JS_QUIET="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_INPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_OUTPUT_FILE="[OPTIONAL] [ARGUMENT=1]"
@@ -888,7 +888,7 @@
 >     "config": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "help": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "version": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "note": [ "[OPTIONAL]" ],
+>     "note": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >     "quiet": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "inputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "outputFile": [ "[OPTIONAL] [ARGUMENT=1]" ],

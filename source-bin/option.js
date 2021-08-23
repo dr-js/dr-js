@@ -3,7 +3,7 @@ import { Preset, prepareOption } from 'source/node/module/Option/preset.js'
 const COMMON_FORMAT_LIST = Preset.parseCompactList(
   'help,h/T|show full help',
   'version,v/T|show version',
-  'note,N/O|noop, tag for ps/htop',
+  'note,N/AS,O|noop, tag for ps/htop',
 
   'quiet,q/T|less log',
   'input-file,I/SP,O|common option',
