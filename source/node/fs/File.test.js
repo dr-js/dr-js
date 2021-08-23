@@ -31,6 +31,6 @@ describe('Node.Fs.File', () => {
       await writeText(SOURCE_FILE, 'module.exports = { b: 2 }')
       info(await readText(SOURCE_FILE))
       stringifyEqual(readJSONAlike(SOURCE_FILE), { b: 2 })
-    }, 3)
+    }, 6)
   })
 })

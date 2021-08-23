@@ -26,7 +26,7 @@ describe('Browser.Net', () => {
   })
 
   it('fetchLikeRequest() option: timeout', async () => {
-    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 20 }).then(
+    await fetchLikeRequest(`${baseUrl}/test-timeout`, { timeout: 10 }).then(
       () => { throw new Error('should throw timeout 10 error') },
       expectError('NETWORK_TIMEOUT')
     )

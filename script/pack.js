@@ -4,20 +4,16 @@ import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/min
 import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor.js'
 import { runMain, argvFlag, commonCombo } from '@dr-js/dev/module/main.js'
 
-const retrySync = process.platform === 'linux'
-  ? (func, ...args) => func(...args) // one chance should be enough for linux
-  : (func, ...args) => { // +3 more chance, since some net/fs test is still flaky
-    try { return func(...args) } catch (error) {
-      console.error('##[warning] [retrySync|0]', error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
-      try { return func(...args) } catch (error) {
-        console.error('##[warning] [retrySync|1]', error)
-        try { return func(...args) } catch (error) {
-          console.error('##[warning] [retrySync|2]', error)
-          return func(...args)
-        }
-      }
-    }
+import { withRetry } from 'source/common/function.js'
+
+const retryCount = process.platform === 'linux'
+  ? 1 // one chance should be enough for linux
+  : 6 // 6 more chance for win32/darwin, since some net/fs test is still flaky
+const retryTest = (func, ...args) => withRetry((failed, maxRetry) => {
+  try { return func(...args) } catch (error) {
+    console.error(`##[warning] [retry|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
   }
+}, retryCount, 1000)
 
 runMain(async (logger) => {
   const { fromRoot, fromOutput, RUN } = commonCombo(logger)
@@ -54,11 +50,11 @@ runMain(async (logger) => {
   isTest && RUN('npm run lint')
   isTest && await processOutput({ logger }) // once more
   isTest && logger.padLog('test output')
-  isTest && retrySync(RUN, 'npm run test-output-library')
-  isTest && retrySync(RUN, 'npm run test-output-module')
-  isTest && retrySync(RUN, 'npm run test-output-bin')
+  isTest && await retryTest(RUN, 'npm run test-output-library')
+  isTest && await retryTest(RUN, 'npm run test-output-module')
+  isTest && await retryTest(RUN, 'npm run test-output-bin')
   isTest && logger.padLog('test browser')
-  isTest && retrySync(RUN, 'npm run test-browser')
+  isTest && await retryTest(RUN, 'npm run test-browser')
   isTest && logger.padLog('test bin')
   isTest && RUN('npm run test-bin')
   await clearOutput({ fromOutput, logger })
