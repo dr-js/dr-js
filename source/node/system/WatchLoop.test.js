@@ -27,21 +27,20 @@ const fromRoot = (...args) => resolve(TEST_ROOT, ...args)
 
 const LOOP_COUNT_SCALE = process.platform === 'win32' ? 0.25 : 1
 
-const DR_JS = require.resolve('@dr-js/core/bin/index.js')
 const DR_DEV = require.resolve('@dr-js/dev/bin/index.js')
 
 const UNIT_CONFIG_LIST = [ {
   name: 'normal-process',
   clue: { commandPattern: 'Note: pattern-normal-process' },
-  run: { start: { argList: [ 'node', basename(DR_JS), '--swg', '-N', 'Note: pattern-normal-process' ], cwd: dirname(DR_JS), logFile: fromRoot('process-log-normal-process.log') } }
+  run: { start: { argList: [ 'node', '-e', 'setTimeout(() => {}, 5 * 60 * 1000); "Note: pattern-normal-process"' ], logFile: fromRoot('process-log-normal-process.log') } }
 }, {
   name: 'multi-process',
   clue: { commandPattern: /NOTE=pattern-multi-process/ },
-  run: { start: { argList: [ 'node', basename(DR_DEV), '--EE', 'NOTE=pattern-multi-process', '-E', '--', 'node', DR_DEV, '-E', '--', 'node', DR_DEV, '-E', '--', 'node', DR_JS, '--swg' ], cwd: dirname(DR_DEV), logFile: fromRoot('process-log-multi-process.log') } }
+  run: { start: { argList: [ 'node', basename(DR_DEV), '--EE', 'NOTE=pattern-multi-process', '-E', '--', 'node', DR_DEV, '-E', '--', 'node', DR_DEV, '-E', '--', 'node', '-e', 'setTimeout(() => {}, 5 * 60 * 1000)' ], cwd: dirname(DR_DEV), logFile: fromRoot('process-log-multi-process.log') } }
 }, {
   name: 'flaky-process',
   clue: { commandPattern: 'Note: pattern-flaky-process' },
-  run: { start: { argList: [ 'node', basename(DR_JS), '--wait', '1024', '-N', 'Note: pattern-flaky-process' ], cwd: dirname(DR_JS), logFile: fromRoot('process-log-flaky-process.log') } }
+  run: { start: { argList: [ 'node', '-e', 'setTimeout(() => {}, 1024); "Note: pattern-flaky-process"' ], logFile: fromRoot('process-log-flaky-process.log') } }
 }, {
   name: 'bloat-process',
   clue: { commandPattern: 'memory-bloater.js' },
@@ -78,6 +77,8 @@ describe('Node.System.WatchLoop', () => {
     })
     let loopState = initLoopState(loopConfig)
     // console.log({ loopConfig, loopState })
+
+    __DEV__ && await loopStop(loopConfig, initLoopState(loopConfig)) // stop existing from prev failed test in dev
 
     const runLoop = async (loopCount, isNoStart = false) => {
       while (loopCount--) {
