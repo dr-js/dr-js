@@ -16,7 +16,7 @@ const DEFAULT_CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 const createDefaultCacheMap = () => createCacheMap({ valueSizeSumMax: DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX })
 
-const createResponderBufferCache = ({ // TODO: DEPRECATE: this do not support range, and bad at gzip
+/** @deprecated */ const createResponderBufferCache = ({ // TODO: DEPRECATE: this do not support range, and bad at gzip
   getBufferData, // (store, cacheKey) => ({ buffer, bufferGzip, length, type, entityTag })
   sizeSingleMax = DEFAULT_CACHE_FILE_SIZE_MAX,
   expireTime = DEFAULT_CACHE_EXPIRE_TIME,

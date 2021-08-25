@@ -54,11 +54,13 @@ const extractPackageJSON = async (sourceFile) => { // https://github.com/npm/nod
   return JSON.parse(String(Buffer.concat(chunkList)))
 }
 
+/** @deprecated */ const extractPackageJson = extractPackageJSON // TODO: DEPRECATE
+
 export {
   REGEXP_NPM_TAR, getNpmTar, check, verify,
   createCompressStream, createExtractStream,
   compressAsync, extractAsync, // NOTE: will not auto create output path
   extractPackageJSON,
 
-  extractPackageJSON as extractPackageJson // TODO: DEPRECATE
+  extractPackageJson // TODO: DEPRECATE
 }

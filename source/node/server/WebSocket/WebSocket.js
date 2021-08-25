@@ -30,7 +30,7 @@ const CLOSED = 3 // The connection is closed or couldn't be opened.
 
 // TODO: redo with Runlet
 
-const createWebSocket = ({
+/** @deprecated */ const createWebSocket = ({
   socket,
   frameLengthLimit = DEFAULT_FRAME_LENGTH_LIMIT,
   isMask = false, // default only for client to server, to prevent proxy mistaken binary data as http or other protocol

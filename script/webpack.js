@@ -1,22 +1,21 @@
 import { compileWithWebpack, commonFlag } from '@dr-js/dev/module/webpack.js'
-import { runMain, commonCombo } from '@dr-js/dev/module/main.js'
+
+import { runKit } from 'source/node/kit.js'
 
 import { createWebpackIndexFile, deleteWebpackIndexFile } from './generateSpec.js'
 
-runMain(async (logger) => {
-  const { fromRoot, fromOutput } = commonCombo(logger)
+runKit(async (kit) => {
+  await createWebpackIndexFile(kit)
 
-  await createWebpackIndexFile({ fromRoot, logger })
-
-  const { mode, isWatch, profileOutput, getCommonWebpackConfig } = await commonFlag({ fromRoot, logger })
+  const { mode, isWatch, profileOutput, getCommonWebpackConfig } = await commonFlag({ kit })
 
   const config = getCommonWebpackConfig({
-    output: { path: fromOutput('library'), filename: '[name].js', library: { name: 'Dr', type: 'window' } },
+    output: { path: kit.fromOutput('library'), filename: '[name].js', library: { name: 'Dr', type: 'window' } },
     entry: { 'Dr.browser': 'source/Dr.browser' }
   })
 
-  logger.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
-  await compileWithWebpack({ config, isWatch, profileOutput, logger })
+  kit.padLog(`compile with webpack mode: ${mode}, isWatch: ${Boolean(isWatch)}`)
+  await compileWithWebpack({ config, isWatch, profileOutput, kit })
 
-  !isWatch && await deleteWebpackIndexFile({ fromRoot, logger })
-}, 'webpack')
+  !isWatch && await deleteWebpackIndexFile(kit)
+}, { title: 'webpack' })

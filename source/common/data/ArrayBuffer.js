@@ -98,6 +98,9 @@ const tryCalcSHA256ArrayBuffer = () => {
 
 const calcSHA256ArrayBuffer = tryCalcSHA256ArrayBuffer()
 
+/** @deprecated */ const fromString = fromU16String // TODO: DEPRECATE
+/** @deprecated */ const toString = toU16String // TODO: DEPRECATE
+
 export {
   isEqualArrayBuffer,
   concatArrayBuffer,
@@ -106,5 +109,5 @@ export {
   fromNodejsBuffer,
   calcSHA256ArrayBuffer,
 
-  fromU16String as fromString, toU16String as toString // TODO: DEPRECATE
+  fromString, toString // TODO: DEPRECATE
 }

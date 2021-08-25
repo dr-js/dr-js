@@ -1,6 +1,6 @@
 // check: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
 let globalCache
-const getGlobal = () => globalCache !== undefined ? globalCache : ( // TODO: DEPRECATE: just use `globalThis`
+/** @deprecated */ const getGlobal = () => globalCache !== undefined ? globalCache : ( // TODO: DEPRECATE: just use `globalThis`
   globalCache = (typeof (globalThis) !== 'undefined') ? globalThis // eslint-disable-line no-undef
     : (typeof (self) !== 'undefined') ? self // eslint-disable-line no-undef
       : (typeof (window) !== 'undefined') ? window

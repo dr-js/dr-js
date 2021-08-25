@@ -5,39 +5,31 @@ on:
 
 env:
   cache-version: 20210623
+  cache-path: | # actually "\n" separated string
+    .github/cache/persist-gitignore/
+    ~/.npm/
   IS_CI: true
 
 jobs:
-  test-push:
+  test-push: # job id
+    timeout-minutes: 15
     strategy:
       fail-fast: false # allow all test to run to the end
       matrix:
         os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
         node-version: [ "12.x" ]
-
     runs-on: "${{ matrix.os }}"
-
     steps:
-      - uses: actions/checkout@v2 # https://github.com/actions/checkout
-      - uses: actions/setup-node@v2 # https://github.com/actions/setup-node
-        with: { node-version: "${{ matrix.node-version }}" }
-
-      - name: Patch & log CI info
-        run: |
-          npx @dr-js/dev@0.4 -eI .github/ci-patch.js
-          dr-dev -c .github/cache/config.js --cache-step setup
-
-      - uses: actions/cache@v2 # https://github.com/actions/cache
-        with:
-          key: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}"
-          restore-keys: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-"
-          path: |
-            .github/cache/persist-gitignore/
-            ~/.npm/
-
+      - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v2", with: { node-version: "${{ matrix.node-version }}" } } # https://github.com/actions/setup-node
+      - run: npx @dr-js/dev@0.4 -eI .github/ci-patch.js
+      - run: dr-dev -c .github/cache/config.js --cache-step setup
+      - { uses: "actions/cache@v2", with: { # https://github.com/actions/cache
+        key: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}",
+        restore-keys: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-",
+        path: "${{ env.cache-path }}"
+      } }
       - run: dr-dev -c .github/cache/config.js --cache-step mark
-
       - run: npm ci # TODO: wait for npm@7 adoption and try npm install + cache for faster puppeteer install
       - run: npm test
-
       - run: dr-dev -c .github/cache/config.js --cache-step prune

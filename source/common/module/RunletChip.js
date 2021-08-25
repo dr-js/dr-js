@@ -103,10 +103,13 @@ const createENDRegulatorChip = ({ // TODO: maybe use LogicalPool instead, so Pen
   }
 })
 
+/** @deprecated */ const createAsyncIteratorInputChip = createAsyncIterInputChip // TODO: DEPRECATE
+/** @deprecated */ const createAsyncIteratorOutputChip = createAsyncIterOutputChip // TODO: DEPRECATE
+
 export {
   createArrayInputChip, createArrayOutputChip,
   createAsyncIterInputChip, createAsyncIterOutputChip,
   createENDRegulatorChip,
 
-  createAsyncIterInputChip as createAsyncIteratorInputChip, createAsyncIterOutputChip as createAsyncIteratorOutputChip // TODO: DEPRECATE
+  createAsyncIteratorInputChip, createAsyncIteratorOutputChip // TODO: DEPRECATE
 }

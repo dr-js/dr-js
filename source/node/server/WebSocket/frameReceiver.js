@@ -3,7 +3,7 @@ import { BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function.js'
 
 const NULL_ERROR = (error) => { __DEV__ && error && console.log('[NULL_ERROR] get error', error) }
 
-const createFrameReceiverStore = (frameLengthLimit) => {
+/** @deprecated */ const createFrameReceiverStore = (frameLengthLimit) => {
   let promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
   let doClearSocketListener = null
   return {
@@ -20,7 +20,7 @@ const createFrameReceiverStore = (frameLengthLimit) => {
   }
 }
 
-const listenAndReceiveFrame = (frameReceiverStore, socket, onFrame, onError = frameReceiverStore.dispose) => {
+/** @deprecated */ const listenAndReceiveFrame = (frameReceiverStore, socket, onFrame, onError = frameReceiverStore.dispose) => {
   let receiveResolve = null
   let receiveReject = null
 

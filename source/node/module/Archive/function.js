@@ -49,7 +49,7 @@ const extractGzBrFileAsync = async (fileFrom, fileTo, isGzip = REGEXP_GZ.test(fi
   createWriteStream(fileTo)
 )
 
-const withTempPath = async ( // TODO: DEPRECATE: not suitable for other use
+/** @deprecated */ const withTempPath = async ( // TODO: DEPRECATE: not suitable for other use
   pathTemp = resolve(tmpdir(), getRandomId('dr-js-')),
   asyncFunc,
   pathFrom, pathTo
