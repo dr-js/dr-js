@@ -12,6 +12,7 @@ env:
 
 jobs:
   test-push: # job id
+    timeout-minutes: 15
     strategy:
       fail-fast: false # allow all test to run to the end
       matrix:

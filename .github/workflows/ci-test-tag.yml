@@ -12,6 +12,7 @@ env:
 
 jobs:
   test-tag: # job id
+    timeout-minutes: 15
     strategy:
       fail-fast: false # allow all test to run to the end
       matrix:
@@ -35,6 +36,7 @@ jobs:
 
   publish-tag: # job id
     needs: [ "test-tag" ] # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idneeds
+    timeout-minutes: 15
     runs-on: "ubuntu-latest"
     steps:
       - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
