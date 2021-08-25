@@ -24,7 +24,7 @@ import { calcHash } from 'source/node/data/Buffer.js'
 //     +---------------------------------------------------------------+
 
 // NOTE: these quadbit will also set RSV123 to 0, thus will ignore extension bits RSV1-3
-const FRAME_CONFIG = {
+/** @deprecated */ const FRAME_CONFIG = {
   // [ quadbitFIN, quadbitOpcodeMask ]
   COMPLETE: [ 0b1000, 0b1111 ],
   FIRST: [ 0b0000, 0b1111 ],
@@ -32,7 +32,7 @@ const FRAME_CONFIG = {
   LAST: [ 0b1000, 0b0000 ]
 }
 
-const OPCODE_TYPE = {
+/** @deprecated */ const OPCODE_TYPE = {
   CONTINUATION: 0b0000,
   TEXT: 0b0001,
   BINARY: 0b0010,
@@ -41,21 +41,21 @@ const OPCODE_TYPE = {
   PONG: 0b1010
 }
 
-const WEBSOCKET_VERSION = 13
-const WEBSOCKET_EVENT = {
+/** @deprecated */ const WEBSOCKET_VERSION = 13
+/** @deprecated */ const WEBSOCKET_EVENT = {
   OPEN: 'ws:open',
   FRAME: 'ws:frame',
   CLOSE: 'ws:close'
 }
 
 const WEBSOCKET_MAGIC_STRING = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
-const getRequestKey = () => randomBytes(16).toString('base64')
-const getRespondKey = (requestKey) => calcHash(`${requestKey}${WEBSOCKET_MAGIC_STRING}`)
+/** @deprecated */ const getRequestKey = () => randomBytes(16).toString('base64')
+/** @deprecated */ const getRespondKey = (requestKey) => calcHash(`${requestKey}${WEBSOCKET_MAGIC_STRING}`)
 
-const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
+/** @deprecated */ const BUFFER_MAX_LENGTH = bufferConstants.MAX_LENGTH // max at (2^31) - 1, less than Number.MAX_SAFE_INTEGER at (2^53) - 1
 
 // TODO: will overwrite buffer, consider optimize speed?
-const applyMaskQuadletBufferInPlace = (buffer, maskQuadletBuffer) => {
+/** @deprecated */ const applyMaskQuadletBufferInPlace = (buffer, maskQuadletBuffer) => {
   for (let index = 0, indexMax = buffer.length; index < indexMax; index++) {
     buffer[ index ] ^= maskQuadletBuffer[ index & 3 ]
   }

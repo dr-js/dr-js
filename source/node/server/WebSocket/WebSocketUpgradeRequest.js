@@ -6,7 +6,7 @@ const DEFAULT_RESPONDER_ERROR = (store, error) => {
   store.setState({ error })
 }
 
-const createUpdateRequestListener = ({
+/** @deprecated */ const createUpdateRequestListener = ({
   responderList = [],
   responderError = DEFAULT_RESPONDER_ERROR
 }) => async (webSocket, request, bodyHeadBuffer) => {

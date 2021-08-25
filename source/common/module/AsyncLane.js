@@ -29,7 +29,7 @@ const createAsyncLane = ({
     return lane.asyncQueue.push(value)
   }
 
-  const getStatus = (isVerbose) => laneList.map(({ index, asyncQueue }) => isVerbose // TODO: DEPRECATE: use `calcStatus`, this should not alter return type based on input, so bad design
+  /** @deprecated */ const getStatus = (isVerbose) => laneList.map(({ index, asyncQueue }) => isVerbose // TODO: DEPRECATE: use `calcStatus`, this should not alter return type based on input, so bad design
     ? { index, length: asyncQueue.getLength() }
     : asyncQueue.getLength()
   )
@@ -106,7 +106,7 @@ const extendLaneValueList = (asyncLane) => {
     valueList.length = asyncQueue.getLength()
   })
 
-  const getStatus = (isVerbose) => { // TODO: DEPRECATE
+  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE
     const status = asyncLane.getStatus(isVerbose)
     isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList })
     return status
@@ -164,7 +164,7 @@ const extendLaneValueMap = (asyncLane) => {
     return lane && lane.valueMap.delete(id)
   }
 
-  const getStatus = (isVerbose) => { // TODO: DEPRECATE:
+  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE:
     const status = asyncLane.getStatus(isVerbose)
     isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
     return status
@@ -209,7 +209,7 @@ const extendAutoSelectByTagLane = (
     return valuePromise
   }
 
-  const getStatus = (isVerbose) => { // TODO: DEPRECATE
+  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE
     const status = asyncLane.getStatus(isVerbose)
     isVerbose && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList })
     return status

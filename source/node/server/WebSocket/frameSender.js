@@ -6,7 +6,7 @@ const DEFAULT_MASK_QUADLET_BUFFER = Buffer.alloc(4)
 
 const NULL_ERROR = (error) => { __DEV__ && error && console.log('[NULL_ERROR] get error', error) }
 
-const createFrameSenderStore = (frameLengthLimit) => {
+/** @deprecated */ const createFrameSenderStore = (frameLengthLimit) => {
   let promiseTail = Promise.resolve('HEAD') // used to coordinate send and receive
   return {
     dispose: () => {
@@ -23,7 +23,7 @@ const createFrameSenderStore = (frameLengthLimit) => {
 // frameTypeConfig: COMPLETE/FIRST
 // dataType: TEXT/BINARY/CLOSE/PING/PONG
 // data: Buffer for either text or binary, will be re-written for masking
-const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, isMask) => {
+/** @deprecated */ const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, isMask) => {
   const [ quadbitFIN, quadbitOpcodeMask ] = frameTypeConfig
   const { length } = dataBuffer
   const initialOctet = (quadbitFIN << 4) | (dataType & quadbitOpcodeMask)
@@ -57,7 +57,7 @@ const encodeFrame = (frameSenderStore, frameTypeConfig, dataType, dataBuffer, is
   isMask && length && applyMaskQuadletBufferInPlace(frameSenderStore.encodedFrameDataBuffer, maskQuadletBuffer)
 }
 
-const encodeCloseFrame = (frameSenderStore, code = 1000, reason = '', isMask) => {
+/** @deprecated */ const encodeCloseFrame = (frameSenderStore, code = 1000, reason = '', isMask) => {
   const stringLength = Buffer.byteLength(reason)
   const dataBuffer = Buffer.allocUnsafe(2 + stringLength)
   dataBuffer.writeUInt16BE(code, 0)
@@ -65,10 +65,10 @@ const encodeCloseFrame = (frameSenderStore, code = 1000, reason = '', isMask) =>
   // __DEV__ && console.log('encodeCloseFrame', { code, reason, stringLength })
   encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.CLOSE, dataBuffer, isMask)
 }
-const encodePingFrame = (frameSenderStore, dataBuffer, isMask) => encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.PING, dataBuffer, isMask)
-const encodePongFrame = (frameSenderStore, dataBuffer, isMask) => encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.PONG, dataBuffer, isMask)
+/** @deprecated */ const encodePingFrame = (frameSenderStore, dataBuffer, isMask) => encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.PING, dataBuffer, isMask)
+/** @deprecated */ const encodePongFrame = (frameSenderStore, dataBuffer, isMask) => encodeFrame(frameSenderStore, FRAME_CONFIG.COMPLETE, OPCODE_TYPE.PONG, dataBuffer, isMask)
 
-const sendEncodedFrame = (frameSenderStore, socket) => { // will send the frame just encoded
+/** @deprecated */ const sendEncodedFrame = (frameSenderStore, socket) => { // will send the frame just encoded
   __DEV__ && console.log('[Frame] sendEncodedFrame', frameSenderStore.encodedFrameHeaderBuffer, '|', frameSenderStore.encodedFrameDataBuffer)
   const frameHeaderBuffer = frameSenderStore.encodedFrameHeaderBuffer
   const frameDataBuffer = frameSenderStore.encodedFrameDataBuffer

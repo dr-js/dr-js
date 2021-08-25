@@ -35,7 +35,7 @@ const doUpgradeSocket = (webSocket, protocol, responseKey) => {
   ].filter(Boolean).join('\r\n'))
 }
 
-const enableWebSocketServer = ({
+/** @deprecated */ const enableWebSocketServer = ({
   server,
   onUpgradeRequest = DEFAULT_ON_UPGRADE_REQUEST,
   frameLengthLimit, isMask = false, shouldPing = true // by default, server do not mask and do ping

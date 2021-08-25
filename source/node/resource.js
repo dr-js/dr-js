@@ -3,21 +3,21 @@ import { readText, readJSON } from 'source/node/fs/File.js'
 import { fetchLikeRequest } from 'source/node/net.js'
 
 // TODO: check if is needed, or simplify
-const loadRemoteScript = async (uri) => { // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadRemoteScript = async (uri) => { // TODO: DEPRECATE: moved to `@dr-js/dev`
   const scriptString = await (await fetchLikeRequest(uri)).text()
   return runInThisContext(scriptString, { filename: uri, displayErrors: true })
 }
-const loadLocalScript = async (filePath) => { // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadLocalScript = async (filePath) => { // TODO: DEPRECATE: moved to `@dr-js/dev`
   const scriptString = await readText(filePath)
   return runInThisContext(scriptString, { filename: filePath, displayErrors: true })
 }
-const loadScript = (uri) => uri.includes('://') // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadScript = (uri) => uri.includes('://') // TODO: DEPRECATE: moved to `@dr-js/dev`
   ? loadRemoteScript(uri)
   : loadLocalScript(uri)
 
-const loadRemoteJSON = async (uri) => (await fetchLikeRequest(uri)).json() // TODO: DEPRECATE: moved to `@dr-js/dev`
-const loadLocalJSON = readJSON // TODO: DEPRECATE: moved to `@dr-js/dev`
-const loadJSON = (uri) => uri.includes('://') // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadRemoteJSON = async (uri) => (await fetchLikeRequest(uri)).json() // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadLocalJSON = readJSON // TODO: DEPRECATE: moved to `@dr-js/dev`
+/** @deprecated */ const loadJSON = (uri) => uri.includes('://') // TODO: DEPRECATE: moved to `@dr-js/dev`
   ? loadRemoteJSON(uri)
   : loadLocalJSON(uri)
 
