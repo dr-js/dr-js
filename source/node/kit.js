@@ -81,7 +81,7 @@ const getKitLogger = ({
 }
 
 const getKitPathCombo = ({
-  PATH_ROOT = findUpPackageRoot(process.cwd()),
+  PATH_ROOT = findUpPackageRoot(process.cwd()) || process.cwd(),
   PATH_OUTPUT = 'output-gitignore/', // relative
   PATH_TEMP = '.temp-gitignore/', // relative
   PATH_HOME = homedir(),

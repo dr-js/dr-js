@@ -23,6 +23,11 @@ describe('Node.Module.Software.npm', () => {
       findUpPackageRoot(require.resolve('@dr-js/core/module/common/verify')),
       resolve(__dirname, __dirname.includes('output-gitignore') ? '../' : './', '../../../../node_modules/@dr-js/core/')
     )
+
+    strictEqual(
+      findUpPackageRoot('/not/exist/path/'),
+      undefined
+    )
   })
 
   it('getPathNpmExecutable()', () => {

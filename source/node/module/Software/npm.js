@@ -20,6 +20,7 @@ const findUpPackageRoot = (path = __dirname) => {
     prevPath = path
     path = resolve(path, '..')
   }
+  return undefined // NOTE: no package.json is found
 }
 
 // TODO: NOTE:
