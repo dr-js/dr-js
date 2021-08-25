@@ -21,8 +21,10 @@ const actionJSON = async ({
   return result // should check errorList
 }
 
+/** @deprecated */ const actionJson = actionJSON // TODO: DEPRECATE
+
 export {
   actionJSON,
 
-  actionJSON as actionJson // TODO: DEPRECATE
+  actionJson // TODO: DEPRECATE
 }

@@ -1,5 +1,13 @@
 import { createMapMap } from 'source/common/data/MapMap.js'
 
+import { // TODO: DEPRECATE: import from RunletChip
+  createArrayInputChip,
+  createArrayOutputChip,
+  createAsyncIteratorInputChip,
+  createAsyncIteratorOutputChip,
+  createENDRegulatorChip
+} from './RunletChip.js'
+
 // Runlet is a Stream with less code and clearer execution order.
 //
 // Runlet contain Pools and Chips:
@@ -581,6 +589,12 @@ const quickConfigPend = (poolMap, chipMap, extraConfig) => {
   return { ...extraConfig, poolMap, chipMap }
 }
 
+/** @deprecated */ const createArrayInputChipExport = createArrayInputChip // TODO: DEPRECATE
+/** @deprecated */ const createArrayOutputChipExport = createArrayOutputChip // TODO: DEPRECATE
+/** @deprecated */ const createAsyncIteratorInputChipExport = createAsyncIteratorInputChip // TODO: DEPRECATE
+/** @deprecated */ const createAsyncIteratorOutputChipExport = createAsyncIteratorOutputChip // TODO: DEPRECATE
+/** @deprecated */ const createENDRegulatorChipExport = createENDRegulatorChip // TODO: DEPRECATE
+
 export {
   END, SKIP, REDO,
   createPack, clearPack, describePack,
@@ -589,11 +603,11 @@ export {
   KEY_POOL_IO, KEY_PEND_INPUT, KEY_PEND_OUTPUT, PoolIO,
   TYPE_LOGICAL_PENDVIEW, TYPE_LOGICAL_PENDVIEWEE, createLogicalCountPool,
   ChipSyncBasic,
-  toPoolMap, toChipMap, toLinearChipList, quickConfigPend
-}
+  toPoolMap, toChipMap, toLinearChipList, quickConfigPend,
 
-export { // TODO: DEPRECATE: import from RunletChip
-  createArrayInputChip, createArrayOutputChip,
-  createAsyncIteratorInputChip, createAsyncIteratorOutputChip,
-  createENDRegulatorChip
-} from './RunletChip.js'
+  createArrayInputChipExport as createArrayInputChip, // TODO: DEPRECATE
+  createArrayOutputChipExport as createArrayOutputChip, // TODO: DEPRECATE
+  createAsyncIteratorInputChipExport as createAsyncIteratorInputChip, // TODO: DEPRECATE
+  createAsyncIteratorOutputChipExport as createAsyncIteratorOutputChip, // TODO: DEPRECATE
+  createENDRegulatorChipExport as createENDRegulatorChip // TODO: DEPRECATE
+}

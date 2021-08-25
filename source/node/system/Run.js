@@ -16,8 +16,13 @@ import {
   return result
 }
 
+/** @deprecated */ const describeRunOutcomeExport = describeRunOutcome // TODO: DEPRECATE
+/** @deprecated */ const describeRunOutcomeSyncExport = describeRunOutcomeSync // TODO: DEPRECATE
+
 export {
-  describeRunOutcome, describeRunOutcomeSync, // TODO: DEPRECATE
+  describeRunOutcomeExport as describeRunOutcome, // TODO: DEPRECATE
+  describeRunOutcomeSyncExport as describeRunOutcomeSync, // TODO: DEPRECATE
+
   runDeprecate as run, runSyncDeprecate as runSync, // TODO: DEPRECATE
 
   withCwd // TODO: DEPRECATE: moved to `@dr-js/dev`

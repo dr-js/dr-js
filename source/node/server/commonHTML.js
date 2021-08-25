@@ -1,9 +1,32 @@
-export {
+import {
   COMMON_LAYOUT,
   COMMON_STYLE,
-  COMMON_SCRIPT, COMMON_FUNC_MAP,
-
+  COMMON_SCRIPT,
+  COMMON_FUNC_MAP,
   styleTagMerge,
   simpleCompactCSS
 } from 'source/common/module/HTML.js' // TODO: DEPRECATE
-export { DR_BROWSER_FILE_PATH, DR_BROWSER_SCRIPT_TAG } from './function.js' // TODO: DEPRECATE
+import {
+  DR_BROWSER_FILE_PATH,
+  DR_BROWSER_SCRIPT_TAG
+} from './function.js' // TODO: DEPRECATE
+
+/** @deprecated */ const COMMON_LAYOUT_EXPORT = COMMON_LAYOUT // TODO: DEPRECATE
+/** @deprecated */ const COMMON_STYLE_EXPORT = COMMON_STYLE // TODO: DEPRECATE
+/** @deprecated */ const COMMON_SCRIPT_EXPORT = COMMON_SCRIPT // TODO: DEPRECATE
+/** @deprecated */ const COMMON_FUNC_MAP_EXPORT = COMMON_FUNC_MAP // TODO: DEPRECATE
+/** @deprecated */ const styleTagMergeExport = styleTagMerge // TODO: DEPRECATE
+/** @deprecated */ const simpleCompactCSSExport = simpleCompactCSS // TODO: DEPRECATE
+/** @deprecated */ const DR_BROWSER_FILE_PATH_EXPORT = DR_BROWSER_FILE_PATH // TODO: DEPRECATE
+/** @deprecated */ const DR_BROWSER_SCRIPT_TAG_EXPORT = DR_BROWSER_SCRIPT_TAG // TODO: DEPRECATE
+
+export {
+  COMMON_LAYOUT_EXPORT as COMMON_LAYOUT, // TODO: DEPRECATE
+  COMMON_STYLE_EXPORT as COMMON_STYLE, // TODO: DEPRECATE
+  COMMON_SCRIPT_EXPORT as COMMON_SCRIPT, // TODO: DEPRECATE
+  COMMON_FUNC_MAP_EXPORT as COMMON_FUNC_MAP, // TODO: DEPRECATE
+  styleTagMergeExport as styleTagMerge, // TODO: DEPRECATE
+  simpleCompactCSSExport as simpleCompactCSS, // TODO: DEPRECATE
+  DR_BROWSER_FILE_PATH_EXPORT as DR_BROWSER_FILE_PATH, // TODO: DEPRECATE
+  DR_BROWSER_SCRIPT_TAG_EXPORT as DR_BROWSER_SCRIPT_TAG // TODO: DEPRECATE
+}
