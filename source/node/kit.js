@@ -104,7 +104,7 @@ const getKitPathCombo = ({
 const getKitRun = ({
   PATH_ROOT, // required
   log = console.log,
-  isQuiet = argvFlag('quiet') || Boolean(process.env.KIT_QUIET),
+  isQuiet = Boolean(argvFlag('quiet') || process.env.KIT_QUIET),
   isDryRun = Boolean(process.env.KIT_DRY_RUN)
 } = {}) => {
   const toArgList = (argListOrString) => Array.isArray(argListOrString) ? [ ...argListOrString ] : argListOrString.split(' ').filter(Boolean) // prepend `'bash', '-c'` to run in bash shell
@@ -112,7 +112,7 @@ const getKitRun = ({
     const argList = toArgList(argListOrString)
     argList[ 0 ] = resolveCommand(argList[ 0 ], PATH_ROOT) // mostly for finding `npm.cmd` on win32
     if (isDryRun) !isQuiet && log(`[${isDryRun ? 'RUN|DRY' : isDetached ? 'RUN|DETACHED' : 'RUN'}] "${argList.join(' ')}"`)
-    else return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, stdio: isQuiet ? [ 'ignore', 'ignore', 'inherit' ] : 'inherit', ...option })
+    else return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, quiet: isQuiet, ...option })
   }
   const RUN_SUDO_NPM = (argListOrString, option) => RUN([ ...getSudoArgs(), ...toArgList(argListOrString) ], option)
   return { RUN, RUN_SUDO_NPM }
@@ -125,16 +125,21 @@ const getKit = (option) => {
   return { ...kitLogger, ...kitPathCombo, ...kitRun }
 }
 
-const runKit = (asyncFunc, {
-  title = process.argv.slice(2).join('+') || undefined,
-  kit = getKit({ title })
-} = {}) => {
+const runKit = (
+  asyncFunc, // async (kitOrKitLogger) => {}
+  {
+    kit, kitLogger, // allow pass pre-created kit or kitLogger
+    title = process.argv.slice(2).join('+') || undefined, // get default title from CLI args
+    ...kitOption
+  } = {}
+) => {
+  const kitOrKitLogger = kit || kitLogger || getKit({ title, ...kitOption })
   const startTime = clock()
-  new Promise((resolve) => resolve(asyncFunc(kit))).then(
-    () => { kit.padLog(`done in ${time(clock() - startTime)}`) },
+  new Promise((resolve) => resolve(asyncFunc(kitOrKitLogger))).then(
+    () => { kitOrKitLogger.padLog(`done in ${time(clock() - startTime)}`) },
     (error) => {
       console.warn(error) // to check error message & stacktrace
-      kit.padLog(`error after ${time(clock() - startTime)}`)
+      kitOrKitLogger.padLog(`error after ${time(clock() - startTime)}`)
       process.exit(-1)
     }
   )

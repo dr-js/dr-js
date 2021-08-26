@@ -1,7 +1,7 @@
 import { resolve } from 'path'
-import { readFileSync } from 'fs'
 import { strictEqual, truthy } from 'source/common/verify.js'
 import { COMMON_STYLE } from 'source/common/module/HTML.js'
+import { readTextSync } from 'source/node/fs/File.js'
 import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import {
   /* getArgs, setArgs, */ check, verify,
@@ -21,7 +21,7 @@ import {
 
 const { describe, it, before, after, info = console.log } = globalThis
 
-const TEST_DOC_STRING = String(readFileSync(__filename))
+const TEST_DOC_STRING = readTextSync(__filename)
 
 const TEST_ROOT = resolve(__dirname, './test-bash-gitignore/')
 const fromRoot = (...args) => resolve(TEST_ROOT, ...args)
@@ -46,7 +46,7 @@ describe('Node.Module.Software.bash', () => {
       catStringToFileCommand(COMMON_STYLE(), fromRoot('test-cat-string-to-file-0')),
       catStringToFileCommand(TEST_DOC_STRING, fromRoot('test-cat-string-to-file-1'))
     ])
-    strictEqual(String(readFileSync(fromRoot('test-cat-string-to-file-0'))), COMMON_STYLE() + '\n')
-    strictEqual(String(readFileSync(fromRoot('test-cat-string-to-file-1'))), TEST_DOC_STRING + '\n')
+    strictEqual(readTextSync(fromRoot('test-cat-string-to-file-0')), COMMON_STYLE() + '\n')
+    strictEqual(readTextSync(fromRoot('test-cat-string-to-file-1')), TEST_DOC_STRING + '\n')
   })
 })
