@@ -1,5 +1,9 @@
 const remessageError = (error, nextMessage) => {
-  error.stack && error.stack.replace(error.message, nextMessage) // NOTE: V8(Chrome/Nodejs) will save a copy of message in the `.stack` for simpler `.toString()`, but FireFox will compose correctly
+  if (error.message && error.stack) {
+    // NOTE: patch for V8(Chrome/Nodejs), V8 will save a copy of message in the `.stack` for simpler `.toString()`
+    //   but FireFox will compose correctly
+    error.stack = error.stack.replace(error.message, nextMessage) // TODO: this may replace the string in stacktrace
+  }
   error.message = nextMessage
   return error
 }
@@ -13,6 +17,20 @@ const rethrowError = (error) => {
   try {
     return thisArg[ name ](...args)
   } catch (error) { __DEV__ && console.log('[tryCall] failed:', name, error) }
+}
+
+const withFallbackResult = (fallbackResult, func, ...args) => {
+  try { return func(...args) } catch (error) {
+    __DEV__ && console.log('[withFallbackResult] error:', error)
+    return fallbackResult
+  }
+}
+
+const withFallbackResultAsync = async (fallbackResult, func, ...args) => {
+  try { return await func(...args) } catch (error) {
+    __DEV__ && console.log('[withFallbackResult] error:', error)
+    return fallbackResult
+  }
 }
 
 // for better flow control
@@ -42,6 +60,8 @@ export {
   remessageError,
   rethrowError,
   tryCall, // TODO: DEPRECATE
+  withFallbackResult,
+  withFallbackResultAsync,
   catchSync,
   catchAsync,
   catchPromise
