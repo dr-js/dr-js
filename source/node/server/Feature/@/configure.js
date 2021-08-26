@@ -1,8 +1,8 @@
 import { createSecureContext } from 'tls'
-import { readFileSync } from 'fs'
 import { objectMap } from 'source/common/immutable/Object.js'
 import { createExotGroup } from 'source/common/module/Exot.js'
 
+import { readBufferSync } from 'source/node/fs/File.js'
 import { configureLog } from 'source/node/module/Log.js'
 import { configurePid } from 'source/node/module/Pid.js'
 import { addExitListenerLossyOnce } from 'source/node/system/ExitListener.js'
@@ -55,7 +55,7 @@ const loadTLS = (
     SNICallback: Object.keys(optionMap).length >= 2 ? (hostname, callback) => callback(null, secureContextMap[ hostname ] || secureContextMap.default) : undefined
   }
 }
-const autoLoadBuffer = (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferOrPath : readFileSync(bufferOrPath)
+const autoLoadBuffer = (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferOrPath : readBufferSync(bufferOrPath)
 
 const configureFeature = ({
   serverExot, loggerExot,

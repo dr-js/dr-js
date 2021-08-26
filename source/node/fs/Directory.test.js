@@ -1,8 +1,8 @@
 import { join as joinPath, dirname, resolve } from 'path'
-import { writeFileSync } from 'fs'
 import { strictEqual, stringifyEqual, doThrowAsync, includes, truthy } from 'source/common/verify.js'
 import { getSample } from 'source/common/math/sample.js'
 import { PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
+import { writeTextSync } from './File.js'
 import {
   // getPathTypeFromDirent,
   getDirInfoList,
@@ -166,7 +166,7 @@ describe('Node.Fs.Directory', () => {
   it('resetDirectory()', async () => {
     await createDirectory(resolve(TEST_ROOT, 'reset/'))
 
-    writeFileSync(resolve(TEST_ROOT, 'reset/file-to-dir'), 'data')
+    writeTextSync(resolve(TEST_ROOT, 'reset/file-to-dir'), 'data')
     await resetDirectory(resolve(TEST_ROOT, 'reset/file-to-dir'))
     strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/file-to-dir'))).length, 0)
 
@@ -175,7 +175,7 @@ describe('Node.Fs.Directory', () => {
     strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir-empty/'))).length, 0)
 
     await createDirectory(resolve(TEST_ROOT, 'reset/dir/q/w/e/r/t/y/'))
-    writeFileSync(resolve(TEST_ROOT, 'reset/dir/q/w/e/file'), 'data')
+    writeTextSync(resolve(TEST_ROOT, 'reset/dir/q/w/e/file'), 'data')
     await resetDirectory(resolve(TEST_ROOT, 'reset/dir/'))
     strictEqual((await getDirInfoList(resolve(TEST_ROOT, 'reset/dir/'))).length, 0)
 

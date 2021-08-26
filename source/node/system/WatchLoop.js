@@ -1,5 +1,4 @@
 import { resolve, dirname } from 'path'
-import { readFileSync, unlinkSync } from 'fs'
 
 import { padTable, time, describe } from 'source/common/format.js'
 import { isString, isBasicFunction } from 'source/common/check.js'
@@ -8,7 +7,7 @@ import { setTimeoutAsync } from 'source/common/time.js'
 import { createLoopIndex } from 'source/common/data/LoopIndex.js'
 
 import { existPath } from 'source/node/fs/Path.js'
-import { readJSON, writeJSON } from 'source/node/fs/File.js'
+import { readText, readJSON, writeJSON, deleteFile } from 'source/node/fs/File.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { getContainerLsList, matchContainerLsList } from 'source/node/module/Software/docker.js'
 import { getProcessListAsync, toProcessPidMap, toProcessTree, flattenProcessTree, isPidExist, killProcessInfoAsync } from 'source/node/system/Process.js'
@@ -325,9 +324,9 @@ const clueFind = async (unitConfig, unitState, SPI) => {
     processInfo = clue.pid && isPidExist(clue.pid) && SPI.processPidMap[ clue.pid ]
     if (unitState.clueProcessInfo && unitState.clueProcessInfo.command !== processInfo.command) processInfo = undefined
   } else if (clue.pidFile) {
-    const pid = parseInt(String(readFileSync(clue.pidFile)).trim())
+    const pid = parseInt((await readText(clue.pidFile)).trim())
     processInfo = pid && isPidExist(pid) && SPI.processPidMap[ pid ]
-    if (!processInfo && !clue.pidFileKeepStale) unlinkSync(clue.pidFile) // delete stale pidFile
+    if (!processInfo && !clue.pidFileKeepStale) await deleteFile(clue.pidFile) // delete stale pidFile
   } else if (clue.commandPattern) {
     processInfo = SPI.processList.find(({ command }) => clue.commandPattern(command))
   } else if (clue.containerImagePattern) {

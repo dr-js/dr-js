@@ -3,10 +3,11 @@ import {
   hostname, cpus, networkInterfaces,
   totalmem, freemem, loadavg, uptime
 } from 'os'
-import { readFileSync } from 'fs'
 
 import { percent, time, binary } from 'source/common/format.js'
 import { indentLine, indentList } from 'source/common/string.js'
+
+import { readTextSync } from 'source/node/fs/File.js'
 
 const getSystemPlatform = () => ({
   platform: platform(),
@@ -35,7 +36,7 @@ const getSystemMemory = platform() !== 'linux' ? () => ({ // this will not inclu
   // SwapTotal:       2097152 kB
   // SwapFree:        2048256 kB
   // ...
-  const stringMemInfo = String(readFileSync('/proc/meminfo'))
+  const stringMemInfo = readTextSync('/proc/meminfo')
   const toByte = (regexp) => parseInt(regexp.exec(stringMemInfo)[ 1 ]) * 1024
   return {
     total: toByte(/MemTotal:\s+(\d+)/),

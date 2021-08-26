@@ -1,8 +1,8 @@
-import { readFileSync } from 'fs'
 import { createServer as createNetServer } from 'net'
 import { tryRequireResolve } from 'source/env/tryRequire.js'
 import { catchAsync } from 'source/common/error.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { readTextSync } from 'source/node/fs/File.js'
 
 const DR_BROWSER_FILE_PATH = () => [
   './Dr.browser.js', // maybe after webpack, all file gets merged as `library/output.js`
@@ -12,7 +12,7 @@ const DR_BROWSER_FILE_PATH = () => [
 
 let cache = ''
 const DR_BROWSER_SCRIPT_TAG = () => {
-  if (cache === '') cache = `<script>${readFileSync(DR_BROWSER_FILE_PATH())}</script>`
+  if (cache === '') cache = `<script>${readTextSync(DR_BROWSER_FILE_PATH())}</script>`
   return cache
 }
 

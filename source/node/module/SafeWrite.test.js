@@ -1,7 +1,7 @@
 import { resolve } from 'path'
-import { readFileSync } from 'fs'
 import { strictEqual } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
+import { readTextSync } from 'source/node/fs/File.js'
 import { resetDirectory } from 'source/node/fs/Directory.js'
 import { modifyDelete } from 'source/node/fs/Modify.js'
 
@@ -24,7 +24,7 @@ describe('Node.Module.SafeWrite', () => { // TODO: flaky test
     write('4')
     write('5')
     end()
-    strictEqual(readFileSync(pathOutputFile, 'utf8'), '12345')
+    strictEqual(readTextSync(pathOutputFile), '12345')
   })
 
   it('createSafeWriteStream() async write 1', async () => {
@@ -41,7 +41,7 @@ describe('Node.Module.SafeWrite', () => { // TODO: flaky test
     write('5')
     end()
     await setTimeoutAsync(10)
-    strictEqual(readFileSync(pathOutputFile, 'utf8'), '12345')
+    strictEqual(readTextSync(pathOutputFile), '12345')
   })
 
   it('createSafeWriteStream() async write 2', async () => {
@@ -57,7 +57,7 @@ describe('Node.Module.SafeWrite', () => { // TODO: flaky test
     await setTimeoutAsync(10)
     write('5')
     end()
-    strictEqual(readFileSync(pathOutputFile, 'utf8'), '12345')
+    strictEqual(readTextSync(pathOutputFile), '12345')
   })
 
   it('createSafeWriteStream() async write 3', async () => {
@@ -71,7 +71,7 @@ describe('Node.Module.SafeWrite', () => { // TODO: flaky test
     write('5')
     await setTimeoutAsync(10)
     end()
-    strictEqual(readFileSync(pathOutputFile, 'utf8'), '12345')
+    strictEqual(readTextSync(pathOutputFile), '12345')
   })
 
   it('createSafeWriteStream() async write 4', async () => {
@@ -84,6 +84,6 @@ describe('Node.Module.SafeWrite', () => { // TODO: flaky test
     write('4')
     write('5')
     end()
-    strictEqual(readFileSync(pathOutputFile, 'utf8'), '12345')
+    strictEqual(readTextSync(pathOutputFile), '12345')
   })
 })
