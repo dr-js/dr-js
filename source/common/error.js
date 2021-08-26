@@ -9,7 +9,7 @@ const rethrowError = (error) => {
   throw error
 }
 
-const tryCall = (thisArg, name, ...args) => {
+/** @deprecated */ const tryCall = (thisArg, name, ...args) => { // TODO: DEPRECATE
   try {
     return thisArg[ name ](...args)
   } catch (error) { __DEV__ && console.log('[tryCall] failed:', name, error) }
@@ -41,7 +41,7 @@ const packError = (error) => ({ result: undefined, error: error || new Error() }
 export {
   remessageError,
   rethrowError,
-  tryCall,
+  tryCall, // TODO: DEPRECATE
   catchSync,
   catchAsync,
   catchPromise
