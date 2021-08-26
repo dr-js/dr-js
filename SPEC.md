@@ -208,7 +208,7 @@
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
-  - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readJSONAlike`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
+  - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
   - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
 + 📄 [source/node/fs/Path.js](source/node/fs/Path.js)
@@ -572,7 +572,7 @@
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
     - **File**
-      - `appendArrayBuffer`, `appendBuffer`, `appendText`, `editArrayBuffer`, `editBuffer`, `editJSON`, `editJSONPretty`, `editText`, `readArrayBuffer`, `readBuffer`, `readJSON`, `readJSONAlike`, `readText`, `writeArrayBuffer`, `writeBuffer`, `writeJSON`, `writeJSONPretty`, `writeText`
+      - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
     - **Modify**
       - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
     - **Path**
