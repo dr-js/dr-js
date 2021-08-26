@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, appendFileSync, promises as fsAsync } from 'fs'
+import { readFileSync, writeFileSync, appendFileSync, copyFileSync as __copyFileSync, renameSync, unlinkSync, promises as fsAsync } from 'fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { dupJSON } from 'source/common/data/function.js'
@@ -86,9 +86,22 @@ const editJSONPrettySync = (
   pathTo = pathFrom // for in-place edit
 ) => writeJSONPrettySync(pathTo, editFunc(readJSONSync(pathFrom)))
 
+const copyFile = async (pathFrom, pathTo) => fsAsync.copyFile(pathFrom, pathTo) // resolve to nothing
+const copyFileSync = (pathFrom, pathTo) => __copyFileSync(pathFrom, pathTo)
+const renameFile = async (pathFrom, pathTo) => fsAsync.rename(pathFrom, pathTo) // resolve to nothing
+const renameFileSync = (pathFrom, pathTo) => renameSync(pathFrom, pathTo)
+const deleteFile = async (path) => fsAsync.unlink(path) // resolve to nothing
+const deleteFileSync = (path) => unlinkSync(path)
+const deleteFileForce = async (path) => { try { await deleteFile(path) } catch (error) { __DEV__ && console.log('[deleteFileForce]', path, error) } } // resolve to nothing
+const deleteFileForceSync = (path) => { try { deleteFileSync(path) } catch (error) { __DEV__ && console.log('[deleteFileForceSync]', path, error) } }
+
 export {
   readBuffer, readBufferSync, writeBuffer, writeBufferSync, appendBuffer, appendBufferSync, editBuffer, editBufferSync,
   readArrayBuffer, readArrayBufferSync, writeArrayBuffer, writeArrayBufferSync, appendArrayBuffer, appendArrayBufferSync, editArrayBuffer, editArrayBufferSync,
   readText, readTextSync, writeText, writeTextSync, appendText, appendTextSync, editText, editTextSync,
-  readJSON, readJSONSync, readJSONAlike, readJSONAlikeSync, writeJSON, writeJSONSync, writeJSONPretty, writeJSONPrettySync, editJSON, editJSONSync, editJSONPretty, editJSONPrettySync
+  readJSON, readJSONSync, readJSONAlike, readJSONAlikeSync, writeJSON, writeJSONSync, writeJSONPretty, writeJSONPrettySync, editJSON, editJSONSync, editJSONPretty, editJSONPrettySync,
+
+  copyFile, copyFileSync,
+  renameFile, renameFileSync,
+  deleteFile, deleteFileSync, deleteFileForce, deleteFileForceSync
 }
