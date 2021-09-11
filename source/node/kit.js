@@ -111,8 +111,8 @@ const getKitRun = ({
   const RUN = (argListOrString, { isDetached = false, ...option } = {}) => {
     const argList = toArgList(argListOrString)
     argList[ 0 ] = resolveCommand(argList[ 0 ], PATH_ROOT) // mostly for finding `npm.cmd` on win32
-    if (isDryRun) !isQuiet && log(`[${isDryRun ? 'RUN|DRY' : isDetached ? 'RUN|DETACHED' : 'RUN'}] "${argList.join(' ')}"`)
-    else return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, quiet: isQuiet, ...option })
+    log(`[${isDryRun ? 'DRY-RUN' : 'RUN'}${isDetached ? '|DETACHED' : ''}] "${argList.join(' ')}"`)
+    if (!isDryRun) return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, quiet: isQuiet, ...option })
   }
   const RUN_SUDO_NPM = (argListOrString, option) => RUN([ ...getSudoArgs(), ...toArgList(argListOrString) ], option)
   return { RUN, RUN_SUDO_NPM }
