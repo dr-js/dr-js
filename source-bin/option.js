@@ -51,6 +51,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'compress,a/T|compress to archive: -I=inputDirectory, -O=outputFile',
   'extract,x/T|extract from archive: -I=inputFile, -O=outputPath',
 
+  'docker,dk/AS,O|run "docker" command: $@=...argList',
+  'docker-compose,dc/AS,O|run "docker-compose" command: $@=...argList',
+
   'auth-file-describe/T|describe auth file: -I=authFile',
   'auth-check-code-generate/AI,O/0-1|generate checkCode from auth file: -I=authFile, $0=timestamp/now',
   'auth-check-code-verify/AS,O/1-2|verify checkCode with auth file: -I=authFile, $@=checkCode,timestamp/now',

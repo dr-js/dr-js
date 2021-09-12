@@ -26,6 +26,7 @@ import { run, runSync, runDetached } from 'source/node/run.js'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process.js'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
 import { compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'
+import { runDocker, runCompose } from 'source/node/module/Software/docker.js'
 import { pingRaceUrlList, pingStatUrlList } from 'source/node/module/PingRace.js'
 import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCheckCode } from 'source/node/module/Auth.js'
 
@@ -178,6 +179,11 @@ const runMode = async (optionData, modeName) => {
       return compressAutoAsync(inputFile, outputFile)
     case 'extract':
       return extractAutoAsync(inputFile, outputFile)
+
+    case 'docker':
+      return runDocker(argumentList).promise
+    case 'docker-compose':
+      return runCompose(argumentList).promise
 
     case 'auth-file-describe':
       return outputValueAuto(await describeAuthFile(inputFile))

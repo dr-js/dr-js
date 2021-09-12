@@ -799,6 +799,10 @@
 >       compress to archive: -I=inputDirectory, -O=outputFile
 >   --extract --x -x [OPTIONAL] [ARGUMENT=0-1]
 >       extract from archive: -I=inputFile, -O=outputPath
+>   --docker --dk [OPTIONAL] [ARGUMENT=1+]
+>       run "docker" command: $@=...argList
+>   --docker-compose --dc [OPTIONAL] [ARGUMENT=1+]
+>       run "docker-compose" command: $@=...argList
 >   --auth-file-describe [OPTIONAL] [ARGUMENT=0-1]
 >       describe auth file: -I=authFile
 >   --auth-check-code-generate [OPTIONAL] [ARGUMENT=0-1]
@@ -867,6 +871,8 @@
 >     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
 >     export DR_JS_COMPRESS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EXTRACT="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_DOCKER="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_DK]"
+>     export DR_JS_DOCKER_COMPOSE="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_DC]"
 >     export DR_JS_AUTH_FILE_DESCRIBE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_AUTH_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_AUTH_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
@@ -924,6 +930,8 @@
 >     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],
 >     "compress": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "extract": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "docker": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=dk]" ],
+>     "dockerCompose": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=dc]" ],
 >     "authFileDescribe": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "authCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "authCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
