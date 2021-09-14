@@ -831,6 +831,8 @@
 >       websocket chat server: -H=hostname:port
 >   --server-test-connection --stc [OPTIONAL]
 >       connection test server: -H=hostname:port
+>   --server-test-connection-simple --stcs [OPTIONAL]
+>       connection test server, just log all & json back: -H=hostname:port
 >   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
 > ENV Usage:
@@ -891,6 +893,7 @@
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
+>     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
 >   "
 > CONFIG Usage:
@@ -950,6 +953,7 @@
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
+>     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
 >   }
 > ```

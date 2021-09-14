@@ -205,12 +205,13 @@ const runMode = async (optionData, modeName) => {
     case 'server-serve-static':
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
-      return startServer(configureServerServeStatic, { isSimpleServe: modeName === 'server-serve-static-simple', expireTime: Number(expireTime), staticRoot: root })
+      return startServer(configureServerServeStatic, { isSimpleServe: modeName.endsWith('-simple'), expireTime: Number(expireTime), staticRoot: root })
     }
     case 'server-websocket-group':
       return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
-      return startServer(configureServerTestConnection)
+    case 'server-test-connection-simple':
+      return startServer(configureServerTestConnection, { isSimpleTest: modeName.endsWith('-simple') })
     case 'server-tcp-proxy': { // TODO: move to separate file?
       let targetOptionList
       let getTargetOption

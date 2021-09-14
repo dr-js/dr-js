@@ -71,6 +71,7 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'server-serve-static-simple,ssss/O/0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-websocket-group,swg/O|websocket chat server: -H=hostname:port',
   'server-test-connection,stc/O|connection test server: -H=hostname:port',
+  'server-test-connection-simple,stcs/O|connection test server, just log all & json back: -H=hostname:port',
   'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...'
 )
 const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
