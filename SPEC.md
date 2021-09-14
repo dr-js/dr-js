@@ -245,6 +245,8 @@
   - `configureTerminalColor`
 + 📄 [source/node/module/TerminalStatusBar.js](source/node/module/TerminalStatusBar.js)
   - `createStatusBar`
++ 📄 [source/node/module/TerminalTTY.js](source/node/module/TerminalTTY.js)
+  - `createColor`, `createStatusBar`
 + 📄 [source/node/module/function.js](source/node/module/function.js)
   - `createArgListPack`, `probeSync`, `spawnString`
 + 📄 [source/node/module/ActionJSON/path.js](source/node/module/ActionJSON/path.js)
@@ -618,6 +620,8 @@
       - `configureTerminalColor`
     - **TerminalStatusBar**
       - `createStatusBar`
+    - **TerminalTTY**
+      - `createColor`, `createStatusBar`
     - **Function**
       - `createArgListPack`, `probeSync`, `spawnString`
   - **Server**
