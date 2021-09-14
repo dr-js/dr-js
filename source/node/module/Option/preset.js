@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'path'
 import { tryRequire } from 'source/env/tryRequire.js'
-import { splitCamelCase } from 'source/common/string.js'
+import { indentLineList, splitCamelCase } from 'source/common/string.js'
 import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify.js'
 import { tryParseJSONObject } from 'source/common/data/function.js'
 import { objectFilter } from 'source/common/immutable/Object.js'
@@ -63,7 +63,7 @@ const pickOneOf = (selectList, extraDescription = '') => {
     arrayLength(argumentList, 1)
     oneOf(argumentList[ 0 ], selectList)
   }
-  return getPreset(1, argumentListVerify, undefined, `${extraDescription}one of:\n  ${arraySplitChunk(selectList, 4).map((v) => v.join(' ')).join('\n  ')}`)
+  return getPreset(1, argumentListVerify, undefined, `${extraDescription}one of:\n${indentLineList(arraySplitChunk(selectList, 4).map((v) => v.join(' ')))}`)
 }
 const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1- |some description, and extra '|' is also allowed` // check test for more
   compactFormat,

@@ -1,5 +1,6 @@
 const REGEXP_INDENT_LINE = /\n/g
 const indentLine = (string, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${string.replace(REGEXP_INDENT_LINE, `\n${indentString}`)}`
+const indentLineList = (stringList, indentString = '  ', indentStringStart = indentString) => `${indentStringStart}${stringList.join(`\n${indentString}`)}`
 
 const indentList = (
   title,
@@ -147,7 +148,7 @@ const forEachLine = (string, func) => { // NOTE: this only split by `\n`, basica
 }
 
 export {
-  indentLine, indentList,
+  indentLine, indentLineList, indentList,
   filterJoin,
   autoEllipsis,
 

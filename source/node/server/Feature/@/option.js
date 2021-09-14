@@ -1,18 +1,19 @@
 import { resolve } from 'path'
 import { isString, isBasicObject } from 'source/common/check.js'
+import { indentLineList } from 'source/common/string.js'
 import { Preset } from 'source/node/module/Option/preset.js'
 import { parseHostString } from 'source/node/server/function.js'
 
 const { parseCompact, parseCompactList } = Preset
 
 const getServerExotFormatConfig = (extraList = []) => parseCompact('host,H/SS,O|set "hostname:port"', [
-  parseCompact(`TLS-SNI-config/SO,O|TLS SNI config map, set to enable https:\n  ${[
+  parseCompact(`TLS-SNI-config/SO,O|TLS SNI config map, set to enable https:\n${indentLineList([
     'multi config: { [hostname]: { key: pathOrBuffer, cert: pathOrBuffer, ca: pathOrBuffer } }, default to special hostname "default", or the first config',
     'single config: { key: pathOrBuffer, cert: pathOrBuffer, ca: pathOrBuffer }',
     'key: Private keys in PEM format',
     'cert: Cert chains in PEM format',
     'ca: Optionally override the trusted CA certificates'
-  ].join('\n  ')}`, parseCompactList(
+  ])}`, parseCompactList(
     'TLS-dhparam/O/1|pathOrBuffer; Diffie-Hellman Key Exchange, generate with: "openssl dhparam -dsaparam -outform PEM -out output/path/dh4096.pem 4096"'
   )),
   ...extraList

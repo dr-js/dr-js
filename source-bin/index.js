@@ -17,7 +17,7 @@ import { PATH_TYPE } from 'source/node/fs/Path.js'
 import { readText, writeText, readJSON } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
-import { autoTestServerPort } from 'source/node/server/function.js'
+import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
 import { createServerExot } from 'source/node/server/Server.js'
 import { createTCPProxyListener } from 'source/node/server/Proxy.js'
 import { getDefaultOpenCommandList } from 'source/node/system/DefaultOpen.js'
@@ -26,6 +26,7 @@ import { run, runSync, runDetached } from 'source/node/run.js'
 import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/node/system/Process.js'
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
 import { compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'
+import { runDocker, runCompose } from 'source/node/module/Software/docker.js'
 import { pingRaceUrlList, pingStatUrlList } from 'source/node/module/PingRace.js'
 import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCheckCode } from 'source/node/module/Auth.js'
 
@@ -60,15 +61,8 @@ const runMode = async (optionData, modeName) => {
     (error) => log(`[${modeName}] error: ${path}\n${error.stack || error}`)
   )
 
-  // for ipv6 should use host like: `[::]:80`
-  const parseHost = (host, defaultHostname) => {
-    const hostnameList = host.split(':')
-    const port = Number(hostnameList.pop())
-    const hostname = hostnameList.join(':') || defaultHostname
-    return { hostname, port }
-  }
   const quickServerExot = async (protocol = 'http:') => {
-    const { hostname, port } = parseHost(tryGetFirst('host') || '', '0.0.0.0')
+    const { hostname, port } = parseHostString(tryGetFirst('host') || '', '0.0.0.0')
     return createServerExot({
       protocol,
       hostname,
@@ -179,6 +173,11 @@ const runMode = async (optionData, modeName) => {
     case 'extract':
       return extractAutoAsync(inputFile, outputFile)
 
+    case 'docker':
+      return runDocker(argumentList).promise
+    case 'docker-compose':
+      return runCompose(argumentList).promise
+
     case 'auth-file-describe':
       return outputValueAuto(await describeAuthFile(inputFile))
     case 'auth-check-code-generate':
@@ -206,17 +205,18 @@ const runMode = async (optionData, modeName) => {
     case 'server-serve-static':
     case 'server-serve-static-simple': {
       const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
-      return startServer(configureServerServeStatic, { isSimpleServe: modeName === 'server-serve-static-simple', expireTime: Number(expireTime), staticRoot: root })
+      return startServer(configureServerServeStatic, { isSimpleServe: modeName.endsWith('-simple'), expireTime: Number(expireTime), staticRoot: root })
     }
     case 'server-websocket-group':
       return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
-      return startServer(configureServerTestConnection)
+    case 'server-test-connection-simple':
+      return startServer(configureServerTestConnection, { isSimpleTest: modeName.endsWith('-simple') })
     case 'server-tcp-proxy': { // TODO: move to separate file?
       let targetOptionList
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
-        targetOptionList = argumentList.map((host) => parseHost(host, '127.0.0.1'))
+        targetOptionList = argumentList.map((host) => parseHostString(host, '127.0.0.1'))
         let targetOptionIndex = 0 // selected in round robin order
         getTargetOption = (socket) => {
           targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length

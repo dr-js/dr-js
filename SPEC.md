@@ -58,7 +58,7 @@
 + 📄 [source/common/function.js](source/common/function.js)
   - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
-  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+  - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentLineList`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/test.js](source/common/test.js)
   - `createTest`
 + 📄 [source/common/time.js](source/common/time.js)
@@ -245,6 +245,8 @@
   - `configureTerminalColor`
 + 📄 [source/node/module/TerminalStatusBar.js](source/node/module/TerminalStatusBar.js)
   - `createStatusBar`
++ 📄 [source/node/module/TerminalTTY.js](source/node/module/TerminalTTY.js)
+  - `createColor`, `createStatusBar`, `promptAsync`
 + 📄 [source/node/module/function.js](source/node/module/function.js)
   - `createArgListPack`, `probeSync`, `spawnString`
 + 📄 [source/node/module/ActionJSON/path.js](source/node/module/ActionJSON/path.js)
@@ -538,7 +540,7 @@
   - **Function**
     - `createInsideOutPromise`, `debounce`, `lossyAsync`, `once`, `throttle`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
-    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
+    - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentLineList`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Test**
     - `createTest`
   - **Time**
@@ -618,6 +620,8 @@
       - `configureTerminalColor`
     - **TerminalStatusBar**
       - `createStatusBar`
+    - **TerminalTTY**
+      - `createColor`, `createStatusBar`, `promptAsync`
     - **Function**
       - `createArgListPack`, `probeSync`, `spawnString`
   - **Server**
@@ -799,6 +803,10 @@
 >       compress to archive: -I=inputDirectory, -O=outputFile
 >   --extract --x -x [OPTIONAL] [ARGUMENT=0-1]
 >       extract from archive: -I=inputFile, -O=outputPath
+>   --docker --dk [OPTIONAL] [ARGUMENT=1+]
+>       run "docker" command: $@=...argList
+>   --docker-compose --dc [OPTIONAL] [ARGUMENT=1+]
+>       run "docker-compose" command: $@=...argList
 >   --auth-file-describe [OPTIONAL] [ARGUMENT=0-1]
 >       describe auth file: -I=authFile
 >   --auth-check-code-generate [OPTIONAL] [ARGUMENT=0-1]
@@ -823,6 +831,8 @@
 >       websocket chat server: -H=hostname:port
 >   --server-test-connection --stc [OPTIONAL]
 >       connection test server: -H=hostname:port
+>   --server-test-connection-simple --stcs [OPTIONAL]
+>       connection test server, just log all & json back: -H=hostname:port
 >   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
 > ENV Usage:
@@ -867,6 +877,8 @@
 >     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
 >     export DR_JS_COMPRESS="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EXTRACT="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_DOCKER="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_DK]"
+>     export DR_JS_DOCKER_COMPOSE="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_DC]"
 >     export DR_JS_AUTH_FILE_DESCRIBE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_AUTH_CHECK_CODE_GENERATE="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_AUTH_CHECK_CODE_VERIFY="[OPTIONAL] [ARGUMENT=1-2]"
@@ -881,6 +893,7 @@
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
+>     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
 >   "
 > CONFIG Usage:
@@ -924,6 +937,8 @@
 >     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],
 >     "compress": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "extract": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "docker": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=dk]" ],
+>     "dockerCompose": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=dc]" ],
 >     "authFileDescribe": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "authCheckCodeGenerate": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "authCheckCodeVerify": [ "[OPTIONAL] [ARGUMENT=1-2]" ],
@@ -938,6 +953,7 @@
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
+>     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
 >   }
 > ```

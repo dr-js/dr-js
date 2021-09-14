@@ -44,10 +44,23 @@ const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
 // TODO: support CORS for testing
 
-const configure = ({ log, routePrefix }) => {
+const configure = ({
+  log, routePrefix,
+  isSimpleTest
+}) => {
   const bufferData = prepareBufferData(Buffer.from('TEST CONTENT'))
 
-  const routeConfigList = [
+  const routeConfigList = isSimpleTest ? [
+    [ [ '/*', '/', '' ], Object.keys(METHOD_MAP), async (store) => {
+      const { url, method, httpVersion, rawHeaders, socket: { remoteAddress, remotePort } } = store.request
+      const describeObject = {
+        from: `${remoteAddress}:${remotePort}`,
+        request: { url, method, httpVersion, headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')) }
+      }
+      log(`[test-describe]\n${JSON.stringify(describeObject, null, 2)}`)
+      return responderSendJSON(store, { object: describeObject })
+    } ]
+  ] : [
     [ [ '/test-describe', '/test-describe/*' ], Object.keys(METHOD_MAP), async (store) => {
       const { url, method, httpVersion, rawHeaders, socket: { remoteAddress, remotePort } } = store.request
       const describeObject = {

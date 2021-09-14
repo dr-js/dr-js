@@ -22,10 +22,10 @@ const editBufferSync = (
 
 const readArrayBuffer = async (path) => fromNodejsBuffer(await readBuffer(path))
 const readArrayBufferSync = (path) => fromNodejsBuffer(readBufferSync(path))
-const writeArrayBuffer = writeBuffer
-const writeArrayBufferSync = writeBufferSync
-const appendArrayBuffer = appendBuffer
-const appendArrayBufferSync = appendBufferSync
+const writeArrayBuffer = async (path, arrayBuffer) => writeBuffer(path, Buffer.from(arrayBuffer))
+const writeArrayBufferSync = (path, arrayBuffer) => writeBufferSync(path, Buffer.from(arrayBuffer))
+const appendArrayBuffer = async (path, arrayBuffer) => appendBuffer(path, Buffer.from(arrayBuffer))
+const appendArrayBufferSync = (path, arrayBuffer) => appendBufferSync(path, Buffer.from(arrayBuffer))
 const editArrayBuffer = async (
   editFunc = async (arrayBuffer) => arrayBuffer,
   pathFrom,
@@ -56,7 +56,7 @@ const editTextSync = (
 
 const readJSON = async (path) => JSON.parse(await readText(path))
 const readJSONSync = (path) => JSON.parse(readTextSync(path))
-const readJSONAlike = (path) => {
+const readJSONAlike = (path) => { // TODO: better consider this `async`
   delete require.cache[ tryRequireResolve(path) ] // clear existing cache
   return dupJSON(tryRequire(path)) // can be .js or .json, copy to prevent mutate module cache
 }

@@ -1,11 +1,20 @@
 import { setTimeoutAsync } from 'source/common/time.js'
-import { createStatusBar } from './TerminalStatusBar.js'
+import {
+  createColor,
+  createStatusBar
+} from './TerminalTTY.js'
 
 const { describe, it, info = console.log } = globalThis
 
 const timeScale = __DEV__ ? 50 : 1
 
-describe('Node.Module.TerminalStatusBar', () => {
+describe('Node.Module.TerminalTTY', () => {
+  it('createColor()', async () => {
+    const Color = createColor()
+    info(`Color.fg.red('test color'): ${Color.fg.red('test color')}`)
+    info(`Color.bg.darkGray('test color'): ${Color.bg.darkGray('test color')}`)
+  })
+
   it('createStatusBar()', async () => {
     const { update, done } = createStatusBar({ throttleWait: 20 * timeScale })
 

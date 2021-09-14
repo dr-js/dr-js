@@ -22,27 +22,32 @@ const describeSystemProcessor = (processorList = getSystemProcessor()) => proces
   .map(({ model, speed, times }) => `[${model}] speed:${speed}MHz ${Object.entries(times).map(([ k, v ]) => `${k}:${time(v)}`).join(' ')}`)
   .join('\n')
 
-const getSystemMemory = platform() !== 'linux' ? () => ({ // this will not include swap, and free means fully unused, so cached memory is not counted
-  total: totalmem(), // in bytes
-  free: freemem(), // in bytes
-  swapTotal: 0,
-  swapFree: 0
-}) : () => {
-  // ~$ cat /proc/meminfo
-  // MemTotal:        9170456 kB
-  // MemFree:          325068 kB
-  // MemAvailable:    2137580 kB // use this as it's more in line with the common "free" concept
-  // ...
-  // SwapTotal:       2097152 kB
-  // SwapFree:        2048256 kB
-  // ...
-  const stringMemInfo = readTextSync('/proc/meminfo')
-  const toByte = (regexp) => parseInt(regexp.exec(stringMemInfo)[ 1 ]) * 1024
-  return {
-    total: toByte(/MemTotal:\s+(\d+)/),
-    free: toByte(/MemAvailable:\s+(\d+)/), // contains cache + free
-    swapTotal: toByte(/SwapTotal:\s+(\d+)/), // SwapTotal may be 0, check before divide
-    swapFree: toByte(/SwapFree:\s+(\d+)/)
+const getSystemMemory = () => {
+  try {
+    if (platform() === 'linux') {
+      // ~$ cat /proc/meminfo
+      // MemTotal:        9170456 kB
+      // MemFree:          325068 kB
+      // MemAvailable:    2137580 kB // use this as it's more in line with the common "free" concept
+      // ...
+      // SwapTotal:       2097152 kB
+      // SwapFree:        2048256 kB
+      // ...
+      const stringMemInfo = readTextSync('/proc/meminfo')
+      const toByte = (regexp) => parseInt(regexp.exec(stringMemInfo)[ 1 ]) * 1024
+      return {
+        total: toByte(/MemTotal:\s+(\d+)/),
+        free: toByte(/MemAvailable:\s+(\d+)/), // contains cache + free // NOTE: not all dist report `MemAvailable`, some only have `MemFree`
+        swapTotal: toByte(/SwapTotal:\s+(\d+)/), // `SwapTotal` may be 0, check before divide
+        swapFree: toByte(/SwapFree:\s+(\d+)/)
+      }
+    }
+  } catch (error) { __DEV__ && console.log('[getSystemMemory]', error) }
+  return { // this will not include swap, and free means fully unused, so cached memory is not counted
+    total: totalmem(), // in bytes
+    free: freemem(), // in bytes
+    swapTotal: 0,
+    swapFree: 0
   }
 }
 const describeSystemMemory = ({ total, free, swapTotal, swapFree } = getSystemMemory()) => [

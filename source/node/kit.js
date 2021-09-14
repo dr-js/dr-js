@@ -6,7 +6,7 @@ import { time } from 'source/common/format.js'
 import { clamp } from 'source/common/math/base.js'
 
 import { findUpPackageRoot, getSudoArgs } from 'source/node/module/Software/npm.js'
-import { configureTerminalColor } from 'source/node/module/TerminalColor.js'
+import { createColor } from 'source/node/module/TerminalTTY.js'
 import { resolveCommand } from './system/ResolveCommand.js'
 import { runDetached, runSync } from './run.js'
 
@@ -37,7 +37,7 @@ const getKitLogger = ({
   isVerbose = Boolean(loadEnvKey(ENV_KEY_VERBOSE) || argvFlag('verbose') || process.env.KIT_VERBOSE),
   isQuiet = Boolean(argvFlag('quiet') || process.env.KIT_QUIET),
   padWidth = clamp(process.env.KIT_LOGGER_WIDTH || (process.stdout.isTTY && process.stdout.columns) || 80, 32, 240),
-  TerminalColor = configureTerminalColor(),
+  TerminalColor = createColor(),
   colorPadLogFunc = TerminalColor.fg.yellow,
   colorStepLogFunc = TerminalColor.fg.yellow,
   colorLogFunc = TerminalColor.fg.darkGray,
@@ -111,8 +111,8 @@ const getKitRun = ({
   const RUN = (argListOrString, { isDetached = false, ...option } = {}) => {
     const argList = toArgList(argListOrString)
     argList[ 0 ] = resolveCommand(argList[ 0 ], PATH_ROOT) // mostly for finding `npm.cmd` on win32
-    if (isDryRun) !isQuiet && log(`[${isDryRun ? 'RUN|DRY' : isDetached ? 'RUN|DETACHED' : 'RUN'}] "${argList.join(' ')}"`)
-    else return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, quiet: isQuiet, ...option })
+    log(`[${isDryRun ? 'DRY-RUN' : 'RUN'}${isDetached ? '|DETACHED' : ''}] "${argList.join(' ')}"`)
+    if (!isDryRun) return (isDetached ? runDetached : runSync)(argList, { cwd: PATH_ROOT, quiet: isQuiet, ...option })
   }
   const RUN_SUDO_NPM = (argListOrString, option) => RUN([ ...getSudoArgs(), ...toArgList(argListOrString) ], option)
   return { RUN, RUN_SUDO_NPM }
