@@ -1,5 +1,6 @@
 import { resolve, dirname, basename } from 'path'
 import { strictEqual } from 'source/common/verify.js'
+import { indentLineList } from 'source/common/string.js'
 import { getRandomId } from 'source/common/math/random.js'
 import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import { createLoggerExot } from 'source/node/module/Logger.js'
@@ -83,7 +84,7 @@ describe('Node.System.WatchLoop', () => {
     const runLoop = async (loopCount, isNoStart = false) => {
       while (loopCount--) {
         const { statusList } = await loopMain(loopConfig, loopState, { isNoStart }) // statusList only return on slow loop
-        log(statusList ? `#${loopState.loopIndex}\n- ${statusList.join('\n- ')}` : `#${loopState.loopIndex}`)
+        log(statusList ? `#${loopState.loopIndex}\n${indentLineList(statusList, '- ')}` : `#${loopState.loopIndex}`)
         statusList && await saveLoopState(loopConfig, loopState) // lazy save
         await loopWaitAndStep(loopConfig, loopState)
       }
