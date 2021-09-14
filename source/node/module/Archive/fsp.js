@@ -28,7 +28,7 @@ const extractFspGzBrAsync = async (sourceFile, outputPath, pathTemp) => withTemp
 const compressAsync = async (sourceDirectory, outputFile, pathTemp) => (REGEXP_GZBR.test(outputFile) ? compressFspGzBrAsync : compressFspAsync)(sourceDirectory, outputFile, pathTemp)
 const extractAsync = async (sourceFile, outputPath, pathTemp) => (REGEXP_GZBR.test(sourceFile) ? extractFspGzBrAsync : extractFspAsync)(sourceFile, outputPath, pathTemp)
 
-export { // TODO: move related to `module/Archive/`
+export {
   REGEXP_FSP,
   compressFspAsync, extractFspAsync,
   compressFspGzBrAsync, extractFspGzBrAsync,
