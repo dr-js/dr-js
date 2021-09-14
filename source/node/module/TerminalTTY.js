@@ -98,7 +98,24 @@ const createStatusBar = ({
   return { update, done }
 }
 
+const promptAsync = async ({
+  message = '',
+  defaultAnswer = undefined
+}) => {
+  const readlineInterface = createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  const answer = await new Promise((resolve) => {
+    readlineInterface.on('close', () => resolve(defaultAnswer)) // NOTE: no need to off as this will not be re-used
+    readlineInterface.question(message, (answer) => resolve(answer))
+  })
+  readlineInterface.close()
+  return answer
+}
+
 export {
   createColor,
-  createStatusBar
+  createStatusBar,
+  promptAsync
 }

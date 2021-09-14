@@ -246,7 +246,7 @@
 + 📄 [source/node/module/TerminalStatusBar.js](source/node/module/TerminalStatusBar.js)
   - `createStatusBar`
 + 📄 [source/node/module/TerminalTTY.js](source/node/module/TerminalTTY.js)
-  - `createColor`, `createStatusBar`
+  - `createColor`, `createStatusBar`, `promptAsync`
 + 📄 [source/node/module/function.js](source/node/module/function.js)
   - `createArgListPack`, `probeSync`, `spawnString`
 + 📄 [source/node/module/ActionJSON/path.js](source/node/module/ActionJSON/path.js)
@@ -621,7 +621,7 @@
     - **TerminalStatusBar**
       - `createStatusBar`
     - **TerminalTTY**
-      - `createColor`, `createStatusBar`
+      - `createColor`, `createStatusBar`, `promptAsync`
     - **Function**
       - `createArgListPack`, `probeSync`, `spawnString`
   - **Server**
