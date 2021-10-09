@@ -69,6 +69,7 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
 
   'server-serve-static,sss/O/0-1|static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-serve-static-simple,ssss/O/0-1|static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
+  'server-serve-static-api,sssa/O/0-1|static API server, no HTML, will map "POST /a/b/c" to static file with name "#a#b#c#[POST]": -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000',
   'server-websocket-group,swg/O|websocket chat server: -H=hostname:port',
   'server-test-connection,stc/O|connection test server: -H=hostname:port',
   'server-test-connection-simple,stcs/O|connection test server, just log all & json back: -H=hostname:port',

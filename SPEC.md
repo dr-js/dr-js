@@ -827,6 +827,8 @@
 >       static file server: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-serve-static-simple --ssss [OPTIONAL] [ARGUMENT=0-1]
 >       static file server, no HTML: -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
+>   --server-serve-static-api --sssa [OPTIONAL] [ARGUMENT=0-1]
+>       static API server, no HTML, will map "POST /a/b/c" to static file with name "#a#b#c#[POST]": -H=hostname:port, -R=staticRoot/cwd, $0=expireTime/5*1000
 >   --server-websocket-group --swg [OPTIONAL]
 >       websocket chat server: -H=hostname:port
 >   --server-test-connection --stc [OPTIONAL]
@@ -891,6 +893,7 @@
 >     export DR_JS_PING_STAT="[OPTIONAL] [ARGUMENT=1+]"
 >     export DR_JS_SERVER_SERVE_STATIC="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSS]"
 >     export DR_JS_SERVER_SERVE_STATIC_SIMPLE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSS]"
+>     export DR_JS_SERVER_SERVE_STATIC_API="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_SSSA]"
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
 >     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
@@ -951,6 +954,7 @@
 >     "pingStat": [ "[OPTIONAL] [ARGUMENT=1+]" ],
 >     "serverServeStatic": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sss]" ],
 >     "serverServeStaticSimple": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ssss]" ],
+>     "serverServeStaticApi": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=sssa]" ],
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
 >     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],

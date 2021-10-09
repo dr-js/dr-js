@@ -203,9 +203,10 @@ const runMode = async (optionData, modeName) => {
       ))
 
     case 'server-serve-static':
-    case 'server-serve-static-simple': {
+    case 'server-serve-static-simple':
+    case 'server-serve-static-api': {
       const [ expireTime = 5 * 1000 ] = argumentList // expireTime: 5sec, in msec
-      return startServer(configureServerServeStatic, { isSimpleServe: modeName.endsWith('-simple'), expireTime: Number(expireTime), staticRoot: root })
+      return startServer(configureServerServeStatic, { isSimpleServe: modeName.endsWith('-simple'), isSimpleApi: modeName.endsWith('-api'), expireTime: Number(expireTime), staticRoot: root })
     }
     case 'server-websocket-group':
       return startServer(configureServerWebSocketGroup)

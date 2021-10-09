@@ -10,12 +10,12 @@ import { getPathStat, toPosixPath, createPathPrefixLock } from 'source/node/fs/P
 import { getDirInfoList } from 'source/node/fs/Directory.js'
 import { responderEndWithRedirect } from 'source/node/server/Responder/Common.js'
 import { responderSendBufferCompress } from 'source/node/server/Responder/Send.js'
-import { getRouteParamAny } from 'source/node/server/Responder/Router.js'
+import { METHOD_MAP, getRouteParamAny } from 'source/node/server/Responder/Router.js'
 import { createResponderServeStatic } from 'source/node/server/Responder/ServeStatic.js'
 
 const configure = ({
   routePrefix,
-  isSimpleServe,
+  isSimpleServe, isSimpleApi,
   expireTime, // in msec
   staticRoot
 }) => {
@@ -23,7 +23,9 @@ const configure = ({
   const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
   const responderServeStatic = createResponderServeStatic({ expireTime })
 
-  const routeConfigList = [
+  const routeConfigList = isSimpleApi ? [
+    [ [ '/', '/*' ], Object.keys(METHOD_MAP), (store) => responderServeStatic(store, fromStaticRoot(`${store.request.url.replace(/\//g, '#')}#[${store.request.method}]`)) ]
+  ] : [
     [ isSimpleServe ? '/*' : '/file/*', [ 'GET', 'HEAD' ], (store) => responderServeStatic(store, getParamFilePath(store)) ],
     !isSimpleServe && [ '/list/*', 'GET', (store) => responderFilePathList(store, getParamFilePath(store), routePrefix, staticRoot) ],
     !isSimpleServe && [ [ '/', '/*', '/file', '/list' ], 'GET', (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}/list/` }) ]
