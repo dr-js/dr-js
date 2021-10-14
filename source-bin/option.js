@@ -44,6 +44,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
 
   'json-format,jf/AI,O/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
 
+  'encode,enc/SS,O|encode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType',
+  'decode,dec/SS,O|decode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType',
+
   'file-list,ls/AP,O/0-1|list file: $0=path/cwd',
   'file-list-all,ls-R,lla/AP,O/0-1|list all file: $0=path/cwd',
   'file-tree,tree/AP,O/0-1|list all file in tree: $0=path/cwd',

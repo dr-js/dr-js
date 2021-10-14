@@ -793,6 +793,10 @@
 >       send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
+>   --encode --enc [OPTIONAL] [ARGUMENT=1]
+>       encode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType
+>   --decode --dec [OPTIONAL] [ARGUMENT=1]
+>       decode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
 >       list file: $0=path/cwd
 >   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
@@ -874,6 +878,8 @@
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
+>     export DR_JS_ENCODE="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_ENC]"
+>     export DR_JS_DECODE="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_DEC]"
 >     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS]"
 >     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS_R,DR_JS_LLA]"
 >     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
@@ -935,6 +941,8 @@
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
+>     "encode": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=enc]" ],
+>     "decode": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=dec]" ],
 >     "fileList": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ls]" ],
 >     "fileListAll": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=lsR,lla]" ],
 >     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],
