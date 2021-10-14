@@ -28,6 +28,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'cat/AP,O/0-|with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout',
   'write/SP,O|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP,O|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
+
+  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write',
+
   'merge/AP,O/2-|merge to one file: $@=mergedFile,...inputFileList',
   'create-directory,mkdir/AP,O/0-|create directory: $@=...pathList',
   'modify-copy,cp/AP,O/2|copy path: $@=pathFrom,pathTo',

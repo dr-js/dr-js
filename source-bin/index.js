@@ -15,7 +15,7 @@ import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, readJSON } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, readJSON } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -99,6 +99,11 @@ const runMode = async (optionData, modeName) => {
       const [ mergedFile, ...fileList ] = argumentList
       for (const path of fileList) await quickRunletFromStream(createReadStream(path), createWriteStream(mergedFile, { flags: 'a' }))
       return
+    }
+
+    case 'text-file': {
+      const [ modeName = 'write' ] = argumentList
+      return (modeName.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
     }
 
     case 'open': {

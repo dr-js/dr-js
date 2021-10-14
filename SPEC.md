@@ -767,6 +767,8 @@
 >       for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`
 >   --append [OPTIONAL] [ARGUMENT=1]
 >       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
+>   --text-file --txt [OPTIONAL] [ARGUMENT=0-1]
+>       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write
 >   --merge [OPTIONAL] [ARGUMENT=2+]
 >       merge to one file: $@=mergedFile,...inputFileList
 >   --create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
@@ -865,6 +867,7 @@
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_TEXT_FILE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TXT]"
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_MKDIR]"
 >     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_CP]"
@@ -928,6 +931,7 @@
 >     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "textFile": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=txt]" ],
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=mkdir]" ],
 >     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=cp]" ],
