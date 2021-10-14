@@ -76,8 +76,8 @@ const getKitLogger = ({
   const devLog = isVerbose ? log : () => {}
 
   return (!isVerbose && isQuiet)
-    ? { padLog: stepLog, stepLog: devLog, log: devLog, devLog: () => {} }
-    : { padLog, stepLog, log, devLog }
+    ? { padLog: stepLog, stepLog: devLog, log: devLog, devLog: () => {}, isVerbose }
+    : { padLog, stepLog, log, devLog, isVerbose }
 }
 
 const getKitPathCombo = ({
