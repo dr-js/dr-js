@@ -194,7 +194,7 @@
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/data/Z64String.js](source/node/data/Z64String.js)
-  - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
+  - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -558,7 +558,7 @@
     - **Stream**
       - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
     - **Z64String**
-      - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
+      - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
   - **File**
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
