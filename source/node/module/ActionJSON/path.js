@@ -4,7 +4,7 @@ import { promises as fsAsync } from 'fs'
 import { catchAsync } from 'source/common/error.js'
 import { objectMap } from 'source/common/immutable/Object.js'
 import { PATH_TYPE, getPathStat, existPath, toPosixPath, createPathPrefixLock } from 'source/node/fs/Path.js'
-import { getDirInfoList, getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/fs/Directory.js'
+import { getDirInfoList, getDirInfoTree, walkDirInfoTree, createDirectory } from 'source/node/fs/Directory.js'
 import { modifyRename, modifyCopy, modifyDelete } from 'source/node/fs/Modify.js'
 
 const PATH_VISIBLE = 'path.visible'
@@ -51,7 +51,7 @@ const ACTION_CORE_MAP = { // all async
   },
   [ PATH_DIRECTORY_ALL_FILE_LIST ]: async (absolutePath) => { // recursive, file only
     const fileList = [] // [ name, size, mtimeMs ]
-    const { error } = await catchAsync(async () => walkDirInfoTreeAsync(
+    const { error } = await catchAsync(async () => walkDirInfoTree(
       await getDirInfoTree(absolutePath),
       async ({ type, path }) => {
         const stat = (type === PATH_TYPE.Directory) || await getPathStat(path)
