@@ -1,31 +1,46 @@
 import { dirname } from 'path'
-import { getPathLstat, copyPath, renamePath, deletePath } from './Path.js'
-import { createDirectory, copyDirectory, deleteDirectory } from './Directory.js'
-
-const EMPTY_FUNC = () => {}
+import { withFallbackResult, withFallbackResultAsync } from 'source/common/error.js'
+import { getPathLstat, getPathLstatSync, copyPath, copyPathSync, renamePath, renamePathSync, deletePath, deletePathSync } from './Path.js'
+import { createDirectory, createDirectorySync, copyDirectory, copyDirectorySync, deleteDirectory, deleteDirectorySync } from './Directory.js'
 
 const modifyCopy = async (pathFrom, pathTo, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathLstat(pathFrom)
   if (pathStat.isDirectory()) return copyDirectory(pathFrom, pathTo, pathStat)
   await createDirectory(dirname(pathTo))
-  return copyPath(pathFrom, pathTo, pathStat)
+  await copyPath(pathFrom, pathTo, pathStat)
+}
+const modifyCopySync = (pathFrom, pathTo, pathStat) => {
+  if (pathStat === undefined) pathStat = getPathLstatSync(pathFrom)
+  if (pathStat.isDirectory()) return copyDirectorySync(pathFrom, pathTo, pathStat)
+  createDirectorySync(dirname(pathTo))
+  copyPathSync(pathFrom, pathTo, pathStat)
 }
 
 const modifyRename = async (pathFrom, pathTo, pathStat) => {
   await createDirectory(dirname(pathTo))
-  return renamePath(pathFrom, pathTo, pathStat)
+  await renamePath(pathFrom, pathTo, pathStat)
+}
+const modifyRenameSync = (pathFrom, pathTo, pathStat) => {
+  createDirectorySync(dirname(pathTo))
+  renamePathSync(pathFrom, pathTo, pathStat)
 }
 
 const modifyDelete = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathLstat(path)
   if (pathStat.isDirectory()) return deleteDirectory(path, pathStat)
-  return deletePath(path, pathStat)
+  await deletePath(path, pathStat)
+}
+const modifyDeleteSync = (path, pathStat) => {
+  if (pathStat === undefined) pathStat = getPathLstatSync(path)
+  if (pathStat.isDirectory()) return deleteDirectorySync(path, pathStat)
+  deletePathSync(path, pathStat)
 }
 
-const modifyDeleteForce = async (path, pathStat) => modifyDelete(path, pathStat).catch(EMPTY_FUNC)
+const modifyDeleteForce = async (path, pathStat) => withFallbackResultAsync(undefined, modifyDelete, path, pathStat)
+const modifyDeleteForceSync = (path, pathStat) => withFallbackResult(undefined, modifyDeleteSync, path, pathStat)
 
 export {
-  modifyCopy,
-  modifyRename,
-  modifyDelete, modifyDeleteForce
+  modifyCopy, modifyCopySync,
+  modifyRename, modifyRenameSync,
+  modifyDelete, modifyDeleteSync, modifyDeleteForce, modifyDeleteForceSync
 }

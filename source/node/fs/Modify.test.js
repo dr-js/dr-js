@@ -1,12 +1,12 @@
 import { resolve } from 'path'
 import { strictEqual } from 'source/common/verify.js'
-import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat, addTrailingSep } from './Path.js'
+import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat, getPathLstatSync, addTrailingSep } from './Path.js'
 import { deleteDirectory, resetDirectory } from './Directory.js'
 
 import {
-  modifyCopy,
-  modifyRename,
-  modifyDelete
+  modifyCopy, modifyCopySync,
+  modifyRename, modifyRenameSync,
+  modifyDelete, modifyDeleteSync // modifyDeleteForce, modifyDeleteForceSync
 } from './Modify.js'
 
 const { describe, it, before, after } = globalThis
@@ -43,6 +43,17 @@ describe('Node.Fs.Modify', () => {
     await modifyDelete(filePath1)
     strictEqual(await getPathLstat(filePath1), STAT_ERROR)
   })
+  it('copy/rename/delete File sync', () => {
+    modifyCopySync(SOURCE_FILE, filePath0)
+    strictEqual(getPathTypeFromStat(getPathLstatSync(filePath0)), PATH_TYPE.File)
+
+    modifyRenameSync(filePath0, filePath1)
+    strictEqual(getPathLstatSync(filePath0), STAT_ERROR)
+    strictEqual(getPathTypeFromStat(getPathLstatSync(filePath1)), PATH_TYPE.File)
+
+    modifyDeleteSync(filePath1)
+    strictEqual(getPathLstatSync(filePath1), STAT_ERROR)
+  })
 
   it('copy/rename/delete Directory', async () => {
     await modifyCopy(SOURCE_DIRECTORY, directoryPath0)
@@ -54,5 +65,16 @@ describe('Node.Fs.Modify', () => {
 
     await modifyDelete(directoryPath1)
     strictEqual(await getPathLstat(directoryPath1), STAT_ERROR)
+  })
+  it('copy/rename/delete Directory sync', () => {
+    modifyCopySync(SOURCE_DIRECTORY, directoryPath0)
+    strictEqual(getPathTypeFromStat(getPathLstatSync(directoryPath0)), PATH_TYPE.Directory)
+
+    modifyRenameSync(directoryPath0, directoryPath1)
+    strictEqual(getPathLstatSync(directoryPath0), STAT_ERROR)
+    strictEqual(getPathTypeFromStat(getPathLstatSync(directoryPath1)), PATH_TYPE.Directory)
+
+    modifyDeleteSync(directoryPath1)
+    strictEqual(getPathLstatSync(directoryPath1), STAT_ERROR)
   })
 })

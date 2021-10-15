@@ -206,13 +206,13 @@
 + 📄 [source/node/fs/Checksum.js](source/node/fs/Checksum.js)
   - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
-  - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
+  - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
   - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
-  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
+  - `modifyCopy`, `modifyCopySync`, `modifyDelete`, `modifyDeleteForce`, `modifyDeleteForceSync`, `modifyDeleteSync`, `modifyRename`, `modifyRenameSync`
 + 📄 [source/node/fs/Path.js](source/node/fs/Path.js)
-  - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `dropTrailingSep`, `existPath`, `expandHome`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `resolveHome`, `toPosixPath`
+  - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `copyPathSync`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `deletePathForceSync`, `deletePathSync`, `dropTrailingSep`, `existPath`, `existPathSync`, `expandHome`, `getPathLstat`, `getPathLstatSync`, `getPathStat`, `getPathStatSync`, `getPathTypeFromStat`, `nearestExistPath`, `nearestExistPathSync`, `renamePath`, `renamePathSync`, `resolveHome`, `toPosixPath`
 + 📄 [source/node/fs/Watch.js](source/node/fs/Watch.js)
   - `createFileWatcherExot`
 + 📄 [source/node/module/Auth.js](source/node/module/Auth.js)
@@ -572,13 +572,13 @@
     - **Checksum**
       - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
     - **Directory**
-      - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
+      - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
     - **File**
       - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
     - **Modify**
-      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
+      - `modifyCopy`, `modifyCopySync`, `modifyDelete`, `modifyDeleteForce`, `modifyDeleteForceSync`, `modifyDeleteSync`, `modifyRename`, `modifyRenameSync`
     - **Path**
-      - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `dropTrailingSep`, `existPath`, `expandHome`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `resolveHome`, `toPosixPath`
+      - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `copyPathSync`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `deletePathForceSync`, `deletePathSync`, `dropTrailingSep`, `existPath`, `existPathSync`, `expandHome`, `getPathLstat`, `getPathLstatSync`, `getPathStat`, `getPathStatSync`, `getPathTypeFromStat`, `nearestExistPath`, `nearestExistPathSync`, `renamePath`, `renamePathSync`, `resolveHome`, `toPosixPath`
     - **Watch**
       - `createFileWatcherExot`
   - **Module**
