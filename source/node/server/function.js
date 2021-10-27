@@ -52,6 +52,8 @@ const parseCookieString = (cookieString) => cookieString
     return o
   }, {})
 
+const isRequestAborted = (store) => Boolean(store.request.aborted) // client may already drop connection, for long-time queued task
+
 const getRequestParam = (store, key) => {
   const { headers } = store.request
   return (
@@ -97,6 +99,7 @@ export {
 
   getUnusedPort, autoTestServerPort,
   parseHostString, parseCookieString,
+  isRequestAborted,
   getRequestParam, getRequestBuffer, getRequestJSON,
   getWSProtocolListParam, packWSProtocolListParam,
   isPrivateAddress

@@ -288,7 +288,7 @@
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
-  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
+  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
 + 📄 [source/node/server/Feature/@/configure.js](source/node/server/Feature/@/configure.js)
   - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupServerExotGroup`
 + 📄 [source/node/server/Feature/@/option.js](source/node/server/Feature/@/option.js)
@@ -693,7 +693,7 @@
     - **CommonHTML**
       - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
-      - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
+      - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpenCommandList`
