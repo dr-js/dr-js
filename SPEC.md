@@ -238,7 +238,7 @@
 + 📄 [source/node/module/PingRace.js](source/node/module/PingRace.js)
   - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
 + 📄 [source/node/module/RuntimeDump.js](source/node/module/RuntimeDump.js)
-  - `dumpAsync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+  - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/TerminalColor.js](source/node/module/TerminalColor.js)
@@ -613,7 +613,7 @@
     - **PingRace**
       - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
     - **RuntimeDump**
-      - `dumpAsync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+      - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
     - **SafeWrite**
       - `createSafeWriteStream`
     - **TerminalColor**
