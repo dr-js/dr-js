@@ -28,6 +28,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'cat/AP,O/0-|with 0 args pipe stdin to stdout, else read $@ as file and pipe to stdout',
   'write/SP,O|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP,O|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
+
+  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write',
+
   'merge/AP,O/2-|merge to one file: $@=mergedFile,...inputFileList',
   'create-directory,mkdir/AP,O/0-|create directory: $@=...pathList',
   'modify-copy,cp/AP,O/2|copy path: $@=pathFrom,pathTo',
@@ -43,6 +46,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'process-signal,sig/O/0-2|send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"',
 
   'json-format,jf/AI,O/0-1|re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2',
+
+  'encode,enc/SS,O|encode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType',
+  'decode,dec/SS,O|decode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType',
 
   'file-list,ls/AP,O/0-1|list file: $0=path/cwd',
   'file-list-all,ls-R,lla/AP,O/0-1|list all file: $0=path/cwd',

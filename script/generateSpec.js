@@ -1,11 +1,11 @@
 import { sep } from 'path'
-import { existsSync } from 'fs'
 
 import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
 import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
 import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown.js'
 
 import { readJSON, writeJSON, writeText } from 'source/node/fs/File.js'
+import { existPathSync } from 'source/node/fs/Path.js'
 import { modifyDelete } from 'source/node/fs/Modify.js'
 import { runKit } from 'source/node/kit.js'
 
@@ -65,7 +65,7 @@ const createWebpackIndexFile = async (kit) => {
 
 const deleteWebpackIndexFile = async (kit) => {
   const PATH_FILE_DELETE_CONFIG = kit.fromRoot(FILE_TEMP_FILE_DELETE)
-  if (!existsSync(PATH_FILE_DELETE_CONFIG)) return
+  if (!existPathSync(PATH_FILE_DELETE_CONFIG)) return
 
   kit.padLog('[clear] delete previous temp build file')
   const { deleteList } = await readJSON(PATH_FILE_DELETE_CONFIG)

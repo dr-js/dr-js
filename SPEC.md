@@ -194,7 +194,7 @@
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/data/Z64String.js](source/node/data/Z64String.js)
-  - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
+  - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
 + 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
   - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
 + 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
@@ -206,13 +206,13 @@
 + 📄 [source/node/fs/Checksum.js](source/node/fs/Checksum.js)
   - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
-  - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
+  - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
   - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
-  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
+  - `modifyCopy`, `modifyCopySync`, `modifyDelete`, `modifyDeleteForce`, `modifyDeleteForceSync`, `modifyDeleteSync`, `modifyRename`, `modifyRenameSync`
 + 📄 [source/node/fs/Path.js](source/node/fs/Path.js)
-  - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `dropTrailingSep`, `existPath`, `expandHome`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `resolveHome`, `toPosixPath`
+  - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `copyPathSync`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `deletePathForceSync`, `deletePathSync`, `dropTrailingSep`, `existPath`, `existPathSync`, `expandHome`, `getPathLstat`, `getPathLstatSync`, `getPathStat`, `getPathStatSync`, `getPathTypeFromStat`, `nearestExistPath`, `nearestExistPathSync`, `renamePath`, `renamePathSync`, `resolveHome`, `toPosixPath`
 + 📄 [source/node/fs/Watch.js](source/node/fs/Watch.js)
   - `createFileWatcherExot`
 + 📄 [source/node/module/Auth.js](source/node/module/Auth.js)
@@ -238,7 +238,7 @@
 + 📄 [source/node/module/PingRace.js](source/node/module/PingRace.js)
   - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
 + 📄 [source/node/module/RuntimeDump.js](source/node/module/RuntimeDump.js)
-  - `dumpAsync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+  - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
 + 📄 [source/node/module/TerminalColor.js](source/node/module/TerminalColor.js)
@@ -288,7 +288,7 @@
 + 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
   - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
-  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
+  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
 + 📄 [source/node/server/Feature/@/configure.js](source/node/server/Feature/@/configure.js)
   - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupServerExotGroup`
 + 📄 [source/node/server/Feature/@/option.js](source/node/server/Feature/@/option.js)
@@ -558,7 +558,7 @@
     - **Stream**
       - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
     - **Z64String**
-      - `packBr64`, `packGz64`, `unpackBr64`, `unpackGz64`
+      - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
   - **File**
     - **Directory**
       - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
@@ -572,13 +572,13 @@
     - **Checksum**
       - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
     - **Directory**
-      - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`, `withTempDirectory`
+      - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
     - **File**
       - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
     - **Modify**
-      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
+      - `modifyCopy`, `modifyCopySync`, `modifyDelete`, `modifyDeleteForce`, `modifyDeleteForceSync`, `modifyDeleteSync`, `modifyRename`, `modifyRenameSync`
     - **Path**
-      - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `dropTrailingSep`, `existPath`, `expandHome`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `resolveHome`, `toPosixPath`
+      - `PATH_TYPE`, `STAT_ERROR`, `addTrailingSep`, `copyPath`, `copyPathSync`, `createPathPrefixLock`, `deletePath`, `deletePathForce`, `deletePathForceSync`, `deletePathSync`, `dropTrailingSep`, `existPath`, `existPathSync`, `expandHome`, `getPathLstat`, `getPathLstatSync`, `getPathStat`, `getPathStatSync`, `getPathTypeFromStat`, `nearestExistPath`, `nearestExistPathSync`, `renamePath`, `renamePathSync`, `resolveHome`, `toPosixPath`
     - **Watch**
       - `createFileWatcherExot`
   - **Module**
@@ -613,7 +613,7 @@
     - **PingRace**
       - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
     - **RuntimeDump**
-      - `dumpAsync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+      - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
     - **SafeWrite**
       - `createSafeWriteStream`
     - **TerminalColor**
@@ -693,7 +693,7 @@
     - **CommonHTML**
       - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
-      - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
+      - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
   - **System**
     - **DefaultOpen**
       - `getDefaultOpenCommandList`
@@ -767,6 +767,8 @@
 >       for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`
 >   --append [OPTIONAL] [ARGUMENT=1]
 >       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
+>   --text-file --txt [OPTIONAL] [ARGUMENT=0-1]
+>       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write
 >   --merge [OPTIONAL] [ARGUMENT=2+]
 >       merge to one file: $@=mergedFile,...inputFileList
 >   --create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
@@ -793,6 +795,10 @@
 >       send signal to process by pid: -I=pidFile $@=pid/pidFile,signal/"SIGTERM"
 >   --json-format --jf [OPTIONAL] [ARGUMENT=0-1]
 >       re-format JSON file: -O=outputFile/-I, -I=inputFile, $0=unfoldLevel/2
+>   --encode --enc [OPTIONAL] [ARGUMENT=1]
+>       encode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType
+>   --decode --dec [OPTIONAL] [ARGUMENT=1]
+>       decode text as "b64/gz64/br64": -O=outputFile/stdout, $N=text, $1=codecType
 >   --file-list --ls [OPTIONAL] [ARGUMENT=0-1]
 >       list file: $0=path/cwd
 >   --file-list-all --ls-R --lla [OPTIONAL] [ARGUMENT=0-1]
@@ -861,6 +867,7 @@
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_TEXT_FILE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TXT]"
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_MKDIR]"
 >     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_CP]"
@@ -874,6 +881,8 @@
 >     export DR_JS_PROCESS_STATUS="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_PS]"
 >     export DR_JS_PROCESS_SIGNAL="[OPTIONAL] [ARGUMENT=0-2] [ALIAS=DR_JS_SIG]"
 >     export DR_JS_JSON_FORMAT="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_JF]"
+>     export DR_JS_ENCODE="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_ENC]"
+>     export DR_JS_DECODE="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_DEC]"
 >     export DR_JS_FILE_LIST="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS]"
 >     export DR_JS_FILE_LIST_ALL="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_LS_R,DR_JS_LLA]"
 >     export DR_JS_FILE_TREE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TREE]"
@@ -922,6 +931,7 @@
 >     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "textFile": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=txt]" ],
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=mkdir]" ],
 >     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=cp]" ],
@@ -935,6 +945,8 @@
 >     "processStatus": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ps]" ],
 >     "processSignal": [ "[OPTIONAL] [ARGUMENT=0-2] [ALIAS=sig]" ],
 >     "jsonFormat": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=jf]" ],
+>     "encode": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=enc]" ],
+>     "decode": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=dec]" ],
 >     "fileList": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=ls]" ],
 >     "fileListAll": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=lsR,lla]" ],
 >     "fileTree": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=tree]" ],

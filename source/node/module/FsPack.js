@@ -4,7 +4,7 @@ import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { catchAsync } from 'source/common/error.js'
 import { bufferToReadableStream, quickRunletFromStream } from 'source/node/data/Stream.js'
 import { PATH_TYPE, toPosixPath } from 'source/node/fs/Path.js'
-import { getDirInfoTree, walkDirInfoTreeAsync, createDirectory } from 'source/node/fs/Directory.js'
+import { getDirInfoTree, walkDirInfoTree, createDirectory } from 'source/node/fs/Directory.js'
 
 // TODO: block symlink with error on win32 since it by default cannot be created?
 
@@ -208,7 +208,7 @@ const collectContentListFromPath = async (inputPath) => {
   const contentList = []
   const directoryPathList = []
   const fileDirectorySet = new Set()
-  await walkDirInfoTreeAsync(await getDirInfoTree(inputPath), ({ type, path }) => {
+  await walkDirInfoTree(await getDirInfoTree(inputPath), ({ type, path }) => {
     switch (type) {
       case PATH_TYPE.File:
         contentList.push({ type: TYPE_FILE, path })

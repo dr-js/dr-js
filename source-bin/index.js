@@ -13,8 +13,9 @@ import { isBasicFunction } from 'source/common/check.js'
 import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
+import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, readJSON } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, readJSON } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -51,7 +52,7 @@ const getVersion = () => ({
 
 const runMode = async (optionData, modeName) => {
   const sharedPack = sharedOption(optionData, modeName)
-  const { tryGetFirst, getToggle } = optionData
+  const { getFirst, tryGetFirst, getToggle } = optionData
   const { argumentList, log, inputFile, outputFile, outputValueAuto } = sharedPack
 
   const isOutputJSON = getToggle('json')
@@ -100,6 +101,11 @@ const runMode = async (optionData, modeName) => {
       return
     }
 
+    case 'text-file': {
+      const [ modeName = 'write' ] = argumentList
+      return (modeName.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
+    }
+
     case 'open': {
       const [ uri = '.', isDetached = false ] = argumentList // `uri` can be url or path, and detached will lost logging, but allow followup command to run
       return (isDetached ? runDetached : runSync)([ ...getDefaultOpenCommandList(), uri.includes('://') ? uri : normalize(uri) ])
@@ -144,6 +150,17 @@ const runMode = async (optionData, modeName) => {
     case 'json-format': {
       const [ unfoldLevel = 2 ] = argumentList
       return writeText(outputFile || inputFile, prettyStringifyJSON(await readJSON(inputFile), unfoldLevel))
+    }
+
+    case 'encode':
+    case 'decode': {
+      const [ codecType = 'b64' ] = argumentList
+      const [ encode, decode ] = ({
+        'b64': [ packB64, unpackB64 ],
+        'gz64': [ packGz64, unpackGz64 ],
+        'br64': [ packBr64, unpackBr64 ]
+      })[ codecType ]
+      return outputValueAuto((modeName === 'encode' ? encode : decode)(getFirst('note')))
     }
 
     case 'file-list':

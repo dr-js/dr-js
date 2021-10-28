@@ -1,7 +1,9 @@
 import { dirname } from 'path'
-import { unlinkSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { catchSync } from 'source/common/error.js'
 
+import { readTextSync, writeTextSync } from 'source/node/fs/File.js'
+import { createDirectorySync } from 'source/node/fs/Directory.js'
+import { deletePathSync } from 'source/node/fs/Path.js'
 import { addExitListenerSync } from 'source/node/system/ExitListener.js'
 import { isPidExist } from 'source/node/system/Process.js'
 
@@ -13,7 +15,7 @@ const configurePid = ({
 
   __DEV__ && !shouldIgnoreExistPid && console.log('check existing pid file', filePid)
   !shouldIgnoreExistPid && catchSync(() => {
-    const existingPid = Number(String(readFileSync(filePid)).trim())
+    const existingPid = Number(readTextSync(filePid).trim())
     if (!existingPid || !isPidExist(existingPid)) return // allow skip invalid/malformed or un-exist pid
 
     // NOTE: this will actually exit the process
@@ -22,12 +24,12 @@ const configurePid = ({
   })
 
   __DEV__ && console.log('create pid file', filePid)
-  mkdirSync(dirname(filePid), { recursive: true })
-  writeFileSync(filePid, `${process.pid}`)
+  createDirectorySync(dirname(filePid))
+  writeTextSync(filePid, `${process.pid}`)
 
   addExitListenerSync((exitState) => {
     __DEV__ && console.log('delete pid file', filePid, exitState)
-    catchSync(unlinkSync, filePid)
+    catchSync(deletePathSync, filePid)
   })
 }
 

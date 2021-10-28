@@ -7,7 +7,7 @@ import { createAsyncLane, extendAutoSelectLane } from 'source/common/module/Asyn
 
 import { setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { PATH_TYPE, getPathStat, getPathTypeFromStat } from './Path.js'
-import { getDirInfoTree, walkDirInfoTreeAsync } from './Directory.js'
+import { getDirInfoTree, walkDirInfoTree } from './Directory.js'
 
 const getChecksumInfoOfFile = async (
   absolutePath, // absolute path of file
@@ -34,7 +34,7 @@ const getChecksumInfoListOfPath = async (
       break
     case PATH_TYPE.Directory: {
       const { getTailPromise, pushAuto } = extendAutoSelectLane(createAsyncLane({ laneSize: 4 })) // NOTE: too much or too lane will actually be slower
-      await walkDirInfoTreeAsync(await getDirInfoTree(path), async (dirInfo) => {
+      await walkDirInfoTree(await getDirInfoTree(path), async (dirInfo) => {
         dirInfo.type === PATH_TYPE.File && pushAuto(() => collector(dirInfo.path))
       })
       await getTailPromise()

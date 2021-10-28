@@ -9,8 +9,8 @@ import {
 } from 'v8'
 
 import { getRandomId } from 'source/common/math/random.js'
-import { writeJSON } from 'source/node/fs/File.js'
-import { createDirectory } from 'source/node/fs/Directory.js'
+import { writeJSONSync } from 'source/node/fs/File.js'
+import { createDirectorySync } from 'source/node/fs/Directory.js'
 
 const getV8Extra = () => ({
   date: new Date().toISOString(),
@@ -23,18 +23,19 @@ const getV8Extra = () => ({
 const getV8HeapSnapshotReadableStream = getHeapSnapshot // should pipe to some file
 const writeV8HeapSnapshot = writeHeapSnapshot // should pipe to some file
 
-const dumpAsync = async (path) => {
-  await createDirectory(path)
+const dumpSync = (path) => {
+  createDirectorySync(path)
   const tag = getRandomId()
   // all sync may cause main thread block
   writeV8HeapSnapshot(resolve(path, `runtime-dump-${tag}.heapsnapshot`))
-  await writeJSON(resolve(path, `runtime-dump-${tag}.extra.json`), getV8Extra())
+  writeJSONSync(resolve(path, `runtime-dump-${tag}.extra.json`), getV8Extra())
 }
+/** @deprecated */ const dumpAsync = async (path) => dumpSync(path)
 
 const setupSIGUSR2 = (outputPath) => { // linux only
   outputPath = resolve(outputPath)
   // console.log(`[setupSIGUSR2] outputPath: "${outputPath}"`)
-  const listener = () => dumpAsync(outputPath)
+  const listener = () => dumpSync(outputPath)
   process.on('SIGUSR2', listener)
   return () => process.off('SIGUSR2', listener)
 }
@@ -43,6 +44,8 @@ export {
   getV8Extra,
   getV8HeapSnapshotReadableStream,
   writeV8HeapSnapshot,
-  dumpAsync,
-  setupSIGUSR2
+  dumpSync,
+  setupSIGUSR2,
+
+  dumpAsync
 }
