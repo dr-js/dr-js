@@ -17,7 +17,7 @@ jobs:
       fail-fast: false # allow all test to run to the end
       matrix:
         os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
-        node-version: [ "12.x", "14.x", "16.x" ]
+        node-version: [ "12.x", "16.x", "17.x" ]
     runs-on: "${{ matrix.os }}"
     steps:
       - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
