@@ -9,11 +9,11 @@ import { runKit, argvFlag } from 'source/node/kit.js'
 const retryCount = process.platform === 'linux'
   ? 1 // one chance should be enough for linux
   : 6 // 6 more chance for win32/darwin, since some net/fs test is still flaky
-const retryTest = (func, ...args) => withRetry((failed, maxRetry) => {
-  try { return func(...args) } catch (error) {
-    console.error(`##[warning] [retry|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
+const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
+  try { return kit.RUN(`npm run ${name}`) } catch (error) {
+    console.error(`##[warning] [retry|${name}|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
   }
-}, retryCount, 1000)
+}, retryCount)
 
 runKit(async (kit) => {
   const processOutput = async ({ kit }) => {
@@ -50,11 +50,11 @@ runKit(async (kit) => {
   isTest && kit.RUN('npm run lint')
   isTest && await processOutput({ kit }) // once more
   isTest && kit.padLog('test output')
-  isTest && await retryTest(kit.RUN, 'npm run test-output-library')
-  isTest && await retryTest(kit.RUN, 'npm run test-output-module')
-  isTest && await retryTest(kit.RUN, 'npm run test-output-bin')
+  isTest && await retryNpmRunTest(kit, 'test-output-library')
+  isTest && await retryNpmRunTest(kit, 'test-output-module')
+  isTest && await retryNpmRunTest(kit, 'test-output-bin')
   isTest && kit.padLog('test browser')
-  isTest && await retryTest(kit.RUN, 'npm run test-browser')
+  isTest && await retryNpmRunTest(kit, 'test-browser')
   isTest && kit.padLog('test bin')
   isTest && kit.RUN('npm run test-bin')
   await clearOutput({ kit })
