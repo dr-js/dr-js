@@ -4,12 +4,26 @@ import { getRandomId } from 'source/common/math/random.js'
 // TODO: still under testing, pattern not stable
 // Exot is short for "Exot-ic", a pattern for wrapping external IO or Resource that require manual `up` and `down`.
 
+/** @typedef { Error & { exotId?: string } } ExotError */
 const createExotError = (exotId, message) => { // error with exotId
+  /** @type { ExotError } */
   const exotError = new Error(message)
   exotError.exotId = exotId
   return exotError
 }
 
+/** @typedef { {
+ *    id: string,
+ *    up: (v?: (e: ExotError) => void) => Promise<void>,
+ *    down: () => Promise<void>,
+ *    isUp: () => boolean
+ * } } Exot */
+/** @typedef { (option: {
+ *    idPrefix?: string,
+ *    id?: string,
+ *    [extra: string]: *
+ * }) => Exot } CreateExot */
+/** @type { CreateExot } */
 const createDummyExot = ({ // most Exot create func should be just sync, and move async things to up()
   // ## other option to config this Exot
   idPrefix = 'DUMMY-EXOT-',
@@ -45,6 +59,7 @@ const createDummyExot = ({ // most Exot create func should be just sync, and mov
   }
 }
 
+/** @type { CreateExot } */
 const createExotGroup = ({
   // ## other option to config this Exot
   idPrefix = 'EXOT-GROUP-',
@@ -112,18 +127,23 @@ const isExot = (value) => isObjectAlike(value) &&
   isBasicFunction(value.down) &&
   isBasicFunction(value.isUp)
 
+/** @typedef { Map<string, Exot> } ExotMap */
+/** @type { (...v: Exot[]) => ExotMap } */
 const toExotMap = (...exotList) => {
+  /** @type { ExotMap } */
   const exotMap = new Map()
   for (const exot of exotList) exotMap.set(exot.id, exot)
   return exotMap
 }
 
+/** @type { <T>(v: ExotMap, c: (Exot) => T) => T[] } */
 const mapExotMapValue = (exotMap, func) => {
   const resultList = []
   for (const exot of exotMap.values()) resultList.push(func(exot))
   return resultList
 }
 
+/** @type { <T>(v: ExotMap, c: (Exot) => T) => T } */
 const findExotMapValue = (exotMap, func) => {
   for (const exot of exotMap.values()) {
     const result = func(exot)

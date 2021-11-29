@@ -1,5 +1,6 @@
 import { tryRequire } from 'source/env/tryRequire.js'
 
+/** @type { (a: ArrayBuffer, b: ArrayBuffer) => boolean } */
 const isEqualArrayBuffer = (a, b) => {
   if (a === b) return true
   if (a.byteLength !== b.byteLength) return false
@@ -11,6 +12,7 @@ const isEqualArrayBuffer = (a, b) => {
   return true
 }
 
+/** @type { (v: ArrayBuffer[]) => ArrayBuffer } */
 const concatArrayBuffer = (arrayBufferList = []) => {
   const resultTypedArray = new Uint8Array(arrayBufferList.reduce((o, arrayBuffer) => o + arrayBuffer.byteLength, 0))
   let byteOffset = 0
@@ -22,6 +24,7 @@ const concatArrayBuffer = (arrayBufferList = []) => {
   return resultTypedArray.buffer
 }
 
+/** @type { (v: ArrayBuffer, a: number[], b: number) => ArrayBuffer[] } */
 const deconcatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0) => byteLengthList.map((byteLength) => {
   const arrayBuffer = concatedArrayBuffer.slice(byteOffset, byteOffset + byteLength)
   byteOffset += byteLength
@@ -33,6 +36,7 @@ const deconcatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0
 // targeted usage: change data form and later read back, like during network transmitting (JSON -> ArrayBuffer -> binary packet)
 // string to arrayBuffer will use more space (in string unicode encode use 8bit instead of 16bit for char like [a-z])
 // invalid UTF-16 char will be kept in output U16String, unlike the 57236 -> 65533 mapping in `TextEncoder/TextDecoder/Buffer.toString`
+/** @typedef { string } U16String */
 const PREFIX_ODD = Uint8Array.of(0x00)
 const PREFIX_EVEN = Uint8Array.of(0xff, 0xff)
 const CHUNK_SIZE = 3 * 4 * 1024 // use chunk to compress array to string early, to save memory
@@ -41,6 +45,7 @@ const encodeU16Chunk = (dataView, index, indexMax) => {
   for (; index < indexMax; index++) charCodeList.push(String.fromCharCode(dataView.getUint16(index * 2, false)))
   return charCodeList.join('')
 }
+/** @type { (v: ArrayBuffer) => U16String } */
 const toU16String = (arrayBuffer) => { // NOTE: if the source string is not UTF-16, caution not send the string though API with UTF-16 filter
   const packArrayBuffer = concatArrayBuffer([
     arrayBuffer.byteLength % 2 ? PREFIX_ODD : PREFIX_EVEN,
@@ -54,6 +59,7 @@ const toU16String = (arrayBuffer) => { // NOTE: if the source string is not UTF-
   return stringList.join('')
 }
 
+/** @type { (v: U16String) => ArrayBuffer } */
 const fromU16String = (string = '') => {
   const dataView = new DataView(new ArrayBuffer(string.length * 2))
   for (let index = 0, indexMax = string.length; index < indexMax; index++) {
@@ -68,6 +74,7 @@ const fromU16String = (string = '') => {
 // NOTE: why check & slice: in Node.js most small Buffers are views on a bigger shared ArrayBuffer.
 // https://nodejs.org/api/buffer.html#buffer_buf_buffer
 // https://github.com/nodejs/node/issues/3580
+/** @type { (v: Buffer) => ArrayBuffer } */
 const fromNodejsBuffer = (nodejsBuffer) => {
   const { buffer: arrayBuffer, byteOffset, byteLength } = nodejsBuffer
   return arrayBuffer.byteLength === byteLength
@@ -96,6 +103,7 @@ const tryCalcSHA256ArrayBuffer = () => {
   }
 }
 
+/** @type { (v: ArrayBuffer) => Promise<ArrayBuffer> } */
 const calcSHA256ArrayBuffer = tryCalcSHA256ArrayBuffer()
 
 /** @deprecated */ const fromString = fromU16String // TODO: DEPRECATE

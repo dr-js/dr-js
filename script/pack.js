@@ -48,6 +48,7 @@ runKit(async (kit) => {
   const isTest = argvFlag('test', 'publish')
   isTest && kit.padLog('lint source')
   isTest && kit.RUN('npm run lint')
+  isTest && kit.RUN('npm run type-check')
   isTest && await processOutput({ kit }) // once more
   isTest && kit.padLog('test output')
   isTest && await retryNpmRunTest(kit, 'test-output-library')
