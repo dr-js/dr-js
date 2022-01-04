@@ -205,6 +205,7 @@ const withTimeoutPromise = (
 }
 const DUMMY_ERROR = {}
 
+/** @type { <T>() => { promise: Promise<T>, resolve: (v?: T) => void, reject: (e: Error) => void } } */
 const createInsideOutPromise = () => {
   let promiseResolve, promiseReject
   const promise = new Promise((resolve, reject) => {

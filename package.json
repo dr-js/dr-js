@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@dr-js/core",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "description": "A collection of strange functions",
   "author": "dr-js",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "build-library-babel-dev": "dr-dev --EE BABEL_ENV=dev -E -- npm run build-library-babel -- --watch",
     "build-library-webpack": "node -r @babel/register ./script/webpack production profile",
     "build-library-webpack-dev": "node -r @babel/register ./script/webpack development watch",
-    "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module",
+    "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module --copy-files",
     "// test ========================": "",
     "test-T": "dr-dev --EE 'BABEL_ENV=dev&TEST_SANITY=true' -E -- dr-dev --TR @babel/register -T",
     "test-dev": "npm run test-T -- source/node/module/Software/hostStatus.test.js",
@@ -36,6 +36,8 @@
     "test-browser": "node -r @babel/register ./script/testBrowser production",
     "test-browser-dev": "node -r @babel/register ./script/testBrowser development",
     "test-bin": "node -r @babel/register ./script/testBin",
+    "type-check-dev": "tsc source/common/**/*.js source/type.d.ts --allowJs --checkJs --noEmit --target esnext --baseUrl ./",
+    "type-check": "node -r @babel/register script/typeCheck.js",
     "// =============================": "",
     "version-bump": "dr-dev --version-bump-git-branch --git-commit --debug",
     "tag-push": "dr-dev --shell-alias quick-git-push-combo",
@@ -49,8 +51,9 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "^0.4.24",
-    "@dr-js/dev-web-puppeteer": "^0.4.24"
+    "@dr-js/dev": "^0.4.27 || ^0.4.27-dev.0",
+    "@dr-js/dev-web-puppeteer": "^0.4.27 || ^0.4.27-dev.0",
+    "typescript": "^4.5.4"
   },
   "sideEffects": false
 }

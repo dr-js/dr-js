@@ -1,3 +1,4 @@
+/** @type { (a: string, b?: number) => number } */
 const hashStringToNumber = (string = '', hash = 0) => {
   for (let index = 0, indexMax = string.length; index < indexMax; index++) {
     // Convert to 32bit integer and drop the sign bit (for +/-), so result range will be: [0, 2^32-1]
@@ -6,8 +7,10 @@ const hashStringToNumber = (string = '', hash = 0) => {
   return hash
 }
 
+/** @type { (v: string) => string } */
 const reverseString = (string) => [ ...string ].reverse().join('')
 
+/** @type { (v: string) => string } */
 const swapObfuscateString = (string = '') => {
   const stringLength = string.length
   const stringEndIndex = stringLength - 1
@@ -22,9 +25,11 @@ const swapObfuscateString = (string = '') => {
   return result.join('')
 }
 
-const dupJSON = (packageJSON) => JSON.parse(JSON.stringify(packageJSON))
+/** @type { (v: vJSON) => vJSON } */
+const dupJSON = (value) => JSON.parse(JSON.stringify(value))
 
 // always return a object/array, use this with object destructuring
+/** @type { (v: string, d:vJSON) => vJSON } */
 const tryParseJSONObject = (text, defaultResult = {}) => {
   try {
     const result = JSON.parse(text)
@@ -33,6 +38,7 @@ const tryParseJSONObject = (text, defaultResult = {}) => {
   return defaultResult
 }
 
+/** @type { (a: vJSON, b: string[]) => vJSON | undefined } */
 const getValueByKeyList = (value, keyList) => {
   for (const key of keyList) {
     if (value && Object.prototype.hasOwnProperty.call(value, key)) value = value[ key ]

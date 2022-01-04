@@ -6,6 +6,8 @@
 //   node { value, prev, next } index = length - 1
 //   tail { value: null, prev, next: null }
 
+/** @typedef { { value: vJSON, prev: LinkedListNode | null, next: LinkedListNode | null } } LinkedListNode */
+/** @type { (value: vJSON, prev?: LinkedListNode, next?: LinkedListNode) => LinkedListNode } */
 const createNode = (value, prev = null, next = null) => ({ value, prev, next })
 
 const isFreeNode = ({ prev, next }) => prev === null && next === null
@@ -13,9 +15,34 @@ const isLinkNode = ({ prev, next }) => prev !== null && next !== null
 // const isLinkHead = ({ prev, next }) => prev === null && next !== null
 // const isLinkTail = ({ prev, next }) => prev !== null && next === null
 
+/** @typedef { () => LinkedListNode } GetLinkedListNode */
+/** @typedef { (v: LinkedListNode) => void } SetLinkedListNode */
+/** @typedef { (a: LinkedListNode, b: LinkedListNode) => void } Set2LinkedListNode */
+/** @typedef { (callback: (v: LinkedListNode, i: number) => void) => void } ForEachLinkedListNode */
+/** @typedef { {
+ *   clear: GetVoid,
+ *   getHead: GetLinkedListNode, getTail: GetLinkedListNode,
+ *   getLength: GetNumber,
+ *   insertAfter: Set2LinkedListNode, insertBefore: Set2LinkedListNode,
+ *   remove: SetLinkedListNode, removeBetween: Set2LinkedListNode,
+ *   forEach: ForEachLinkedListNode, forEachReverse: ForEachLinkedListNode,
+ *   reverse: GetVoid,
+ *   moveToFirst: SetLinkedListNode, moveToLast: SetLinkedListNode,
+ *   push: SetLinkedListNode, pop: GetVoid,
+ *   unshift: SetLinkedListNode, shift: GetVoid
+ * } } DoublyLinkedList */
+/** @type { () => DoublyLinkedList } */
 const createDoublyLinkedList = () => {
+  /** @type { ?Set<LinkedListNode> } */
   let devNodeSet // only in dev mode
-  let head, tail, length
+  /** @type { LinkedListNode } */
+  let head
+  /** @type { LinkedListNode } */
+  let tail
+  /** @type { number } */
+  let length
+
+  /** @type { GetVoid } */
   const clear = () => {
     if (__DEV__) devNodeSet = new Set()
     head = createNode(null)
@@ -23,11 +50,10 @@ const createDoublyLinkedList = () => {
     head.next = tail
     length = 0
   }
-  clear()
 
-  const getHead = () => head
-  const getTail = () => tail
-  const getLength = () => __DEV__ ? devNodeSet.size : length // node count (do not count head/tail)
+  clear() // set local value
+
+  /** @type { Set2LinkedListNode } */
   const insertAfter = (node, prevNode) => {
     if (__DEV__ && devNodeSet.has(node)) throw new Error('[DoublyLinkedList][insertAfter] already has node')
     if (__DEV__ && !isFreeNode(node)) throw new Error('[DoublyLinkedList][insertAfter] invalid node')
@@ -39,6 +65,7 @@ const createDoublyLinkedList = () => {
     length++
     __DEV__ && devNodeSet.add(node)
   }
+  /** @type { Set2LinkedListNode } */
   const insertBefore = (node, nextNode) => {
     if (__DEV__ && devNodeSet.has(node)) throw new Error('[DoublyLinkedList][insertBefore] already has node')
     if (__DEV__ && !isFreeNode(node)) throw new Error('[DoublyLinkedList][insertAfter] invalid node')
@@ -50,6 +77,7 @@ const createDoublyLinkedList = () => {
     length++
     __DEV__ && devNodeSet.add(node)
   }
+  /** @type { SetLinkedListNode } */
   const remove = (node) => {
     if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][remove] missing node')
     if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][remove] invalid node')
@@ -60,6 +88,7 @@ const createDoublyLinkedList = () => {
     length--
     __DEV__ && devNodeSet.delete(node)
   }
+  /** @type { Set2LinkedListNode } */
   const removeBetween = (fromNode, toNode) => { // include both from & to node
     if (__DEV__ && !devNodeSet.has(fromNode)) throw new Error('[DoublyLinkedList][removeBetween] missing fromNode')
     if (__DEV__ && !isLinkNode(fromNode)) throw new Error('[DoublyLinkedList][removeBetween] invalid fromNode')
@@ -77,6 +106,7 @@ const createDoublyLinkedList = () => {
       node = node.next
     }
   }
+  /** @type { ForEachLinkedListNode } */
   const forEach = (callback) => { // index from 0, node from head to tail (do not count head/tail)
     let node = head.next
     let index = 0
@@ -87,6 +117,7 @@ const createDoublyLinkedList = () => {
       index++
     }
   }
+  /** @type { ForEachLinkedListNode } */
   const forEachReverse = (callback) => { // index from length - 1, node from tail to head (do not count head/tail)
     let node = tail.prev
     let index = __DEV__ ? devNodeSet.size - 1 : length - 1
@@ -97,6 +128,7 @@ const createDoublyLinkedList = () => {
       index--
     }
   }
+  /** @type { GetVoid } */
   const reverse = () => {
     let node = head.next
     while (node !== tail) {
@@ -113,6 +145,7 @@ const createDoublyLinkedList = () => {
     prev.prev = head
     next.next = tail
   }
+  /** @type { SetLinkedListNode } */
   const moveToFirst = (node) => {
     if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][moveToFirst] missing node')
     if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][moveToFirst] invalid node')
@@ -126,6 +159,7 @@ const createDoublyLinkedList = () => {
     node.next = head.next
     node.next.prev = head.next = node
   }
+  /** @type { SetLinkedListNode } */
   const moveToLast = (node) => {
     if (__DEV__ && !devNodeSet.has(node)) throw new Error('[DoublyLinkedList][moveToLast] missing node')
     if (__DEV__ && !isLinkNode(node)) throw new Error('[DoublyLinkedList][moveToLast] invalid node')
@@ -142,19 +176,14 @@ const createDoublyLinkedList = () => {
 
   return {
     clear,
-    getHead,
-    getTail,
-    getLength,
-    insertAfter,
-    insertBefore,
-    remove,
-    removeBetween,
-    forEach,
-    forEachReverse,
+    getHead: () => head,
+    getTail: () => tail,
+    getLength: () => __DEV__ ? devNodeSet.size : length, // node count (do not count head/tail)
+    insertAfter, insertBefore,
+    remove, removeBetween,
+    forEach, forEachReverse,
     reverse,
-    moveToFirst,
-    moveToLast,
-
+    moveToFirst, moveToLast,
     push: (node) => insertBefore(node, tail),
     pop: () => remove(tail.prev),
     unshift: (node) => insertAfter(node, head),

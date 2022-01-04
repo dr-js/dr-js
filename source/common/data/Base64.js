@@ -35,6 +35,7 @@ const encodeU24Chunk = (u8List, index, indexMax) => {
   return stringList.join('')
 }
 
+/** @type { (v: ArrayBuffer) => string } */
 const encode = (arrayBuffer = new ArrayBuffer(0)) => {
   const u8List = new Uint8Array(arrayBuffer)
   const u8Count = u8List.length
@@ -63,6 +64,7 @@ const encode = (arrayBuffer = new ArrayBuffer(0)) => {
   return stringList.join('')
 }
 
+/** @type { (v: string) => ArrayBuffer } */
 const decode = (b64String = '') => {
   const padIndex = b64String.indexOf('=') // support joined b64String by keep only the first
   const u6Count = padIndex === -1 ? b64String.length : padIndex

@@ -1,3 +1,3 @@
 module.exports = {
-  extends: [ './node_modules/@dr-js/dev-web-puppeteer/EXPORT/eslint-config-almost-standard-v14.js' ]
+  extends: [ './node_modules/@dr-js/dev/resource/eslint-config-almost-standard-v14.js' ]
 }

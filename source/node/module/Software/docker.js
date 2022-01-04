@@ -83,11 +83,16 @@ const matchContainerLsList = (
   })
 }
 
+// $ docker-compose version
+// Docker Compose version v2.2.1
+// $ docker-compose version
+// docker-compose version 1.29.2, build 5becea4c
+// ...
 const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, verify: verifyCompose } = createArgListPack(
   () => {
     if (!check()) return undefined // expect docker command available
     const argsList = [ ...getArgs().slice(0, -1), 'docker-compose' ]
-    if (probeSync([ ...argsList, 'version' ], 'docker-compose')) return argsList
+    if (probeSync([ ...argsList, 'version' ], 'ompose version')) return argsList
   },
   'expect both "docker-compose" and "docker" in PATH, with server up'
 )
