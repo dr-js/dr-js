@@ -32,14 +32,18 @@ const extractT7zAsync = async (sourceFile, outputPath, pathTemp) => withTempDire
 }, pathTemp)
 
 const compressAutoAsync = async (sourceDirectory, outputFile, pathTemp) => (REGEXP_T7Z.test(outputFile) || REGEXP_TXZ.test(outputFile)) ? compressT7zAsync(sourceDirectory, outputFile, pathTemp)
-  : REGEXP_NPM_TAR.test(outputFile) ? createDirectory(dirname(outputFile)).then(() => compressNpmTarAsync(sourceDirectory, outputFile))
-    : REGEXP_FSP.test(outputFile) ? createDirectory(dirname(outputFile)).then(() => compressFspAsync(sourceDirectory, outputFile))
-      : compress7zAsync(sourceDirectory, outputFile)
+  : createDirectory(dirname(outputFile)).then(() => (
+    REGEXP_NPM_TAR.test(outputFile) ? compressNpmTarAsync
+      : REGEXP_FSP.test(outputFile) ? compressFspAsync
+        : compress7zAsync
+  )(sourceDirectory, outputFile))
 
 const extractAutoAsync = async (sourceFile, outputPath, pathTemp) => (REGEXP_T7Z.test(sourceFile) || REGEXP_TXZ.test(sourceFile)) ? extractT7zAsync(sourceFile, outputPath, pathTemp)
-  : REGEXP_NPM_TAR.test(sourceFile) ? createDirectory(outputPath).then(() => extractNpmTarAsync(sourceFile, outputPath))
-    : REGEXP_FSP.test(sourceFile) ? createDirectory(outputPath).then(() => extractFspAsync(sourceFile, outputPath))
-      : extract7zAsync(sourceFile, outputPath)
+  : createDirectory(outputPath).then(() => (
+    REGEXP_NPM_TAR.test(sourceFile) ? extractNpmTarAsync
+      : REGEXP_FSP.test(sourceFile) ? extractFspAsync
+        : extract7zAsync
+  )(sourceFile, outputPath))
 
 // not all archive info may be preserved, especially when repack on win32
 const repackAsync = async (fileFrom, fileTo, pathTemp) => withTempDirectory(async (pathTemp) => {
