@@ -51,8 +51,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "^0.4.27 || ^0.4.27-dev.0",
-    "@dr-js/dev-web-puppeteer": "^0.4.27 || ^0.4.27-dev.0",
+    "@dr-js/dev": "^0.4.28 || ^0.4.28-dev.0",
+    "@dr-js/dev-web-puppeteer": "^0.4.28 || ^0.4.28-dev.0",
     "typescript": "^4.5.4"
   },
   "sideEffects": false
