@@ -30,6 +30,6 @@ jobs:
         path: "${{ env.cache-path }}"
       } }
       - run: dr-dev -c .github/cache/config.js --cache-step mark
-      - run: npm ci # TODO: wait for npm@7 adoption and try npm install + cache for faster puppeteer install
+      - run: npm8 ci --no-optional # TODO: wait for npm@7 adoption and try npm install + cache for faster puppeteer install
       - run: npm test
       - run: dr-dev -c .github/cache/config.js --cache-step prune

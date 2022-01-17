@@ -9,4 +9,8 @@ runKit(async (kit) => {
 
   kit.padLog('Patch install "@dr-js/dev" globally')
   kit.RUN_SUDO_NPM('install --global @dr-js/dev@0.4')
+
+  kit.padLog('Patch install "@min-pack/npm" globally')
+  if (process.platform !== 'win32') kit.RUN_SUDO_NPM('install --global @min-pack/npm@0.1')
+  else kit.RUN([ 'npx', '-p', 'npm@8', '-c', 'npm i -g @min-pack/npm@0.1' ]) // HACK: bypass npm@6+win32 `npm ERR! Error: EPERM: operation not permitted, rename` error
 }, { title: 'ci-patch' })
