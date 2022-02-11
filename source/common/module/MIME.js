@@ -1,6 +1,5 @@
-const BASIC_MIME_DATA_LIST = [
+const BASIC_MIME_DATA_LIST = [ // https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
   'application/gzip;gz',
-  'application/javascript;js;mjs',
   'application/json',
   'application/pdf',
   'application/xml',
@@ -25,19 +24,20 @@ const BASIC_MIME_DATA_LIST = [
   'image/jpeg;jpg',
   'image/png',
   'image/svg+xml;svg',
+  'image/vnd.microsoft.icon;ico',
   'image/webp',
-  'image/x-icon;ico',
 
   'text/css',
   'text/csv',
   'text/html;htm',
+  'text/javascript;js;mjs;cjs', // 'application/javascript' is obsolete: https://stackoverflow.com/questions/876561/when-serving-javascript-files-is-it-better-to-use-the-application-javascript-or // TODO: HACK: according to SPEC '.cjs' should use 'application/node': https://github.com/nodejs/modules/issues/146
   'text/plain;txt;text;conf;log;ini',
   'text/rtf',
   'text/xml',
 
   'video/mp4;mp4v;mpg4',
   'video/mpeg;mpg',
-  'video/webm', // should overwrite 'audio/webm'
+  'video/webm;mkv', // should overwrite 'audio/webm' // TODO: HACK: allow inline playback for some '.mkv': https://superuser.com/questions/1281836/what-does-matroska-have-which-webm-doesnt-that-made-the-differentiation-necess
   'video/x-flv;flv',
   'video/x-ms-wmv;wmv',
   'video/x-msvideo;avi'
