@@ -16,7 +16,7 @@ const PACKAGE_KEY_ORDER = [
   'author', 'contributors', 'maintainers',
   'license', 'keywords',
   'repository', 'homepage', 'bugs',
-  'main', 'bin', 'browser',
+  'type', 'main', 'bin', 'browser',
   'man', 'files', 'directories',
   'scripts',
   'config', 'publishConfig',
@@ -89,12 +89,11 @@ const parsePackageNameAndVersion = (nameAndVersion) => {
   return [ name, version ]
 }
 
+// check: https://github.com/npm/cli/blob/v8.5.0/lib/utils/tar.js#L123 + https://github.com/npm/cli/blob/v8.5.0/lib/commands/pack.js#L58
 // check: https://github.com/npm/cli/blob/v6.14.5/lib/pack.js#L67-L71
-const toPackageTgzName = (name, version) => `${
-  name[ 0 ] === '@' ? name.substr(1).replace(/\//g, '-') : name
-}-${
-  version
-}.tgz`
+const toPackageTgzName = (name, version) => `${name}-${version}.tgz`
+  .replace(/^@/, '')
+  .replace(/\//, '-')
 
 export {
   sortPackageJSON, packPackageJSON,
