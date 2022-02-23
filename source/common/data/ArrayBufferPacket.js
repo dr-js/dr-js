@@ -5,6 +5,11 @@ const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
 const HEADER_BYTE_SIZE = 4 // Math.ceil(Math.log2(MAX_PACKET_HEADER_SIZE) / 8)
 const EMPTY_ARRAY_BUFFER = new ArrayBuffer(0)
 
+// ## ArrayBufferHeader # mostly for inline JSON header
+// basic structure:
+//     size_header    - 4 Byte
+//   + buffer_header  - size_header Byte
+
 /** @type { (v: ArrayBuffer) => [ headerSize: ArrayBuffer, header: ArrayBuffer ] } */
 const packArrayBufferHeader = (headerArrayBuffer) => {
   const headerSize = headerArrayBuffer.byteLength
@@ -24,6 +29,12 @@ const parseArrayBufferHeader = (arrayBufferPair) => {
   ]
 }
 
+// ## ArrayBufferPacket # for JSON header + single binary payload
+// basic structure:
+//     size_header    - 4 Byte
+//   + buffer_header  - size_header Byte (any string/JSON info)
+//   + buffer_payload - remaining Byte
+
 /** @type { (header: U16String, payload?: ArrayBuffer) => ArrayBuffer } */
 const packArrayBufferPacket = (headerU16String, payloadArrayBuffer = EMPTY_ARRAY_BUFFER) => concatArrayBuffer([
   ...packArrayBufferHeader(fromU16String(headerU16String)),
@@ -37,6 +48,14 @@ const parseArrayBufferPacket = (arrayBufferPacket) => {
   const payloadArrayBuffer = arrayBufferPacket.slice(payloadOffset)
   return [ headerU16String, payloadArrayBuffer ]
 }
+
+// ## ChainArrayBufferPacket # for pack multiple binary payload up as single binary payload
+// basic structure:
+//     size_header    - 4 Byte
+//   + buffer_header  - size_header Byte (size list of each payload)
+//   + buffer_0       - size_0 Byte
+//   + buffer_1       - size_1 Byte
+//   + ...
 
 /** @type { (v: ArrayBuffer[]) => ArrayBuffer } */
 const packChainArrayBufferPacket = (arrayBufferList = []) => {
@@ -59,6 +78,43 @@ const parseChainArrayBufferPacket = (chainArrayBufferPacket) => {
   return deconcatArrayBuffer(chainArrayBufferPacket, byteLengthList, payloadOffset)
 }
 
+// ## ArrayBufferListPacket # for pack multiple binary payload up as single binary payload, but easier to parse in non-JS language (not using U16Strings)
+// basic structure:
+//     size_0   - 4 Byte
+//   + buffer_0 - size_0 Byte
+//   + size_1   - 4 Byte
+//   + buffer_1 - size_1 Byte
+//   + ...
+
+/** @type { (v: ArrayBuffer[]) => ArrayBuffer } */
+const packArrayBufferListPacket = (arrayBufferList) => {
+  const packetList = []
+  for (const arrayBuffer of arrayBufferList) {
+    const headerSize = arrayBuffer.byteLength
+    if (headerSize > MAX_PACKET_HEADER_SIZE) throw new Error(`arrayBuffer exceeds max size ${MAX_PACKET_HEADER_SIZE}, get: ${headerSize}`)
+    const headerSizeDataView = new DataView(new ArrayBuffer(HEADER_BYTE_SIZE))
+    headerSizeDataView.setUint32(0, headerSize, false)
+    packetList.push(headerSizeDataView.buffer, arrayBuffer)
+  }
+  return concatArrayBuffer(packetList)
+}
+
+/** @type { (v: ArrayBuffer) => ArrayBuffer[] } */
+const parseArrayBufferListPacket = (arrayBufferPacket) => {
+  const arrayBufferList = []
+  let index = 0
+  while (index < arrayBufferPacket.byteLength) {
+    const headerSizeDataView = new DataView(arrayBufferPacket.slice(index, index + HEADER_BYTE_SIZE))
+    const headerSize = headerSizeDataView.getUint32(0, false)
+    arrayBufferList.push(arrayBufferPacket.slice(
+      index + HEADER_BYTE_SIZE,
+      index + HEADER_BYTE_SIZE + headerSize
+    ))
+    index += HEADER_BYTE_SIZE + headerSize
+  }
+  return arrayBufferList
+}
+
 export {
   MAX_PACKET_HEADER_SIZE,
   HEADER_BYTE_SIZE,
@@ -67,5 +123,7 @@ export {
   packArrayBufferPacket,
   parseArrayBufferPacket,
   packChainArrayBufferPacket,
-  parseChainArrayBufferPacket
+  parseChainArrayBufferPacket,
+  packArrayBufferListPacket,
+  parseArrayBufferListPacket
 }

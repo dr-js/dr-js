@@ -1,16 +1,6 @@
-# Platform quirk
-*~
-Thumbs.db
-.DS_Store
-
-# Log
-log
-logs
-*.log
-
 # Editor configuration
-.idea
-.vscode
+/.idea
+/.vscode
 
 # Ignore local or CI ".npmrc"
 .npmrc

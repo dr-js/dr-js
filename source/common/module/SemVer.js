@@ -60,7 +60,7 @@ const REGEXP_ALL_NUMBER = /^\d+$/
 //     1.0.0-otherdevbranch.0 -> 1.0.0-otherdevbranch.1
 const versionBumpByGitBranch = (version, {
   gitBranch, // = getGitBranch(),
-  getIsMajorBranch = (gitBranch) => [ 'master', 'main' ].includes(gitBranch),
+  getIsMajorBranch = (gitBranch) => [ 'master', 'main', 'major' ].includes(gitBranch),
   isMajorBranch = getIsMajorBranch(gitBranch)
 }) => {
   const { major, minor, patch, label } = parseSemVer(version)
