@@ -380,7 +380,7 @@
 + 📄 [source/node/system/Run.js](source/node/system/Run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
-  - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+  - `V8_HEAP_RESERVED_SIZE`, `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`, `getV8HeapStatus`
 + 📄 [source/node/system/WatchLoop.js](source/node/system/WatchLoop.js)
   - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
 
@@ -706,7 +706,7 @@
     - **Run**
       - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
-      - `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`
+      - `V8_HEAP_RESERVED_SIZE`, `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`, `getV8HeapStatus`
     - **WatchLoop**
       - `LOOP_INDEX`, `addUnitStateHistory`, `defaultCommandStop`, `formatLoopConfig`, `formatUnitConfig`, `initLoopState`, `latestUnitStateHistory`, `loadLoopState`, `loopClue`, `loopMain`, `loopStop`, `loopWaitAndStep`, `markLoopState`, `migrateLoopState`, `saveLoopState`
   - **Kit**
