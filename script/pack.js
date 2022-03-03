@@ -12,6 +12,7 @@ const retryCount = process.platform === 'linux'
 const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
   try { return kit.RUN(`npm run ${name}`) } catch (error) {
     console.error(`##[warning] [retry|${name}|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
+    throw error // retry
   }
 }, retryCount)
 
@@ -45,7 +46,7 @@ runKit(async (kit) => {
   kit.RUN('npm run build-bin')
 
   await processOutput({ kit })
-  const isTest = argvFlag('test', 'publish')
+  const isTest = isPublish || argvFlag('test')
   isTest && kit.padLog('lint source')
   isTest && kit.RUN('npm run lint')
   isTest && kit.RUN('npm run type-check')
