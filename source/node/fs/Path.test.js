@@ -140,6 +140,19 @@ describe('Node.Fs.Path', () => {
     strictEqual(await getPathLstat(directoryPathRenameFrom), STAT_ERROR)
     strictEqual(getPathTypeFromStat(await getPathLstat(filePathRenameTo)), PATH_TYPE.File)
     strictEqual(getPathTypeFromStat(await getPathLstat(directoryPathRenameTo)), PATH_TYPE.Directory)
+
+    getExpectedError = false
+    await copyPath(directoryPath3, directoryPathRenameFrom)
+    try { await renamePath(directoryPathRenameFrom, directoryPathRenameTo) } catch (error) { getExpectedError = true }
+    strictEqual(getExpectedError, process.platform === 'win32')// TODO: NOTE: should only error on win32, currently linux & darwin will replace the empty dir
+
+    process.platform === 'win32'
+      ? strictEqual(getPathTypeFromStat(await getPathLstat(directoryPathRenameFrom)), PATH_TYPE.Directory)
+      : strictEqual(await getPathLstat(directoryPathRenameFrom), STAT_ERROR)
+
+    await deletePath(filePathRenameTo) // clear for next test
+    await deletePath(directoryPathRenameTo) // clear for next test
+    process.platform === 'win32' && await deletePath(directoryPathRenameFrom) // clear for next test
   })
   it('renamePathSync()', () => {
     let getExpectedError = false
@@ -150,11 +163,23 @@ describe('Node.Fs.Path', () => {
     renamePathSync(filePathRenameFrom, filePathRenameTo)
     copyPathSync(directoryPath3, directoryPathRenameFrom)
     renamePathSync(directoryPathRenameFrom, directoryPathRenameTo)
-
     strictEqual(getPathLstatSync(filePathRenameFrom), STAT_ERROR)
     strictEqual(getPathLstatSync(directoryPathRenameFrom), STAT_ERROR)
     strictEqual(getPathTypeFromStat(getPathLstatSync(filePathRenameTo)), PATH_TYPE.File)
     strictEqual(getPathTypeFromStat(getPathLstatSync(directoryPathRenameTo)), PATH_TYPE.Directory)
+
+    getExpectedError = false
+    copyPathSync(directoryPath3, directoryPathRenameFrom)
+    try { renamePathSync(directoryPathRenameFrom, directoryPathRenameTo) } catch (error) { getExpectedError = true }
+    strictEqual(getExpectedError, process.platform === 'win32') // TODO: NOTE: should only error on win32, currently linux & darwin will replace the empty dir
+
+    process.platform === 'win32'
+      ? strictEqual(getPathTypeFromStat(getPathLstatSync(directoryPathRenameFrom)), PATH_TYPE.Directory)
+      : strictEqual(getPathLstatSync(directoryPathRenameFrom), STAT_ERROR)
+
+    deletePathSync(filePathRenameTo) // clear for next test
+    deletePathSync(directoryPathRenameTo) // clear for next test
+    process.platform === 'win32' && deletePathSync(directoryPathRenameFrom) // clear for next test
   })
 
   it('deletePath()', async () => {

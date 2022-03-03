@@ -3,6 +3,7 @@ import {
   hostname, cpus, networkInterfaces,
   totalmem, freemem, loadavg, uptime
 } from 'os'
+import { getHeapStatistics } from 'v8'
 
 import { percent, time, binary } from 'source/common/format.js'
 import { indentLine, indentList } from 'source/common/string.js'
@@ -127,6 +128,25 @@ const getSystemInfo = () => {
   }
 }
 
+// NOTE: reserved space in heap that cannot be used to save JS data,
+//   48MiB for device with >=2GiB mem,
+//   24MiB for device with <2GiB mem
+// the value comes from test code like:
+//   node --max-old-space-size=8 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8"
+//   node --max-old-space-size=64 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 64"
+//   node --max-old-space-size=512 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 512"
+const V8_HEAP_RESERVED_SIZE = (totalmem() < 2 * 1024 * 1024 * 1024 ? 24 : 48) * 1024 * 1024
+
+const getV8HeapStatus = () => {
+  const { // https://nodejs.org/api/v8.html#v8getheapcodestatistics
+    used_heap_size: v8HeapUsed, // similar to MemUsed
+    heap_size_limit: v8HeapMax // similar to MemTotal
+  } = getHeapStatistics() // NOTE: `total_available_size + used_heap_size` of then don't match `heap_size_limit`, but should be close (±1MiB)
+  const total = v8HeapMax - V8_HEAP_RESERVED_SIZE
+  const free = Math.max(total - v8HeapUsed, 0)
+  return { total, free }
+}
+
 export {
   getSystemPlatform,
   getSystemProcessor,
@@ -142,5 +162,7 @@ export {
   describeSystemActivity,
   describeSystemStatus,
 
-  getSystemInfo
+  getSystemInfo,
+
+  V8_HEAP_RESERVED_SIZE, getV8HeapStatus
 }

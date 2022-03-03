@@ -70,7 +70,7 @@ const versionBumpByGitBranch = (version, {
       : parseInt(patch) + 1 // bump patch
     return `${major}.${minor}.${bumpPatch}`
   } else { // X.Y.Z-labelGitBranch.A for dev branch
-    const labelGitBranch = gitBranch.replace(/\W/g, '')
+    const labelGitBranch = gitBranch.replace(/[\W_]/g, '')
     return versionBumpToIdentifier(version, { identifier: labelGitBranch })
   }
 }

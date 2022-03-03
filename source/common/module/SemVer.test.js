@@ -103,9 +103,9 @@ describe('Common.Module.SemVer', () => {
     strictEqual(versionBumpByGitBranch('1.0.0', { gitBranch: 'master' }), '1.0.1')
     strictEqual(versionBumpByGitBranch('1.0.0-with-label', { gitBranch: 'master' }), '1.0.0')
 
-    strictEqual(versionBumpByGitBranch('1.0.0', { gitBranch: 'other-dev-branch' }), '1.0.1-otherdevbranch.0')
-    strictEqual(versionBumpByGitBranch('1.0.0-with-label', { gitBranch: 'other-dev-branch' }), '1.0.0-otherdevbranch.0')
-    strictEqual(versionBumpByGitBranch('1.0.0-otherdevbranch.0', { gitBranch: 'other-dev-branch' }), '1.0.0-otherdevbranch.1')
+    strictEqual(versionBumpByGitBranch('1.0.0', { gitBranch: 'other-dev_branch' }), '1.0.1-otherdevbranch.0')
+    strictEqual(versionBumpByGitBranch('1.0.0-with-label', { gitBranch: 'other-dev_branch' }), '1.0.0-otherdevbranch.0')
+    strictEqual(versionBumpByGitBranch('1.0.0-otherdevbranch.0', { gitBranch: 'other-dev_branch' }), '1.0.0-otherdevbranch.1')
   })
 
   it('versionBumpToIdentifier()', () => {
