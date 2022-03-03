@@ -63,7 +63,7 @@ const copyPathSync = (pathFrom, pathTo, pathStat) => {
 }
 
 const renamePath = async (pathFrom, pathTo) => fsAsync.rename(pathFrom, pathTo) // resolve to nothing
-const renamePathSync = (pathFrom, pathTo) => renameSync(pathFrom, pathTo) // resolve to nothing
+const renamePathSync = (pathFrom, pathTo) => renameSync(pathFrom, pathTo) // resolve to nothing // TODO: NOTE: WIN32: If there is a empty directory at newPath, (only on win32) an error will be raised instead.
 
 const deletePath = async (path, pathStat) => {
   if (pathStat === undefined) pathStat = await getPathLstat(path)
