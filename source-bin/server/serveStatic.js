@@ -80,10 +80,12 @@ const renderItem = (
   tag, name, size, mtimeMs, isDownload,
   // generated
   HREF = `href="${routePrefix}${hrefPrefix}/${lazyEncodeURI(toPosixPath(joinPath(...hrefFragList)))}"`,
-  NAME = escapeHTML(name)
-) => `<a class="auto-height" ${HREF} ${isDownload ? `download="${NAME}"` : ''}>
-<object class="name">${isDownload ? `<a ${HREF} target="_blank">${tag}</a>` : tag}</object>
-<p class="name">|${NAME}</p>
+  NAME = escapeHTML(name),
+  NAME_EXT = (/\.(\w{1,5})$/.exec(NAME) || [])[ 1 ] || ''
+) => `<a class="auto-height" ${HREF} ${isDownload ? 'target="_blank"' : ''}>
+<object class="name">${isDownload ? `<a ${HREF} download="${NAME}">${tag}</a>` : tag}</object>
+<p class="name">|${NAME.slice(0, -NAME_EXT.length || undefined)}</p>
+<p>${NAME_EXT}</p>
 <p class="size">${size ? `${binary(size)}B` : ''}</p>
 <p class="date">${mtimeMs ? escapeHTML(new Date(mtimeMs).toISOString()) : ''}</p>
 </a>`
