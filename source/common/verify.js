@@ -19,50 +19,69 @@ import {
 
 import { describe } from './format.js'
 
-const throwError = (title, message, detail) => { throw new Error(`[verify|${title}]${message ? ` ${message};` : ''} ${detail || ''}`) }
-const createVerify = (title, checkFunc) => (value, message) => checkFunc(value) || throwError(title, message, `get: ${describe(value)}`)
+const __throw = (title, message, detail) => { throw new Error(`[verify|${title}]${message ? ` ${message};` : ''} ${detail || ''}`) }
 
-const string = createVerify('String', isString)
-const boolean = createVerify('Boolean', isBoolean)
-const truthy = createVerify('Truthy', isTruthy)
-const number = createVerify('Number', isNumber)
-const integer = createVerify('Integer', isInteger)
-const regexp = createVerify('RegExp', isRegExp)
-const arrayBuffer = createVerify('ArrayBuffer', isArrayBuffer)
+/** @typedef { (value: *, message?: string) => void } VerifyFunc */
+/** @type { (title: string, checkFunc: ((value: *) => boolean)) => VerifyFunc } */
+const __toVerify = (title, checkFunc) => (value, message) => { checkFunc(value) || __throw(title, message, `get: ${describe(value)}`) }
 
-const objectAlike = createVerify('ObjectAlike', isObjectAlike)
+const string = __toVerify('String', isString)
+const boolean = __toVerify('Boolean', isBoolean)
+const truthy = __toVerify('Truthy', isTruthy)
+const number = __toVerify('Number', isNumber)
+const integer = __toVerify('Integer', isInteger)
+const regexp = __toVerify('RegExp', isRegExp)
+const arrayBuffer = __toVerify('ArrayBuffer', isArrayBuffer)
 
-const basicObject = createVerify('BasicObject', isBasicObject)
-const objectKey = (value, key, message) => isObjectKey(value, key) || throwError('ObjectKey', message, `expect to have key: ${key}`)
-const objectContain = (value, target, message) => isObjectContain(value, target) || throwError('ObjectContain', message, `expect to contain: ${describe(target)}`)
+const objectAlike = __toVerify('ObjectAlike', isObjectAlike)
 
-const basicArray = createVerify('Array', isBasicArray)
-const arrayLength = (value, length, message) => isArrayLength(value, length) || throwError('ArrayLength', message, `expect length: ${length}, get: ${isBasicArray(value) ? value.length : describe(value)}`)
+const basicObject = __toVerify('BasicObject', isBasicObject)
+/** @type { (value: *, key: string, message?: string) => void } */
+const objectKey = (value, key, message) => { isObjectKey(value, key) || __throw('ObjectKey', message, `expect to have key: ${key}`) }
+/** @type { (value: *, target: *, message?: string) => void } */
+const objectContain = (value, target, message) => { isObjectContain(value, target) || __throw('ObjectContain', message, `expect to contain: ${describe(target)}`) }
 
-const basicFunction = createVerify('Function', isBasicFunction)
-const promiseAlike = createVerify('PromiseAlike', isPromiseAlike)
+const basicArray = __toVerify('Array', isBasicArray)
+/** @type { (value: *, length: number, message?: string) => void } */
+const arrayLength = (value, length, message) => { isArrayLength(value, length) || __throw('ArrayLength', message, `expect length: ${length}, get: ${isBasicArray(value) ? value.length : describe(value)}`) }
 
-const oneOf = (value, validList, message) => isOneOf(value, validList) || throwError('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`)
+const basicFunction = __toVerify('Function', isBasicFunction)
+const promiseAlike = __toVerify('PromiseAlike', isPromiseAlike)
 
-const doThrow = (func, message) => isFunctionThrow(func) || throwError('DoThrow', message)
-const doNotThrow = (func, message) => isFunctionThrow(func) && throwError('DoNotThrow', message)
+/** @type { (value: *, validList: Array, message?: string) => void } */
+const oneOf = (value, validList, message) => { isOneOf(value, validList) || __throw('OneOf', message, `expect one of: [${validList}], get: ${describe(value)}`) }
 
-const doThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) || throwError('DoThrowAsync', message)
-const doNotThrowAsync = async (func, message) => (await isFunctionThrowAsync(func)) && throwError('DoNotThrowAsync', message)
-// const doThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => !isThrow && throwError('DoThrowAsync', message)) // NOTE: reference async-less implementation
-// const doNotThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => isThrow && throwError('DoNotThrowAsync', message)) // NOTE: reference async-less implementation
+/** @type { (func: Function, message?: string) => void } */
+const doThrow = (func, message) => { isFunctionThrow(func) || __throw('DoThrow', message) }
+/** @type { (func: Function, message?: string) => void } */
+const doNotThrow = (func, message) => { isFunctionThrow(func) && __throw('DoNotThrow', message) }
 
-const describeEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
+/** @type { (func: Function, message?: string) => Promise<void> } */
+const doThrowAsync = async (func, message) => { (await isFunctionThrowAsync(func)) || __throw('DoThrowAsync', message) }
+/** @type { (func: Function, message?: string) => Promise<void> } */
+const doNotThrowAsync = async (func, message) => { (await isFunctionThrowAsync(func)) && __throw('DoNotThrowAsync', message) }
+// const doThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => !isThrow && __throw('DoThrowAsync', message)) // NOTE: reference async-less implementation
+// const doNotThrowAsync = (func, message) => isFunctionThrowAsync(func).then((isThrow) => isThrow && __throw('DoNotThrowAsync', message)) // NOTE: reference async-less implementation
 
-const strictEqual = (actual, expect, message) => isStrictEqual(actual, expect) || throwError('StrictEqual', message, describeEqual(actual, expect))
-const notStrictEqual = (actual, expect, message) => isStrictEqual(actual, expect) && throwError('NotStrictEqual', message, describeEqual(actual, expect))
+const __detailEqual = (actual, expect) => `\nactual: ${describe(actual)}\nexpect: ${describe(expect)}`
 
-const stringifyEqual = (actual, expect, message = 'should stringify equal') => isStringifyEqual(actual, expect) || throwError('StringifyEqual', message, describeEqual(actual, expect))
-const notStringifyEqual = (actual, expect, message = 'should not stringify equal') => isStringifyEqual(actual, expect) && throwError('NotStringifyEqual', message, describeEqual(actual, expect))
+/** @typedef { (actual: *, expect: *, message?: string) => void } VerifyCompareFunc */
+
+/** @type { VerifyCompareFunc } */
+const strictEqual = (actual, expect, message) => { isStrictEqual(actual, expect) || __throw('StrictEqual', message, __detailEqual(actual, expect)) }
+/** @type { VerifyCompareFunc } */
+const notStrictEqual = (actual, expect, message) => { isStrictEqual(actual, expect) && __throw('NotStrictEqual', message, __detailEqual(actual, expect)) }
+
+/** @type { VerifyCompareFunc } */
+const stringifyEqual = (actual, expect, message = 'should stringify equal') => { isStringifyEqual(actual, expect) || __throw('StringifyEqual', message, __detailEqual(actual, expect)) }
+/** @type { VerifyCompareFunc } */
+const notStringifyEqual = (actual, expect, message = 'should not stringify equal') => { isStringifyEqual(actual, expect) && __throw('NotStringifyEqual', message, __detailEqual(actual, expect)) }
 
 // for string/array/typedArray
-const includes = (actual, expect, message) => (actual && actual.includes && actual.includes(expect)) || throwError('Includes', message, `expect ${describe(actual)} to include ${expect}`)
-const notIncludes = (actual, expect, message) => (actual && actual.includes && !actual.includes(expect)) || throwError('NotIncludes', message, `expect ${describe(actual)} to not include ${expect}`)
+/** @type { VerifyCompareFunc } */
+const includes = (actual, expect, message) => { (actual && actual.includes && actual.includes(expect)) || __throw('Includes', message, `expect ${describe(actual)} to include ${expect}`) }
+/** @type { VerifyCompareFunc } */
+const notIncludes = (actual, expect, message) => { (actual && actual.includes && !actual.includes(expect)) || __throw('NotIncludes', message, `expect ${describe(actual)} to not include ${expect}`) }
 
 export {
   string,

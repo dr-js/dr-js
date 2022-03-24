@@ -14,6 +14,7 @@ runKit(async (kit) => {
 
 const TYPE_CHECK_LIST = [
   'source/type.d.ts',
+
   'source/common/data/ArrayBuffer.js',
   'source/common/data/ArrayBufferPacket.js',
   'source/common/data/Base64.js',
@@ -28,5 +29,9 @@ const TYPE_CHECK_LIST = [
   'source/common/data/SaveQueue.js',
   'source/common/data/SetMap.js',
   'source/common/data/Toggle.js',
-  'source/common/data/Tree.js'
+  'source/common/data/Tree.js',
+
+  'source/common/verify.js',
+
+  'source/common/function.test.js'
 ]
