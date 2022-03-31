@@ -46,6 +46,10 @@ const once = (func) => { // NOTE: also support asyncFunc
 
 // drop calls during async function running, good to make a trigger for async func
 // WARN: lossyFunc will drop return result from func
+/** @type { (asyncFunc: Function, onError?: Function) => {
+  trigger: Function,
+  getRunningPromise: () => Promise | undefined
+} } */
 const lossyAsync = (asyncFunc, onError = rethrowError) => {
   let runningPromise
   const onResolve = () => { runningPromise = undefined }

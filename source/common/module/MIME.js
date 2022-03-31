@@ -7,6 +7,13 @@ const BASIC_MIME_DATA_LIST = [ // https://developer.mozilla.org/docs/Web/HTTP/Ba
   'application/x-tar;tar',
   'application/zip',
 
+  // 'application/msword;doc',
+  // 'application/vnd.ms-excel;xls',
+  // 'application/vnd.ms-powerpoint;ppt',
+  // 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;docx',
+  // 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;xlsx',
+  // 'application/vnd.openxmlformats-officedocument.presentationml.presentation;pptx',
+
   'audio/midi;mid',
   'audio/mpeg;mp3',
   'audio/ogg',
@@ -37,7 +44,7 @@ const BASIC_MIME_DATA_LIST = [ // https://developer.mozilla.org/docs/Web/HTTP/Ba
 
   'video/mp4;mp4v;mpg4',
   'video/mpeg;mpg',
-  'video/webm;mkv', // should overwrite 'audio/webm' // TODO: HACK: allow inline playback for some '.mkv': https://superuser.com/questions/1281836/what-does-matroska-have-which-webm-doesnt-that-made-the-differentiation-necess
+  'video/webm;mkv', // NOTE: should overwrite `webm` from above 'audio/webm' // TODO: HACK: allow inline playback for some '.mkv': https://superuser.com/questions/1281836/what-does-matroska-have-which-webm-doesnt-that-made-the-differentiation-necess
   'video/x-flv;flv',
   'video/x-ms-wmv;wmv',
   'video/x-msvideo;avi'
@@ -53,8 +60,8 @@ const BASIC_EXTENSION_MAP = BASIC_MIME_DATA_LIST.reduce((o, mimeData) => {
 
 const REGEXP_EXTENSION = /\.(\w+)$/
 const getMIMETypeFromFileName = (fileName) => {
-  const result = REGEXP_EXTENSION.exec(fileName)
-  return (result && BASIC_EXTENSION_MAP[ result[ 1 ] ]) || DEFAULT_MIME
+  const [ , fileExt ] = REGEXP_EXTENSION.exec(fileName) || []
+  return (fileExt && BASIC_EXTENSION_MAP[ fileExt.toLowerCase() ]) || DEFAULT_MIME
 }
 
 export {
