@@ -81,7 +81,8 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'server-websocket-group,swg/O|websocket chat server: -H=hostname:port',
   'server-test-connection,stc/O|connection test server: -H=hostname:port',
   'server-test-connection-simple,stcs/O|connection test server, just log all & json back: -H=hostname:port',
-  'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...'
+  'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...',
+  'server-http-request-proxy,shrp/AS,O/1-|HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false'
 )
 const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
 

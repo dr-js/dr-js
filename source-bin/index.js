@@ -34,6 +34,7 @@ import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCh
 import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection.js'
 import { configure as configureServerServeStatic } from './server/serveStatic.js'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup.js'
+import { configure as configureServerHttpRequestProxy } from './server/httpRequestProxy.js'
 
 import { logAuto, sharedOption, sharedMode } from './function.js'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option.js'
@@ -240,7 +241,7 @@ const runMode = async (optionData, modeName) => {
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
         targetOptionList = argumentList.map((host) => parseHostString(host, '127.0.0.1'))
-        let targetOptionIndex = 0 // selected in round robin order
+        let targetOptionIndex = 0 // selected in round-robin order
         getTargetOption = (socket) => {
           targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
           const targetOption = targetOptionList[ targetOptionIndex ]
@@ -260,6 +261,16 @@ const runMode = async (optionData, modeName) => {
         `at: ${serverExot.option.hostname}:${serverExot.option.port}`,
         ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)
       ]))
+    }
+    case 'server-http-request-proxy': {
+      const [ toOriginString, isSetXForwardString ] = argumentList
+      const { protocol, origin } = new URL(toOriginString)
+      if (!/^https?:$/.test(protocol)) throw new Error(`invalid protocol: ${protocol} from: ${toOriginString}`)
+      return startServer(configureServerHttpRequestProxy, {
+        targetOrigin: origin,
+        isSetXForward: Boolean(isSetXForwardString),
+        timeout: tryGetFirst('timeout') || 42000
+      })
     }
 
     default:

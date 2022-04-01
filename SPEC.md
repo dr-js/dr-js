@@ -335,6 +335,8 @@
   - `responderServerFetch`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
++ 📄 [source/node/server/Responder/Proxy.js](source/node/server/Responder/Proxy.js)
+  - `createResponderHTTPRequestProxy`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
@@ -660,6 +662,8 @@
     - **Responder**
       - **Common**
         - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+      - **Proxy**
+        - `createResponderHTTPRequestProxy`
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
@@ -847,6 +851,8 @@
 >       connection test server, just log all & json back: -H=hostname:port
 >   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
+>   --server-http-request-proxy --shrp [OPTIONAL] [ARGUMENT=1+]
+>       HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -913,6 +919,7 @@
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
 >     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
+>     export DR_JS_SERVER_HTTP_REQUEST_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_SHRP]"
 >   "
 > CONFIG Usage:
 >   {
@@ -979,5 +986,6 @@
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
 >     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
+>     "serverHttpRequestProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=shrp]" ],
 >   }
 > ```
