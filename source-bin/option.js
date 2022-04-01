@@ -29,7 +29,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'write/SP,O|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP,O|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
 
-  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write',
+  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=openMode/write',
+  'text-replace,tr/AS,O/2|replace first string in text file: -I=textFile, $0=fromString, $1=toString',
+  'text-replace-all,tra/AS,O/2|replace all string in text file: -I=textFile, $0=fromString, $1=toString',
 
   'merge/AP,O/2-|merge to one file: $@=mergedFile,...inputFileList',
   'create-directory,mkdir/AP,O/0-|create directory: $@=...pathList',

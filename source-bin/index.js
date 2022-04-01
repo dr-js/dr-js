@@ -15,7 +15,7 @@ import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, appendText, readJSON } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, editTextSync, readJSON } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -102,8 +102,13 @@ const runMode = async (optionData, modeName) => {
     }
 
     case 'text-file': {
-      const [ modeName = 'write' ] = argumentList
-      return (modeName.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
+      const [ openMode = 'write' ] = argumentList
+      return (openMode.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
+    }
+    case 'text-replace':
+    case 'text-replace-all': {
+      const [ fromString, toString ] = argumentList
+      return editTextSync((string) => string[ modeName === 'text-replace' ? 'replace' : 'replaceAll' ](fromString, toString), inputFile)
     }
 
     case 'open': {
@@ -178,11 +183,11 @@ const runMode = async (optionData, modeName) => {
         )
         return resultList.join('\n')
       }
-      const collectFile = async (modeName, rootPath) => modeName === 'file-list' ? (await getDirInfoList(rootPath)).map(({ type, name }) => type === PATH_TYPE.Directory ? `${name}/` : name)
-        : modeName === 'file-list-all' ? getFileList(rootPath)
-          : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
-            : ''
-      return outputValueAuto(await collectFile(modeName, argumentList[ 0 ] || process.cwd()))
+      const rootPath = argumentList[ 0 ] || process.cwd()
+      return outputValueAuto(modeName === 'file-list' ? (await getDirInfoList(rootPath)).map(({ type, name }) => type === PATH_TYPE.Directory ? `${name}/` : name)
+        : modeName === 'file-list-all' ? await getFileList(rootPath)
+          : modeName === 'file-tree' ? await prettyStringifyFileTree(rootPath)
+            : '')
     }
 
     case 'compress':

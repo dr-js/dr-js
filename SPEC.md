@@ -768,7 +768,11 @@
 >   --append [OPTIONAL] [ARGUMENT=1]
 >       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
 >   --text-file --txt [OPTIONAL] [ARGUMENT=0-1]
->       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write
+>       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=openMode/write
+>   --text-replace --tr [OPTIONAL] [ARGUMENT=2]
+>       replace first string in text file: -I=textFile, $0=fromString, $1=toString
+>   --text-replace-all --tra [OPTIONAL] [ARGUMENT=2]
+>       replace all string in text file: -I=textFile, $0=fromString, $1=toString
 >   --merge [OPTIONAL] [ARGUMENT=2+]
 >       merge to one file: $@=mergedFile,...inputFileList
 >   --create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
@@ -868,6 +872,8 @@
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_TEXT_FILE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TXT]"
+>     export DR_JS_TEXT_REPLACE="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_TR]"
+>     export DR_JS_TEXT_REPLACE_ALL="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_TRA]"
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_MKDIR]"
 >     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_CP]"
@@ -932,6 +938,8 @@
 >     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "textFile": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=txt]" ],
+>     "textReplace": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=tr]" ],
+>     "textReplaceAll": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=tra]" ],
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=mkdir]" ],
 >     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=cp]" ],
