@@ -849,6 +849,8 @@
 >       connection test server: -H=hostname:port
 >   --server-test-connection-simple --stcs [OPTIONAL]
 >       connection test server, just log all & json back: -H=hostname:port
+>   --server-test-connection-simple-payload --stcsp [OPTIONAL]
+>       connection test server, just log all & json back with payload-base64: -H=hostname:port
 >   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
 >   --server-http-request-proxy --shrp [OPTIONAL] [ARGUMENT=1+]
@@ -918,6 +920,7 @@
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
 >     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
+>     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE_PAYLOAD="[OPTIONAL] [ALIAS=DR_JS_STCSP]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
 >     export DR_JS_SERVER_HTTP_REQUEST_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_SHRP]"
 >   "
@@ -985,6 +988,7 @@
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
 >     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],
+>     "serverTestConnectionSimplePayload": [ "[OPTIONAL] [ALIAS=stcsp]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
 >     "serverHttpRequestProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=shrp]" ],
 >   }

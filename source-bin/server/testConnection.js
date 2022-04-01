@@ -46,7 +46,8 @@ const BASIC_METHOD_LIST = [ 'GET', 'POST', 'PUT', 'DELETE' ]
 
 const configure = ({
   log, routePrefix,
-  isSimpleTest
+  isSimpleTest,
+  isSimplePayload
 }) => {
   const bufferData = prepareBufferData(Buffer.from('TEST CONTENT'))
 
@@ -55,7 +56,11 @@ const configure = ({
       const { url, method, httpVersion, rawHeaders, socket: { remoteAddress, remotePort } } = store.request
       const describeObject = {
         from: `${remoteAddress}:${remotePort}`,
-        request: { url, method, httpVersion, headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')) }
+        request: {
+          url, method, httpVersion,
+          headers: arraySplitChunk(rawHeaders, 2).map((fragList) => fragList.join(': ')),
+          payload: isSimplePayload ? (await readableStreamToBufferAsync(store.request)).toString('base64') : undefined
+        }
       }
       log(`[test-describe]\n${JSON.stringify(describeObject, null, 2)}`)
       return responderSendJSON(store, { object: describeObject })
@@ -107,7 +112,8 @@ const configure = ({
   return {
     routeConfigList,
     isAddFavicon: true,
-    title: 'TestConnection'
+    title: 'TestConnection',
+    extraInfo: { isSimpleTest, isSimplePayload }
   }
 }
 

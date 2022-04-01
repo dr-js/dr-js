@@ -235,7 +235,8 @@ const runMode = async (optionData, modeName) => {
       return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
     case 'server-test-connection-simple':
-      return startServer(configureServerTestConnection, { isSimpleTest: modeName.endsWith('-simple') })
+    case 'server-test-connection-simple-payload':
+      return startServer(configureServerTestConnection, { isSimpleTest: modeName.includes('-simple'), isSimplePayload: modeName.endsWith('-payload') })
     case 'server-tcp-proxy': { // TODO: move to separate file?
       let targetOptionList
       let getTargetOption
