@@ -5,13 +5,14 @@ import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import { fetchLikeRequest } from './net.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 // TODO: NOTE: this test depend on the server from `script/testBrowser.js`
 
 const baseUrl = '' // use current origin
 
 const expectError = (content) => (error) => {
-  if (String(error).includes(content)) info(`good, expected: ${error}`)
+  if (String(error).includes(content)) log(`good, expected: ${error}`)
   else throw new Error(`unexpected: ${error.stack || error}`)
 }
 
@@ -77,7 +78,7 @@ describe('Browser.Net', () => {
     )
   })
 
-  const onProgress = (now, total) => info(`${percent(now / total)} ${now}/${total}`)
+  const onProgress = (now, total) => log(`${percent(now / total)} ${now}/${total}`)
 
   it('fetchLikeRequest() onProgress', async () => {
     await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { onProgressDownload: onProgress })).arrayBuffer()

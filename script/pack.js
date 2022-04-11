@@ -6,9 +6,9 @@ import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProce
 import { withRetry } from 'source/common/function.js'
 import { runKit, argvFlag } from 'source/node/kit.js'
 
-const retryCount = process.platform === 'linux'
-  ? 1 // one chance should be enough for linux
-  : 6 // 6 more chance for win32/darwin, since some net/fs test is still flaky
+const retryCount = (!process.env.IS_CI || process.platform === 'linux')
+  ? 1 // one chance should be enough for linux CI
+  : 3 // 3 more chance for win32/darwin CI, since some net/fs test is still flaky
 const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
   try { return kit.RUN(`npm run ${name}`) } catch (error) {
     console.error(`##[warning] [retry|${name}|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028

@@ -68,18 +68,24 @@ describe('Common.Module.TimedLookup', () => {
 
     notStrictEqual(parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ], parseCheckCode(generateCheckCode(generateLookupData(defaultOption), 0))[ 2 ], 'should generate random one')
 
+    let allowFlaky = 2
     withRepeat((looped, count) => {
       const defaultLookupData = generateLookupData(defaultOption)
-      notStrictEqual(
-        parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
-        parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ],
-        `should not loop with time: 0 - ${defaultOption.size * defaultOption.timeGap} [${looped}/${count}]`
-      )
-      notStrictEqual(
-        parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
-        parseCheckCode(generateCheckCode(defaultLookupData, (defaultOption.size - 32) * defaultOption.timeGap))[ 2 ],
-        `should not loop with time: 0 - ${(defaultOption.size - 32) * defaultOption.timeGap} [${looped}/${count}]`
-      )
+      try {
+        notStrictEqual(
+          parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
+          parseCheckCode(generateCheckCode(defaultLookupData, defaultOption.size * defaultOption.timeGap))[ 2 ],
+          `should not loop with time: 0 - ${defaultOption.size * defaultOption.timeGap} [${looped}/${count}]`
+        )
+        notStrictEqual(
+          parseCheckCode(generateCheckCode(defaultLookupData, 0))[ 2 ],
+          parseCheckCode(generateCheckCode(defaultLookupData, (defaultOption.size - 32) * defaultOption.timeGap))[ 2 ],
+          `should not loop with time: 0 - ${(defaultOption.size - 32) * defaultOption.timeGap} [${looped}/${count}]`
+        )
+      } catch (error) {
+        if (allowFlaky <= 0) throw error
+        allowFlaky--
+      }
     }, 128)
   })
 

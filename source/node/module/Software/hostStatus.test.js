@@ -9,6 +9,6 @@ describe('Node.Module.Software.hostStatus', () => {
   it('getCommonHostStatus()', async () => {
     const resultList = await getCommonHostStatus()
 
-    for (const [ title, output ] of resultList) info(`[${title}]\n${indentLine(output)}`)
+    for (const [ title, output ] of resultList) __DEV__ && info(`[${title}]\n${indentLine(output)}`)
   })
 })

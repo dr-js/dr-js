@@ -335,6 +335,8 @@
   - `responderServerFetch`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
   - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
++ 📄 [source/node/server/Responder/Proxy.js](source/node/server/Responder/Proxy.js)
+  - `createResponderHTTPRequestProxy`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
   - `createResponderCheckRateLimit`, `createResponderRateLimit`
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
@@ -660,6 +662,8 @@
     - **Responder**
       - **Common**
         - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+      - **Proxy**
+        - `createResponderHTTPRequestProxy`
       - **RateLimit**
         - `createResponderCheckRateLimit`, `createResponderRateLimit`
       - **Router**
@@ -768,7 +772,11 @@
 >   --append [OPTIONAL] [ARGUMENT=1]
 >       for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`
 >   --text-file --txt [OPTIONAL] [ARGUMENT=0-1]
->       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write
+>       ">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=openMode/write
+>   --text-replace --tr [OPTIONAL] [ARGUMENT=2]
+>       replace first string in text file: -I=textFile, $0=fromString, $1=toString
+>   --text-replace-all --tra [OPTIONAL] [ARGUMENT=2]
+>       replace all string in text file: -I=textFile, $0=fromString, $1=toString
 >   --merge [OPTIONAL] [ARGUMENT=2+]
 >       merge to one file: $@=mergedFile,...inputFileList
 >   --create-directory --mkdir [OPTIONAL] [ARGUMENT=0+]
@@ -841,8 +849,12 @@
 >       connection test server: -H=hostname:port
 >   --server-test-connection-simple --stcs [OPTIONAL]
 >       connection test server, just log all & json back: -H=hostname:port
+>   --server-test-connection-simple-payload --stcsp [OPTIONAL]
+>       connection test server, just log all & json back with payload-base64: -H=hostname:port
 >   --server-tcp-proxy --stp [OPTIONAL] [ARGUMENT=1+]
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
+>   --server-http-request-proxy --shrp [OPTIONAL] [ARGUMENT=1+]
+>       HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -868,6 +880,8 @@
 >     export DR_JS_WRITE="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_APPEND="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_TEXT_FILE="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_TXT]"
+>     export DR_JS_TEXT_REPLACE="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_TR]"
+>     export DR_JS_TEXT_REPLACE_ALL="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_TRA]"
 >     export DR_JS_MERGE="[OPTIONAL] [ARGUMENT=2+]"
 >     export DR_JS_CREATE_DIRECTORY="[OPTIONAL] [ARGUMENT=0+] [ALIAS=DR_JS_MKDIR]"
 >     export DR_JS_MODIFY_COPY="[OPTIONAL] [ARGUMENT=2] [ALIAS=DR_JS_CP]"
@@ -906,7 +920,9 @@
 >     export DR_JS_SERVER_WEBSOCKET_GROUP="[OPTIONAL] [ALIAS=DR_JS_SWG]"
 >     export DR_JS_SERVER_TEST_CONNECTION="[OPTIONAL] [ALIAS=DR_JS_STC]"
 >     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE="[OPTIONAL] [ALIAS=DR_JS_STCS]"
+>     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE_PAYLOAD="[OPTIONAL] [ALIAS=DR_JS_STCSP]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
+>     export DR_JS_SERVER_HTTP_REQUEST_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_SHRP]"
 >   "
 > CONFIG Usage:
 >   {
@@ -932,6 +948,8 @@
 >     "write": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "append": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "textFile": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=txt]" ],
+>     "textReplace": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=tr]" ],
+>     "textReplaceAll": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=tra]" ],
 >     "merge": [ "[OPTIONAL] [ARGUMENT=2+]" ],
 >     "createDirectory": [ "[OPTIONAL] [ARGUMENT=0+] [ALIAS=mkdir]" ],
 >     "modifyCopy": [ "[OPTIONAL] [ARGUMENT=2] [ALIAS=cp]" ],
@@ -970,6 +988,8 @@
 >     "serverWebsocketGroup": [ "[OPTIONAL] [ALIAS=swg]" ],
 >     "serverTestConnection": [ "[OPTIONAL] [ALIAS=stc]" ],
 >     "serverTestConnectionSimple": [ "[OPTIONAL] [ALIAS=stcs]" ],
+>     "serverTestConnectionSimplePayload": [ "[OPTIONAL] [ALIAS=stcsp]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
+>     "serverHttpRequestProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=shrp]" ],
 >   }
 > ```

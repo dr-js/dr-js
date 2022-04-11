@@ -3,6 +3,7 @@ import { withTempDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 
 const { info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
   async (pathTemp) => run([
@@ -13,15 +14,15 @@ const runFuncWithExposeGC = async (...funcList) => withTempDirectory(
   ], {
     maxBuffer: 8 * 1024 * 1024,
     cwd: pathTemp, // generate OOM report under temp path
-    quiet: !__DEV__
+    quiet: !__DEV__, describeError: false
   }).promise.catch((error) => error),
   resolve(__dirname, 'temp-gitignore/')
 )
 
 const createTestFunc = (expectExitCode = 0, ...funcList) => async () => {
   const { code, signal, stdoutPromise, stderrPromise } = await runFuncWithExposeGC(...funcList)
-  !__DEV__ && info(`STDOUT:\n${await stdoutPromise}\n\nSTDERR:\n${await stderrPromise}`)
-  info(`test done, exit code: ${code}, signal: ${signal}`)
+  !__DEV__ && log(`STDOUT:\n${await stdoutPromise}\n\nSTDERR:\n${await stderrPromise}`)
+  log(`test done, exit code: ${code}, signal: ${signal}`)
   if (code === expectExitCode) return
   info(`STDOUT:\n${await stdoutPromise}\n\nSTDERR:\n${await stderrPromise}`)
   throw new Error(`exitCode: ${code}, expectExitCode: ${expectExitCode}`)

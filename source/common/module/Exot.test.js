@@ -6,6 +6,7 @@ import { getRandomId } from 'source/common/math/random.js'
 import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 describe('source/common/module/Exot', () => {
   it('isExot()', () => {
@@ -19,44 +20,44 @@ describe('source/common/module/Exot', () => {
 
   it('createSampleExot() basic', async () => {
     const { id, up, down, isUp, sampleAsync, sampleSync } = createSampleExot({ sampleConfig: { key: 'basic' } })
-    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
 
     const upPromise = up((error) => {
-      info(`unexpected error: ${error}`)
+      log(`unexpected error: ${error}`)
       throw error
     })
-    info(`[during up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[during up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     await upPromise
-    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(globalThis[ id ])
 
     await sampleAsync('pass')
     sampleSync('pass')
 
     const downPromise = down()
-    info(`[during down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[during down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     await downPromise
-    info(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
   })
 
   it('createSampleExot() error async', async () => {
     const { id, up, down, isUp, sampleAsync } = createSampleExot({ sampleConfig: { key: 'trouble async' } })
-    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
 
     const { promise, resolve, reject } = createInsideOutPromise()
 
     await up((error) => {
       if (!error.exotId) {
-        info(`unexpected error: ${error}`)
+        log(`unexpected error: ${error}`)
         reject(error)
       }
-      info('get expected error')
+      log('get expected error')
       down().then(resolve)
     })
-    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(globalThis[ id ])
 
     // pass|late-check-error|exot-error
@@ -64,46 +65,46 @@ describe('source/common/module/Exot', () => {
     await doThrowAsync(async () => sampleAsync('early-check-error'))
     await doThrowAsync(async () => sampleAsync('late-check-error'))
 
-    info('## async ExotError -> onExotError -> down')
+    log('## async ExotError -> onExotError -> down')
     sampleAsync('exot-error').then(() => {
-      info('should not be here')
+      log('should not be here')
       process.exit(-2)
     }, () => {
-      info('should not be here, either')
+      log('should not be here, either')
       process.exit(-3)
     })
-    info(`[during async func] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[during async func] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(globalThis[ id ])
 
     await promise
-    info(`[after async func ExotError] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after async func ExotError] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
 
-    info('## already downed: async ExotError -> onExotError (should do nothing)')
+    log('## already downed: async ExotError -> onExotError (should do nothing)')
     sampleAsync('exot-error').then(() => {
-      info('should not be here')
+      log('should not be here')
       process.exit(-2)
     }, () => {
-      info('should not be here, either')
+      log('should not be here, either')
       process.exit(-3)
     })
 
     // allow down again
     await down()
-    info(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
   })
 
   it('createSampleExot() error sync', async () => {
     const { id, up, down, isUp, sampleSync } = createSampleExot({ sampleConfig: { key: 'trouble async' } })
-    info(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[before up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
 
     await up((error) => {
-      info(`should not be here, error: ${error}`)
+      log(`should not be here, error: ${error}`)
       process.exit(-4)
     })
-    info(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after up] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(globalThis[ id ])
 
     // pass|late-check-error|exot-error
@@ -111,22 +112,22 @@ describe('source/common/module/Exot', () => {
     doThrow(() => sampleSync('early-check-error'))
     doThrow(() => sampleSync('late-check-error'))
 
-    info('## sync ExotError -> throw -> down')
+    log('## sync ExotError -> throw -> down')
     doThrow(() => sampleSync('exot-error'))
 
-    info(`[after sync func Error] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after sync func Error] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(globalThis[ id ])
 
     await down() // manually
-    info(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after down] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
 
-    info('## already downed: sync ExotError -> throw')
+    log('## already downed: sync ExotError -> throw')
     doThrow(() => sampleSync('exot-error'))
 
     // allow down again
     await down()
-    info(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
+    log(`[after down (again)] isUp: ${isUp()}, globalThis[ id ]: ${globalThis[ id ]}`)
     truthy(!globalThis[ id ])
   })
 

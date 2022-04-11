@@ -203,6 +203,7 @@ const mainScriptInit = () => {
       Common: {
         Time: { setTimeoutAsync },
         Function: { lossyAsync },
+        Error: { withFallbackResult },
         Math: { getRandomInt, getRandomId },
         Format: { binary }
       },
@@ -248,6 +249,12 @@ const mainScriptInit = () => {
     return `${protocol === 'https:' ? 'wss:' : 'ws:'}//${host}${ROUTE_PREFIX}/websocket-group/${encodeURIComponent(groupPath)}?id=${encodeURIComponent(id)}`
   }
 
+  const saveSetup = (groupPath, id) => { location.hash = `#${new URLSearchParams({ GP: groupPath, ID: id })}` }
+  const loadSetup = () => {
+    const { GP: groupPath = '', ID: id = '' } = withFallbackResult({}, () => Object.fromEntries(new URLSearchParams(location.hash.slice(1)).entries()))
+    return { groupPath, id }
+  }
+
   const STATE = {
     fileWeakMap: new WeakMap(),
     retryCount: 0
@@ -270,6 +277,7 @@ const mainScriptInit = () => {
     qS('#main').style.display = ''
     qS('#payload-text').focus()
     qS('#button-toggle', `Exit Group: ${groupPath} [Ctrl+d]`)
+    saveSetup(groupPath, id)
     document.title = `[${groupPath}/${id}]`
     STATE.websocket = websocket
     STATE.groupPath = groupPath
@@ -378,6 +386,10 @@ const mainScriptInit = () => {
   qS('#button-log-clear').onclick = clearLog
   qS('#button-toggle').onclick = toggleWebSocket
   qS('#button-send').onclick = sendPayload
+
+  const { groupPath, id } = loadSetup()
+  qS('#group-path').value = groupPath
+  qS('#id').value = id
 
   const { start, addKeyCommand } = createKeyCommandHub()
   addKeyCommand({ checkMap: { ctrlKey: true, key: 'd' }, callback: toggleWebSocket })

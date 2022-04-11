@@ -29,7 +29,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'write/SP,O|for use like ">": `dr-js --cat sourceFile | dr-js --write outputFile`',
   'append/SP,O|for use like ">>": `dr-js --cat sourceFile | dr-js --append outputFile`',
 
-  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=modeName/write',
+  'text-file,txt/O/0-1|">" or ">>" text to file: -O=outputFile, $N=fileTextContent, $1=openMode/write',
+  'text-replace,tr/AS,O/2|replace first string in text file: -I=textFile, $0=fromString, $1=toString',
+  'text-replace-all,tra/AS,O/2|replace all string in text file: -I=textFile, $0=fromString, $1=toString',
 
   'merge/AP,O/2-|merge to one file: $@=mergedFile,...inputFileList',
   'create-directory,mkdir/AP,O/0-|create directory: $@=...pathList',
@@ -79,7 +81,9 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'server-websocket-group,swg/O|websocket chat server: -H=hostname:port',
   'server-test-connection,stc/O|connection test server: -H=hostname:port',
   'server-test-connection-simple,stcs/O|connection test server, just log all & json back: -H=hostname:port',
-  'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...'
+  'server-test-connection-simple-payload,stcsp/O|connection test server, just log all & json back with payload-base64: -H=hostname:port',
+  'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...',
+  'server-http-request-proxy,shrp/AS,O/1-|HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false'
 )
 const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
 

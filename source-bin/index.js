@@ -15,7 +15,7 @@ import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, appendText, readJSON } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, editTextSync, readJSON } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -34,6 +34,7 @@ import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCh
 import { commonServerUp, commonServerDown, configure as configureServerTestConnection } from './server/testConnection.js'
 import { configure as configureServerServeStatic } from './server/serveStatic.js'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup.js'
+import { configure as configureServerHttpRequestProxy } from './server/httpRequestProxy.js'
 
 import { logAuto, sharedOption, sharedMode } from './function.js'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option.js'
@@ -102,8 +103,13 @@ const runMode = async (optionData, modeName) => {
     }
 
     case 'text-file': {
-      const [ modeName = 'write' ] = argumentList
-      return (modeName.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
+      const [ openMode = 'write' ] = argumentList
+      return (openMode.startsWith('w') ? writeText : appendText)(outputFile, `${getFirst('note')}\n`)
+    }
+    case 'text-replace':
+    case 'text-replace-all': {
+      const [ fromString, toString ] = argumentList
+      return editTextSync((string) => string[ modeName === 'text-replace' ? 'replace' : 'replaceAll' ](fromString, toString), inputFile)
     }
 
     case 'open': {
@@ -178,11 +184,11 @@ const runMode = async (optionData, modeName) => {
         )
         return resultList.join('\n')
       }
-      const collectFile = async (modeName, rootPath) => modeName === 'file-list' ? (await getDirInfoList(rootPath)).map(({ type, name }) => type === PATH_TYPE.Directory ? `${name}/` : name)
-        : modeName === 'file-list-all' ? getFileList(rootPath)
-          : modeName === 'file-tree' ? prettyStringifyFileTree(rootPath)
-            : ''
-      return outputValueAuto(await collectFile(modeName, argumentList[ 0 ] || process.cwd()))
+      const rootPath = argumentList[ 0 ] || process.cwd()
+      return outputValueAuto(modeName === 'file-list' ? (await getDirInfoList(rootPath)).map(({ type, name }) => type === PATH_TYPE.Directory ? `${name}/` : name)
+        : modeName === 'file-list-all' ? await getFileList(rootPath)
+          : modeName === 'file-tree' ? await prettyStringifyFileTree(rootPath)
+            : '')
     }
 
     case 'compress':
@@ -229,13 +235,14 @@ const runMode = async (optionData, modeName) => {
       return startServer(configureServerWebSocketGroup)
     case 'server-test-connection':
     case 'server-test-connection-simple':
-      return startServer(configureServerTestConnection, { isSimpleTest: modeName.endsWith('-simple') })
+    case 'server-test-connection-simple-payload':
+      return startServer(configureServerTestConnection, { isSimpleTest: modeName.includes('-simple'), isSimplePayload: modeName.endsWith('-payload') })
     case 'server-tcp-proxy': { // TODO: move to separate file?
       let targetOptionList
       let getTargetOption
       if (!isBasicFunction(argumentList[ 0 ])) {
         targetOptionList = argumentList.map((host) => parseHostString(host, '127.0.0.1'))
-        let targetOptionIndex = 0 // selected in round robin order
+        let targetOptionIndex = 0 // selected in round-robin order
         getTargetOption = (socket) => {
           targetOptionIndex = (targetOptionIndex + 1) % targetOptionList.length
           const targetOption = targetOptionList[ targetOptionIndex ]
@@ -255,6 +262,16 @@ const runMode = async (optionData, modeName) => {
         `at: ${serverExot.option.hostname}:${serverExot.option.port}`,
         ...targetOptionList.map((option) => `proxy to: ${option.hostname}:${option.port}`)
       ]))
+    }
+    case 'server-http-request-proxy': {
+      const [ toOriginString, isSetXForwardString ] = argumentList
+      const { protocol, origin } = new URL(toOriginString)
+      if (!/^https?:$/.test(protocol)) throw new Error(`invalid protocol: ${protocol} from: ${toOriginString}`)
+      return startServer(configureServerHttpRequestProxy, {
+        targetOrigin: origin,
+        isSetXForward: Boolean(isSetXForwardString),
+        timeout: tryGetFirst('timeout') || 42000
+      })
     }
 
     default:

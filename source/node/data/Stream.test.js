@@ -31,6 +31,7 @@ import {
 } from './Stream.js'
 
 const { describe, it, before, after, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const FILE_NOT_EXIST = resolve(__dirname, 'not-exist.txt')
 const FILE_NOT_WRITABLE = resolve(__dirname, 'no-directory/no-directory/not-writable.txt')
@@ -38,7 +39,7 @@ const FILE_NOT_GZIP = resolve(__dirname, 'Stream.js') // plain test file
 
 const unexpectedResolve = () => { throw new Error('unexpected promise resolve') }
 const expectError = (content) => (error) => {
-  if (String(error).includes(content)) info(`good, expected: ${error}`)
+  if (String(error).includes(content)) log(`good, expected: ${error}`)
   else throw new Error(`unexpected: ${error.stack || error}`)
 }
 
@@ -178,7 +179,7 @@ describe('Node.Data.Stream', () => {
   const samplePoolSizeLimit = 8
   it('createReadableStreamInputChip/createWritableStreamOutputChip/createTransformStreamChip', async () => {
     {
-      info('Runlet with stream speed')
+      log('Runlet with stream speed')
       const stepper = createStepper()
 
       const poolMap = toPoolMap([
@@ -197,30 +198,30 @@ describe('Node.Data.Stream', () => {
       trigger()
 
       const result = await chipMap.get('out').promise
-      info(`done: ${time(stepper())}`)
+      log(`done: ${time(stepper())}`)
       __DEV__ && console.log(result)
-      __DEV__ && info('==== runlet.describe ====')
-      __DEV__ && info(describe().join('\n'))
+      log('==== runlet.describe ====')
+      log(describe().join('\n'))
     }
 
     { // test stream pipe
-      info('Ref stream pipe speed')
+      log('Ref stream pipe speed')
       const stepper = createStepper()
       await waitStreamStopAsync(setupStreamPipe(
         createReadStream(TEST_INPUT),
         createGzip(),
         createWriteStream(TEST_OUTPUT + '-REF')
       ))
-      info(`done: ${time(stepper())}`)
+      log(`done: ${time(stepper())}`)
     }
 
     const outputBuffer = await readBuffer(TEST_OUTPUT)
-    __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
+    log(`outputBuffer size: ${binary(outputBuffer.length)}B`)
     strictEqual(outputBuffer.compare(await readBuffer(TEST_OUTPUT + '-REF')), 0)
   })
 
   it('quickRunletFromStream', async () => {
-    info('Runlet with stream speed')
+    log('Runlet with stream speed')
     const stepper = createStepper()
     const result = await quickRunletFromStream(
       createReadStream(TEST_INPUT),
@@ -228,15 +229,15 @@ describe('Node.Data.Stream', () => {
       createGzip(),
       createWriteStream(TEST_OUTPUT + '-QUICK')
     )
-    info(`done: ${time(stepper())}`)
+    log(`done: ${time(stepper())}`)
     __DEV__ && console.log(result)
 
     const outputBuffer = await readBuffer(TEST_OUTPUT + '-QUICK')
-    __DEV__ && info(`outputBuffer size: ${binary(outputBuffer.length)}B`)
+    log(`outputBuffer size: ${binary(outputBuffer.length)}B`)
 
     stepper()
     const refBuffer = gzipSync(gzipSync(await readBuffer(TEST_INPUT)))
-    info(`prepare refBuffer done: ${time(stepper())}`)
+    log(`prepare refBuffer done: ${time(stepper())}`)
     strictEqual(outputBuffer.compare(refBuffer), 0)
   })
 

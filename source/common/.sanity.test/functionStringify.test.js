@@ -1,6 +1,7 @@
 import { typeNameOf } from 'source/common/format.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const TEST_FUNC_LIST = [
   // anonymous function
@@ -85,7 +86,7 @@ const TEST_FUNC_LIST = [
 
 process.env.TEST_SANITY && describe('Common.SanityTest.FunctionStringify', () => {
   it('FunctionStringify', async () => { // TODO: NOTE: this is not a test, but left here to show it's harder to pick out the content from `String(func)`
-    info(TEST_FUNC_LIST.map((func) => [
+    log(TEST_FUNC_LIST.map((func) => [
       `funcType: ${JSON.stringify(typeNameOf(func))} / ${typeof (func)}`, // Function|AsyncFunction|GeneratorFunction|AsyncGeneratorFunction
       `funcName: ${JSON.stringify(func.name)}`,
       `funcText: ${JSON.stringify(String(func))}`

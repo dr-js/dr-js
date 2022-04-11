@@ -38,7 +38,7 @@ describe('Node.Module.Software.bash', () => {
   it('verify()', verify)
 
   it('toHeredocNoMagic()', () => {
-    info(toHeredocNoMagic(COMMON_STYLE()))
+    __DEV__ && info(toHeredocNoMagic(COMMON_STYLE()))
   })
 
   process.platform !== 'win32' && it('catStringToFileCommand()', () => {

@@ -3,6 +3,7 @@ import { createInsideOutPromise } from 'source/common/function.js'
 import { getEnvironment } from 'source/env/global.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const { isNode } = getEnvironment()
 
@@ -56,7 +57,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       resolve('bad resolve')
     }).then((result) => {
       if (result !== 'good resolve') throw new Error(`unexpected result: ${result}`)
-      info('expected resolve:', result)
+      log('expected resolve:', result)
     }),
     new Promise((resolve, reject) => {
       reject(new Error('good reject'))
@@ -67,7 +68,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       reject(new Error('should be ignored'))
     }).then((result) => { throw new Error(`unexpected resolve: ${result}`) }, (error) => {
       if (!error.message.includes('good reject')) throw new Error(`unexpected reject: ${error}`)
-      info('expected reject:', error)
+      log('expected reject:', error)
     })
   ]))
 
@@ -77,7 +78,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       promise = new Promise(() => { throw new Error('error from executor') })
         .catch((error) => {
           if (!error.message.includes('error from executor')) throw new Error('unexpected error message')
-          info('expected reject error:', error)
+          log('expected reject error:', error)
         })
     } catch (error) { throw new Error('unexpected sync error') }
     return promise
@@ -87,12 +88,12 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
     .then(() => { throw new Error('error from onFulfilled') })
     .catch((error) => {
       if (!error.message.includes('error from onFulfilled')) throw new Error('unexpected error message')
-      info('expected onFulfilled error:', error)
+      log('expected onFulfilled error:', error)
     })
     .then(() => Promise.reject(new Error('test reject')))
     .then(() => { throw new Error('unexpected fulfill') }, (error) => {
       if (!error.message.includes('test reject')) throw new Error('unexpected error message')
-      info('expected onRejected error:', error)
+      log('expected onRejected error:', error)
     })
   )
 
@@ -103,7 +104,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
     .then({}, [], () => {})
     .then((result) => {
       if (result !== 'RESULT') throw new Error('unexpected result')
-      info('expected result:', result)
+      log('expected result:', result)
     })
   )
 
@@ -136,7 +137,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       promise,
       promise0, promise1
     ]).then(() => {
-      info(tagList.join('\n'))
+      log(tagList.join('\n'))
       stringifyEqual(tagList, [
         '[test|DEFINE] ------------------------------------------------------------------',
         '[then|DEFINE] ------------------------------------------------------------------',
@@ -183,7 +184,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       promiseTTT, promiseTTT0, promiseTTT1, promiseTTT2,
       promiseEnd
     ]).then(() => {
-      info(tagList.join('\n'))
+      log(tagList.join('\n'))
       stringifyEqual(tagList, [
         '[test|DEFINE] ------------------------------------------------------------------',
         '[then|DEFINE] ------------------------------------------------------------------',
@@ -256,7 +257,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
         .then(() => tag('then-then-then', 'Promise.resolve()|then|then|then'))
         .then(() => tag('then-then-then-then', 'Promise.resolve()|then|then|then|then'))
     ]).then(() => {
-      info(tagList.join('\n'))
+      log(tagList.join('\n'))
       stringifyEqual(tagList, [
         '[sync|DEFINE] ------------------------------------------------------------------',
         '[sync|#0] new Promise() executor',
@@ -336,7 +337,7 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
       promise0, promise1, promise2, promise3, promise4, promise5,
       promise9
     ]).then(() => {
-      info(tagList.join('\n'))
+      log(tagList.join('\n'))
       stringifyEqual(tagList, [
         '[sync|DEFINE] ------------------------------------------------------------------',
         '[sync|#0] new Promise+promise executor',
@@ -771,11 +772,11 @@ process.env.TEST_SANITY && describe('Common.SanityTest.Promise', () => {
     tag('sync', 'last line of code')
 
     return Promise.all(promiseList).then(() => {
-      // info(tagList.filter((line) => !line.includes('setTimeout')).join('\n'))
-      // info('\n\n\n\n')
-      // info(tagList.filter((line) => !line.includes('nextTick')).join('\n'))
-      // info('\n\n\n\n')
-      info(tagList.join('\n'))
+      // log(tagList.filter((line) => !line.includes('setTimeout')).join('\n'))
+      // log('\n\n\n\n')
+      // log(tagList.filter((line) => !line.includes('nextTick')).join('\n'))
+      // log('\n\n\n\n')
+      log(tagList.join('\n'))
       stringifyEqual(tagList, [
         '[sync|DEFINE] ------------------------------------------------------------------',
         '[sync|#0] setup reference',

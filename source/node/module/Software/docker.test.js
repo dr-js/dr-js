@@ -15,9 +15,10 @@ import {
 } from './docker.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 describe('Node.Module.Software.Docker', () => {
-  __DEV__ && info(`DOCKER_BIN_PATH: ${resolveCommandName('docker')}`)
+  log(`DOCKER_BIN_PATH: ${resolveCommandName('docker')}`)
 
   if (resolveCommandName('docker')) {
     it('check()', () => truthy(check()))
@@ -28,34 +29,34 @@ describe('Node.Module.Software.Docker', () => {
     it('runDocker()', async () => {
       const { promise, stdoutPromise } = runDocker([ 'version' ], { quiet: true })
       await promise
-      info(String(await stdoutPromise))
-      info(String(await runDockerStdout([ 'version' ])))
+      log(String(await stdoutPromise))
+      log(String(await runDockerStdout([ 'version' ])))
     })
 
     it('runDockerSync()', () => {
       const { stdout } = runDockerSync([ 'version' ], { quiet: true })
-      info(String(stdout))
-      info(String(runDockerStdoutSync([ 'version' ])))
+      log(String(stdout))
+      log(String(runDockerStdoutSync([ 'version' ])))
     })
 
     it('runCompose()', async () => {
       const { promise, stdoutPromise } = runCompose([ 'version' ], { quiet: true })
       await promise
-      info(String(await stdoutPromise))
-      info(String(await runComposeStdout([ 'version' ])))
+      log(String(await stdoutPromise))
+      log(String(await runComposeStdout([ 'version' ])))
     })
 
     it('runComposeSync()', () => {
       const { stdout } = runComposeSync([ 'version' ], { quiet: true })
-      info(String(stdout))
-      info(String(runComposeStdoutSync([ 'version' ])))
+      log(String(stdout))
+      log(String(runComposeStdoutSync([ 'version' ])))
     })
 
     it('getContainerLsList()', async () => {
-      info(JSON.stringify(await getContainerLsList(), null, 2))
+      log(JSON.stringify(await getContainerLsList(), null, 2))
     })
   } else { // no docker installed (GitHub CI Macos)
-    info('no docker installed')
+    log('no docker installed')
     it('check()', () => truthy(!check()))
     it('verify()', () => doThrow(verify))
     it('checkCompose()', () => truthy(!checkCompose()))
