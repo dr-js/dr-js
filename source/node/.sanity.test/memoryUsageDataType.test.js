@@ -6,7 +6,7 @@ process.env.TEST_SANITY && !process.env.IS_CI && describe('Node.SanityTest.Memor
   it('basic data type', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4
-    testDropRound: 3, // first 2-4 result may be less stable
+    testDropRound: 4, // first 2-4 result may be less stable
     testSubjectCount: 64 * 1024, // number of test subject (for 8K and 256K the result should not change much or the test is flowed)
     // testKeepRound: 2, testDropRound: 2, testSubjectCount: 4 * 1024, // FASTER DEV TEST CONFIG
     testList: [ // [ title, predictionAvg, funcCreateSubject ]
@@ -24,7 +24,7 @@ process.env.TEST_SANITY && !process.env.IS_CI && describe('Node.SanityTest.Memor
   it('promise', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig, isNodejs15 = Number(process.versions.node.split('.')[ 0 ]) >= 15 }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4
-    testDropRound: 3, // first 2-4 result may be less stable
+    testDropRound: 4, // first 2-4 result may be less stable
     testSubjectCount: 64 * 1024, // number of test subject (for 8K and 256K the result should not change much or the test is flowed)
     // testKeepRound: 2, testDropRound: 2, testSubjectCount: 4 * 1024, // FASTER DEV TEST CONFIG
     testList: [ // [ title, predictionAvg, funcCreateSubject ]
@@ -40,7 +40,7 @@ process.env.TEST_SANITY && !process.env.IS_CI && describe('Node.SanityTest.Memor
   it('function', createTestFunc(0, commonFunc, async (triggerGC, { formatMemory, markMemory, runSubjectPredictionTestConfig, isNodejs14 = Number(process.versions.node.split('.')[ 0 ]) >= 14 }) => runSubjectPredictionTestConfig({
     testConfigName: 'rough data size test',
     testKeepRound: 6, // suggest at least 4
-    testDropRound: 3, // first 2-4 result may be less stable
+    testDropRound: 4, // first 2-4 result may be less stable
     testSubjectCount: 64 * 1024, // number of test subject (for 8K and 256K the result should not change much or the test is flowed)
     // testKeepRound: 2, testDropRound: 2, testSubjectCount: 4 * 1024, // FASTER DEV TEST CONFIG
     testList: [ // [ title, predictionAvg, funcCreateSubject ]

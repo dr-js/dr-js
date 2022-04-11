@@ -4,6 +4,7 @@ import { getRandomId, getRandomInt, getRandomIntList } from 'source/common/math/
 import { createDoublyLinkedList, createNode } from './LinkedList.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const getTestData = (length = getRandomInt(4, 16)) => {
   const linkedList = createDoublyLinkedList()
@@ -138,7 +139,7 @@ describe('Common.Data.LinkedList', () => {
     it(`stress-test #${testLeft}`, () => {
       sanityCheck('start')
       while (testLeft !== 0) {
-        info(`testLeft: ${testLeft}, linkedList length: ${linkedList.getLength()}`)
+        log(`testLeft: ${testLeft}, linkedList length: ${linkedList.getLength()}`)
         const numberList = getRandomIntList(0, 0xffff, Math.min(0xfff, testLeft))
         for (const number of numberList) {
           const index = number % operationCount

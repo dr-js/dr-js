@@ -3,17 +3,18 @@ import { setTimeoutAsync } from './time.js'
 import { createTest } from './test.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const quickTestSetup = () => {
   const TEST_GLOBAL = {}
-  createTest().TEST_SETUP({ log: () => {}, testGlobal: TEST_GLOBAL })
+  createTest().TEST_SETUP({ log, testGlobal: TEST_GLOBAL })
   return TEST_GLOBAL
 }
 
 const quickTestRunAsync = async (setupFunc, expectResult) => {
   const TEST_GLOBAL = {}
   const { TEST_SETUP, TEST_RUN } = createTest()
-  TEST_SETUP({ log: info, testGlobal: TEST_GLOBAL })
+  TEST_SETUP({ log, testGlobal: TEST_GLOBAL })
   await setupFunc(TEST_GLOBAL)
   const RESULT = await TEST_RUN()
   TEST_GLOBAL.info('[RESULT]', JSON.stringify(RESULT))

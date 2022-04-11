@@ -23,6 +23,7 @@ import {
 } from './RunletChip.js'
 
 const { describe, it, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 describe('Common.Module.Runlet', () => {
   const poolKey = 'default'
@@ -79,12 +80,12 @@ describe('Common.Module.Runlet', () => {
     attach()
     const stepper = createStepper()
     trigger()
-    info(`done: ${time(stepper())}`)
+    log(`done: ${time(stepper())}`)
     truthy(isEND, 'should end now when all Chip is sync')
     const result = await promise
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, benchValueList.length)
   })
 
@@ -132,10 +133,10 @@ describe('Common.Module.Runlet', () => {
     trigger()
 
     const result = await promise
-    info(`done: ${time(stepper())}`)
+    log(`done: ${time(stepper())}`)
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, benchValueList.length)
   })
 
@@ -159,8 +160,8 @@ describe('Common.Module.Runlet', () => {
 
     const result = await chipMap.get('out').promise
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, getSampleRange(1, sampleSourceCount))
   })
 
@@ -182,8 +183,8 @@ describe('Common.Module.Runlet', () => {
     const result = []
     for await (const value of chipMap.get('out')) result.push(value)
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, getSampleRange(1, sampleSourceCount))
   })
 
@@ -204,8 +205,8 @@ describe('Common.Module.Runlet', () => {
 
     const result = await chipMap.get('out').promise
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, getSampleRange(1, sampleSourceCount))
   })
 
@@ -224,19 +225,19 @@ describe('Common.Module.Runlet', () => {
     attach()
     trigger()
     await setTimeoutAsync(10)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     pause()
     await setTimeoutAsync(10)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     resume()
     trigger()
 
     const result = await chipMap.get('out').promise
     __DEV__ && console.log(result)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     stringifyEqual(result, getSampleRange(1, sampleSourceCount))
   })
 
@@ -273,8 +274,8 @@ describe('Common.Module.Runlet', () => {
     const result = await IOP.promise // runlet should not reach the end
     strictEqual(result, 'noop')
 
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
   })
 
   it('createRunlet() active, test error from middle chip', async () => { // TODO: test error from both end chip?
@@ -303,8 +304,8 @@ describe('Common.Module.Runlet', () => {
     const { attach, trigger, detach, getIsValid, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
     attach()
     trigger()
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
 
     truthy(getIsValid())
 
@@ -318,8 +319,8 @@ describe('Common.Module.Runlet', () => {
     __DEV__ && console.log(detachedData)
 
     await setTimeoutAsync(10)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
   })
 
   it('createRunlet() active, 1:n ratio', async () => {
@@ -407,8 +408,8 @@ describe('Common.Module.Runlet', () => {
     trigger()
 
     const result = await chipMap.get('out').promise
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
     __DEV__ && console.log(result)
     stringifyEqual(result.sort(compareStringWithNumber), [ // NOTE: the order can change, so sort is needed
       '1[1/5]', '1[2/5]', '1[3/5]', '1[4/5]', '1[5/5]',
@@ -449,8 +450,8 @@ describe('Common.Module.Runlet', () => {
     truthy(!pendOutput.canPull())
 
     pendInput.push(createPack(1, undefined))
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
 
     strictEqual(pendOutput.pull(), undefined) // nothing yet
     while (!pendOutput.canPull()) await setTimeoutAsync(1) // wait & keep polling
@@ -461,8 +462,8 @@ describe('Common.Module.Runlet', () => {
     while (!pendOutput.canPull()) await setTimeoutAsync(1) // wait & keep polling
     stringifyEqual(pendOutput.pull(), [ '1[3/3] [1/2]', undefined, undefined ])
     stringifyEqual(pendOutput.pull(), [ undefined, END, undefined ]) // should flush value & END out
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
   })
 
   // ## ThePlan ##
@@ -536,8 +537,8 @@ describe('Common.Module.Runlet', () => {
     const { attach, trigger, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
     attach()
     trigger()
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
 
     const [ result0, result1 ] = await Promise.all([ endIOP0.promise, endIOP1.promise ])
     __DEV__ && console.log('result0', JSON.stringify(result0))
@@ -547,8 +548,8 @@ describe('Common.Module.Runlet', () => {
     truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
   })
 
   it('createRunlet() active, sort of messy setup', async () => {
@@ -602,8 +603,8 @@ describe('Common.Module.Runlet', () => {
     const { attach, trigger, describe } = createRunlet(quickConfigPend(poolMap, chipMap))
     attach()
     trigger()
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
 
     const [ result0, result1 ] = await Promise.all([ endIOP0.promise, endIOP1.promise ])
     __DEV__ && console.log('result0', JSON.stringify(result0))
@@ -613,8 +614,8 @@ describe('Common.Module.Runlet', () => {
     truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(describe().join('\n'))
   })
 
   it('createRunlet() active, very messy setup', async () => {
@@ -672,9 +673,9 @@ describe('Common.Module.Runlet', () => {
     const runletMain = createRunlet(quickConfigPend(poolMap, chipMapMain))
     runletMain.attach()
     runletMain.trigger()
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(runletB.describe().join('\n'))
-    __DEV__ && info(runletMain.describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(runletB.describe().join('\n'))
+    log(runletMain.describe().join('\n'))
 
     const [ result0, result1 ] = await Promise.all([ endIOP0.promise, endIOP1.promise ])
     __DEV__ && console.log('result0', JSON.stringify(result0))
@@ -684,9 +685,9 @@ describe('Common.Module.Runlet', () => {
     truthy(result1.length > 0)
 
     await setTimeoutAsync(1)
-    __DEV__ && info('==== runlet.describe ====')
-    __DEV__ && info(runletB.describe().join('\n'))
-    __DEV__ && info(runletMain.describe().join('\n'))
+    log('==== runlet.describe ====')
+    log(runletB.describe().join('\n'))
+    log(runletMain.describe().join('\n'))
   })
 })
 

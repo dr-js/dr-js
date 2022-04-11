@@ -9,6 +9,7 @@ import { ping, fetchLikeRequest } from './net.js'
 import { BUFFER_SCRIPT, withTestServer } from './testServer.test.js'
 
 const { describe, it, before, after, info = console.log } = globalThis
+const log = __DEV__ ? info : () => {}
 
 const SOURCE_SCRIPT = resolve(__dirname, './test-net-script-gitignore.js')
 
@@ -21,7 +22,7 @@ after(() => {
 })
 
 const expectError = (content) => (error) => {
-  if (String(error).includes(content)) info(`good, expected: ${error}`)
+  if (String(error).includes(content)) log(`good, expected: ${error}`)
   else throw new Error(`unexpected: ${error.stack || error}`)
 }
 
@@ -95,7 +96,7 @@ describe('Node.Net', () => {
     )
   }))
 
-  const onProgress = (now, total) => info(`${percent(now / total)} ${now}/${total}`)
+  const onProgress = (now, total) => log(`${percent(now / total)} ${now}/${total}`)
 
   it('fetchLikeRequest() onProgress', withTestServer(async ({ baseUrl }) => {
     await (await fetchLikeRequest(`${baseUrl}/test-buffer`, { onProgressDownload: onProgress })).buffer()

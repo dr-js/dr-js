@@ -22,6 +22,7 @@ import {
 } from './WatchLoop.js'
 
 const { describe, it, before, after, info = console.log } = global
+const log = __DEV__ ? info : () => {}
 
 const TEST_ROOT = resolve(__dirname, 'test-watchloop-gitignore')
 const fromRoot = (...args) => resolve(TEST_ROOT, ...args)
@@ -64,12 +65,12 @@ after(async () => {
 describe('Node.System.WatchLoop', () => {
   it('loop', async () => {
     const loggerExot = createLoggerExot({ pathLogDirectory: fromRoot('log/'), getLogFileName: () => 'test.log', saveInterval: 100 })
-    await loggerExot.up(info)
-    const log = (...args) => {
-      info(...args)
+    await loggerExot.up(log)
+    const __log = (...args) => {
+      log(...args)
       loggerExot.add(...args)
     }
-    log('[loop] start')
+    __log('[loop] start')
 
     let loopConfig = formatLoopConfig({
       stateFilePath: fromRoot('loopState.0.json'),
@@ -84,7 +85,7 @@ describe('Node.System.WatchLoop', () => {
     const runLoop = async (loopCount, isNoStart = false) => {
       while (loopCount--) {
         const { statusList } = await loopMain(loopConfig, loopState, { isNoStart }) // statusList only return on slow loop
-        log(statusList ? `#${loopState.loopIndex}\n${indentLineList(statusList, '- ')}` : `#${loopState.loopIndex}`)
+        __log(statusList ? `#${loopState.loopIndex}\n${indentLineList(statusList, '- ')}` : `#${loopState.loopIndex}`)
         statusList && await saveLoopState(loopConfig, loopState) // lazy save
         await loopWaitAndStep(loopConfig, loopState)
       }
@@ -103,7 +104,7 @@ describe('Node.System.WatchLoop', () => {
     strictEqual(loopState.unitStateMap[ 'bloat-process' ].latestFoundTime > 0, true, 'bloat process should run normal for some time')
 
     {
-      log('[loop] migrate (add unit, all-slow-loop)')
+      __log('[loop] migrate (add unit, all-slow-loop)')
       const prevLoopConfig = loopConfig
       const prevLoopState = loopState
       loopConfig = formatLoopConfig({
@@ -124,9 +125,9 @@ describe('Node.System.WatchLoop', () => {
     }
 
     {
-      log('[loop] migrate (drop unit, stabilize)')
+      __log('[loop] migrate (drop unit, stabilize)')
       await runLoop(2, 'no-start')
-      log('[loop] migrate (drop unit)')
+      __log('[loop] migrate (drop unit)')
       const prevLoopConfig = loopConfig
       const prevLoopState = loopState
       loopConfig = formatLoopConfig({
@@ -140,7 +141,7 @@ describe('Node.System.WatchLoop', () => {
       strictEqual(Object.keys(loopState.unitStateMap).length, 2)
     }
 
-    log('[loop] stop')
+    __log('[loop] stop')
     markLoopState(loopConfig, loopState, 'stop')
     await loopStop(loopConfig, loopState)
     await loopWaitAndStep(loopConfig, loopState)
