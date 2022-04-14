@@ -120,7 +120,10 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
         ? 'make-fetch-happen/agent'
         // make-fetch-happen@9: https://github.com/npm/cli/blob/v7.20.3/node_modules/make-fetch-happen/lib/remote.js#L31
         : 'make-fetch-happen/lib/agent'
-    ))(url, option),
+    ))(url, {
+      dns: { ttl: 5 * 60 * 1000, lookup: tryRequire('dns').lookup }, // make-fetch-happen@10.1: https://github.com/npm/cli/blob/v8.6.0/node_modules/make-fetch-happen/lib/options.js#L31
+      ...option
+    }),
     secureEndpoint: new URL(url).protocol === 'https:' // HACK: to counter HACK part2/2
   })
 }

@@ -1,6 +1,7 @@
 import { resolve } from 'path'
 
 import { strictEqual } from 'source/common/verify.js'
+import { autoEllipsis } from 'source/common/string.js'
 import { runStdout } from 'source/node/run.js'
 import { describeSystemPlatform } from 'source/node/system/Status.js'
 import { runKit } from 'source/node/kit.js'
@@ -64,5 +65,15 @@ runKit(async (kit) => {
       describeSystemPlatform(),
       ''
     ].join('\n'))
+  }
+
+  {
+    kit.padLog('test fetchWithJumpProxy')
+    const stdoutString = String(await runStdout([
+      process.execPath,
+      'output-gitignore/bin',
+      '--fetch', 'https://dr.run'
+    ], { cwd: PATH_ROOT }))
+    console.log({ stdoutString: autoEllipsis(stdoutString, 512, 256, 64) })
   }
 }, { title: 'test-bin' })
