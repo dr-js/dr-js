@@ -69,6 +69,8 @@
   - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromString`, `fromU16String`, `isEqualArrayBuffer`, `toString`, `toU16String`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
++ 📄 [source/common/data/B62.js](source/common/data/B62.js)
+  - `decode`, `encode`
 + 📄 [source/common/data/Base64.js](source/common/data/Base64.js)
   - `decode`, `encode`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
@@ -122,7 +124,7 @@
 + 📄 [source/common/math/easing.js](source/common/math/easing.js)
   - `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
-  - `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`
+  - `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
   - `getSample`, `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncFuncQueue.js](source/common/module/AsyncFuncQueue.js)
@@ -432,6 +434,8 @@
       - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromString`, `fromU16String`, `isEqualArrayBuffer`, `toString`, `toU16String`
     - **ArrayBufferPacket**
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
+    - **B62**
+      - `decode`, `encode`
     - **Base64**
       - `decode`, `encode`
     - **CacheMap**
@@ -480,7 +484,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **AsyncFuncQueue**
       - `createAsyncFuncQueue`

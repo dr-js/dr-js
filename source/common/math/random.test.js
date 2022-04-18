@@ -2,7 +2,7 @@ import { includes, strictEqual, truthy } from 'source/common/verify.js'
 import {
   getRandomInt,
   getRandomIntList,
-  getRandomId,
+  getRandomId, getRandomId62,
   getRandomArrayBuffer
 } from './random.js'
 
@@ -27,6 +27,11 @@ describe('Common.Math.Random', () => {
   it('getRandomId()', () => {
     truthy(getRandomId('[abc]').startsWith('[abc]'))
     includes(getRandomId(), '-')
+  })
+
+  it('getRandomId62()', () => {
+    truthy(getRandomId62('[abc]').startsWith('[abc]'))
+    includes(getRandomId62('+'), '+')
   })
 
   it('getRandomArrayBuffer()', () => {
