@@ -1,4 +1,5 @@
 import { tryRequire } from 'source/env/tryRequire.js'
+import { encode as encodeB62 } from 'source/common/data/B62.js'
 
 // range [from, to] // this will not auto swap, meaning <from> should be smaller than <to>
 const RANDOM_INT = (from, to) => Math.floor(Math.random() * (to - from + 1) + from)
@@ -54,13 +55,14 @@ const getRandomIntList = (a, b, count) => {
   return resultList
 }
 
-const getRandomId = (prefix = '') => `${prefix}${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+const getRandomId = (prefix = '') => `${prefix}${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}` // mostly: 17char = 8 + 1 + 8
+const getRandomId62 = (prefix = '') => `${prefix}${encodeB62(Date.now())}${encodeB62(Math.floor(Math.random() * (62 ** 7)))}` // mostly: 14char = 7 + 7, slightly higher random (62 ** 7 > 36 ** 8)
 
 const getRandomArrayBuffer = tryGetRandomArrayBuffer() // (byteLength) => arrayBuffer
 
 export {
   getRandomInt,
   getRandomIntList,
-  getRandomId,
+  getRandomId, getRandomId62,
   getRandomArrayBuffer
 }

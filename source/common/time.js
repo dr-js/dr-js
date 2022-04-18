@@ -38,7 +38,7 @@ const CLOCK_PER_SECOND = 1000
 const CLOCK_TO_SECOND = 1 / CLOCK_PER_SECOND
 
 const clock = tryClock() // return running/relative time in milliseconds
-const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer
+const getTimestamp = () => Math.floor(Date.now() * CLOCK_TO_SECOND) // UTC, integer, in seconds; use `Date.now()` directly for milliseconds value
 
 // similar to output of `TZ=UTC0 date +%Y%m%d`, in `YYYYMMDD` format
 const getUTCDateTag = (date = new Date()) => [ date.getUTCFullYear(), pad00(date.getUTCMonth() + 1), pad00(date.getUTCDate()) ].join('')
