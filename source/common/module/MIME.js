@@ -2,6 +2,7 @@ const BASIC_MIME_DATA_LIST = [ // https://developer.mozilla.org/docs/Web/HTTP/Ba
   'application/gzip;gz',
   'application/json',
   'application/pdf',
+  'application/wasm',
   'application/xml',
   'application/x-7z-compressed;7z',
   'application/x-tar;tar',
