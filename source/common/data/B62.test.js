@@ -7,14 +7,22 @@ const { describe, it, info = console.log } = globalThis
 
 const TEST_LIST = [ // [ uint, string ]
   [ 0, '0' ],
+  [ 9, '9' ],
   [ 16, 'g' ],
   [ 61, 'Z' ],
   [ 65, '13' ],
+  [ 99, '1B' ],
   [ 999, 'g7' ],
+  [ 3843, 'ZZ' ],
   [ 9999, '2Bh' ],
   [ 238327, 'ZZZ' ],
+  [ 14776335, 'ZZZZ' ],
+  [ 916132831, 'ZZZZZ' ],
+  [ 56800235583, 'ZZZZZZ' ],
+  [ 3521614606207, 'ZZZZZZZ' ],
   [ 10000000000001, '2Q3rKTOF' ],
   [ 10000000000003, '2Q3rKTOH' ],
+  [ 218340105584895, 'ZZZZZZZZ' ],
   [ Number.MAX_SAFE_INTEGER - 1, 'FfGNdXsE6' ],
   [ Number.MAX_SAFE_INTEGER, 'FfGNdXsE7' ]
 ]
