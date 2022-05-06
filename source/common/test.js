@@ -1,3 +1,4 @@
+import { tryRequire } from 'source/env/tryRequire.js'
 import { string, basicFunction } from 'source/common/verify.js'
 import { isString, isBasicFunction } from 'source/common/check.js'
 import { catchSync, catchAsync } from 'source/common/error.js'
@@ -84,7 +85,8 @@ const createTest = ({ // BDD style
   const it = getPushScopeFunc('it', LIST_NAME_IT)
   const after = getPushScopeFunc('after', LIST_NAME_AFTER)
 
-  const info = (...args) => CONFIG && CONFIG.log(indentLine(args.join(' '), '      > '))
+  const stringify = (tryRequire('util') || {}).inspect || String
+  const info = (...args) => CONFIG && CONFIG.log(indentLine(args.map((v) => stringify(v)).join(' '), '      > '))
 
   const TEST_SETUP = ({
     log = console.log,
