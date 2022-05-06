@@ -126,7 +126,7 @@
 + 📄 [source/common/math/random.js](source/common/math/random.js)
   - `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomInt`, `getRandomIntList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
-  - `getSample`, `getSampleRange`, `getSampleRate`
+  - `getSample`, `getSampleIterator`, `getSampleIteratorRange`, `getSampleIteratorRate`, `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncFuncQueue.js](source/common/module/AsyncFuncQueue.js)
   - `createAsyncFuncQueue`
 + 📄 [source/common/module/AsyncLane.js](source/common/module/AsyncLane.js)
@@ -484,7 +484,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleRange`, `getSampleRate`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleIterator`, `getSampleIteratorRange`, `getSampleIteratorRate`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **AsyncFuncQueue**
       - `createAsyncFuncQueue`
