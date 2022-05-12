@@ -7,11 +7,6 @@ import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
 import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { spawnString } from '../function.js'
 
-import {
-  parsePackageNameAndVersion, // TODO: DEPRECATE
-  toPackageTgzName // TODO: DEPRECATE
-} from 'source/common/module/PackageJSON.js'
-
 const findUpPackageRoot = (path = __dirname) => {
   path = resolve(path) // normalize
   let prevPath
@@ -129,9 +124,6 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
 }
 const fetchWithJumpProxy = (initialUrl, option) => fetchWithJump(initialUrl, { fetch: fetchLikeRequestWithProxy, ...option })
 
-/** @deprecated */ const parsePackageNameAndVersionExport = parsePackageNameAndVersion // TODO: DEPRECATE
-/** @deprecated */ const toPackageTgzNameExport = toPackageTgzName // TODO: DEPRECATE
-
 export {
   findUpPackageRoot,
 
@@ -146,8 +138,5 @@ export {
 
   hasRepoVersion,
 
-  fetchLikeRequestWithProxy, fetchWithJumpProxy,
-
-  parsePackageNameAndVersionExport as parsePackageNameAndVersion, // TODO: DEPRECATE
-  toPackageTgzNameExport as toPackageTgzName // TODO: DEPRECATE
+  fetchLikeRequestWithProxy, fetchWithJumpProxy
 }

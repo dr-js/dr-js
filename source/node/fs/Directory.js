@@ -74,7 +74,6 @@ const walkDirInfoTree = async (
   { root, dirInfoListMap },
   callback // async (dirInfo) => true/false // return true to end search
 ) => dirInfoTreeBreadthFirstSearchAsync({ path: root }, callback, dirInfoListMap)
-/** @deprecated */ const walkDirInfoTreeAsync = walkDirInfoTree
 const walkDirInfoTreeSync = (
   { root, dirInfoListMap },
   callback // (dirInfo) => true/false // return true to end search
@@ -83,7 +82,6 @@ const walkDirInfoTreeBottomUp = async (
   { root, dirInfoListMap },
   callback // async (dirInfo) => true/false // return true to end search
 ) => dirInfoTreeBottomUpSearchAsync({ path: root }, callback, dirInfoListMap)
-/** @deprecated */ const walkDirInfoTreeBottomUpAsync = walkDirInfoTreeBottomUp
 const walkDirInfoTreeBottomUpSync = (
   { root, dirInfoListMap },
   callback // (dirInfo) => true/false // return true to end search
@@ -244,8 +242,8 @@ export {
   getDirInfoList, getDirInfoListSync,
   getDirInfoTree, getDirInfoTreeSync,
 
-  walkDirInfoTree, walkDirInfoTreeSync, walkDirInfoTreeAsync,
-  walkDirInfoTreeBottomUp, walkDirInfoTreeBottomUpSync, walkDirInfoTreeBottomUpAsync,
+  walkDirInfoTree, walkDirInfoTreeSync,
+  walkDirInfoTreeBottomUp, walkDirInfoTreeBottomUpSync,
 
   copyDirInfoTree, copyDirInfoTreeSync,
   renameDirInfoTree, renameDirInfoTreeSync,

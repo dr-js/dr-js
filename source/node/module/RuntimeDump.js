@@ -30,7 +30,6 @@ const dumpSync = (path) => {
   writeV8HeapSnapshot(resolve(path, `runtime-dump-${tag}.heapsnapshot`))
   writeJSONSync(resolve(path, `runtime-dump-${tag}.extra.json`), getV8Extra())
 }
-/** @deprecated */ const dumpAsync = async (path) => dumpSync(path)
 
 const setupSIGUSR2 = (outputPath) => { // linux only
   outputPath = resolve(outputPath)
@@ -45,7 +44,5 @@ export {
   getV8HeapSnapshotReadableStream,
   writeV8HeapSnapshot,
   dumpSync,
-  setupSIGUSR2,
-
-  dumpAsync
+  setupSIGUSR2
 }

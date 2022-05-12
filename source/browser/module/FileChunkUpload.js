@@ -6,8 +6,7 @@ const { isSecureContext } = window
 const uploadFileByChunk = async ({
   fileBlob, fileSize = fileBlob.size,
   key, chunkSizeMax,
-  uploadFileChunk, // TODO: DEPRECATE
-  uploadChunk = uploadFileChunk, // async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
+  uploadChunk, // async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
   onProgress // (uploadedSize, totalSize) => {}
 }) => uploadArrayBufferByChunk({ // shared code for browser/node upload
   size: fileSize,

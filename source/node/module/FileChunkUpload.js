@@ -96,8 +96,7 @@ const uploadFileByChunk = async ({
   fileBuffer, filePath, // use path for larger file
   fileSize, // optional
   key, chunkSizeMax,
-  uploadFileChunk, // TODO: DEPRECATE
-  uploadChunk = uploadFileChunk, // = async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
+  uploadChunk, // = async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {}
   onProgress // (uploadedSize, totalSize) => {}
 }) => {
   if (fileSize === undefined) fileSize = fileBuffer ? fileBuffer.length : (await fsAsync.stat(filePath)).size

@@ -1,10 +1,6 @@
-import { tmpdir } from 'os'
-import { resolve } from 'path'
 import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
 import { constants, createGzip, createGunzip, createBrotliCompress, createBrotliDecompress } from 'zlib'
-import { getRandomId } from 'source/common/math/random.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
-import { createDirectory, deleteDirectory } from 'source/node/fs/Directory.js'
 
 const REGEXP_TGZ = /\.t(?:ar\.)?gz$/
 const REGEXP_TBR = /\.t(?:ar\.)?br$/
@@ -49,20 +45,9 @@ const extractGzBrFileAsync = async (fileFrom, fileTo, isGzip = REGEXP_GZ.test(fi
   createWriteStream(fileTo)
 )
 
-/** @deprecated */ const withTempPath = async ( // TODO: DEPRECATE: not suitable for other use
-  pathTemp = resolve(tmpdir(), getRandomId('dr-js-')),
-  asyncFunc,
-  pathFrom, pathTo
-) => {
-  await createDirectory(pathTemp)
-  await asyncFunc(resolve(pathFrom), resolve(pathTo), pathTemp)
-  await deleteDirectory(pathTemp)
-}
-
 export {
   REGEXP_TGZ, REGEXP_TBR, REGEXP_T7Z, REGEXP_TXZ,
   isBufferGzip, isFileGzip, createGzipMax, createBrotliCompressMax,
   REGEXP_GZ, REGEXP_BR, REGEXP_GZBR,
-  compressGzBrFileAsync, extractGzBrFileAsync,
-  withTempPath // TODO: DEPRECATE: not suitable for other use
+  compressGzBrFileAsync, extractGzBrFileAsync
 }
