@@ -21,7 +21,7 @@ const COMMON_FORMAT_LIST = Preset.parseCompactList(
 const MODE_FORMAT_LIST = Preset.parseCompactList(
   'eval,e/A|eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv',
   'repl,i/T|start node REPL',
-  'fetch,f/O/1-4|fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, -T=timeout/0, $@=initialUrl,method/GET,jumpMax/4',
+  'fetch,f/O/1-3|fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, -T=timeout/0, $@=initialUrl,method/GET,jumpMax/4',
 
   'wait/AI,O/0-1|wait specified time, in msec: $0=waitTime/2*1000',
   'echo/A|show args: $@=...args',

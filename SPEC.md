@@ -763,7 +763,7 @@
 >       eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0-1]
 >       start node REPL
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >       fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, -T=timeout/0, $@=initialUrl,method/GET,jumpMax/4
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
 >       wait specified time, in msec: $0=waitTime/2*1000
@@ -877,7 +877,7 @@
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_WAIT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
@@ -945,7 +945,7 @@
 >     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "repl": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
+>     "fetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
 >     "wait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "echo": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],
