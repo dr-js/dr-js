@@ -34,18 +34,15 @@ const modulePathHack = (newPath) => {
 }
 const patchModulePath = () => modulePathHack(resolve(module.filename, '../../../../'))
 
-const evalScript = ( // NOTE: use eval not Function to derive local
+const evalScript = (
   evalScriptString, // inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ]
   evalScriptPath, // inputFile || resolve('__SCRIPT_STRING__'),
   evalArgv, // inputFile ? argumentList : argumentList.slice(1)
   evalOption // optionData
-) => eval(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`)( // eslint-disable-line no-eval
-  evalArgv, // NOTE: allow both evalArgv / argumentList is accessible from eval
-  evalOption,
-  evalScriptPath,
-  dirname(evalScriptPath),
-  require('module').createRequire(evalScriptPath)
-)
+) => { // NOTE: use indirect eval to limit inner-context, check: https://esbuild.github.io/content-types/#direct-eval
+  const asyncFunc = (0, eval)(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`) // eslint-disable-line no-eval
+  return asyncFunc(evalArgv, evalOption, evalScriptPath, dirname(evalScriptPath), require('module').createRequire(evalScriptPath))
+}
 
 const stepper = createStepper()
 const logAuto = (...args) => console.log(
