@@ -1,4 +1,4 @@
-import { resolve, basename } from 'path'
+import { resolve, basename } from 'node:path'
 import { createDirectory } from 'source/node/fs/Directory.js'
 
 import {

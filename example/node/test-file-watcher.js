@@ -1,4 +1,4 @@
-const { resolve } = require('path')
+const { resolve } = require('node:path')
 const { writeText } = require('../../output-gitignore/library/node/fs/File.js')
 const { createFileWatcherExot } = require('../../output-gitignore/library/node/fs/Watch.js')
 const { createDirectory } = require('../../output-gitignore/library/node/fs/Directory.js')

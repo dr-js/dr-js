@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { STAT_ERROR, PATH_TYPE, getPathTypeFromStat, getPathLstat, getPathLstatSync, addTrailingSep } from './Path.js'
 import { deleteDirectory, resetDirectory } from './Directory.js'

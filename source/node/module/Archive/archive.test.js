@@ -1,4 +1,4 @@
-import { resolve, basename } from 'path'
+import { resolve, basename } from 'node:path'
 import { truthy } from 'source/common/verify.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
 

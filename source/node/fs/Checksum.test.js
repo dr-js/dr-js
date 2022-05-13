@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual, doThrowAsync } from 'source/common/verify.js'
 import { getSampleRange } from 'source/common/math/sample.js'
 import { writeText } from './File.js'

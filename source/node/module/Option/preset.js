@@ -1,4 +1,4 @@
-import { resolve, dirname } from 'path'
+import { resolve, dirname } from 'node:path'
 import { tryRequire } from 'source/env/tryRequire.js'
 import { indentLineList, splitCamelCase } from 'source/common/string.js'
 import { string, number, boolean, integer, regexp, basicObject, basicFunction, arrayLength, oneOf } from 'source/common/verify.js'

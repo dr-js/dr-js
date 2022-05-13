@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, appendFileSync, copyFileSync as __copyFileSync, renameSync, unlinkSync, promises as fsAsync } from 'fs'
+import { readFileSync, writeFileSync, appendFileSync, copyFileSync as __copyFileSync, renameSync, unlinkSync, promises as fsAsync } from 'node:fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
 import { dupJSON } from 'source/common/data/function.js'

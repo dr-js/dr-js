@@ -26,7 +26,7 @@ const getDefaultOpenCommandList = () => {
 export { getDefaultOpenCommandList }
 
 // ultimate URL test:
-// require('child_process').spawnSync('rundll32.exe', [ 'url.dll,OpenURL', 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
-// require('child_process').spawnSync('open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
-// require('child_process').spawnSync('xdg-open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
-// require('child_process').spawnSync('termux-open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
+// require('node:child_process').spawnSync('rundll32.exe', [ 'url.dll,OpenURL', 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
+// require('node:child_process').spawnSync('open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
+// require('node:child_process').spawnSync('xdg-open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])
+// require('node:child_process').spawnSync('termux-open', [ 'http://localhost?a=1#some://url?with=special&chars\'\":[]{}()!@#$%^&*-=_+<>,.?/\\' ])

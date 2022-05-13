@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import {
   cachedDataVersionTag,
   getHeapSpaceStatistics,
@@ -6,7 +6,7 @@ import {
   getHeapSnapshot,
   getHeapCodeStatistics,
   writeHeapSnapshot
-} from 'v8'
+} from 'node:v8'
 
 import { getRandomId } from 'source/common/math/random.js'
 import { writeJSONSync } from 'source/node/fs/File.js'

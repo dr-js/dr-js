@@ -44,7 +44,7 @@ And some helpful quick composed shell scripts:
   > 
   > dr-js\
   >   -O result.json\
-  >   -e "return require('@dr-js/core/library/common/format').prettyStringifyJSON(JSON.parse(require('fs').readFileSync(evalArgv[ 0 ])), evalArgv[ 1 ])"\
+  >   -e "return require('@dr-js/core/library/common/format').prettyStringifyJSON(JSON.parse(require('node:fs').readFileSync(evalArgv[ 0 ])), evalArgv[ 1 ])"\
   >   ${ARG0_FILE_JSON} ${ARG1_FORMAT_JSON_LEVEL}
   > ```
 
@@ -53,7 +53,7 @@ And some helpful quick composed shell scripts:
   > dr-js -e "$(cat <<- 'EOM'
   >   const { generateLookupData, generateCheckCode, verifyCheckCode, packDataArrayBuffer, parseDataArrayBuffer } = require('@dr-js/core/library/common/module/TimedLookup')
   >   const { fromNodejsBuffer } = require('@dr-js/core/library/common/data/ArrayBuffer')
-  >   const { readFileSync } = require('fs')
+  >   const { readFileSync } = require('node:fs')
   >   const [ mode, ...extraArgv ] = evalArgv
   >   const loadTimedLookup = () => parseDataArrayBuffer(fromNodejsBuffer(readFileSync(evalOption.getFirst('root'))))
   >   switch (mode) {

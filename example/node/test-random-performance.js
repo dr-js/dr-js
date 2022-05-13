@@ -1,4 +1,4 @@
-const { randomBytes } = require('crypto')
+const { randomBytes } = require('node:crypto')
 const { createStepper } = require('../../output-gitignore/library/common/time.js')
 
 const logResult = (result) => {

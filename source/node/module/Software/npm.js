@@ -1,5 +1,5 @@
-import { resolve } from 'path'
-import { statSync, realpathSync } from 'fs'
+import { resolve } from 'node:path'
+import { statSync, realpathSync } from 'node:fs'
 import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
 import { compareSemVer } from 'source/common/module/SemVer.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
@@ -105,7 +105,7 @@ const hasRepoVersion = async ( // NOTE: `npm view` can not return the pakument, 
 
 const fetchLikeRequestWithProxy = (url, option = {}) => {
   // NOTE: this is to support npm@6 which ship with agent-base@4, npm@7 do not need this
-  tryRequire('https').request.__agent_base_https_request_patched__ = true // HACK: to counter HACK part1/2: https://github.com/TooTallNate/node-agent-base/commit/33af5450
+  tryRequire('node:https').request.__agent_base_https_request_patched__ = true // HACK: to counter HACK part1/2: https://github.com/TooTallNate/node-agent-base/commit/33af5450
   return fetchLikeRequest(url, {
     ...option,
     agent: tryRequire(fromNpmNodeModules( // change from 7.16.0: https://github.com/npm/cli/commit/e92b5f2b
@@ -116,7 +116,7 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
         // make-fetch-happen@9: https://github.com/npm/cli/blob/v7.20.3/node_modules/make-fetch-happen/lib/remote.js#L31
         : 'make-fetch-happen/lib/agent'
     ))(url, {
-      dns: { ttl: 5 * 60 * 1000, lookup: tryRequire('dns').lookup }, // make-fetch-happen@10.1: https://github.com/npm/cli/blob/v8.6.0/node_modules/make-fetch-happen/lib/options.js#L31
+      dns: { ttl: 5 * 60 * 1000, lookup: tryRequire('node:dns').lookup }, // make-fetch-happen@10.1: https://github.com/npm/cli/blob/v8.6.0/node_modules/make-fetch-happen/lib/options.js#L31
       ...option
     }),
     secureEndpoint: new URL(url).protocol === 'https:' // HACK: to counter HACK part2/2

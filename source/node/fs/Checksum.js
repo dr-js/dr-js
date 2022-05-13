@@ -1,6 +1,6 @@
-import { resolve, relative } from 'path'
-import { createReadStream } from 'fs'
-import { createHash } from 'crypto'
+import { resolve, relative } from 'node:path'
+import { createReadStream } from 'node:fs'
+import { createHash } from 'node:crypto'
 
 import { compareString } from 'source/common/compare.js'
 import { createAsyncLane, extendAutoSelectLane } from 'source/common/module/AsyncLane.js'

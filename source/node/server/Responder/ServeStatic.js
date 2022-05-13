@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs'
+import { createReadStream } from 'node:fs'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME.js'
 import { readBuffer } from 'source/node/fs/File.js'

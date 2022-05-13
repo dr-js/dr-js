@@ -1,5 +1,5 @@
-import { randomFill, createHash } from 'crypto'
-import { promisify } from 'util'
+import { randomFill, createHash } from 'node:crypto'
+import { promisify } from 'node:util'
 
 const randomFillAsync = promisify(randomFill)
 

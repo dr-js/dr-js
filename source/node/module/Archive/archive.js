@@ -1,5 +1,5 @@
-import { resolve, dirname } from 'path'
-import { promises as fsAsync } from 'fs'
+import { resolve, dirname } from 'node:path'
+import { promises as fsAsync } from 'node:fs'
 import { createDirectory, withTempDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 

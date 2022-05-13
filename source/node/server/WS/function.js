@@ -1,5 +1,5 @@
-import { randomBytes } from 'crypto'
-import { constants as bufferConstants } from 'buffer'
+import { randomBytes } from 'node:crypto'
+import { constants as bufferConstants } from 'node:buffer'
 import { calcHash } from 'source/node/data/Buffer.js'
 
 // Source: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers

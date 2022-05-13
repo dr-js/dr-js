@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process'
+import { spawnSync } from 'node:child_process'
 
 const spawnString = ([ command, ...argList ]) => String(spawnSync(command, argList).stdout || '')
 const probeSync = (argList = [], expect) => spawnString(argList).includes(expect)

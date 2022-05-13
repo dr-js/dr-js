@@ -1,5 +1,5 @@
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
-import { constants, createGzip, createGunzip, createBrotliCompress, createBrotliDecompress } from 'zlib'
+import { createReadStream, createWriteStream, promises as fsAsync } from 'node:fs'
+import { constants, createGzip, createGunzip, createBrotliCompress, createBrotliDecompress } from 'node:zlib'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 
 const REGEXP_TGZ = /\.t(?:ar\.)?gz$/

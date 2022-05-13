@@ -85,7 +85,7 @@ const createTest = ({ // BDD style
   const it = getPushScopeFunc('it', LIST_NAME_IT)
   const after = getPushScopeFunc('after', LIST_NAME_AFTER)
 
-  const stringify = (tryRequire('util') || {}).inspect || String
+  const stringify = (tryRequire('node:util') || {}).inspect || String
   const info = (...args) => CONFIG && CONFIG.log(indentLine(args.map((v) => isString(v) ? v : stringify(v)).join(' '), '      > '))
 
   const TEST_SETUP = ({

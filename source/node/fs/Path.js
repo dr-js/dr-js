@@ -4,9 +4,9 @@ import {
   renameSync, unlinkSync, accessSync,
   mkdirSync, rmdirSync, copyFileSync,
   Stats, promises as fsAsync
-} from 'fs'
-import { join, resolve, dirname, sep } from 'path'
-import { homedir } from 'os'
+} from 'node:fs'
+import { join, resolve, dirname, sep } from 'node:path'
+import { homedir } from 'node:os'
 
 import { withFallbackResult, withFallbackResultAsync } from 'source/common/error.js'
 

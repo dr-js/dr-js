@@ -1,6 +1,6 @@
-import { request as httpRequest } from 'http'
-import { request as httpsRequest } from 'https'
-import { createGunzip } from 'zlib'
+import { request as httpRequest } from 'node:http'
+import { request as httpsRequest } from 'node:https'
+import { createGunzip } from 'node:zlib'
 
 import { clock } from 'source/common/time.js'
 import { isString, isArrayBuffer } from 'source/common/check.js'

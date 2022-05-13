@@ -1,5 +1,5 @@
-import { resolve, dirname } from 'path'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { resolve, dirname } from 'node:path'
+import { createReadStream, createWriteStream, promises as fsAsync } from 'node:fs'
 
 import { rethrowError } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'

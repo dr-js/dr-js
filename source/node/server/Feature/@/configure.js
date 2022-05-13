@@ -1,4 +1,4 @@
-import { createSecureContext } from 'tls'
+import { createSecureContext } from 'node:tls'
 import { objectMap } from 'source/common/immutable/Object.js'
 import { createExotGroup } from 'source/common/module/Exot.js'
 

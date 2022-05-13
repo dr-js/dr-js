@@ -1,4 +1,4 @@
-import { strictEqual } from 'assert'
+import { strictEqual } from 'node:assert'
 import { runKit } from 'source/node/kit.js'
 import { guardPromiseEarlyExit } from '../ExitListener.js'
 

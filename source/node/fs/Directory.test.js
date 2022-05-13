@@ -1,4 +1,4 @@
-import { join as joinPath, dirname, resolve } from 'path'
+import { join as joinPath, dirname, resolve } from 'node:path'
 import { strictEqual, stringifyEqual, doThrow, doThrowAsync, includes, truthy } from 'source/common/verify.js'
 import { getSample } from 'source/common/math/sample.js'
 import { PATH_TYPE, getPathTypeFromStat, getPathLstat, getPathLstatSync, addTrailingSep } from './Path.js'

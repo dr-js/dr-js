@@ -1,5 +1,5 @@
-const { resolve } = require('path')
-const { homedir } = require('os')
+const { resolve } = require('node:path')
+const { homedir } = require('node:os')
 
 module.exports = {
   // cacheStep: '', // pass from CLI

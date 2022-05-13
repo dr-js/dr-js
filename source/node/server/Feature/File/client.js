@@ -1,5 +1,5 @@
-import { dirname } from 'path'
-import { createWriteStream, promises as fsAsync } from 'fs'
+import { dirname } from 'node:path'
+import { createWriteStream, promises as fsAsync } from 'node:fs'
 
 import { withRetryAsync } from 'source/common/function.js'
 import { percent, binary } from 'source/common/format.js'

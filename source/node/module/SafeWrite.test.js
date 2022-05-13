@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { readTextSync } from 'source/node/fs/File.js'

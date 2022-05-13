@@ -1,6 +1,6 @@
-import { resolve, dirname } from 'path'
-import { createWriteStream } from 'fs'
-import { start as startREPL } from 'repl'
+import { resolve, dirname } from 'node:path'
+import { createWriteStream } from 'node:fs'
+import { start as startREPL } from 'node:repl'
 
 import { time } from 'source/common/format.js'
 import { createStepper } from 'source/common/time.js'
@@ -26,7 +26,7 @@ import { configurePid } from 'source/node/module/Pid.js'
 //   and the '../../../../' will result in an invalid path
 const modulePathHack = (newPath) => {
   if (!newPath.endsWith('node_modules')) return // keep only valid paths
-  const modulePaths = require('module')._resolveLookupPaths('modulePaths') // list of path to look for global node_modules, check the value of `module.paths` in repl
+  const modulePaths = require('node:module')._resolveLookupPaths('modulePaths') // list of path to look for global node_modules, check the value of `module.paths` in repl
   basicArray(modulePaths)
   if (!modulePaths.includes(newPath)) modulePaths.push(newPath)
 }
@@ -39,7 +39,7 @@ const evalScript = (
   evalOption // optionData
 ) => { // NOTE: use indirect eval to limit inner-context, check: https://esbuild.github.io/content-types/#direct-eval
   const asyncFunc = (0, eval)(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`) // eslint-disable-line no-eval
-  return asyncFunc(evalArgv, evalOption, evalScriptPath, dirname(evalScriptPath), require('module').createRequire(evalScriptPath))
+  return asyncFunc(evalArgv, evalOption, evalScriptPath, dirname(evalScriptPath), require('node:module').createRequire(evalScriptPath))
 }
 
 const stepper = createStepper()

@@ -1,4 +1,4 @@
-import { statSync } from 'fs'
+import { statSync } from 'node:fs'
 import { strictEqual, notStrictEqual } from 'source/common/verify.js'
 import {
   getEntityTagByContentHash,

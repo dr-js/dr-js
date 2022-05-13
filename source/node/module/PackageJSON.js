@@ -1,4 +1,4 @@
-import { resolve, basename } from 'path'
+import { resolve, basename } from 'node:path'
 import { sortPackageJSON, packPackageJSON, toPackageInfo, collectDependency } from 'source/common/module/PackageJSON.js'
 import { editText, readJSON, writeText } from 'source/node/fs/File.js'
 import { getFileList } from 'source/node/fs/Directory.js'

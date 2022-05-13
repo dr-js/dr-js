@@ -1,4 +1,4 @@
-import { openSync, write, writeSync, closeSync } from 'fs'
+import { openSync, write, writeSync, closeSync } from 'node:fs'
 import { rethrowError } from 'source/common/error.js'
 
 // async write normally, sync write on emergency

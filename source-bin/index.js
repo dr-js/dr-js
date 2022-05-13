@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { cpus } from 'os'
-import { normalize } from 'path'
-import { createReadStream, createWriteStream } from 'fs'
+import { cpus } from 'node:os'
+import { normalize } from 'node:path'
+import { createReadStream, createWriteStream } from 'node:fs'
 
 import { getEndianness } from 'source/env/function.js'
 

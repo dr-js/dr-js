@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { withTempDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 

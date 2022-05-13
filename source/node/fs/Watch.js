@@ -1,5 +1,5 @@
-import { dirname } from 'path'
-import { watch, promises as fsAsync } from 'fs'
+import { dirname } from 'node:path'
+import { watch, promises as fsAsync } from 'node:fs'
 import { throttle } from 'source/common/function.js'
 import { createHub } from 'source/common/module/Event.js'
 import { nearestExistPath } from './Path.js'

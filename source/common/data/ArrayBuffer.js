@@ -90,7 +90,7 @@ const tryCalcSHA256ArrayBuffer = () => {
   } catch (error) { __DEV__ && console.log('[tryCalcSHA256ArrayBuffer] browser', error) }
 
   try { // node
-    const { createHash } = tryRequire('crypto')
+    const { createHash } = tryRequire('node:crypto')
     const calcSHA256ArrayBuffer = async (arrayBuffer) => { // the code is actually sync
       const buffer = createHash('sha256').update(Buffer.from(arrayBuffer)).digest()
       return fromNodejsBuffer(buffer)

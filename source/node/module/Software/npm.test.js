@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual, doNotThrow, truthy } from 'source/common/verify.js'
 
 import {

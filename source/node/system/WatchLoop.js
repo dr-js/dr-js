@@ -1,4 +1,4 @@
-import { resolve, dirname } from 'path'
+import { resolve, dirname } from 'node:path'
 
 import { padTable, time, describe } from 'source/common/format.js'
 import { isString, isBasicFunction } from 'source/common/check.js'

@@ -1,6 +1,6 @@
-import { join, dirname, basename } from 'path'
-import { readdirSync, mkdirSync, promises as fsAsync } from 'fs'
-import { tmpdir } from 'os'
+import { join, dirname, basename } from 'node:path'
+import { readdirSync, mkdirSync, promises as fsAsync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { catchSync, catchAsync } from 'source/common/error.js'
 import { getRandomId } from 'source/common/math/random.js'
 import {
