@@ -4,7 +4,7 @@ on:
   push: { branches: [ "**" ] }
 
 env:
-  cache-version: 20210623
+  cache-version: 20220513
   cache-path: | # actually "\n" separated string
     .github/cache/persist-gitignore/
     ~/.npm/

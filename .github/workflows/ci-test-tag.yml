@@ -4,7 +4,7 @@ on: # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow
   push: { tags: [ "v*" ] } # use `v0.0.0` tag pattern
 
 env:
-  cache-version: 20210623
+  cache-version: 20220513
   cache-path: | # actually "\n" separated string
     .github/cache/persist-gitignore/
     ~/.npm/
@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
         node-version: [ "18.x" ]
-        include: [ { os: "ubuntu-latest", node-version: "14.x" }, { os: "ubuntu-latest", node-version: "12.x" } ]
+        include: [ { os: "ubuntu-latest", node-version: "14.x" } ]
     runs-on: "${{ matrix.os }}"
     steps:
       - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
