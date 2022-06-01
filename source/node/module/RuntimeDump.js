@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import {
   cachedDataVersionTag,
   getHeapSpaceStatistics,
@@ -6,7 +6,7 @@ import {
   getHeapSnapshot,
   getHeapCodeStatistics,
   writeHeapSnapshot
-} from 'v8'
+} from 'node:v8'
 
 import { getRandomId } from 'source/common/math/random.js'
 import { writeJSONSync } from 'source/node/fs/File.js'
@@ -30,7 +30,6 @@ const dumpSync = (path) => {
   writeV8HeapSnapshot(resolve(path, `runtime-dump-${tag}.heapsnapshot`))
   writeJSONSync(resolve(path, `runtime-dump-${tag}.extra.json`), getV8Extra())
 }
-/** @deprecated */ const dumpAsync = async (path) => dumpSync(path)
 
 const setupSIGUSR2 = (outputPath) => { // linux only
   outputPath = resolve(outputPath)
@@ -45,7 +44,5 @@ export {
   getV8HeapSnapshotReadableStream,
   writeV8HeapSnapshot,
   dumpSync,
-  setupSIGUSR2,
-
-  dumpAsync
+  setupSIGUSR2
 }

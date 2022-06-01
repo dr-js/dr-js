@@ -1,4 +1,4 @@
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 import { withFallbackResult, withFallbackResultAsync } from 'source/common/error.js'
 import { getPathLstat, getPathLstatSync, copyPath, copyPathSync, renamePath, renamePathSync, deletePath, deletePathSync } from './Path.js'
 import { createDirectory, createDirectorySync, copyDirectory, copyDirectorySync, deleteDirectory, deleteDirectorySync } from './Directory.js'

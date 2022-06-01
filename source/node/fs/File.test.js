@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { stringifyEqual, truthy } from 'source/common/verify.js'
 import { withRetryAsync } from 'source/common/function.js'
 import { isEqualArrayBuffer } from 'source/common/data/ArrayBuffer.js'

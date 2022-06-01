@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto'
+import { randomBytes } from 'node:crypto'
 import { END } from 'source/common/module/Runlet.js'
 
 import { FRAME_CONFIG, OPCODE_TYPE, BUFFER_MAX_LENGTH, applyMaskQuadletBufferInPlace } from './function.js'

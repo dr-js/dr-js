@@ -1,5 +1,5 @@
-import { resolve, relative } from 'path'
-import { promises as fsAsync } from 'fs'
+import { resolve, relative } from 'node:path'
+import { promises as fsAsync } from 'node:fs'
 import { strictEqual, stringifyEqual, truthy } from 'source/common/verify.js'
 import { compareString } from 'source/common/compare.js'
 import { PATH_TYPE, getPathLstat, toPosixPath } from 'source/node/fs/Path.js'

@@ -12,11 +12,7 @@ const getWeakEntityTagByStat = (stat) => {
   return `W/"${size}-${modifyTime}"`
 }
 
-/** @deprecated */ const getEntityTagByContentHashAsync = async (buffer) => getEntityTagByContentHash(buffer) // TODO: DEPRECATE: just use the sync version, this will not be more efficient as the buffer should already be in memory
-
 export {
   getEntityTagByContentHash,
-  getWeakEntityTagByStat,
-
-  getEntityTagByContentHashAsync // TODO: DEPRECATE
+  getWeakEntityTagByStat
 }

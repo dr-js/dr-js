@@ -1,4 +1,4 @@
-import { resolve, dirname, basename } from 'path'
+import { resolve, dirname, basename } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { indentLineList } from 'source/common/string.js'
 import { getRandomId } from 'source/common/math/random.js'

@@ -1,4 +1,4 @@
-import { createServer, request } from 'http'
+import { createServer, request } from 'node:http'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { strictEqual, truthy } from 'source/common/verify.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'

@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { modifyDelete } from 'source/node/fs/Modify.js'
 import { resetDirectory } from 'source/node/fs/Directory.js'
 import { dumpSync } from './RuntimeDump.js'

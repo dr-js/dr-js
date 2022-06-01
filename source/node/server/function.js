@@ -1,4 +1,4 @@
-import { createServer as createNetServer } from 'net'
+import { createServer as createNetServer } from 'node:net'
 import { tryRequireResolve } from 'source/env/tryRequire.js'
 import { catchAsync } from 'source/common/error.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-import { cpus } from 'os'
-import { normalize } from 'path'
-import { createReadStream, createWriteStream } from 'fs'
+import { cpus } from 'node:os'
+import { normalize } from 'node:path'
+import { createReadStream, createWriteStream } from 'node:fs'
 
 import { getEndianness } from 'source/env/function.js'
 
-import { prettyStringifyJSON } from 'source/common/format.js'
+import { binary, percent, time, prettyStringifyJSON } from 'source/common/format.js'
+import { throttle } from 'source/common/function.js'
 import { indentList } from 'source/common/string.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { isBasicFunction } from 'source/common/check.js'
@@ -15,7 +16,7 @@ import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, appendText, editTextSync, readJSON } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, editTextSync, readJSON, readBuffer } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -28,6 +29,7 @@ import { getAllProcessStatusAsync, describeAllProcessStatusAsync } from 'source/
 import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status.js'
 import { compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'
 import { runDocker, runCompose } from 'source/node/module/Software/docker.js'
+import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 import { pingRaceUrlList, pingStatUrlList } from 'source/node/module/PingRace.js'
 import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCheckCode } from 'source/node/module/Auth.js'
 
@@ -54,7 +56,7 @@ const getVersion = () => ({
 const runMode = async (optionData, modeName) => {
   const sharedPack = sharedOption(optionData, modeName)
   const { getFirst, tryGetFirst, getToggle } = optionData
-  const { argumentList, log, inputFile, outputFile, outputValueAuto } = sharedPack
+  const { argumentList, log, inputFile, outputFile, outputValueAuto, outputStream } = sharedPack
 
   const isOutputJSON = getToggle('json')
   const root = tryGetFirst('root') || process.cwd()
@@ -274,11 +276,31 @@ const runMode = async (optionData, modeName) => {
       })
     }
 
-    default:
-      return sharedMode({
-        ...sharedPack,
-        fetchUA: `${packageName}/${packageVersion}`
+    case 'fetch': {
+      let [ initialUrl, method = 'GET', jumpMax = 4 ] = argumentList
+      jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
+      const timeout = tryGetFirst('timeout') || 0 // in msec, 0 for unlimited
+      log(`[fetch] jumpMax: ${jumpMax}, timeout: ${timeout || 'none'}`)
+      const body = inputFile ? await readBuffer(inputFile) : null
+      let isDone = false
+      const response = await fetchWithJumpProxy(initialUrl, {
+        method, timeout, jumpMax, body,
+        headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, // patch for sites require a UA, like GitHub
+        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
+        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
+        preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
       })
+      if (!response.ok) throw new Error(`bad status: ${response.status}`)
+      const contentLength = Number(response.headers[ 'content-length' ])
+      log(`[fetch] status: ${response.status}, header: ${prettyStringifyJSON(response.headers)}`)
+      log(`[fetch] fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
+      await outputStream(response.stream())
+      isDone = true
+      return log('\n[fetch] done')
+    }
+
+    default:
+      return sharedMode(sharedPack)
   }
 }
 

@@ -29,16 +29,9 @@ const createAsyncLane = ({
     return lane.asyncQueue.push(value)
   }
 
-  /** @deprecated */ const getStatus = (isVerbose) => laneList.map(({ index, asyncQueue }) => isVerbose // TODO: DEPRECATE: use `calcStatus`, this should not alter return type based on input, so bad design
-    ? { index, length: asyncQueue.getLength() }
-    : asyncQueue.getLength()
-  )
-
   return {
     laneList, // for extend func, not recommend direct access
-    calcStatus, getTailPromise, reset, push,
-
-    getStatus // TODO: DEPRECATE
+    calcStatus, getTailPromise, reset, push
   }
 }
 const DEFAULT_STATUS_MAP_FUNC = ({ index, asyncQueue }) => ({ index, length: asyncQueue.getLength() })
@@ -106,17 +99,9 @@ const extendLaneValueList = (asyncLane) => {
     valueList.length = asyncQueue.getLength()
   })
 
-  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = laneList[ laneStatus.index ].valueList })
-    return status
-  }
-
   return {
     ...asyncLane, calcStatus, reset, push, // change
-    trimValueList, // new
-
-    getStatus // TODO: DEPRECATE
+    trimValueList // new
   }
 }
 
@@ -164,17 +149,9 @@ const extendLaneValueMap = (asyncLane) => {
     return lane && lane.valueMap.delete(id)
   }
 
-  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE:
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.valueList = [ ...laneList[ laneStatus.index ].valueMap.values() ] })
-    return status
-  }
-
   return {
     ...asyncLane, calcStatus, reset, push, // change
-    trimValueMap, findValue, dropValue, // new
-
-    getStatus // TODO: DEPRECATE
+    trimValueMap, findValue, dropValue // new
   }
 }
 
@@ -209,17 +186,9 @@ const extendAutoSelectByTagLane = (
     return valuePromise
   }
 
-  /** @deprecated */ const getStatus = (isVerbose) => { // TODO: DEPRECATE
-    const status = asyncLane.getStatus(isVerbose)
-    isVerbose && status.forEach((laneStatus) => { laneStatus.tagList = laneList[ laneStatus.index ].tagList })
-    return status
-  }
-
   return {
     ...asyncLane, calcStatus, reset, push, // change
-    pushAutoTag: (value, tag) => push(value, selectByTagLane(laneList, value, tag).index, tag), // new
-
-    getStatus // TODO: DEPRECATE
+    pushAutoTag: (value, tag) => push(value, selectByTagLane(laneList, value, tag).index, tag) // new
   }
 }
 

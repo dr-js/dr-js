@@ -1,5 +1,5 @@
-import { resolve, sep } from 'path'
-import { homedir } from 'os'
+import { resolve, sep } from 'node:path'
+import { homedir } from 'node:os'
 import { strictEqual, doThrow, truthy } from 'source/common/verify.js'
 import { deleteDirectory, copyDirectory, copyDirectorySync, resetDirectory, resetDirectorySync } from './Directory.js'
 

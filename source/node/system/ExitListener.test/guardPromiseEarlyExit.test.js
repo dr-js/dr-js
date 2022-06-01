@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { existPath } from 'source/node/fs/Path.js'
 import { run } from 'source/node/run.js'

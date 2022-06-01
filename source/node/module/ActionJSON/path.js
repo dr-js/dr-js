@@ -1,5 +1,5 @@
-import { posix, relative } from 'path'
-import { promises as fsAsync } from 'fs'
+import { posix, relative } from 'node:path'
+import { promises as fsAsync } from 'node:fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { objectMap } from 'source/common/immutable/Object.js'

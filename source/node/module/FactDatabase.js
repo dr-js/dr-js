@@ -1,5 +1,5 @@
-import { join } from 'path'
-import { createReadStream } from 'fs'
+import { join } from 'node:path'
+import { createReadStream } from 'node:fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { lossyAsync } from 'source/common/function.js'

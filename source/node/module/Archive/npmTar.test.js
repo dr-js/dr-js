@@ -1,5 +1,5 @@
-import { resolve, basename } from 'path'
-import { createReadStream, createWriteStream } from 'fs'
+import { resolve, basename } from 'node:path'
+import { createReadStream, createWriteStream } from 'node:fs'
 import { doThrowAsync, truthy } from 'source/common/verify.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { createDirectory } from 'source/node/fs/Directory.js'

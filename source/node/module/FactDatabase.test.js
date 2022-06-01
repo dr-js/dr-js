@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { getFileList } from 'source/node/fs/Directory.js'
 import { modifyDelete } from 'source/node/fs/Modify.js'

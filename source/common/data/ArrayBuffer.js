@@ -90,7 +90,7 @@ const tryCalcSHA256ArrayBuffer = () => {
   } catch (error) { __DEV__ && console.log('[tryCalcSHA256ArrayBuffer] browser', error) }
 
   try { // node
-    const { createHash } = tryRequire('crypto')
+    const { createHash } = tryRequire('node:crypto')
     const calcSHA256ArrayBuffer = async (arrayBuffer) => { // the code is actually sync
       const buffer = createHash('sha256').update(Buffer.from(arrayBuffer)).digest()
       return fromNodejsBuffer(buffer)
@@ -106,16 +106,11 @@ const tryCalcSHA256ArrayBuffer = () => {
 /** @type { (v: ArrayBuffer) => Promise<ArrayBuffer> } */
 const calcSHA256ArrayBuffer = tryCalcSHA256ArrayBuffer()
 
-/** @deprecated */ const fromString = fromU16String // TODO: DEPRECATE
-/** @deprecated */ const toString = toU16String // TODO: DEPRECATE
-
 export {
   isEqualArrayBuffer,
   concatArrayBuffer,
   deconcatArrayBuffer,
   fromU16String, toU16String,
   fromNodejsBuffer,
-  calcSHA256ArrayBuffer,
-
-  fromString, toString // TODO: DEPRECATE
+  calcSHA256ArrayBuffer
 }

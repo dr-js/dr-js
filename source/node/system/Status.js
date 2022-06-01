@@ -2,8 +2,8 @@ import {
   arch, platform, release,
   hostname, cpus, networkInterfaces,
   totalmem, freemem, loadavg, uptime
-} from 'os'
-import { getHeapStatistics } from 'v8'
+} from 'node:os'
+import { getHeapStatistics } from 'node:v8'
 
 import { percent, time, binary } from 'source/common/format.js'
 import { indentLine, indentList } from 'source/common/string.js'

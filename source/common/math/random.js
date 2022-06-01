@@ -19,7 +19,7 @@ const tryGetRandomArrayBuffer = () => {
   } catch (error) { __DEV__ && console.log('[tryGetRandomArrayBuffer] browser', error) }
 
   try { // node
-    const { randomFillSync } = tryRequire('crypto')
+    const { randomFillSync } = tryRequire('node:crypto')
     const getRandomArrayBuffer = (byteLength) => {
       const dataView = new DataView(new ArrayBuffer(byteLength))
       randomFillSync(dataView)

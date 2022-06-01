@@ -9,8 +9,6 @@
   - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
 + 📄 [source/browser/net.js](source/browser/net.js)
   - `fetchLikeRequest`
-+ 📄 [source/browser/resource.js](source/browser/resource.js)
-  - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 + 📄 [source/browser/canvas/Color.js](source/browser/canvas/Color.js)
   - `hexCSSFromRgb`, `hexCSSFromRgba`, `rgbaFromUint32`, `uint32FromRgba`
 + 📄 [source/browser/canvas/ImageData.js](source/browser/canvas/ImageData.js)
@@ -52,7 +50,7 @@
 + 📄 [source/common/compare.js](source/common/compare.js)
   - `compareString`, `compareStringLocale`, `compareStringWithNumber`
 + 📄 [source/common/error.js](source/common/error.js)
-  - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `tryCall`, `withFallbackResult`, `withFallbackResultAsync`
+  - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `withFallbackResult`, `withFallbackResultAsync`
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
@@ -66,7 +64,7 @@
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
-  - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromString`, `fromU16String`, `isEqualArrayBuffer`, `toString`, `toU16String`
+  - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/B62.js](source/common/data/B62.js)
@@ -160,9 +158,9 @@
 + 📄 [source/common/module/RouteMap.js](source/common/module/RouteMap.js)
   - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
 + 📄 [source/common/module/Runlet.js](source/common/module/Runlet.js)
-  - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
+  - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createCountPool`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
 + 📄 [source/common/module/RunletChip.js](source/common/module/RunletChip.js)
-  - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
+  - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
@@ -177,38 +175,26 @@
   - `objectMergeDeep`, `objectSortKey`
 + 📄 [source/env/function.js](source/env/function.js)
   - `assert`, `getEndianness`
-+ 📄 [source/env/global.js](source/env/global.js)
-  - `getEnvironment`, `getGlobal`
 + 📄 [source/env/tryRequire.js](source/env/tryRequire.js)
   - `tryRequire`, `tryRequireResolve`
 + 📄 [source/node/kit.js](source/node/kit.js)
   - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
 + 📄 [source/node/net.js](source/node/net.js)
   - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
-+ 📄 [source/node/resource.js](source/node/resource.js)
-  - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
 + 📄 [source/node/run.js](source/node/run.js)
   - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runStdout`, `runStdoutSync`, `runSync`
 + 📄 [source/node/data/Buffer.js](source/node/data/Buffer.js)
-  - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
+  - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
   - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/data/Z64String.js](source/node/data/Z64String.js)
   - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
-+ 📄 [source/node/file/Directory.js](source/node/file/Directory.js)
-  - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
-+ 📄 [source/node/file/Modify.js](source/node/file/Modify.js)
-  - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
-+ 📄 [source/node/file/Path.js](source/node/file/Path.js)
-  - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `dropTrailingSep`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
-+ 📄 [source/node/file/Watch.js](source/node/file/Watch.js)
-  - `createFileWatcherExot`
 + 📄 [source/node/fs/Checksum.js](source/node/fs/Checksum.js)
   - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
 + 📄 [source/node/fs/Directory.js](source/node/fs/Directory.js)
-  - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
+  - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
 + 📄 [source/node/fs/File.js](source/node/fs/File.js)
   - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
 + 📄 [source/node/fs/Modify.js](source/node/fs/Modify.js)
@@ -220,7 +206,7 @@
 + 📄 [source/node/module/Auth.js](source/node/module/Auth.js)
   - `AUTH_FILE`, `AUTH_FILE_GROUP`, `AUTH_SKIP`, `DEFAULT_AUTH_KEY`, `configureAuth`, `configureAuthFile`, `configureAuthFileGroup`, `configureAuthSkip`, `describeAuthFile`, `generateAuthCheckCode`, `generateAuthFile`, `loadAuthFile`, `saveAuthFile`, `verifyAuthCheckCode`
 + 📄 [source/node/module/EntityTag.js](source/node/module/EntityTag.js)
-  - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
+  - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
 + 📄 [source/node/module/FactDatabase.js](source/node/module/FactDatabase.js)
   - `INITIAL_FACT_INFO`, `createFactDatabaseExot`, `tryDeleteExtraCache`, `tryLoadFactInfo`
 + 📄 [source/node/module/FileChunkUpload.js](source/node/module/FileChunkUpload.js)
@@ -240,13 +226,9 @@
 + 📄 [source/node/module/PingRace.js](source/node/module/PingRace.js)
   - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
 + 📄 [source/node/module/RuntimeDump.js](source/node/module/RuntimeDump.js)
-  - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+  - `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
 + 📄 [source/node/module/SafeWrite.js](source/node/module/SafeWrite.js)
   - `createSafeWriteStream`
-+ 📄 [source/node/module/TerminalColor.js](source/node/module/TerminalColor.js)
-  - `configureTerminalColor`
-+ 📄 [source/node/module/TerminalStatusBar.js](source/node/module/TerminalStatusBar.js)
-  - `createStatusBar`
 + 📄 [source/node/module/TerminalTTY.js](source/node/module/TerminalTTY.js)
   - `createColor`, `createStatusBar`, `promptAsync`
 + 📄 [source/node/module/function.js](source/node/module/function.js)
@@ -264,9 +246,9 @@
 + 📄 [source/node/module/Archive/fsp.js](source/node/module/Archive/fsp.js)
   - `REGEXP_FSP`, `compressAsync`, `compressFspAsync`, `compressFspGzBrAsync`, `extractAsync`, `extractFspAsync`, `extractFspGzBrAsync`
 + 📄 [source/node/module/Archive/function.js](source/node/module/Archive/function.js)
-  - `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `withTempPath`
+  - `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`
 + 📄 [source/node/module/Archive/npmTar.js](source/node/module/Archive/npmTar.js)
-  - `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `extractPackageJson`, `getNpmTar`, `verify`
+  - `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `getNpmTar`, `verify`
 + 📄 [source/node/module/Archive/tar.js](source/node/module/Archive/tar.js)
   - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
 + 📄 [source/node/module/Option/parser.js](source/node/module/Option/parser.js)
@@ -282,13 +264,11 @@
 + 📄 [source/node/module/Software/hostStatus.js](source/node/module/Software/hostStatus.js)
   - `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`
 + 📄 [source/node/module/Software/npm.js](source/node/module/Software/npm.js)
-  - `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
+  - `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`
 + 📄 [source/node/server/Proxy.js](source/node/server/Proxy.js)
   - `createTCPProxyListener`
 + 📄 [source/node/server/Server.js](source/node/server/Server.js)
   - `createRequestListener`, `createServerExot`, `describeServerOption`
-+ 📄 [source/node/server/commonHTML.js](source/node/server/commonHTML.js)
-  - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
 + 📄 [source/node/server/Feature/@/configure.js](source/node/server/Feature/@/configure.js)
@@ -300,7 +280,7 @@
 + 📄 [source/node/server/Feature/@/HTML/Modal.js](source/node/server/Feature/@/HTML/Modal.js)
   - `initModal`
 + 📄 [source/node/server/Feature/ActionJSON/client.js](source/node/server/Feature/ActionJSON/client.js)
-  - `actionJSON`, `actionJson`
+  - `actionJSON`
 + 📄 [source/node/server/Feature/ActionJSON/setup.js](source/node/server/Feature/ActionJSON/setup.js)
   - `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
 + 📄 [source/node/server/Feature/Auth/HTML.js](source/node/server/Feature/Auth/HTML.js)
@@ -344,23 +324,9 @@
 + 📄 [source/node/server/Responder/Router.js](source/node/server/Responder/Router.js)
   - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
 + 📄 [source/node/server/Responder/Send.js](source/node/server/Responder/Send.js)
-  - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+  - `createResponderFavicon`, `prepareBufferData`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
 + 📄 [source/node/server/Responder/ServeStatic.js](source/node/server/Responder/ServeStatic.js)
-  - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
-+ 📄 [source/node/server/WebSocket/WebSocket.js](source/node/server/WebSocket/WebSocket.js)
-  - `createWebSocket`
-+ 📄 [source/node/server/WebSocket/WebSocketClient.js](source/node/server/WebSocket/WebSocketClient.js)
-  - `createWebSocketClient`
-+ 📄 [source/node/server/WebSocket/WebSocketServer.js](source/node/server/WebSocket/WebSocketServer.js)
-  - `enableWebSocketServer`
-+ 📄 [source/node/server/WebSocket/WebSocketUpgradeRequest.js](source/node/server/WebSocket/WebSocketUpgradeRequest.js)
-  - `createUpdateRequestListener`
-+ 📄 [source/node/server/WebSocket/frameReceiver.js](source/node/server/WebSocket/frameReceiver.js)
-  - `createFrameReceiverStore`, `listenAndReceiveFrame`
-+ 📄 [source/node/server/WebSocket/frameSender.js](source/node/server/WebSocket/frameSender.js)
-  - `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`
-+ 📄 [source/node/server/WebSocket/function.js](source/node/server/WebSocket/function.js)
-  - `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
+  - `createDefaultCacheMap`, `createResponderServeStatic`
 + 📄 [source/node/server/WS/Base.js](source/node/server/WS/Base.js)
   - `createWSBase`
 + 📄 [source/node/server/WS/Client.js](source/node/server/WS/Client.js)
@@ -381,8 +347,6 @@
   - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
 + 📄 [source/node/system/ResolveCommand.js](source/node/system/ResolveCommand.js)
   - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
-+ 📄 [source/node/system/Run.js](source/node/system/Run.js)
-  - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
 + 📄 [source/node/system/Status.js](source/node/system/Status.js)
   - `V8_HEAP_RESERVED_SIZE`, `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`, `getV8HeapStatus`
 + 📄 [source/node/system/WatchLoop.js](source/node/system/WatchLoop.js)
@@ -426,12 +390,10 @@
     - `applyReceiveFileListListener`, `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `createElement`, `deleteArrayBufferCache`, `getElementAtViewport`, `getPathElementList`, `loadArrayBufferCache`, `saveArrayBufferCache`, `throttleByAnimationFrame`
   - **Net**
     - `fetchLikeRequest`
-  - **Resource**
-    - `createDownload`, `createDownloadWithBlob`, `createDownloadWithObject`, `createDownloadWithString`, `deleteArrayBufferCache`, `loadArrayBufferCache`, `loadImage`, `loadScript`, `loadText`, `saveArrayBufferCache`
 - **Common**
   - **Data**
     - **ArrayBuffer**
-      - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromString`, `fromU16String`, `isEqualArrayBuffer`, `toString`, `toU16String`
+      - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
     - **ArrayBufferPacket**
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **B62**
@@ -519,9 +481,9 @@
     - **RouteMap**
       - `appendRouteMap`, `createRouteMap`, `findRouteFromMap`, `getRouteParam`, `getRouteParamAny`, `parseRouteToMap`, `parseRouteUrl`
     - **Runlet**
-      - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createCountPool`, `createENDRegulatorChip`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
+      - `ChipSyncBasic`, `END`, `KEY_PEND_INPUT`, `KEY_PEND_OUTPUT`, `KEY_POOL_IO`, `PoolIO`, `REDO`, `SKIP`, `TYPE_LOGICAL_PENDVIEW`, `TYPE_LOGICAL_PENDVIEWEE`, `clearPack`, `createCountPool`, `createLogicalCountPool`, `createPack`, `createRunlet`, `describePack`, `quickConfigPend`, `toChipMap`, `toLinearChipList`, `toPoolMap`
     - **RunletChip**
-      - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createAsyncIteratorInputChip`, `createAsyncIteratorOutputChip`, `createENDRegulatorChip`
+      - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
     - **SemVer**
       - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
     - **TimedLookup**
@@ -540,7 +502,7 @@
   - **Compare**
     - `compareString`, `compareStringLocale`, `compareStringWithNumber`
   - **Error**
-    - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `tryCall`, `withFallbackResult`, `withFallbackResultAsync`
+    - `catchAsync`, `catchPromise`, `catchSync`, `remessageError`, `rethrowError`, `withFallbackResult`, `withFallbackResultAsync`
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
@@ -554,31 +516,22 @@
   - **Verify**
     - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 - **Env**
-  - `assert`, `getEndianness`, `getEnvironment`, `getGlobal`, `tryRequire`, `tryRequireResolve`
+  - `assert`, `getEndianness`, `tryRequire`, `tryRequireResolve`
 - **Node**
   - **Data**
     - **Buffer**
-      - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`, `toArrayBuffer`
+      - `calcHash`, `createBufferRefragPool`, `getRandomBufferAsync`
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
     - **Stream**
       - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
     - **Z64String**
       - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
-  - **File**
-    - **Directory**
-      - `copyDirInfoTree`, `copyDirectory`, `createDirectory`, `deleteDirInfoTree`, `deleteDirectory`, `getDirInfoList`, `getDirInfoTree`, `getFileList`, `getPathTypeFromDirent`, `renameDirInfoTree`, `resetDirectory`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUpAsync`
-    - **Modify**
-      - `modifyCopy`, `modifyDelete`, `modifyDeleteForce`, `modifyRename`
-    - **Path**
-      - `PATH_TYPE`, `STAT_ERROR`, `copyPath`, `createPathPrefixLock`, `deletePath`, `dropTrailingSep`, `existPath`, `getPathLstat`, `getPathStat`, `getPathTypeFromStat`, `nearestExistPath`, `renamePath`, `toPosixPath`
-    - **Watch**
-      - `createFileWatcherExot`
   - **Fs**
     - **Checksum**
       - `describeChecksumInfoList`, `describeChecksumOfPathList`, `getChecksumInfoListOfPath`, `getChecksumInfoListOfPathList`, `getChecksumInfoOfFile`
     - **Directory**
-      - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeAsync`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpAsync`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
+      - `copyDirInfoTree`, `copyDirInfoTreeSync`, `copyDirectory`, `copyDirectorySync`, `createDirectory`, `createDirectorySync`, `deleteDirInfoTree`, `deleteDirInfoTreeSync`, `deleteDirectory`, `deleteDirectorySync`, `getDirInfoList`, `getDirInfoListSync`, `getDirInfoTree`, `getDirInfoTreeSync`, `getFileList`, `getFileListSync`, `getPathTypeFromDirent`, `renameDirInfoTree`, `renameDirInfoTreeSync`, `resetDirectory`, `resetDirectorySync`, `walkDirInfoTree`, `walkDirInfoTreeBottomUp`, `walkDirInfoTreeBottomUpSync`, `walkDirInfoTreeSync`, `withTempDirectory`, `withTempDirectorySync`
     - **File**
       - `appendArrayBuffer`, `appendArrayBufferSync`, `appendBuffer`, `appendBufferSync`, `appendText`, `appendTextSync`, `copyFile`, `copyFileSync`, `deleteFile`, `deleteFileForce`, `deleteFileForceSync`, `deleteFileSync`, `editArrayBuffer`, `editArrayBufferSync`, `editBuffer`, `editBufferSync`, `editJSON`, `editJSONPretty`, `editJSONPrettySync`, `editJSONSync`, `editText`, `editTextSync`, `readArrayBuffer`, `readArrayBufferSync`, `readBuffer`, `readBufferSync`, `readJSON`, `readJSONAlike`, `readJSONAlikeSync`, `readJSONSync`, `readText`, `readTextSync`, `renameFile`, `renameFileSync`, `writeArrayBuffer`, `writeArrayBufferSync`, `writeBuffer`, `writeBufferSync`, `writeJSON`, `writeJSONPretty`, `writeJSONPrettySync`, `writeJSONSync`, `writeText`, `writeTextSync`
     - **Modify**
@@ -591,15 +544,15 @@
     - **ActionJSON**
       - `ACTION_CORE_MAP`, `ACTION_TYPE`, `setupActionMap`, `ACTION_CORE_MAP`, `ACTION_TYPE`, `ACTION_CORE_MAP`, `ACTION_TYPE`, `setupActionMap`
     - **Archive**
-      - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`, `REGEXP_AUTO`, `check`, `compress7zAsync`, `compressAutoAsync`, `compressT7zAsync`, `extract7zAsync`, `extractAutoAsync`, `extractT7zAsync`, `repackAsync`, `repackTarAsync`, `verify`, `REGEXP_FSP`, `compressAsync`, `compressFspAsync`, `compressFspGzBrAsync`, `extractAsync`, `extractFspAsync`, `extractFspGzBrAsync`, `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `withTempPath`, `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `extractPackageJson`, `getNpmTar`, `verify`, `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
+      - `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`, `REGEXP_AUTO`, `check`, `compress7zAsync`, `compressAutoAsync`, `compressT7zAsync`, `extract7zAsync`, `extractAutoAsync`, `extractT7zAsync`, `repackAsync`, `repackTarAsync`, `verify`, `REGEXP_FSP`, `compressAsync`, `compressFspAsync`, `compressFspGzBrAsync`, `extractAsync`, `extractFspAsync`, `extractFspGzBrAsync`, `REGEXP_BR`, `REGEXP_GZ`, `REGEXP_GZBR`, `REGEXP_T7Z`, `REGEXP_TBR`, `REGEXP_TGZ`, `REGEXP_TXZ`, `compressGzBrFileAsync`, `createBrotliCompressMax`, `createGzipMax`, `extractGzBrFileAsync`, `isBufferGzip`, `isFileGzip`, `REGEXP_NPM_TAR`, `check`, `compressAsync`, `createCompressStream`, `createExtractStream`, `extractAsync`, `extractPackageJSON`, `getNpmTar`, `verify`, `check`, `compressArgs`, `extractArgs`, `getArgs`, `setArgs`, `verify`
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **Software**
-      - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`, `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `parsePackageNameAndVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`, `toPackageTgzName`
+      - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`, `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`
     - **Auth**
       - `AUTH_FILE`, `AUTH_FILE_GROUP`, `AUTH_SKIP`, `DEFAULT_AUTH_KEY`, `configureAuth`, `configureAuthFile`, `configureAuthFileGroup`, `configureAuthSkip`, `describeAuthFile`, `generateAuthCheckCode`, `generateAuthFile`, `loadAuthFile`, `saveAuthFile`, `verifyAuthCheckCode`
     - **EntityTag**
-      - `getEntityTagByContentHash`, `getEntityTagByContentHashAsync`, `getWeakEntityTagByStat`
+      - `getEntityTagByContentHash`, `getWeakEntityTagByStat`
     - **FactDatabase**
       - `INITIAL_FACT_INFO`, `createFactDatabaseExot`, `tryDeleteExtraCache`, `tryLoadFactInfo`
     - **FileChunkUpload**
@@ -619,13 +572,9 @@
     - **PingRace**
       - `PING_STAT_ERROR`, `pingRaceUrlList`, `pingStatUrlList`
     - **RuntimeDump**
-      - `dumpAsync`, `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
+      - `dumpSync`, `getV8Extra`, `getV8HeapSnapshotReadableStream`, `setupSIGUSR2`, `writeV8HeapSnapshot`
     - **SafeWrite**
       - `createSafeWriteStream`
-    - **TerminalColor**
-      - `configureTerminalColor`
-    - **TerminalStatusBar**
-      - `createStatusBar`
     - **TerminalTTY**
       - `createColor`, `createStatusBar`, `promptAsync`
     - **Function**
@@ -643,7 +592,7 @@
         - **Option**
           - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
       - **ActionJSON**
-        - `actionJSON`, `actionJson`, `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
+        - `actionJSON`, `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
       - **Auth**
         - **HTML**
           - `initAuthMask`
@@ -673,9 +622,9 @@
       - **Router**
         - `METHOD_MAP`, `appendRouteMap`, `createResponderRouteListHTML`, `createResponderRouter`, `createRouteMap`, `describeRouteMap`, `getRouteParam`, `getRouteParamAny`
       - **Send**
-        - `createResponderFavicon`, `prepareBufferData`, `prepareBufferDataAsync`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
+        - `createResponderFavicon`, `prepareBufferData`, `responderSendBuffer`, `responderSendBufferCompress`, `responderSendBufferRange`, `responderSendJSON`, `responderSendStream`, `responderSendStreamCompress`, `responderSendStreamRange`
       - **ServeStatic**
-        - `createDefaultCacheMap`, `createResponderBufferCache`, `createResponderServeStatic`
+        - `createDefaultCacheMap`, `createResponderServeStatic`
     - **WS**
       - **Base**
         - `createWSBase`
@@ -684,22 +633,10 @@
       - **Server**
         - `createUpgradeRequestListener`, `enableWSServer`
       - `createFrameDecodeChip`, `createCloseFramePack`, `createFrameEncodeChip`, `encodeBinaryFramePack`, `encodePingFramePack`, `encodePongFramePack`, `encodeTextFramePack`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`, `packProtocolList`, `parseProtocolString`
-    - **WebSocket**
-      - **WebSocket**
-        - `createWebSocket`
-      - **WebSocketClient**
-        - `createWebSocketClient`
-      - **WebSocketServer**
-        - `enableWebSocketServer`
-      - **WebSocketUpgradeRequest**
-        - `createUpdateRequestListener`
-      - `createFrameReceiverStore`, `listenAndReceiveFrame`, `createFrameSenderStore`, `encodeCloseFrame`, `encodeFrame`, `encodePingFrame`, `encodePongFrame`, `sendEncodedFrame`, `BUFFER_MAX_LENGTH`, `FRAME_CONFIG`, `OPCODE_TYPE`, `WEBSOCKET_EVENT`, `WEBSOCKET_VERSION`, `applyMaskQuadletBufferInPlace`, `getRequestKey`, `getRespondKey`
     - **Proxy**
       - `createTCPProxyListener`
     - **Server**
       - `createRequestListener`, `createServerExot`, `describeServerOption`
-    - **CommonHTML**
-      - `COMMON_FUNC_MAP`, `COMMON_LAYOUT`, `COMMON_SCRIPT`, `COMMON_STYLE`, `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `simpleCompactCSS`, `styleTagMerge`
     - **Function**
       - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
   - **System**
@@ -711,8 +648,6 @@
       - `describeAllProcessStatusAsync`, `findProcessListInfo`, `findProcessPidMapInfo`, `findProcessTreeInfo`, `flattenProcessTree`, `getAllProcessStatusAsync`, `getProcessListAsync`, `isPidExist`, `killProcessInfoAsync`, `killProcessTreeInfoAsync`, `sortProcessList`, `toProcessPidMap`, `toProcessTree`
     - **ResolveCommand**
       - `resolveCommand`, `resolveCommandAsync`, `resolveCommandName`, `resolveCommandNameAsync`
-    - **Run**
-      - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runSync`, `withCwd`
     - **Status**
       - `V8_HEAP_RESERVED_SIZE`, `describeSystemActivity`, `describeSystemMemory`, `describeSystemNetwork`, `describeSystemPlatform`, `describeSystemProcessor`, `describeSystemStatus`, `getSystemActivity`, `getSystemInfo`, `getSystemMemory`, `getSystemNetwork`, `getSystemPlatform`, `getSystemProcessor`, `getSystemStatus`, `getV8HeapStatus`
     - **WatchLoop**
@@ -721,8 +656,6 @@
     - `ENV_KEY_LOGGER`, `ENV_KEY_VERBOSE`, `argvFlag`, `getKit`, `getKitLogger`, `getKitPathCombo`, `getKitRun`, `loadEnvKey`, `runKit`, `saveEnvKey`, `syncEnvKey`
   - **Net**
     - `fetchLikeRequest`, `fetchWithJump`, `ping`, `requestHttp`
-  - **Resource**
-    - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `loadJSON`, `loadLocalJSON`, `loadLocalScript`, `loadRemoteJSON`, `loadRemoteScript`, `loadScript`
   - **Run**
     - `describeRunOutcome`, `describeRunOutcomeSync`, `run`, `runDetached`, `runStdout`, `runStdoutSync`, `runSync`
 
@@ -763,7 +696,7 @@
 >       eval file or string: -O=outputFile, -I/$0=scriptFile/scriptString, $@=...evalArgv
 >   --repl --i -i [OPTIONAL] [ARGUMENT=0-1]
 >       start node REPL
->   --fetch --f -f [OPTIONAL] [ARGUMENT=1-4]
+>   --fetch --f -f [OPTIONAL] [ARGUMENT=1-3]
 >       fetch url with http_proxy env support: -I=requestBody/null, -O=outputFile/stdout, -T=timeout/0, $@=initialUrl,method/GET,jumpMax/4
 >   --wait [OPTIONAL] [ARGUMENT=0-1]
 >       wait specified time, in msec: $0=waitTime/2*1000
@@ -877,7 +810,7 @@
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0-1]"
->     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-4]"
+>     export DR_JS_FETCH="[OPTIONAL] [ARGUMENT=1-3]"
 >     export DR_JS_WAIT="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_ECHO="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_CAT="[OPTIONAL] [ARGUMENT=0+]"
@@ -945,7 +878,7 @@
 >     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "repl": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
->     "fetch": [ "[OPTIONAL] [ARGUMENT=1-4]" ],
+>     "fetch": [ "[OPTIONAL] [ARGUMENT=1-3]" ],
 >     "wait": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "echo": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "cat": [ "[OPTIONAL] [ARGUMENT=0+]" ],

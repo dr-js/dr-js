@@ -1,6 +1,6 @@
-import { resolve } from 'path'
-import { createBrotliCompress, createBrotliDecompress } from 'zlib'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { resolve } from 'node:path'
+import { createBrotliCompress, createBrotliDecompress } from 'node:zlib'
+import { createReadStream, createWriteStream, promises as fsAsync } from 'node:fs'
 import { tryRequire } from 'source/env/tryRequire.js'
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { fromNpmNodeModules } from 'source/node/module/Software/npm.js'
@@ -54,13 +54,9 @@ const extractPackageJSON = async (sourceFile) => { // https://github.com/npm/nod
   return JSON.parse(String(Buffer.concat(chunkList)))
 }
 
-/** @deprecated */ const extractPackageJson = extractPackageJSON // TODO: DEPRECATE
-
 export {
   REGEXP_NPM_TAR, getNpmTar, check, verify,
   createCompressStream, createExtractStream,
   compressAsync, extractAsync, // NOTE: will not auto create output path
-  extractPackageJSON,
-
-  extractPackageJson // TODO: DEPRECATE
+  extractPackageJSON
 }

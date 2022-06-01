@@ -1,4 +1,4 @@
-const { resolve } = require('path')
+const { resolve } = require('node:path')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/fs/Path.js')
 const { createServerExot, createRequestListener } = require('../../output-gitignore/library/node/server/Server.js')

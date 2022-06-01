@@ -1,4 +1,4 @@
-import { resolve, basename } from 'path'
+import { resolve, basename } from 'node:path'
 import { truthy } from 'source/common/verify.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'

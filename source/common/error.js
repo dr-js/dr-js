@@ -13,12 +13,6 @@ const rethrowError = (error) => {
   throw error
 }
 
-/** @deprecated */ const tryCall = (thisArg, name, ...args) => { // TODO: DEPRECATE
-  try {
-    return thisArg[ name ](...args)
-  } catch (error) { __DEV__ && console.log('[tryCall] failed:', name, error) }
-}
-
 const withFallbackResult = (fallbackResult, func, ...args) => {
   try { return func(...args) } catch (error) {
     __DEV__ && console.log('[withFallbackResult] error:', error)
@@ -59,7 +53,6 @@ const packError = (error) => ({ result: undefined, error: error || new Error() }
 export {
   remessageError,
   rethrowError,
-  tryCall, // TODO: DEPRECATE
   withFallbackResult,
   withFallbackResultAsync,
   catchSync,

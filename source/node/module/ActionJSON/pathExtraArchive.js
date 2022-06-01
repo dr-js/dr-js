@@ -1,4 +1,4 @@
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { run } from 'source/node/run.js'
 

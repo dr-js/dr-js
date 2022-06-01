@@ -1,4 +1,4 @@
-import { relative, dirname, join as joinPath } from 'path'
+import { relative, dirname, join as joinPath } from 'node:path'
 
 import { compareStringWithNumber } from 'source/common/compare.js'
 import { binary, time } from 'source/common/format.js'

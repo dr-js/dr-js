@@ -1,4 +1,4 @@
-import { createSecureContext } from 'tls'
+import { createSecureContext } from 'node:tls'
 import { objectMap } from 'source/common/immutable/Object.js'
 import { createExotGroup } from 'source/common/module/Exot.js'
 
@@ -59,7 +59,6 @@ const autoLoadBuffer = (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferO
 
 const configureFeature = ({
   serverExot, loggerExot,
-  routePrefix = '', // TODO: DEPRECATE: since all feature already accept `routePrefix`, this is just misleading // NOTE: this is "global" routePrefix, and will apply on feature routePrefix, so normally just use one
   isRawServer = false, // set to skip route related configure
   isFavicon = true, isDebugRoute = false, rootRouteResponder,
   preResponderList = [],
@@ -84,7 +83,6 @@ const configureFeature = ({
 
   if (isRawServer) {
     if ( // prevent dropping routes
-      routePrefix ||
       preRouteList.length ||
       featureRouteList.length ||
       featureWSRouteList.length
@@ -95,12 +93,12 @@ const configureFeature = ({
   const routeMap = createRouteMap([
     ...preRouteList,
     ...featureRouteList,
-    !routePrefix && isFavicon && [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ],
+    isFavicon && [ [ '/favicon', '/favicon.ico' ], 'GET', createResponderFavicon() ],
     [ [ '/', '' ], 'GET', rootRouteResponder || (isDebugRoute ? createResponderRouteListHTML({ getRouteMap: () => routeMap })
-      : featureUrl ? (store) => responderEndWithRedirect(store, { redirectUrl: `${routePrefix}${featureUrl}` })
+      : featureUrl ? (store) => responderEndWithRedirect(store, { redirectUrl: featureUrl })
         : (store) => responderEndWithStatusCode(store, { statusCode: 400 }))
     ]
-  ].filter(Boolean), routePrefix)
+  ].filter(Boolean))
 
   serverExot.server.on('request', createRequestListener({
     responderList: [
@@ -117,7 +115,7 @@ const configureFeature = ({
   if (featureWSRouteList.length !== 0) { // setup WS
     const routeMap = createRouteMap([
       ...featureWSRouteList
-    ].filter(Boolean), routePrefix)
+    ].filter(Boolean))
     serverExot.wsSet = enableWSServer(serverExot.server, {
       onUpgradeRequest: createUpgradeRequestListener({
         responderList: [

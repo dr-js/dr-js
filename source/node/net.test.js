@@ -1,5 +1,5 @@
-import { resolve } from 'path'
-import { unlinkSync, writeFileSync, createReadStream } from 'fs'
+import { resolve } from 'node:path'
+import { unlinkSync, writeFileSync, createReadStream } from 'node:fs'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { percent } from 'source/common/format.js'
 import { stringifyEqual, strictEqual } from 'source/common/verify.js'

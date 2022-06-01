@@ -1,17 +1,15 @@
-import { resolve, dirname } from 'path'
-import { createWriteStream } from 'fs'
-import { start as startREPL } from 'repl'
+import { resolve, dirname } from 'node:path'
+import { createWriteStream } from 'node:fs'
+import { start as startREPL } from 'node:repl'
 
-import { percent, time, binary, prettyStringifyJSON } from 'source/common/format.js'
+import { time } from 'source/common/format.js'
 import { createStepper } from 'source/common/time.js'
 import { isObjectAlike } from 'source/common/check.js'
 import { basicArray } from 'source/common/verify.js'
-import { throttle } from 'source/common/function.js'
 
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
-import { readBuffer, writeBuffer, readText } from 'source/node/fs/File.js'
+import { writeBuffer, readText } from 'source/node/fs/File.js'
 import { configurePid } from 'source/node/module/Pid.js'
-import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 
 // HACK: add `@dr-js/core` to internal `modulePaths` to allow require
 // code: https://github.com/nodejs/node/blob/v12.11.1/lib/internal/modules/cjs/loader.js#L620
@@ -28,24 +26,21 @@ import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
 //   and the '../../../../' will result in an invalid path
 const modulePathHack = (newPath) => {
   if (!newPath.endsWith('node_modules')) return // keep only valid paths
-  const modulePaths = require('module')._resolveLookupPaths('modulePaths') // list of path to look for global node_modules, check the value of `module.paths` in repl
+  const modulePaths = require('node:module')._resolveLookupPaths('modulePaths') // list of path to look for global node_modules, check the value of `module.paths` in repl
   basicArray(modulePaths)
   if (!modulePaths.includes(newPath)) modulePaths.push(newPath)
 }
 const patchModulePath = () => modulePathHack(resolve(module.filename, '../../../../'))
 
-const evalScript = ( // NOTE: use eval not Function to derive local
+const evalScript = (
   evalScriptString, // inputFile ? String(readFileSync(inputFile)) : argumentList[ 0 ]
   evalScriptPath, // inputFile || resolve('__SCRIPT_STRING__'),
   evalArgv, // inputFile ? argumentList : argumentList.slice(1)
   evalOption // optionData
-) => eval(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`)( // eslint-disable-line no-eval
-  evalArgv, // NOTE: allow both evalArgv / argumentList is accessible from eval
-  evalOption,
-  evalScriptPath,
-  dirname(evalScriptPath),
-  require('module').createRequire(evalScriptPath)
-)
+) => { // NOTE: use indirect eval to limit inner-context, check: https://esbuild.github.io/content-types/#direct-eval
+  const asyncFunc = (0, eval)(`async (evalArgv, evalOption, __filename, __dirname, require) => { ${evalScriptString} }`) // eslint-disable-line no-eval
+  return asyncFunc(evalArgv, evalOption, evalScriptPath, dirname(evalScriptPath), require('node:module').createRequire(evalScriptPath))
+}
 
 const stepper = createStepper()
 const logAuto = (...args) => console.log(
@@ -87,13 +82,10 @@ const sharedOption = (optionData, modeName) => {
 const sharedMode = async ({
   // sharedPack
   optionData, modeName,
-  argumentList, log, inputFile, outputValueAuto, outputStream,
+  argumentList, inputFile, outputValueAuto,
 
   // patchModulePath overwrite, so more patch path can be added
-  patchMP = patchModulePath,
-
-  fetchUserAgent, fetchExtraOption, // TODO: DEPRECATE: no need to share
-  fetchUA = fetchUserAgent // TODO: DEPRECATE: no need to share
+  patchMP = patchModulePath
 }) => {
   switch (modeName) {
     case 'eval': {
@@ -109,30 +101,6 @@ const sharedMode = async ({
     case 'repl':
       await patchMP()
       return startREPL({ useGlobal: true }) // NOTE: need manual Ctrl+C
-
-    case 'fetch': { // TODO: DEPRECATE: no need to share
-      let [ initialUrl, method = 'GET', jumpMax = 4, timeout = 0 ] = argumentList
-      jumpMax = Number(jumpMax) || 0 // 0 for no jump, use 'Infinity' for unlimited jump
-      timeout = Number(timeout || optionData.tryGetFirst('timeout')) || 0 // in msec, 0 for unlimited // TODO: DEPRECATE: timeout from argumentList
-      log(`[fetch] jumpMax: ${jumpMax}, timeout: ${timeout || 'none'}`)
-      const body = inputFile ? await readBuffer(inputFile) : null
-      let isDone = false
-      const response = await fetchWithJumpProxy(initialUrl, {
-        method, timeout, jumpMax, body,
-        headers: { 'accept': '*/*', 'user-agent': fetchUA }, // patch for sites require a UA, like GitHub
-        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
-        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
-        preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`),
-        ...fetchExtraOption
-      })
-      if (!response.ok) throw new Error(`bad status: ${response.status}`)
-      const contentLength = Number(response.headers[ 'content-length' ])
-      log(`[fetch] status: ${response.status}, header: ${prettyStringifyJSON(response.headers)}`)
-      log(`[fetch] fetch response content${contentLength ? ` (${binary(contentLength)}B)` : ''}...`)
-      await outputStream(response.stream())
-      isDone = true
-      return log('\n[fetch] done')
-    }
   }
 }
 

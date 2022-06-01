@@ -15,7 +15,7 @@ import { run } from 'source/node/run.js'
 const getHackLookupDNS = (subProcessSet) => (hostname, option, callback) => {
   __DEV__ && console.log('[getHackLookupDNS]', { hostname, option, callback })
   const { subProcess, promise, stdoutPromise } = run([
-    process.execPath, '-e', `require('dns').lookup(${JSON.stringify(hostname)}, ${JSON.stringify(option)}, (error, ...args) => console.log(JSON.stringify([ error ? error.stack : null, ...args ])))`
+    process.execPath, '-e', `require('node:dns').lookup(${JSON.stringify(hostname)}, ${JSON.stringify(option)}, (error, ...args) => console.log(JSON.stringify([ error ? error.stack : null, ...args ])))`
   ], { quiet: true })
   promise
     .then(async () => {

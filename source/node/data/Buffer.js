@@ -1,7 +1,5 @@
-import { randomFill, createHash } from 'crypto'
-import { promisify } from 'util'
-
-import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js' // TODO: DEPRECATE
+import { randomFill, createHash } from 'node:crypto'
+import { promisify } from 'node:util'
 
 const randomFillAsync = promisify(randomFill)
 
@@ -68,12 +66,8 @@ const createBufferRefragPool = () => { // push smaller buffer frag, shift resize
   }
 }
 
-/** @deprecated */ const toArrayBuffer = fromNodejsBuffer // TODO: DEPRECATE
-
 export {
   getRandomBufferAsync,
   calcHash,
-  createBufferRefragPool,
-
-  toArrayBuffer // TODO: DEPRECATE
+  createBufferRefragPool
 }

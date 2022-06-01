@@ -1,5 +1,5 @@
-import { gzip, gzipSync, createGzip } from 'zlib'
-import { promisify } from 'util'
+import { gzip, gzipSync, createGzip } from 'node:zlib'
+import { promisify } from 'node:util'
 import { DEFAULT_MIME, BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
 import { writeBufferToStreamAsync, quickRunletFromStream } from 'source/node/data/Stream.js'
 import { getEntityTagByContentHash } from 'source/node/module/EntityTag.js'
@@ -97,8 +97,6 @@ const createResponderFavicon = (
   type = BASIC_EXTENSION_MAP.png
 ) => (store) => responderSendBufferCompress(store, prepareBufferData(buffer, type))
 
-/** @deprecated */ const prepareBufferDataAsync = async (buffer, type) => prepareBufferData(buffer, type) // TODO: DEPRECATE: just use the sync version, this will not be more efficient as the buffer should already be in memory
-
 export {
   responderSendBuffer,
   responderSendBufferRange,
@@ -112,7 +110,5 @@ export {
 
   createResponderFavicon,
 
-  prepareBufferData,
-
-  prepareBufferDataAsync // TODO: DEPRECATE
+  prepareBufferData
 }

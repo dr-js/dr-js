@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual, truthy } from 'source/common/verify.js'
 import { COMMON_STYLE } from 'source/common/module/HTML.js'
 import { readTextSync } from 'source/node/fs/File.js'

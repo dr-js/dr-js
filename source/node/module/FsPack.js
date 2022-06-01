@@ -1,5 +1,5 @@
-import { resolve, relative, dirname } from 'path'
-import { createReadStream, createWriteStream, promises as fsAsync } from 'fs'
+import { resolve, relative, dirname } from 'node:path'
+import { createReadStream, createWriteStream, promises as fsAsync } from 'node:fs'
 
 import { catchAsync } from 'source/common/error.js'
 import { bufferToReadableStream, quickRunletFromStream } from 'source/node/data/Stream.js'

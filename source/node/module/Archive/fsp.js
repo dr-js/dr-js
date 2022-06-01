@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { withTempDirectory } from 'source/node/fs/Directory.js'
 import { initFsPack, saveFsPack, loadFsPack, appendFromPath, unpackToPath } from 'source/node/module/FsPack.js'
 import { REGEXP_GZBR, compressGzBrFileAsync, extractGzBrFileAsync } from './function.js'

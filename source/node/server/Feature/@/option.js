@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { isString, isBasicObject } from 'source/common/check.js'
 import { indentLineList } from 'source/common/string.js'
 import { Preset } from 'source/node/module/Option/preset.js'

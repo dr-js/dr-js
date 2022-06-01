@@ -1,5 +1,5 @@
-import { openSync, closeSync } from 'fs'
-import { spawn, spawnSync } from 'child_process'
+import { openSync, closeSync } from 'node:fs'
+import { spawn, spawnSync } from 'node:child_process'
 import { remessageError } from 'source/common/error.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 

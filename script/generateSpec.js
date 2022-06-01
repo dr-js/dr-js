@@ -1,4 +1,4 @@
-import { sep } from 'path'
+import { sep } from 'node:path'
 
 import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
 import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'

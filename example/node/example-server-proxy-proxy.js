@@ -1,5 +1,5 @@
-const { resolve } = require('path')
-const { createServer: createHttpServer } = require('http')
+const { resolve } = require('node:path')
+const { createServer: createHttpServer } = require('node:http')
 
 const { createPathPrefixLock } = require('../../output-gitignore/library/node/fs/Path.js')
 const { requestHttp } = require('../../output-gitignore/library/node/net.js')

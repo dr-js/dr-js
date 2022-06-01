@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs'
+import { createReadStream } from 'node:fs'
 import { createCacheMap } from 'source/common/data/CacheMap.js'
 import { getMIMETypeFromFileName } from 'source/common/module/MIME.js'
 import { readBuffer } from 'source/node/fs/File.js'
@@ -6,7 +6,7 @@ import { getPathStat } from 'source/node/fs/Path.js'
 import { getWeakEntityTagByStat } from 'source/node/module/EntityTag.js'
 import { responderEndWithStatusCode } from './Common.js'
 import {
-  responderSendBuffer, responderSendBufferRange, responderSendBufferCompress,
+  responderSendBuffer, responderSendBufferRange,
   responderSendStream, responderSendStreamRange
 } from './Send.js'
 
@@ -15,28 +15,6 @@ const DEFAULT_CACHE_FILE_SIZE_MAX = 512 * 1024 // in byte, 512KiB
 const DEFAULT_CACHE_EXPIRE_TIME = 60 * 1000 // in msec, 1min
 
 const createDefaultCacheMap = () => createCacheMap({ valueSizeSumMax: DEFAULT_CACHE_BUFFER_SIZE_SUM_MAX })
-
-/** @deprecated */ const createResponderBufferCache = ({ // TODO: DEPRECATE: this do not support range, and bad at gzip
-  getBufferData, // (store, cacheKey) => ({ buffer, bufferGzip, length, type, entityTag })
-  sizeSingleMax = DEFAULT_CACHE_FILE_SIZE_MAX,
-  expireTime = DEFAULT_CACHE_EXPIRE_TIME,
-  isEnableGzip = false, // will try use `bufferGzip` or compress every time (not good), if `accept-encoding` has `gzip`
-  serveCacheMap = createDefaultCacheMap()
-}) => {
-  const responderSendCacheBuffer = isEnableGzip
-    ? responderSendBufferCompress
-    : responderSendBuffer
-  return async (store, cacheKey) => {
-    let bufferData = serveCacheMap.get(cacheKey)
-    __DEV__ && bufferData && console.log(`[HIT] CACHE: ${cacheKey}`)
-    if (!bufferData) {
-      bufferData = await getBufferData(store, cacheKey)
-      __DEV__ && console.log(`[${bufferData.length <= sizeSingleMax ? 'SET' : 'BAIL'}] CACHE: ${cacheKey}`)
-      bufferData.length <= sizeSingleMax && serveCacheMap.set(cacheKey, bufferData, bufferData.length, Date.now() + expireTime)
-    }
-    return responderSendCacheBuffer(store, bufferData)
-  }
-}
 
 const createResponderServeStatic = ({
   sizeSingleMax = DEFAULT_CACHE_FILE_SIZE_MAX,
@@ -135,7 +113,5 @@ const REGEXP_HEADER_RANGE = /bytes=(\d+)-(\d+)?$/i
 
 export {
   createDefaultCacheMap,
-  createResponderServeStatic,
-
-  createResponderBufferCache // TODO: DEPRECATE
+  createResponderServeStatic
 }

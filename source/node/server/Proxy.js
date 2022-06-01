@@ -1,5 +1,5 @@
-import { connect as TCPConnect } from 'net'
-import { connect as TLSConnect } from 'tls'
+import { connect as TCPConnect } from 'node:net'
+import { connect as TLSConnect } from 'node:tls'
 
 // TODO: no multi target server support (load balancing)
 

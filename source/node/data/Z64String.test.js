@@ -1,4 +1,4 @@
-import { deflateRawSync, inflateRawSync } from 'zlib'
+import { deflateRawSync, inflateRawSync } from 'node:zlib'
 import { stringifyEqual } from 'source/common/verify.js'
 import { percent } from 'source/common/format.js'
 

@@ -1,4 +1,4 @@
-import { createInterface } from 'readline'
+import { createInterface } from 'node:readline'
 import { throttle } from 'source/common/function.js'
 
 // AES = ANSI escape code

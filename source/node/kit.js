@@ -1,5 +1,5 @@
-import { resolve } from 'path'
-import { homedir, tmpdir } from 'os'
+import { resolve } from 'node:path'
+import { homedir, tmpdir } from 'node:os'
 
 import { clock } from 'source/common/time.js'
 import { time } from 'source/common/format.js'

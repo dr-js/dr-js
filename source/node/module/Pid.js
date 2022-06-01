@@ -1,4 +1,4 @@
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 import { catchSync } from 'source/common/error.js'
 
 import { readTextSync, writeTextSync } from 'source/node/fs/File.js'

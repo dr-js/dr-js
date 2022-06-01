@@ -2,7 +2,7 @@ import {
   gzipSync, gunzipSync,
   brotliCompressSync, brotliDecompressSync,
   constants
-} from 'zlib'
+} from 'node:zlib'
 
 // NOTE: here the "Z" in `Z64String` refers to nodejs 'zlib', not 'gzip'
 // for tagging the pack method:

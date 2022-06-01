@@ -1,4 +1,4 @@
-const { resolve } = require('path')
+const { resolve } = require('node:path')
 const { readArrayBuffer, writeArrayBuffer } = require('../../output-gitignore/library/node/fs/File.js')
 const {
   generateLookupData,

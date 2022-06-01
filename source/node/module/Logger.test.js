@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual, truthy } from 'source/common/verify.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { existPath } from 'source/node/fs/Path.js'

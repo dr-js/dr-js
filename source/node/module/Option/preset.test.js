@@ -1,4 +1,4 @@
-import { resolve, dirname } from 'path'
+import { resolve, dirname } from 'node:path'
 import { includes, strictEqual, stringifyEqual } from 'source/common/verify.js'
 import { objectSortKey } from 'source/common/mutable/Object.js'
 import { packGz64, packBr64 } from 'source/node/data/Z64String.js'

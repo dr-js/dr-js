@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 import { appendBuffer, readBuffer } from 'source/node/fs/File.js'

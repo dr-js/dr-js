@@ -1,5 +1,5 @@
-import { Readable } from 'stream'
-import { createInterface } from 'readline'
+import { Readable } from 'node:stream'
+import { createInterface } from 'node:readline'
 
 import { isObjectAlike, isBasicFunction } from 'source/common/check.js'
 import { createInsideOutPromise } from 'source/common/function.js'
