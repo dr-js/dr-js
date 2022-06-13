@@ -3,11 +3,14 @@
 //   bad for case-insensitive string transports
 //   initial code borrowed from: https://github.com/base62/base62.js/blob/v2.0.1/lib/ascii.js
 
+// NOTE: the "a-zA-Z" order is reversed in charCode ("A-Za-z")
 const __CHAR_LIST = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+const B62_ZERO = __CHAR_LIST[ 0 ]
 
 /** @type { (uint: number) => string } */
 const encode = (uint) => {
-  if (uint === 0) return __CHAR_LIST[ 0 ]
+  if (uint === 0) return B62_ZERO
   let string = ''
   while (uint > 0) {
     string = __CHAR_LIST[ uint % 62 ] + string
@@ -37,6 +40,7 @@ const decode = (uintString) => {
 }
 
 export {
+  B62_ZERO,
   encode,
   decode
 }
