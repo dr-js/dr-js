@@ -23,7 +23,7 @@ jobs:
     steps:
       - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
       - { uses: "actions/setup-node@v2", with: { node-version: "${{ matrix.node-version }}" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@dev -eI .github/ci-patch.js
+      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
       - run: dr-dev -c .github/cache/config.js --cache-step setup
       - { uses: "actions/cache@v2", with: { # https://github.com/actions/cache
         key: "${{ runner.os }}-${{ env.cache-version }}-${{ matrix.node-version }}-${{ hashFiles('.github/cache/temp-gitignore/checksum-file') }}",
@@ -42,7 +42,7 @@ jobs:
     steps:
       - { uses: "actions/checkout@v2" } # https://github.com/actions/checkout
       - { uses: "actions/setup-node@v2", with: { node-version: "16.x" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@dev -eI .github/ci-patch.js
+      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
       - run: npm8 ci --no-optional
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN_DR_JS }}" > .npmrc
       - run: npm run script-publish

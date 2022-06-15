@@ -68,13 +68,17 @@
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/B62.js](source/common/data/B62.js)
-  - `decode`, `encode`
+  - `B62_ZERO`, `decode`, `encode`
++ 📄 [source/common/data/B86.js](source/common/data/B86.js)
+  - `B86_ZERO`, `decode`, `encode`
 + 📄 [source/common/data/Base64.js](source/common/data/Base64.js)
   - `decode`, `encode`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `createCache`, `createCacheMap`
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
++ 📄 [source/common/data/F32.js](source/common/data/F32.js)
+  - `cast`, `decodeF32`, `encodeF32`
 + 📄 [source/common/data/Iter.js](source/common/data/Iter.js)
   - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
@@ -397,13 +401,17 @@
     - **ArrayBufferPacket**
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **B62**
-      - `decode`, `encode`
+      - `B62_ZERO`, `decode`, `encode`
+    - **B86**
+      - `B86_ZERO`, `decode`, `encode`
     - **Base64**
       - `decode`, `encode`
     - **CacheMap**
       - `createCache`, `createCacheMap`
     - **DataUri**
       - `decode`, `encode`
+    - **F32**
+      - `cast`, `decodeF32`, `encodeF32`
     - **Iter**
       - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
     - **LinkedList**
