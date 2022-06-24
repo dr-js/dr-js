@@ -6,7 +6,6 @@ import { string, integer, basicObject, basicArray, basicFunction } from 'source/
 import { setTimeoutAsync } from 'source/common/time.js'
 import { createLoopIndex } from 'source/common/data/LoopIndex.js'
 
-import { existPath } from 'source/node/fs/Path.js'
 import { readText, readJSON, writeJSON, deleteFile } from 'source/node/fs/File.js'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { getContainerLsList, matchContainerLsList } from 'source/node/module/Software/docker.js'
@@ -219,29 +218,32 @@ const initLoopState = (loopConfig, loopExtraData = {}) => {
 }
 
 const loadLoopState = async (loopConfig) => {
-  if (!await existPath(loopConfig.stateFilePath)) return initLoopState(loopConfig) // new config
+  try {
+    const {
+      loopIndex,
+      loopHistoryList,
+      unitStateMap: loadUnitStateMap,
+      loopExtraData = {}
+    } = await readJSON(loopConfig.stateFilePath)
 
-  const {
-    loopIndex,
-    loopHistoryList,
-    unitStateMap: loadUnitStateMap,
-    loopExtraData = {}
-  } = await readJSON(loopConfig.stateFilePath)
+    const unitStateMap = {}
+    for (const unitConfig of loopConfig.unitConfigList) {
+      const prevUnitState = loadUnitStateMap[ unitConfig.name ]
+      unitStateMap[ unitConfig.name ] = prevUnitState || initUnitState()
+    }
 
-  const unitStateMap = {}
-  for (const unitConfig of loopConfig.unitConfigList) {
-    const prevUnitState = loadUnitStateMap[ unitConfig.name ]
-    unitStateMap[ unitConfig.name ] = prevUnitState || initUnitState()
+    const danglingUnitTagList = []
+    for (const [ prevName, prevUnitState ] of Object.entries(loadUnitStateMap)) {
+      if (!unitStateMap[ prevName ] && latestUnitStateHistory(prevUnitState).state.startsWith('found')) danglingUnitTagList.push(`${prevName}@${prevUnitState.clueProcessInfo.pid}`)
+    }
+
+    addLoopHistory(loopHistoryList, `#${loopIndex} load`, danglingUnitTagList.length && `dangling: ${danglingUnitTagList.join(',')}`) // TODO: no config to stop these dangling unit
+
+    return { loopIndex, loopHistoryList, unitStateMap, loopExtraData }
+  } catch (error) {
+    __DEV__ && console.log('[ERROR|loadLoopState]', error)
+    return initLoopState(loopConfig) // new config
   }
-
-  const danglingUnitTagList = []
-  for (const [ prevName, prevUnitState ] of Object.entries(loadUnitStateMap)) {
-    if (!unitStateMap[ prevName ] && latestUnitStateHistory(prevUnitState).state.startsWith('found')) danglingUnitTagList.push(`${prevName}@${prevUnitState.clueProcessInfo.pid}`)
-  }
-
-  addLoopHistory(loopHistoryList, `#${loopIndex} load`, danglingUnitTagList.length && `dangling: ${danglingUnitTagList.join(',')}`) // TODO: no config to stop these dangling unit
-
-  return { loopIndex, loopHistoryList, unitStateMap, loopExtraData }
 }
 
 const saveLoopState = async (loopConfig, loopState) => {
