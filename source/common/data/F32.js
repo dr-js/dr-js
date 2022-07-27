@@ -8,7 +8,7 @@ const cast = (value) => {
   return __V.getFloat32(0)
 }
 
-// F32: 5-char B86, enough to keep Float32 data
+// F32: 5-digit-base86, enough to keep Float32 data
 
 /** @type { (float32: number) => string } */
 const encodeF32 = (float32) => {

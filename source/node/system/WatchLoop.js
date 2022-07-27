@@ -331,12 +331,10 @@ const clueFind = async (unitConfig, unitState, SPI) => {
     if (!processInfo && !clue.pidFileKeepStale) await deleteFile(clue.pidFile) // delete stale pidFile
   } else if (clue.commandPattern) {
     processInfo = SPI.processList.find(({ command }) => clue.commandPattern(command))
-  } else if (clue.containerImagePattern) {
-    const dockerContainer = SPI.dockerContainerList.find(({ image }) => clue.containerImagePattern(image))
-    processInfo = dockerContainer && SPI.processList.find(({ pid }) => pid === dockerContainer.pid)
-  } else if (clue.containerNamesPattern) {
-    const dockerContainer = SPI.dockerContainerList.find(({ names }) => clue.containerNamesPattern(names))
-    processInfo = dockerContainer && SPI.processList.find(({ pid }) => pid === dockerContainer.pid)
+  } else if (clue.containerImagePattern || clue.containerNamesPattern) {
+    const matchPattern = clue.containerImagePattern || clue.containerNamesPattern
+    const dockerContainer = SPI.dockerContainerList.find(({ image }) => matchPattern(image))
+    processInfo = dockerContainer && SPI.processList.find(({ pid }) => pid === dockerContainer.pid) // TODO: this will return the first found process
   }
   return processInfo
 }

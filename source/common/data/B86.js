@@ -1,6 +1,8 @@
 // B86: base86 encode/decode for Uint (range [0, Number.MAX_SAFE_INTEGER], no float, no negative)
-//   extended from base62, use more printable char, but less inline-safe and less readable
-//   5-bit-base86 can fit Uint32
+//   extended from base62, use more printable char but less readable
+//   5-digit-base86 can fit one Uint32
+//   no quote ('") and whitespace (\w) char to be somewhat inline-safe
+//   fixed-length base86 is directly sortable (by ASCII) without decode to Uint
 
 // NOTE: check with: Object.fromEntries(' '.repeat(128).split('').map((v, i) => [ `x${i.toString(16).padStart(2, '0')}`, String.fromCharCode(i) ]))
 // const ASCII_MAP = {
