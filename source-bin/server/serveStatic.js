@@ -20,7 +20,7 @@ const configure = ({
   staticRoot
 }) => {
   const fromStaticRoot = createPathPrefixLock(staticRoot)
-  const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store)))
+  const getParamFilePath = (store) => fromStaticRoot(decodeURIComponent(getRouteParamAny(store) || ''))
   const responderServeStatic = createResponderServeStatic({ expireTime })
 
   const routeConfigList = isSimpleApi ? [

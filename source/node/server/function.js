@@ -59,7 +59,7 @@ const getRequestParam = (store, key) => {
   return (
     headers[ key ] || // from HTTP header
     store.getState().url.searchParams.get(key) || // from Url query // NOTE: url should from ResponderRouter
-    (headers[ 'cookie' ] && decodeURIComponent(parseCookieString(headers[ 'cookie' ])[ key ])) || // from HTTP header cookie
+    (headers[ 'cookie' ] && decodeURIComponent(parseCookieString(headers[ 'cookie' ])[ key ] || '')) || // from HTTP header cookie
     (store.info && getWSProtocolListParam(store.info.protocolList, key)) // for WebSocket UpgradeRequestResponder
   )
 }
