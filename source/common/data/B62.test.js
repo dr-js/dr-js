@@ -1,7 +1,10 @@
 import { strictEqual } from 'source/common/verify.js'
 import { createStepper } from 'source/common/time.js'
 import { time } from 'source/common/format.js'
-import { encode, decode } from './B62.js'
+import {
+  B62_ZERO, B62_MAX,
+  encode, decode
+} from './B62.js'
 
 const { describe, it, info = console.log } = globalThis
 
@@ -41,6 +44,9 @@ describe('Common.Data.B62', () => {
       ...TEST_LIST,
       [ 65, '0013' ] // should ignore leading zeros
     ]) strictEqual(decode(string), uint)
+
+    strictEqual(decode(B62_ZERO), 0)
+    strictEqual(decode(B62_MAX), 62 - 1)
   })
 
   it('stress', () => {

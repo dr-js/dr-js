@@ -38,7 +38,8 @@ const __CHAR_LIST = (
   '{|}~' // x7b-x7e
 ).split('')
 
-const B86_ZERO = __CHAR_LIST[ 0 ]
+const B86_ZERO = '(' // __CHAR_LIST[ 0 ]
+const B86_MAX = '~' // __CHAR_LIST[ __CHAR_LIST.length -1 ]
 
 /** @type { (uint: number) => string } */
 const encode = (uint) => {
@@ -71,7 +72,6 @@ const decode = (uintString) => {
 }
 
 export {
-  B86_ZERO,
-  encode,
-  decode
+  B86_ZERO, B86_MAX,
+  encode, decode
 }
