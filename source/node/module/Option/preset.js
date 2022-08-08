@@ -83,7 +83,7 @@ const parseCompact = ( // sample: `name,short-name,...alias-name-list / O,P / 1-
       name: nameTagList[ 0 ],
       shortName: nameTagList.find((nameTag) => nameTag.length === 1),
       aliasNameList: nameTagList.length > 1 ? nameTagList.slice(1) : undefined,
-      argumentCount: argumentCount,
+      argumentCount,
       description: descriptionList.join('|')
     }, filterFormatValue),
     Array.isArray(extraOptionOrExtendFormatList)

@@ -1,7 +1,11 @@
 import { strictEqual } from 'source/common/verify.js'
 import { createStepper } from 'source/common/time.js'
 import { time } from 'source/common/format.js'
-import { B86_ZERO, encode, decode } from './B86.js'
+import { withRepeat } from 'source/common/function.js'
+import {
+  B86_ZERO, B86_MAX,
+  encode, decode
+} from './B86.js'
 
 const { describe, it, info = console.log } = globalThis
 
@@ -45,28 +49,54 @@ describe('Common.Data.B86', () => {
       ...TEST_LIST,
       [ 65, `${B86_ZERO}${B86_ZERO}${B86_ZERO}j` ] // should ignore leading zeros
     ]) strictEqual(decode(string), uint)
+
+    strictEqual(decode(B86_ZERO), 0)
+    strictEqual(decode(B86_MAX), 86 - 1)
   })
 
   it('stress', () => {
-    const STRESS_LOOP = 9999999
+    const STRESS_LOOP = __DEV__ ? 9999999 : 999999
+    const STRESS_TEST_LIST = TEST_LIST.map(([ v ]) => [ v, encode(v), v.toString(36) ])
     const stepper = createStepper()
-    {
-      let loop = STRESS_LOOP
-      while (loop !== 0) {
-        const [ uint, string ] = TEST_LIST[ loop % TEST_LIST.length ]
-        strictEqual(encode(uint), string)
-        loop--
+
+    withRepeat(() => {
+      {
+        let loop = STRESS_LOOP
+        while (loop !== 0) {
+          const [ uint, stringB86 ] = STRESS_TEST_LIST[ loop % STRESS_TEST_LIST.length ]
+          strictEqual(encode(uint), stringB86)
+          loop--
+        }
       }
-    }
-    info('done encode', time(stepper()))
-    {
-      let loop = STRESS_LOOP
-      while (loop !== 0) {
-        const [ uint, string ] = TEST_LIST[ loop % TEST_LIST.length ]
-        strictEqual(decode(string), uint)
-        loop--
+      info('done encode', time(stepper()))
+      {
+        let loop = STRESS_LOOP
+        while (loop !== 0) {
+          const [ uint, stringB86 ] = STRESS_TEST_LIST[ loop % STRESS_TEST_LIST.length ]
+          strictEqual(decode(stringB86), uint)
+          loop--
+        }
       }
-    }
-    info('done decode', time(stepper()))
+      info('done decode', time(stepper()))
+
+      {
+        let loop = STRESS_LOOP
+        while (loop !== 0) {
+          const [ uint, , stringB36 ] = STRESS_TEST_LIST[ loop % STRESS_TEST_LIST.length ]
+          strictEqual(uint.toString(36), stringB36)
+          loop--
+        }
+      }
+      info('done encode B36', time(stepper()))
+      {
+        let loop = STRESS_LOOP
+        while (loop !== 0) {
+          const [ uint, , stringB36 ] = STRESS_TEST_LIST[ loop % STRESS_TEST_LIST.length ]
+          strictEqual(parseInt(stringB36, 36), uint)
+          loop--
+        }
+      }
+      info('done decode B36', time(stepper()))
+    }, 2)
   })
 })

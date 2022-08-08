@@ -61,9 +61,18 @@ const setAwaitAsync = async (awaitCount = 0) => { // better use it as a relative
   }
 }
 
-const [ requestFrameUpdate, cancelFrameUpdate ] = globalThis.requestAnimationFrame
-  ? [ globalThis.requestAnimationFrame, globalThis.cancelAnimationFrame ]
-  : [ (func) => setTimeout(func, 1000 / 60), clearTimeout ]
+const tryFrameUpdate = () => {
+  try { // browser
+    const { requestAnimationFrame, cancelAnimationFrame } = globalThis
+    const token = requestAnimationFrame(() => {})
+    cancelAnimationFrame(token)
+    return [ requestAnimationFrame, cancelAnimationFrame ]
+  } catch (error) { __DEV__ && console.log('[tryFrameUpdate] browser', error) }
+
+  return [ (func) => setTimeout(func, 1000 / 60), clearTimeout ] // fallback
+}
+
+const [ requestFrameUpdate, cancelFrameUpdate ] = tryFrameUpdate()
 
 const createTimer = ({
   func,

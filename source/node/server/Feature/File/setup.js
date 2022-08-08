@@ -44,9 +44,9 @@ const setup = async ({
 
   const routeList = [
     [ [ `${URL_FILE_SERVE}/*`, `${URL_FILE_SERVE_ABBR}/*` ], [ 'GET', 'HEAD' ], createResponderCheckAuth({
-      responderNext: (store) => responderFileServe(store, decodeURIComponent(getRouteParamAny(store)))
+      responderNext: (store) => responderFileServe(store, decodeURIComponent(getRouteParamAny(store) || ''))
     }) ],
-    responderFileServePublic && [ [ `${URL_FILE_SERVE_PUBLIC}/*`, `${URL_FILE_SERVE_PUBLIC_ABBR}/*` ], [ 'GET', 'HEAD' ], (store) => responderFileServePublic(store, decodeURIComponent(getRouteParamAny(store))) ],
+    responderFileServePublic && [ [ `${URL_FILE_SERVE_PUBLIC}/*`, `${URL_FILE_SERVE_PUBLIC_ABBR}/*` ], [ 'GET', 'HEAD' ], (store) => responderFileServePublic(store, decodeURIComponent(getRouteParamAny(store) || '')) ],
     [ URL_FILE_UPLOAD, 'POST', createResponderCheckAuth({
       responderNext: (store) => responderFileChunkUpload(store, enhanceFileChunkUploadOption({
         onUploadStart: async ({ filePath, key }) => {

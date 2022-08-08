@@ -68,9 +68,9 @@
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
   - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/B62.js](source/common/data/B62.js)
-  - `B62_ZERO`, `decode`, `encode`
+  - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
 + 📄 [source/common/data/B86.js](source/common/data/B86.js)
-  - `B86_ZERO`, `decode`, `encode`
+  - `B86_MAX`, `B86_ZERO`, `decode`, `encode`
 + 📄 [source/common/data/Base64.js](source/common/data/Base64.js)
   - `decode`, `encode`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
@@ -401,9 +401,9 @@
     - **ArrayBufferPacket**
       - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
     - **B62**
-      - `B62_ZERO`, `decode`, `encode`
+      - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
     - **B86**
-      - `B86_ZERO`, `decode`, `encode`
+      - `B86_MAX`, `B86_ZERO`, `decode`, `encode`
     - **Base64**
       - `decode`, `encode`
     - **CacheMap**

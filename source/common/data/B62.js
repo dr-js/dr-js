@@ -1,12 +1,17 @@
 // B62: base62 encode/decode for Uint (range [0, Number.MAX_SAFE_INTEGER], no float, no negative)
 //   good for persisting uint value like: timestamp, size, id, index
-//   bad for case-insensitive string transports
+//   bad for case-insensitive string transports, and NOT directly sortable (by ASCII)
 //   initial code borrowed from: https://github.com/base62/base62.js/blob/v2.0.1/lib/ascii.js
 
 // NOTE: the "a-zA-Z" order is reversed in charCode ("A-Za-z")
-const __CHAR_LIST = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const __CHAR_LIST = (
+  '0123456789' +
+  'abcdefghijklmnopqrstuvwxyz' +
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+).split('')
 
-const B62_ZERO = __CHAR_LIST[ 0 ]
+const B62_ZERO = '0' // __CHAR_LIST[ 0 ]
+const B62_MAX = 'Z' // __CHAR_LIST[ __CHAR_LIST.length - 1 ]
 
 /** @type { (uint: number) => string } */
 const encode = (uint) => {
@@ -40,7 +45,6 @@ const decode = (uintString) => {
 }
 
 export {
-  B62_ZERO,
-  encode,
-  decode
+  B62_ZERO, B62_MAX,
+  encode, decode
 }

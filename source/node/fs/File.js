@@ -83,12 +83,14 @@ const readJSON = async (path) => JSON.parse(await readText(path))
 /** @type { (v: string) => vJSON } */
 const readJSONSync = (path) => JSON.parse(readTextSync(path))
 /** @type { (v: string) => Promise<vJSON> } */
-const readJSONAlike = (path) => { // TODO: better consider this `async`
-  delete require.cache[ tryRequireResolve(path) ] // clear existing cache
-  return dupJSON(tryRequire(path)) // can be .js or .json, copy to prevent mutate module cache
-}
+const readJSONAlike = async (path) => readJSONAlikeSync(path) // TODO: fake `async`, consider deprecate?
 /** @type { (v: string) => vJSON } */
-const readJSONAlikeSync = readJSONAlike
+const readJSONAlikeSync = (path) => {
+  delete require.cache[ tryRequireResolve(path) ] // clear existing cache
+  const jsonAlike = tryRequire(path)
+  if (jsonAlike === undefined) throw new Error(`fail to load file as JSON: ${path}`)
+  return dupJSON(jsonAlike) // can be .js or .json, copy to prevent mutate module cache
+}
 /** @type { (v: string, a: vJSON) => Promise<void> } */
 const writeJSON = async (path, value) => writeBuffer(path, JSON.stringify(value))
 /** @type { (v: string, a: vJSON) => void } */

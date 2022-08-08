@@ -25,7 +25,7 @@ const setup = async ({
   const routeList = [
     [ [ `${URL_ACTION_JSON}/*`, `${URL_ACTION_JSON_ABBR}/*` ], 'POST', createResponderCheckAuth({
       responderNext: async (store) => {
-        const actionType = decodeURIComponent(getRouteParamAny(store))
+        const actionType = decodeURIComponent(getRouteParamAny(store) || '')
         const actionFunc = actionMap[ actionType ]
         __DEV__ && !actionFunc && console.log('missing actionFunc for', actionType)
         if (!actionFunc) return // ends with 400
@@ -35,7 +35,7 @@ const setup = async ({
       }
     }) ],
     [ [ `${URL_ACTION_JSON_PUBLIC}/*`, `${URL_ACTION_JSON_PUBLIC_ABBR}/*` ], 'POST', async (store) => {
-      const actionType = decodeURIComponent(getRouteParamAny(store))
+      const actionType = decodeURIComponent(getRouteParamAny(store) || '')
       const actionFunc = actionMapPublic[ actionType ]
       __DEV__ && !actionFunc && console.log('missing actionFunc for', actionType)
       if (!actionFunc) return // ends with 400
