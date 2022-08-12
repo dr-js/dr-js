@@ -332,8 +332,9 @@ const clueFind = async (unitConfig, unitState, SPI) => {
   } else if (clue.commandPattern) {
     processInfo = SPI.processList.find(({ command }) => clue.commandPattern(command))
   } else if (clue.containerImagePattern || clue.containerNamesPattern) {
-    const matchPattern = clue.containerImagePattern || clue.containerNamesPattern
-    const dockerContainer = SPI.dockerContainerList.find(({ image }) => matchPattern(image))
+    const dockerContainer = SPI.dockerContainerList.find(clue.containerImagePattern
+      ? ({ image }) => clue.containerImagePattern(image)
+      : ({ names }) => clue.containerNamesPattern(names))
     processInfo = dockerContainer && SPI.processList.find(({ pid }) => pid === dockerContainer.pid) // TODO: this will return the first found process
   }
   return processInfo
