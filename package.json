@@ -30,7 +30,7 @@
     "build-module": "dr-dev --EE BABEL_ENV=module -E -- babel ./source --out-dir ./output-gitignore/module --copy-files",
     "// test ========================": "",
     "test-T": "dr-dev --EE 'BABEL_ENV=dev&TEST_SANITY=true' -E -- dr-dev --TR @babel/register -T",
-    "test-dev": "npm run test-T -- source/common/data/B86.test.js",
+    "test-dev": "npm run test-T -- source/node/module/Software/docker.test.js",
     "test-source": "dr-dev --TR @babel/register -T source/env/ source/common/ source/node/ --TFS .test.js",
     "test-source-bin": "dr-dev --TR @babel/register -T source-bin/ --TFS .test.js",
     "test-output-library": "dr-dev -T output-gitignore/library/env/ output-gitignore/library/common/ output-gitignore/library/node/ --TFS .test.js",
@@ -52,8 +52,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "^0.5.3 || ^0.5.3-dev.2",
-    "@dr-js/dev-web-puppeteer": "^0.5.3 || ^0.5.3-dev.2",
+    "@dr-js/dev": "^0.5.3",
+    "@dr-js/dev-web-puppeteer": "^0.5.3",
     "typescript": "^4.7.4"
   },
   "sideEffects": false
