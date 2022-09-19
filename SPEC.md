@@ -60,7 +60,7 @@
 + 📄 [source/common/test.js](source/common/test.js)
   - `createTest`
 + 📄 [source/common/time.js](source/common/time.js)
-  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
+  - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`, `setWeakTimeoutAsync`
 + 📄 [source/common/verify.js](source/common/verify.js)
   - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
@@ -520,7 +520,7 @@
   - **Test**
     - `createTest`
   - **Time**
-    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`
+    - `CLOCK_PER_SECOND`, `CLOCK_TO_SECOND`, `cancelFrameUpdate`, `clock`, `createStepper`, `createTimer`, `getTimestamp`, `getUTCDateTag`, `requestFrameUpdate`, `setAwaitAsync`, `setTimeoutAsync`, `setWeakInterval`, `setWeakTimeout`, `setWeakTimeoutAsync`
   - **Verify**
     - `arrayBuffer`, `arrayLength`, `basicArray`, `basicFunction`, `basicObject`, `boolean`, `doNotThrow`, `doNotThrowAsync`, `doThrow`, `doThrowAsync`, `includes`, `integer`, `notIncludes`, `notStrictEqual`, `notStringifyEqual`, `number`, `objectAlike`, `objectContain`, `objectKey`, `oneOf`, `promiseAlike`, `regexp`, `strictEqual`, `string`, `stringifyEqual`, `truthy`
 - **Env**
