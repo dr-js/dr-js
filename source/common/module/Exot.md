@@ -61,7 +61,7 @@ Exot is short for "Exot-ic",
 
 ```js
 const createExot = ({ // most Exot create func should be just sync, and move async things to up()
-  id = getRandomId() // unique string id, or specific name for singleton like "server-HTTP"
+  id = getRandomId62S() // unique string id, or specific name for singleton like "server-HTTP"
   // other option to config this Exot
 }) => ({
   id,

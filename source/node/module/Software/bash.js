@@ -1,5 +1,5 @@
-import { encode as encodeB62 } from 'source/common/data/B62.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { encode as encodeB62S } from 'source/common/data/B62S.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { run, runStdout, runSync, runStdoutSync } from 'source/node/run.js'
 import { probeSync, createArgListPack } from '../function.js'
 
@@ -55,7 +55,7 @@ const subShellCommandList = (commandList) => [ // with padding for better log gr
 const toHeredocNoMagic = ( // return half command, no magic meaning no shell expanding and more (with the quoted EOM)
   string = '',
   extraPipeCommand = '',
-  EOM = getRandomId(`EOM-${encodeB62(string.length)}-`) // better with this long random EOM
+  EOM = getRandomId62S(`EOM-${encodeB62S(string.length)}-`) // better with this long random EOM
 ) => `<< '${EOM}' ${extraPipeCommand}
 ${string}
 ${EOM}`

@@ -204,7 +204,7 @@ const mainScriptInit = () => {
         Time: { setTimeoutAsync },
         Function: { lossyAsync },
         Error: { withFallbackResult },
-        Math: { getRandomInt, getRandomId },
+        Math: { getRandomInt, getRandomId62S },
         Format: { binary }
       },
       Browser: {
@@ -220,7 +220,7 @@ const mainScriptInit = () => {
 
   const appendLog = (...elementList) => {
     const log = qS('#log')
-    const item = cE('p', { id: getRandomId() }, elementList)
+    const item = cE('p', { id: getRandomId62S() }, elementList)
     log.appendChild(item)
     log.scrollTop = log.scrollHeight
     return item

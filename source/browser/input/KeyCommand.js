@@ -1,4 +1,4 @@
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { isObjectContain } from 'source/common/check.js'
 
 const { document } = window
@@ -27,7 +27,7 @@ const createKeyCommandHub = ({
     eventSource.removeEventListener('keydown', keyCommandListener)
     isActive = false
   }
-  const addKeyCommand = ({ id = getRandomId(), target, checkMap, callback }) => {
+  const addKeyCommand = ({ id = getRandomId62S(), target, checkMap, callback }) => {
     keyCommandMap.set(id, { id, target, checkMap, callback })
     return id
   }

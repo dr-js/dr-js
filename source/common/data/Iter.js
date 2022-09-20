@@ -1,5 +1,5 @@
 import { createInsideOutPromise } from 'source/common/function.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 
 /** @typedef { { value: *, done: boolean } } IterStatus */
 /** @typedef { () => IterStatus } IterNextSync */
@@ -38,7 +38,7 @@ const createLockStepAsyncIter = () => {
   let sendLock = false
   let nextLock = false
   let isDone = false
-  const id = __DEV__ && getRandomId()
+  const id = __DEV__ && getRandomId62S()
   __DEV__ && console.log(`[LSAI|${id}] create`)
   return {
     ...wrapAsync(async () => { // NOTE: expect to call this before send/throw to `await nextIOP.promise`

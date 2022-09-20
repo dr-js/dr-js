@@ -1,5 +1,5 @@
 import { isString, isObjectAlike, isBasicFunction } from 'source/common/check.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 
 // TODO: still under testing, pattern not stable
 // Exot is short for "Exot-ic", a pattern for wrapping external IO or Resource that require manual `up` and `down`.
@@ -28,7 +28,7 @@ const createDummyExot = ({ // most Exot create func should be just sync, and mov
   // ## other option to config this Exot
   idPrefix = 'DUMMY-EXOT-',
   // ## pattern
-  id = getRandomId(idPrefix), // unique string id, or specific name like "server-HTTP"
+  id = getRandomId62S(idPrefix), // unique string id, or specific name like "server-HTTP"
   onUp, onDown, ...extra // for fast convert some IO to Exot
 } = {}) => {
   let isActive = false
@@ -64,7 +64,7 @@ const createExotGroup = ({
   // ## other option to config this Exot
   idPrefix = 'EXOT-GROUP-',
   // ## pattern
-  id = getRandomId(idPrefix), // unique string id, or specific name like "server-HTTP"
+  id = getRandomId62S(idPrefix), // unique string id, or specific name like "server-HTTP"
   getOnExotError, onExotError,
   exotList = [], exotMap = toExotMap(...exotList),
   isBatch = false

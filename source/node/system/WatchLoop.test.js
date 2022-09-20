@@ -1,7 +1,7 @@
 import { resolve, dirname, basename } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { indentLineList } from 'source/common/string.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import { createLoggerExot } from 'source/node/module/Logger.js'
 import { runSync } from 'source/node/run.js'
@@ -113,7 +113,7 @@ describe('Node.System.WatchLoop', () => {
         unitConfigList: [ ...UNIT_CONFIG_LIST, {
           name: 'bad-process',
           clue: { commandPattern: 'bad-process no pattern will keep crashing, and will cause all fast loop become slow check loop' },
-          run: { start: { argList: [ getRandomId('non-exist-command-') ] } }
+          run: { start: { argList: [ getRandomId62S('non-exist-command-') ] } }
         } ]
       })
       loopState = await migrateLoopState(loopConfig, prevLoopConfig, prevLoopState)
