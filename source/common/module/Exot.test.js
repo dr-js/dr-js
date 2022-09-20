@@ -1,7 +1,7 @@
 import { truthy, doThrow, doThrowAsync } from 'source/common/verify.js'
 import { createInsideOutPromise } from 'source/common/function.js'
 import { setTimeoutAsync } from 'source/common/time.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 
 import { createExotError, createDummyExot, isExot, createExotGroup } from './Exot.js'
 
@@ -136,7 +136,7 @@ describe('source/common/module/Exot', () => {
 
 const createSampleExot = ({ // most Exot create func should be just sync, and move async things to up()
   // ## pattern
-  id = getRandomId('SAMPLE-EXOT-'), // unique string id, or specific name like "server-HTTP"
+  id = getRandomId62S('SAMPLE-EXOT-'), // unique string id, or specific name like "server-HTTP"
   // ## other option to config this Exot
   sampleConfig = {}
 } = {}) => {

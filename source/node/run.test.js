@@ -1,6 +1,6 @@
 import { includes, strictEqual, truthy } from 'source/common/verify.js'
 import { catchSync, catchPromise } from 'source/common/error.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import {
   describeRunOutcome, describeRunOutcomeSync,
@@ -12,7 +12,7 @@ const log = __DEV__ ? info : () => {}
 
 const TEST_ARG_LIST_EXIT_0 = [ 'node', '-e', 'console.log("TEST_ARG_LIST_EXIT_0", process.version); process.exitCode = 0' ]
 const TEST_ARG_LIST_EXIT_42 = [ 'node', '-e', 'console.log("TEST_ARG_LIST_EXIT_42", process.version); process.exitCode = 42' ]
-const TEST_ARG_LIST_BAD = [ getRandomId('no-exist-bad-test-command-'), ...[ 0, 1, 2, 3 ].map(getRandomId) ]
+const TEST_ARG_LIST_BAD = [ getRandomId62S('no-exist-bad-test-command-'), ...[ 0, 1, 2, 3 ].map(getRandomId62S) ]
 
 const TITLE_DESCRIBE = '[DESCRIBE-RUN-OUTCOME] ====\n'
 

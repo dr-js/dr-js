@@ -1,5 +1,5 @@
 import { strictEqual, truthy } from 'source/common/verify.js'
-import { getRandomArrayBuffer, getRandomId } from 'source/common/math/random.js'
+import { getRandomArrayBuffer, getRandomId62S } from 'source/common/math/random.js'
 import { getSample } from 'source/common/math/sample.js'
 import { isEqualArrayBuffer, concatArrayBuffer } from 'source/common/data/ArrayBuffer.js'
 import {
@@ -13,7 +13,7 @@ describe('Common.Module.ChunkUpload', () => {
   it('packArrayBufferChunk(),parseArrayBufferChunk()', async () => {
     const testChunkInfo = {
       chunkArrayBuffer: getRandomArrayBuffer(64),
-      key: getRandomId(), chunkIndex: 0, chunkTotal: 1
+      key: getRandomId62S(), chunkIndex: 0, chunkTotal: 1
     }
     const testPacket = await packArrayBufferChunk(testChunkInfo, true)
     const resultChunkInfo = await parseArrayBufferChunk(testPacket, true)
@@ -30,7 +30,7 @@ describe('Common.Module.ChunkUpload', () => {
     const resultChunkInfoList = []
 
     await uploadArrayBufferByChunk({
-      arrayBuffer: testArrayBuffer, key: getRandomId(), isSkipVerifyHash: true,
+      arrayBuffer: testArrayBuffer, key: getRandomId62S(), isSkipVerifyHash: true,
       uploadChunk: async (arrayBufferPacket, { chunkArrayBuffer, key, chunkIndex, chunkTotal }) => {
         resultChunkInfoList.push(await parseArrayBufferChunk(arrayBufferPacket, true))
       },

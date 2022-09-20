@@ -1,12 +1,12 @@
 import { strictEqual, stringifyEqual } from 'source/common/verify.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { createKeyTreeEnhanced } from './KeyTree.js'
 
 const { describe, it } = globalThis
 
 describe('source/common/module/KeyTree', () => {
-  const NAME_KEY = getRandomId('key').replace(/\W/g, '')
-  const NAME_SUB_LIST = getRandomId('subList').replace(/\W/g, '')
+  const NAME_KEY = getRandomId62S('key')
+  const NAME_SUB_LIST = getRandomId62S('subList')
 
   const {
     stringify,

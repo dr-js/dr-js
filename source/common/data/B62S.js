@@ -1,21 +1,19 @@
-// B62: base62 encode/decode for Uint (range [0, Number.MAX_SAFE_INTEGER], no float, no negative)
-//   good for persisting uint value like: timestamp, size, id, index
-//   bad for case-insensitive string transports, and NOT directly sortable (by ASCII)
-//   initial code borrowed from: https://github.com/base62/base62.js/blob/v2.0.1/lib/ascii.js
+// B62S: ASCII sortable base62
+//   use "0-9A-Za-z" instead of "0-9a-zA-Z"
+//   do not mix encode/decode with common B62
 
-// NOTE: the "a-zA-Z" order is reversed in charCode ("A-Za-z")
 const __CHAR_LIST = (
   '0123456789' +
-  'abcdefghijklmnopqrstuvwxyz' +
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  'abcdefghijklmnopqrstuvwxyz'
 ).split('')
 
-const B62_ZERO = '0' // __CHAR_LIST[ 0 ]
-const B62_MAX = 'Z' // __CHAR_LIST[ __CHAR_LIST.length - 1 ]
+const B62S_ZERO = '0' // __CHAR_LIST[ 0 ]
+const B62S_MAX = 'z' // __CHAR_LIST[ __CHAR_LIST.length - 1 ]
 
 /** @type { (uint: number) => string } */
 const encode = (uint) => {
-  if (uint === 0) return B62_ZERO
+  if (uint === 0) return B62S_ZERO
   let string = ''
   while (uint > 0) {
     string = __CHAR_LIST[ uint % 62 ] + string
@@ -37,14 +35,14 @@ const decode = (uintString) => {
   for (let i = 0; i < length; i++) {
     const charCode = uintString.charCodeAt(i)
     const digit = (charCode <= 0x39) ? charCode - 0x30 // 0-9 -> [0,9] // '0':0x30, '9':0x39
-      : (charCode <= 0x5a) ? charCode - 0x41 + 36 // A-Z -> [36,61] // 'A':0x41, 'Z':0x5a
-        : charCode - 0x61 + 10 // a-z -> [10,35] // 'a':0x61, 'z':0x7a
+      : (charCode <= 0x5a) ? charCode - 0x41 + 10 // A-Z -> [10,35] // 'A':0x41, 'Z':0x5a
+        : charCode - 0x61 + 36 // a-z -> [36,61] // 'a':0x61, 'z':0x7a
     uint += digit * __POW62_LIST[ length - i - 1 ] // uint += digit * Math.pow(62, length - i - 1)
   }
   return uint
 }
 
 export {
-  B62_ZERO, B62_MAX,
+  B62S_ZERO, B62S_MAX,
   encode, decode
 }

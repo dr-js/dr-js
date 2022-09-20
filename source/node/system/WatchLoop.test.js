@@ -1,7 +1,7 @@
 import { resolve, dirname, basename } from 'node:path'
 import { strictEqual } from 'source/common/verify.js'
 import { indentLineList } from 'source/common/string.js'
-import { getRandomId } from 'source/common/math/random.js'
+import { getRandomId62S } from 'source/common/math/random.js'
 import { deleteDirectory, resetDirectory } from 'source/node/fs/Directory.js'
 import { createLoggerExot } from 'source/node/module/Logger.js'
 import { runSync } from 'source/node/run.js'
@@ -91,54 +91,61 @@ describe('Node.System.WatchLoop', () => {
       }
     }
 
-    await runLoop(64 * LOOP_COUNT_SCALE)
-    strictEqual(loopState.loopIndex, 64 * LOOP_COUNT_SCALE)
-    strictEqual(Object.keys(loopState.unitStateMap).length, 4)
-    strictEqual(latestUnitStateHistory(loopState.unitStateMap[ 'normal-process' ]).state, 'found')
-    strictEqual(loopState.unitStateMap[ 'normal-process' ].historyList.length, 3)
-    strictEqual(latestUnitStateHistory(loopState.unitStateMap[ 'multi-process' ]).state, 'found')
-    strictEqual(loopState.unitStateMap[ 'multi-process' ].historyList.length, 3)
-    strictEqual(loopState.unitStateMap[ 'flaky-process' ].historyList.length > 5, true, 'flaky process should restart more than once')
-    strictEqual(loopState.unitStateMap[ 'flaky-process' ].latestFoundTime > 0, true, 'flaky process should run normal for some time')
-    strictEqual(loopState.unitStateMap[ 'bloat-process' ].historyList.length > 5, true, 'bloat process should restart more than once')
-    strictEqual(loopState.unitStateMap[ 'bloat-process' ].latestFoundTime > 0, true, 'bloat process should run normal for some time')
+    try {
+      await runLoop(64 * LOOP_COUNT_SCALE)
+      strictEqual(loopState.loopIndex, 64 * LOOP_COUNT_SCALE)
+      strictEqual(Object.keys(loopState.unitStateMap).length, 4)
+      strictEqual(latestUnitStateHistory(loopState.unitStateMap[ 'normal-process' ]).state, 'found')
+      strictEqual(loopState.unitStateMap[ 'normal-process' ].historyList.length, 3)
+      strictEqual(latestUnitStateHistory(loopState.unitStateMap[ 'multi-process' ]).state, 'found')
+      strictEqual(loopState.unitStateMap[ 'multi-process' ].historyList.length, 3)
+      strictEqual(loopState.unitStateMap[ 'flaky-process' ].historyList.length > 5, true, 'flaky process should restart more than once')
+      strictEqual(loopState.unitStateMap[ 'flaky-process' ].latestFoundTime > 0, true, 'flaky process should run normal for some time')
+      strictEqual(loopState.unitStateMap[ 'bloat-process' ].historyList.length > 5, true, 'bloat process should restart more than once')
+      strictEqual(loopState.unitStateMap[ 'bloat-process' ].latestFoundTime > 0, true, 'bloat process should run normal for some time')
 
-    {
-      __log('[loop] migrate (add unit, all-slow-loop)')
-      const prevLoopConfig = loopConfig
-      const prevLoopState = loopState
-      loopConfig = formatLoopConfig({
-        stateFilePath: fromRoot('loopState.1.json'),
-        loopTime: 8, // all
-        unitConfigList: [ ...UNIT_CONFIG_LIST, {
-          name: 'bad-process',
-          clue: { commandPattern: 'bad-process no pattern will keep crashing, and will cause all fast loop become slow check loop' },
-          run: { start: { argList: [ getRandomId('non-exist-command-') ] } }
-        } ]
-      })
-      loopState = await migrateLoopState(loopConfig, prevLoopConfig, prevLoopState)
-      await runLoop(32 * LOOP_COUNT_SCALE)
-      strictEqual(loopState.loopIndex, (64 + 32) * LOOP_COUNT_SCALE)
-      strictEqual(Object.keys(loopState.unitStateMap).length, 5)
-      strictEqual(loopState.unitStateMap[ 'bad-process' ].historyList.length, 2, 'bad process should stuck in restart')
-      strictEqual(loopState.unitStateMap[ 'bad-process' ].latestFoundTime, 0, 'bad process should not reach found state')
-    }
+      {
+        __log('[loop] migrate (add unit, all-slow-loop)')
+        const prevLoopConfig = loopConfig
+        const prevLoopState = loopState
+        loopConfig = formatLoopConfig({
+          stateFilePath: fromRoot('loopState.1.json'),
+          loopTime: 8, // all
+          unitConfigList: [ ...UNIT_CONFIG_LIST, {
+            name: 'bad-process',
+            clue: { commandPattern: 'bad-process no pattern will keep crashing, and will cause all fast loop become slow check loop' },
+            run: { start: { argList: [ getRandomId62S('non-exist-command-') ] } }
+          } ]
+        })
+        loopState = await migrateLoopState(loopConfig, prevLoopConfig, prevLoopState)
+        await runLoop(32 * LOOP_COUNT_SCALE)
+        strictEqual(loopState.loopIndex, (64 + 32) * LOOP_COUNT_SCALE)
+        strictEqual(Object.keys(loopState.unitStateMap).length, 5)
+        strictEqual(loopState.unitStateMap[ 'bad-process' ].historyList.length, 2, 'bad process should stuck in restart')
+        strictEqual(loopState.unitStateMap[ 'bad-process' ].latestFoundTime, 0, 'bad process should not reach found state')
+      }
 
-    {
-      __log('[loop] migrate (drop unit, stabilize)')
-      await runLoop(2, 'no-start')
-      __log('[loop] migrate (drop unit)')
-      const prevLoopConfig = loopConfig
-      const prevLoopState = loopState
-      loopConfig = formatLoopConfig({
-        stateFilePath: fromRoot('loopState.2.json'),
-        loopTime: 32, // or the loop is too fast for bloat test
-        unitConfigList: UNIT_CONFIG_LIST.slice(0, 2)
-      })
-      loopState = await migrateLoopState(loopConfig, prevLoopConfig, prevLoopState)
-      await runLoop(32 * LOOP_COUNT_SCALE)
-      strictEqual(loopState.loopIndex, (64 + 32 + 32) * LOOP_COUNT_SCALE + 2)
-      strictEqual(Object.keys(loopState.unitStateMap).length, 2)
+      {
+        __log('[loop] migrate (drop unit, stabilize)')
+        await runLoop(2, 'no-start')
+        __log('[loop] migrate (drop unit)')
+        const prevLoopConfig = loopConfig
+        const prevLoopState = loopState
+        loopConfig = formatLoopConfig({
+          stateFilePath: fromRoot('loopState.2.json'),
+          loopTime: 32, // or the loop is too fast for bloat test
+          unitConfigList: UNIT_CONFIG_LIST.slice(0, 2)
+        })
+        loopState = await migrateLoopState(loopConfig, prevLoopConfig, prevLoopState)
+        await runLoop(32 * LOOP_COUNT_SCALE)
+        strictEqual(loopState.loopIndex, (64 + 32 + 32) * LOOP_COUNT_SCALE + 2)
+        strictEqual(Object.keys(loopState.unitStateMap).length, 2)
+      }
+    } catch (error) {
+      __log('[ERROR|loop]', error)
+      await loopStop(loopConfig, loopState)
+      await loggerExot.down()
+      throw error
     }
 
     __log('[loop] stop')

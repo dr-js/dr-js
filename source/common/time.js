@@ -53,6 +53,7 @@ const [ setWeakTimeout, setWeakInterval ] = tryWeakTimer() // NOTE: using this o
 //   return 'DATA'
 // }
 const setTimeoutAsync = (wait = 0) => new Promise((resolve) => setTimeout(resolve, wait))
+const setWeakTimeoutAsync = (wait = 0) => new Promise((resolve) => setWeakTimeout(resolve, wait))
 
 const setAwaitAsync = async (awaitCount = 0) => { // better use it as a relative delay method, passing 0 will still cause a baseline await/then
   while (awaitCount > 0) {
@@ -116,7 +117,7 @@ export {
   clock,
   getTimestamp, getUTCDateTag,
   setWeakTimeout, setWeakInterval,
-  setTimeoutAsync, setAwaitAsync,
+  setTimeoutAsync, setWeakTimeoutAsync, setAwaitAsync,
   requestFrameUpdate,
   cancelFrameUpdate,
   createTimer,
