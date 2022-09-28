@@ -169,6 +169,8 @@
   - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
 + 📄 [source/common/module/SemVer.js](source/common/module/SemVer.js)
   - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
++ 📄 [source/common/module/TextEnDecoder.js](source/common/module/TextEnDecoder.js)
+  - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
   - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
@@ -498,6 +500,8 @@
       - `createArrayInputChip`, `createArrayOutputChip`, `createAsyncIterInputChip`, `createAsyncIterOutputChip`, `createENDRegulatorChip`
     - **SemVer**
       - `compareSemVer`, `isVersionSpecComplex`, `parseSemVer`, `versionBumpByGitBranch`, `versionBumpLastNumber`, `versionBumpToIdentifier`, `versionBumpToLocal`
+    - **TextEnDecoder**
+      - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
     - **TimedLookup**
       - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **TimerTag**
