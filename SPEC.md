@@ -80,7 +80,7 @@
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
 + 📄 [source/common/data/F32.js](source/common/data/F32.js)
-  - `cast`, `decodeF32`, `encodeF32`
+  - `cast`, `decodeF32`, `decodeF32W`, `encodeF32`, `encodeF32W`
 + 📄 [source/common/data/Iter.js](source/common/data/Iter.js)
   - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
 + 📄 [source/common/data/LinkedList.js](source/common/data/LinkedList.js)
@@ -417,7 +417,7 @@
     - **DataUri**
       - `decode`, `encode`
     - **F32**
-      - `cast`, `decodeF32`, `encodeF32`
+      - `cast`, `decodeF32`, `decodeF32W`, `encodeF32`, `encodeF32W`
     - **Iter**
       - `createLockStepAsyncIter`, `unwrap`, `wrapAsync`, `wrapSync`
     - **LinkedList**
