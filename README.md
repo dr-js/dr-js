@@ -10,7 +10,7 @@ A collection of strange functions
 [i:npm]: https://img.shields.io/npm/v/@dr-js/core?colorB=blue
 [i:npm-dev]: https://img.shields.io/npm/v/@dr-js/core/dev
 [l:npm]: https://npm.im/@dr-js/core
-[i:ci]: https://img.shields.io/github/workflow/status/dr-js/dr-js/ci-test-push
+[i:ci]: https://img.shields.io/github/actions/workflow/status/dr-js/dr-js/.github/workflows/ci-test-push.yml
 [l:ci]: https://github.com/dr-js/dr-js/actions?query=workflow:ci-test-push
 [i:size]: https://packagephobia.now.sh/badge?p=@dr-js/core
 [l:size]: https://packagephobia.now.sh/result?p=@dr-js/core
