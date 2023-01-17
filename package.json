@@ -14,7 +14,7 @@
   "scripts": {
     "// repo ========================": "",
     "version-bump": "dr-dev --version-bump-git-branch --git-commit --debug",
-    "tag-push": "dr-dev --version-bump-push-check && dr-dev --shell-alias quick-git-push-combo",
+    "tag-push": "dr-dev --version-bump-push-check --git-commit",
     "// script ======================": "",
     "script-pack": "node -r @babel/register ./script/pack quiet pack",
     "script-pack-test": "node -r @babel/register ./script/pack verbose pack test",
@@ -52,8 +52,8 @@
     "npm": ">=6.14"
   },
   "devDependencies": {
-    "@dr-js/dev": "^0.5.4",
-    "@dr-js/dev-web-puppeteer": "^0.5.4",
+    "@dr-js/dev": "^0.5.5",
+    "@dr-js/dev-web-puppeteer": "^0.5.5",
     "typescript": "^4.9.4"
   },
   "sideEffects": false
