@@ -1,6 +1,6 @@
 import { strictEqual, stringifyEqual, doThrow, truthy } from 'source/common/verify.js'
 import {
-  parseSemVer, compareSemVer,
+  parseSemVer, packSemVer, compareSemVer,
 
   versionBumpByGitBranch,
   versionBumpToIdentifier,
@@ -27,6 +27,17 @@ describe('Common.Module.SemVer', () => {
     stringifyEqual(parseSemVer('0.0.0-dev.0-local.0'), { major: 0, minor: 0, patch: 0, label: '-dev.0-local.0' })
     stringifyEqual(parseSemVer('999.999.999'), { major: 999, minor: 999, patch: 999, label: '' })
     stringifyEqual(parseSemVer('999.999.999-999.999.999'), { major: 999, minor: 999, patch: 999, label: '-999.999.999' })
+  })
+
+  it('packSemVer()', () => {
+    stringifyEqual(packSemVer(parseSemVer('0.0.0')), '0.0.0')
+    stringifyEqual(packSemVer(parseSemVer('00.00.01')), '0.0.1')
+    stringifyEqual(packSemVer(parseSemVer('1.2.3')), '1.2.3')
+    stringifyEqual(packSemVer(parseSemVer('0.0.0-label')), '0.0.0-label')
+    stringifyEqual(packSemVer(parseSemVer('0.0.0-dev.0')), '0.0.0-dev.0')
+    stringifyEqual(packSemVer(parseSemVer('0.0.0-dev.0-local.0')), '0.0.0-dev.0-local.0')
+    stringifyEqual(packSemVer(parseSemVer('999.999.999')), '999.999.999')
+    stringifyEqual(packSemVer(parseSemVer('999.999.999-999.999.999')), '999.999.999-999.999.999')
   })
 
   it('compareSemVer()', () => {

@@ -2,6 +2,8 @@ import { compareString } from 'source/common/compare.js'
 
 const REGEXP_SEMVER = /^(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z-.]+)?$/ // simple match, allow label (-abc) but not metadata (+abc) // https://semver.org/
 
+// TODO: NOTE: parsed `label` will have leading `-`, like label will be `-dev.0` for `0.0.0-dev.0`
+
 const parseSemVer = (versionString) => {
   let [ , major, minor, patch, label = '' ] = REGEXP_SEMVER.exec(versionString) || []
   major = parseInt(major)
@@ -10,6 +12,8 @@ const parseSemVer = (versionString) => {
   if (isNaN(major) || isNaN(minor) || isNaN(patch)) throw new Error(`invalid version: ${versionString}`)
   return { major, minor, patch, label }
 }
+
+const packSemVer = ({ major, minor, patch, label = '' }) => `${major}.${minor}.${patch}${label}` // no check for now
 
 const compareSemVer = (stringA, stringB) => { // basically (a - b)
   const a = parseSemVer(stringA)
@@ -126,7 +130,7 @@ const isVersionSpecComplex = (versionSpec) => ( // https://docs.npmjs.com/cli/v7
 )
 
 export {
-  parseSemVer, compareSemVer,
+  parseSemVer, packSemVer, compareSemVer,
 
   versionBumpByGitBranch,
   versionBumpToIdentifier,

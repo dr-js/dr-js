@@ -22,12 +22,12 @@ import {
 } from './WatchLoop.js'
 
 const { describe, it, before, after, info = console.log } = global
-const log = __DEV__ ? info : () => {}
+const log = info // __DEV__ ? info : () => {}
 
 const TEST_ROOT = resolve(__dirname, 'test-watchloop-gitignore')
 const fromRoot = (...args) => resolve(TEST_ROOT, ...args)
 
-const LOOP_COUNT_SCALE = process.platform === 'win32' ? 0.25 : 1
+const LOOP_COUNT_SCALE = process.platform === 'win32' ? 0.5 : 1
 
 const DR_DEV = require.resolve('@dr-js/dev/bin/index.js')
 
@@ -77,10 +77,10 @@ describe('Node.System.WatchLoop', () => {
       loopTime: 32, // or the loop is too fast for bloat test
       unitConfigList: UNIT_CONFIG_LIST
     })
+    await loopStop(loopConfig, initLoopState(loopConfig)) // stop existing from prev failed test in dev
+
     let loopState = initLoopState(loopConfig)
     // console.log({ loopConfig, loopState })
-
-    __DEV__ && await loopStop(loopConfig, initLoopState(loopConfig)) // stop existing from prev failed test in dev
 
     const runLoop = async (loopCount, isNoStart = false) => {
       while (loopCount--) {
