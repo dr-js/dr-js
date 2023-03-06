@@ -1,3 +1,5 @@
+import { remessageError } from 'source/common/error.js'
+
 const { XMLHttpRequest, Blob, TextDecoder } = window
 
 const REGEXP_HEADER_SEPARATOR = /[\r\n]+/
@@ -14,10 +16,10 @@ const fetchLikeRequest = (url, {
   onProgressUpload, // (now, total) => {} // if can't decide total will be `Infinity`
   onProgressDownload // (now, total) => {} // if can't decide total will be `Infinity`
 } = {}) => new Promise((resolve, reject) => {
-  const getError = (message, status) => Object.assign(new Error(message), { status, url, method })
   const request = new XMLHttpRequest()
-  request.onerror = () => reject(getError('NETWORK_ERROR', -1))
-  request.ontimeout = () => reject(getError('NETWORK_TIMEOUT', -1))
+  const tagError = (error) => remessageError(Object.assign(error, { url, method }), `[${method}|${url}] ${error.message}`)
+  request.onerror = () => reject(tagError(new Error('NETWORK_ERROR')))
+  request.ontimeout = () => reject(tagError(new Error('NETWORK_TIMEOUT')))
   request.onreadystatechange = () => {
     const { readyState, status } = request
     if (
@@ -33,13 +35,13 @@ const fetchLikeRequest = (url, {
       status,
       ok: (status >= 200 && status < 300),
       headers: responseHeaders,
-      ...wrapPayload(request, getError)
+      ..._wrapPayload(request, tagError)
     })
   }
   // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/progress_event
   // quirk: https://stackoverflow.com/questions/11127654/why-is-progressevent-lengthcomputable-false
-  if (onProgressUpload && request.upload) request.upload.onprogress = wrapOnProgress(onProgressUpload)
-  if (onProgressDownload) request.onprogress = wrapOnProgress(onProgressDownload)
+  if (onProgressUpload && request.upload) request.upload.onprogress = _wrapOnProgress(onProgressUpload)
+  if (onProgressDownload) request.onprogress = _wrapOnProgress(onProgressDownload)
   request.open(method, url)
   requestHeaders && Object.entries(requestHeaders).forEach(([ key, value ]) => request.setRequestHeader(key, value))
   request.responseType = 'arraybuffer'
@@ -47,32 +49,30 @@ const fetchLikeRequest = (url, {
   request.withCredentials = (credentials === 'include') // Setting withCredentials has no effect on same-site requests. check: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials
   request.send(body || null)
 })
+const _wrapOnProgress = (onProgress) => ({ lengthComputable, loaded, total }) => { onProgress(loaded, lengthComputable ? total : Infinity) }
 
-const wrapPayload = (request, getError) => {
+const _wrapPayload = (request, tagError) => {
   let payloadOutcome // KEEP|DROP
   setTimeout(() => {
     if (payloadOutcome) return
     payloadOutcome = 'DROP'
     request.abort() // drop response data
   })
-  const arrayBuffer = () => new Promise((resolve, reject) => {
-    if (payloadOutcome) return reject(getError(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED', -1))
+  const _arrayBuffer = () => new Promise((resolve, reject) => {
+    if (payloadOutcome) return reject(new Error(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED'))
     payloadOutcome = 'KEEP'
     // use `onload` instead of `onreadystatechange` since `onreadystatechange` fires before `ontimeout`, thus masking the `reject` for timeout
     // check: https://stackoverflow.com/questions/23940460/xmlhttprequest-timeout-case-onreadystatechange-executes-before-ontimeout/30054671#30054671
     request.onload = () => resolve(request.response)
-    request.onerror = () => reject(getError('PAYLOAD_ERROR', -1))
-    request.ontimeout = () => reject(getError('PAYLOAD_TIMEOUT', -1))
+    request.onerror = () => reject(new Error('PAYLOAD_ERROR'))
+    request.ontimeout = () => reject(new Error('PAYLOAD_TIMEOUT'))
   })
-  const blob = () => arrayBuffer().then(toBlob)
-  const text = () => arrayBuffer().then(toText)
-  const json = () => text().then(parseJSON)
+  const _onReject = (error) => { throw tagError(error) }
+  const arrayBuffer = () => _arrayBuffer().catch(_onReject)
+  const blob = () => _arrayBuffer().then((arrayBuffer) => new Blob([ arrayBuffer ])).catch(_onReject)
+  const text = () => _arrayBuffer().then((arrayBuffer) => new TextDecoder().decode(arrayBuffer)).catch(_onReject)
+  const json = () => _arrayBuffer().then((arrayBuffer) => JSON.parse(new TextDecoder().decode(arrayBuffer))).catch(_onReject)
   return { arrayBuffer, blob, text, json }
 }
-const toBlob = (arrayBuffer) => new Blob([ arrayBuffer ])
-const toText = (arrayBuffer) => new TextDecoder().decode(arrayBuffer)
-const parseJSON = (text) => JSON.parse(text)
-
-const wrapOnProgress = (onProgress) => ({ lengthComputable, loaded, total }) => { onProgress(loaded, lengthComputable ? total : Infinity) }
 
 export { fetchLikeRequest }

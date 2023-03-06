@@ -99,6 +99,8 @@
   - `createToggle`
 + 📄 [source/common/data/Tree.js](source/common/data/Tree.js)
   - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTreeNode`
++ 📄 [source/common/data/Tree2.js](source/common/data/Tree2.js)
+  - `SEARCH_END`, `SEARCH_SKIP`, `createTree2BottomUpSearch`, `createTree2BottomUpSearchAsync`, `createTree2BreadthFirstSearch`, `createTree2BreadthFirstSearchAsync`, `createTree2DepthFirstSearch`, `createTree2DepthFirstSearchAsync`, `prettyStringifyTree2Node`
 + 📄 [source/common/data/function.js](source/common/data/function.js)
   - `dupJSON`, `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
 + 📄 [source/common/geometry/Angle.js](source/common/geometry/Angle.js)
@@ -436,6 +438,8 @@
       - `createToggle`
     - **Tree**
       - `createTreeBottomUpSearch`, `createTreeBottomUpSearchAsync`, `createTreeBreadthFirstSearch`, `createTreeBreadthFirstSearchAsync`, `createTreeDepthFirstSearch`, `createTreeDepthFirstSearchAsync`, `prettyStringifyTreeNode`
+    - **Tree2**
+      - `SEARCH_END`, `SEARCH_SKIP`, `createTree2BottomUpSearch`, `createTree2BottomUpSearchAsync`, `createTree2BreadthFirstSearch`, `createTree2BreadthFirstSearchAsync`, `createTree2DepthFirstSearch`, `createTree2DepthFirstSearchAsync`, `prettyStringifyTree2Node`
     - `dupJSON`, `getValueByKeyList`, `hashStringToNumber`, `reverseString`, `swapObfuscateString`, `tryParseJSONObject`
   - **Geometry**
     - **D2**

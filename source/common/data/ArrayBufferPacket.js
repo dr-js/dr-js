@@ -21,8 +21,7 @@ const packArrayBufferHeader = (headerArrayBuffer) => {
 
 /** @type { (v: ArrayBuffer) => [ header: ArrayBuffer, payloadOffset: number ] } */
 const parseArrayBufferHeader = (arrayBufferPair) => {
-  const headerSizeDataView = new DataView(arrayBufferPair.slice(0, HEADER_BYTE_SIZE))
-  const headerSize = headerSizeDataView.getUint32(0, false)
+  const headerSize = new DataView(arrayBufferPair, 0, HEADER_BYTE_SIZE).getUint32(0, false)
   return [
     arrayBufferPair.slice(HEADER_BYTE_SIZE, HEADER_BYTE_SIZE + headerSize),
     HEADER_BYTE_SIZE + headerSize

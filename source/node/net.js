@@ -3,6 +3,7 @@ import { request as httpsRequest } from 'node:https'
 import { createGunzip } from 'node:zlib'
 
 import { clock } from 'source/common/time.js'
+import { remessageError } from 'source/common/error.js'
 import { isString, isArrayBuffer } from 'source/common/check.js'
 import { createInsideOutPromise, withRetryAsync } from 'source/common/function.js'
 import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
@@ -14,10 +15,12 @@ const requestHttp = (
   body // optional, Buffer/String/ReadableStream/ArrayBuffer
 ) => {
   url = url instanceof URL ? url : new URL(url)
+  const method = option.method || 'GET'
+  const tagError = (error) => remessageError(Object.assign(error, { url, method }), `[${method}|${url}] ${error.message}`)
   const { promise, resolve, reject } = createInsideOutPromise()
   const onError = (error) => {
     request.destroy()
-    reject(error)
+    reject(tagError(error))
   }
   const onTimeout = option.timeout && (() => onError(new Error('NETWORK_TIMEOUT')))
   const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, (response) => {
@@ -30,7 +33,7 @@ const requestHttp = (
   if (isReadableStream(body)) setupStreamPipe(body, request)
   else if (isArrayBuffer(body)) request.end(Buffer.from(body))
   else request.end(body) // Buffer/String/undefined
-  return { url, request, promise }
+  return { url, request, promise, tagError }
 }
 
 // ping with a status code of 500 is still a successful ping
@@ -70,8 +73,8 @@ const fetchLikeRequest = async (url, {
     timeout,
     ...extra
   }
-  __DEV__ && console.log('[fetch]', option)
-  const { request, promise } = requestHttp(url, option, body)
+  // __DEV__ && console.log('[fetch]', option)
+  const { request, promise, tagError } = requestHttp(url, option, body)
   const timeStart = clock()
   body && onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
     bodyLength = bodyLength || (isReadableStream(body) ? Infinity
@@ -90,7 +93,7 @@ const fetchLikeRequest = async (url, {
     status,
     ok: (status >= 200 && status < 300),
     headers: response.headers,
-    ...wrapPayload(request, response, timeout + timeStart - clock(), onProgressDownload) // cut off connection setup time
+    ..._wrapPayload(url, method, request, response, timeout + timeStart - clock(), onProgressDownload, tagError) // cut off connection setup time
   }
 }
 
@@ -100,21 +103,21 @@ const fetchLikeRequest = async (url, {
 //   http: IncomingMessage not emitting 'end'
 //     - https://github.com/nodejs/node/issues/10344
 
-const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
+const _wrapPayload = (url, method, request, response, timeoutPayload, onProgressDownload, tagError) => {
   let payloadOutcome // KEEP|DROP
   process.nextTick(() => {
     if (payloadOutcome) return
-    __DEV__ && console.log('[fetch] payload dropped')
+    // __DEV__ && console.log('[fetch] payload dropped')
     payloadOutcome = 'DROP'
     request.destroy() // drop request
   })
-  const stream = () => { // TODO: also use async?
+  const _stream = () => { // TODO: also use async?
     if (payloadOutcome) throw new Error(payloadOutcome === 'KEEP' ? 'PAYLOAD_ALREADY_USED' : 'PAYLOAD_ALREADY_DROPPED')
-    __DEV__ && console.log('[fetch] keep payload')
+    // __DEV__ && console.log('[fetch] keep payload')
     payloadOutcome = 'KEEP'
     if (timeoutPayload > 0) {
       const timeoutToken = setTimeout(() => {
-        __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
+        // __DEV__ && console.log('[fetch] payload timeout', timeoutPayload)
         response.emit('error', new Error('PAYLOAD_TIMEOUT')) // NOTE: emit custom `error` event to signal stream stop
         request.destroy() // drop request
       }, timeoutPayload)
@@ -138,14 +141,19 @@ const wrapPayload = (request, response, timeoutPayload, onProgressDownload) => {
       ? setupStreamPipe(response, createGunzip())
       : response
   }
-  const buffer = async () => readableStreamToBufferAsync(stream()) // use async to keep error inside promise
-  const arrayBuffer = () => buffer().then(fromNodejsBuffer)
-  const text = () => buffer().then(toText)
-  const json = () => text().then(parseJSON)
+  const _buffer = async () => readableStreamToBufferAsync(_stream()) // use async to keep error inside promise // TODO: better error, add fetch config to error message
+  const _onReject = (error) => { throw tagError(error) }
+  const stream = () => {
+    try {
+      return _stream()
+    } catch (error) { throw tagError(error) }
+  }
+  const buffer = () => _buffer().catch(_onReject) // use async to keep error inside promise // TODO: better error, add fetch config to error message
+  const arrayBuffer = () => _buffer().then(fromNodejsBuffer).catch(_onReject) // TODO: better error, add fetch config to error message
+  const text = () => _buffer().then((buffer) => String(buffer)).catch(_onReject) // TODO: better error, add fetch config to error message
+  const json = () => _buffer().then((buffer) => JSON.parse(String(buffer))).catch(_onReject) // TODO: better error, add fetch config to error message
   return { stream, buffer, arrayBuffer, text, json }
 }
-const toText = (buffer) => String(buffer)
-const parseJSON = (text) => JSON.parse(text)
 
 const fetchWithJump = async (initialUrl, {
   fetch = fetchLikeRequest,
