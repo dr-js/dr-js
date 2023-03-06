@@ -13,14 +13,17 @@ const calcHash = (
 ) => createHash(algorithm).update(bufferOrString).digest(encoding)
 
 const createBufferRefragPool = () => { // push smaller buffer frag, shift resized buffer frag
+  /** @type Buffer[] */
   const pool = []
   let poolSumLength = 0
 
+  /** @type (v: Buffer) => void */
   const pushFrag = (bufferFrag) => {
     pool.push(bufferFrag)
     poolSumLength += bufferFrag.length
   }
 
+  /** @type (v: number) => boolean */
   const hasLength = (length) => (poolSumLength >= length)
 
   const tryGetRefragBuffer = (length) => {
@@ -33,8 +36,8 @@ const createBufferRefragPool = () => { // push smaller buffer frag, shift resize
     }
 
     if (length < pool[ 0 ].length) { // frag bigger than merged buffer
-      const buffer = pool[ 0 ].slice(0, length)
-      pool[ 0 ] = pool[ 0 ].slice(length)
+      const buffer = pool[ 0 ].subarray(0, length)
+      pool[ 0 ] = pool[ 0 ].subarray(length)
       return buffer
     }
 
@@ -51,7 +54,7 @@ const createBufferRefragPool = () => { // push smaller buffer frag, shift resize
           length -= fragLength
         } else { // add part of frag
           frag.copy(buffer, offset, 0, length)
-          pool[ 0 ] = frag.slice(length)
+          pool[ 0 ] = frag.subarray(length)
           length = 0
         }
       }

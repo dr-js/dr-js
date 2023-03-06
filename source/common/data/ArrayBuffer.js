@@ -31,6 +31,7 @@ const deconcatArrayBuffer = (concatedArrayBuffer, byteLengthList, byteOffset = 0
   return arrayBuffer
 })
 
+// TODO: NOTE: consider switch to `common/module/TextEnDecoder.js`
 // NOTE: not safe for localStorage (OK in Chrome, but Firefox will filter string as UTF-16 on save, and load with different result)
 // NOTE: unknown origin U16String should be considered as Uint16ArrayBuffer
 // targeted usage: change data form and later read back, like during network transmitting (JSON -> ArrayBuffer -> binary packet)
