@@ -66,7 +66,7 @@
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
-  - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
+  - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packArrayBufferPacket2`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseArrayBufferPacket2`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/B62.js](source/common/data/B62.js)
   - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
 + 📄 [source/common/data/B62S.js](source/common/data/B62S.js)
@@ -176,7 +176,7 @@
 + 📄 [source/common/module/TextEnDecoder.js](source/common/module/TextEnDecoder.js)
   - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+  - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `packDataArrayBuffer2`, `parseCheckCode`, `parseDataArrayBuffer`, `parseDataArrayBuffer2`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
   - `calcDate`, `packTimerTag`, `parseTimerTag`
 + 📄 [source/common/module/TupleHasherDev.js](source/common/module/TupleHasherDev.js)
@@ -407,7 +407,7 @@
     - **ArrayBuffer**
       - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
     - **ArrayBufferPacket**
-      - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
+      - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packArrayBufferPacket2`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseArrayBufferPacket2`, `parseChainArrayBufferPacket`
     - **B62**
       - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
     - **B62S**
@@ -511,7 +511,7 @@
     - **TextEnDecoder**
       - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
     - **TimedLookup**
-      - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+      - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `packDataArrayBuffer2`, `parseCheckCode`, `parseDataArrayBuffer`, `parseDataArrayBuffer2`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **TimerTag**
       - `calcDate`, `packTimerTag`, `parseTimerTag`
     - **TupleHasherDev**

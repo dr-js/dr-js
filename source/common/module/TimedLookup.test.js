@@ -9,7 +9,9 @@ import {
   generateCheckCode, parseCheckCode,
   verifyCheckCode,
   packDataArrayBuffer,
-  parseDataArrayBuffer
+  parseDataArrayBuffer,
+  packDataArrayBuffer2,
+  parseDataArrayBuffer2
 } from './TimedLookup.js'
 
 const { describe, it } = globalThis
@@ -125,6 +127,18 @@ describe('Common.Module.TimedLookup', () => {
     truthy(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer))
 
     const repackedArrayBufferPacket = packDataArrayBuffer({ dataView: parsedDataView, ...parsedOption })
+
+    truthy(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket))
+  })
+
+  it('packDataArrayBuffer2/parseDataArrayBuffer2', () => {
+    const arrayBufferPacket = packDataArrayBuffer2(defaultLookupData)
+    const { dataView: parsedDataView, ...parsedOption } = parseDataArrayBuffer2(arrayBufferPacket)
+
+    truthy(isObjectContain(defaultLookupData, parsedOption))
+    truthy(isEqualArrayBuffer(defaultLookupData.dataView.buffer, parsedDataView.buffer))
+
+    const repackedArrayBufferPacket = packDataArrayBuffer2({ dataView: parsedDataView, ...parsedOption })
 
     truthy(isEqualArrayBuffer(arrayBufferPacket, repackedArrayBufferPacket))
   })

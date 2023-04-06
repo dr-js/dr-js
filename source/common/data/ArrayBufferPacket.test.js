@@ -5,6 +5,8 @@ import {
   HEADER_BYTE_SIZE,
   packArrayBufferPacket,
   parseArrayBufferPacket,
+  packArrayBufferPacket2,
+  parseArrayBufferPacket2,
   packChainArrayBufferPacket,
   parseChainArrayBufferPacket,
   packArrayBufferListPacket,
@@ -46,6 +48,20 @@ describe('Common.Data.ArrayBufferPacket', () => {
     {
       const [ headerU16String, parsedPayload ] = parseArrayBufferPacket(packArrayBufferPacket(headerString, payloadArrayBuffer))
       strictEqual(headerString, headerU16String)
+      truthy(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload))
+    }
+  })
+
+  it('parseArrayBufferPacket2()', () => {
+    {
+      const [ parsedHeader, parsedPayload ] = parseArrayBufferPacket2(packArrayBufferPacket2(headerString))
+      strictEqual(headerString, parsedHeader)
+      truthy(isEqualArrayBuffer(new ArrayBuffer(0), parsedPayload))
+    }
+
+    {
+      const [ parsedHeader, parsedPayload ] = parseArrayBufferPacket2(packArrayBufferPacket2(headerString, payloadArrayBuffer))
+      strictEqual(headerString, parsedHeader)
       truthy(isEqualArrayBuffer(payloadArrayBuffer, parsedPayload))
     }
   })
