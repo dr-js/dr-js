@@ -178,13 +178,14 @@ const withRetryAsync = async (func, maxRetry = Infinity, wait = 0) => {
 
 // to prevent async hanging (un-resolving promise)
 // TODO: this only prevent a promise timeout blocking follow-up code for too long, but the timeout code is not canceled
-const withTimeoutAsync = (func, timeout) => withTimeoutPromise(func(), timeout)
+const withTimeoutAsync = (func, timeout, message = '') => withTimeoutPromise(func(), timeout, message)
 
 const withTimeoutPromise = (
   promise,
-  timeout // in msec, 0 for unlimited
+  timeout, // in msec, 0 for unlimited
+  message = ''
 ) => {
-  if (timeout === 0) return promise // no timeout
+  if (!(timeout > 0)) return promise // no timeout (unlimited)
   let timeoutToken = null
   return Promise.race([
     promise,
@@ -203,7 +204,7 @@ const withTimeoutPromise = (
       clearTimeout(timeoutToken)
       // check: https://stackoverflow.com/questions/46528508/how-can-i-see-the-full-stack-trace-of-error-in-settimeout-with-a-promise
       // check: https://github.com/nodejs/help/issues/1904
-      throw (error !== DUMMY_ERROR) ? error : new Error(`timeout after: ${timeout}`) // for a better stack trace, and late add prevent stack trace performance issue
+      throw (error !== DUMMY_ERROR) ? error : new Error(`timeout after: ${timeout}${message ? `, ${message}` : ''}`) // for a better stack trace, and late add prevent stack trace performance issue
     }
   )
 }
