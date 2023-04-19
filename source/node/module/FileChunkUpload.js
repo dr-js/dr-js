@@ -29,7 +29,7 @@ const createOnFileChunkUpload = async ({
   onError = rethrowError,
   allowSkipHashVerify = true, // TODO: now optional, wait for non-isSecureContext browser crypto
   expireTime = CACHE_EXPIRE_TIME,
-  chunkCacheMap = createCacheMap({ valueSizeSumMax: CACHE_SIZE_SUM_MAX }) // TODO: default chunk cache will reset on server restart, but the file will be left
+  chunkCacheMap = createCacheMap({ valueSizeSumMax: CACHE_SIZE_SUM_MAX, expireAfter: expireTime }) // TODO: default chunk cache will reset on server restart, but the file will be left
 }) => {
   await createDirectory(rootPath)
   await createDirectory(mergePath)
@@ -83,10 +83,10 @@ const createOnFileChunkUpload = async ({
       __DEV__ && console.log('##[done]', chunkCacheMap.size, cacheKey)
       onUploadEnd && await onUploadEnd(chunkData)
     } else if (chunkCacheCount > 1) { // bump the cache on 2nd+ chunks
-      chunkCacheMap.touch(cacheKey, Date.now() + expireTime)
+      chunkCacheMap.touch(cacheKey)
       __DEV__ && console.log('##[touch]', chunkCacheMap.size, cacheKey)
     } else { // save the cache on the first chunk
-      chunkCacheMap.set(cacheKey, chunkData, 1, Date.now() + expireTime)
+      chunkCacheMap.set(cacheKey, chunkData)
       __DEV__ && console.log('##[cache]', chunkCacheMap.size, cacheKey)
     }
   }
