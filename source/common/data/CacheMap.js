@@ -4,8 +4,6 @@ import { createHub } from 'source/common/module/Event.js'
 import { createDoublyLinkedList, createNode } from './LinkedList.js'
 /** @typedef { import("./LinkedList.js").LinkedListNode } LinkedListNode */
 
-const DEFAULT_EXPIRE_TIME = 60 * 1000 // in msec, 1min
-
 /** @typedef { { key: vJSON, size: number, expireAt: number } & LinkedListNode } CacheMapCache */
 /** @type { (key: vJSON, value: vJSON, size: number, expireAt: number) => CacheMapCache } */
 const createCache = (key, value, size, expireAt) => ({
@@ -30,11 +28,13 @@ const createCache = (key, value, size, expireAt) => ({
 /** @type { (option: {
  *   valueSizeSumMax: number,
  *   valueSizeSingleMax?: number,
+ *   expireAfter?: number,
  *   eventHub?: EventHub | null
  * }) => CacheMap } */
 const createCacheMap = ({
   valueSizeSumMax,
   valueSizeSingleMax = Math.max(valueSizeSumMax * 0.05, 1), // limit big value for cache efficiently
+  expireAfter = 60 * 1000, // in msec, 1min
   eventHub = createHub() // set to null should be faster, if no event is needed
 }) => {
   if (__DEV__ && valueSizeSumMax <= 0) throw new Error(`invalid valueSizeSumMax: ${valueSizeSumMax}`)
@@ -77,7 +77,7 @@ const createCacheMap = ({
     getSize: linkedList.getLength,
     getValueSizeSum: () => valueSizeSum,
     /** @type { SetCacheMap } */
-    set: (key, value, size = 1, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
+    set: (key, value, size = 1, expireAt = Date.now() + expireAfter) => {
       const prevCache = map.get(key)
       prevCache && cacheDelete(prevCache) // drop prev cache
       if (size > valueSizeSingleMax) return // size too big for cache
@@ -94,7 +94,7 @@ const createCacheMap = ({
       return cache.value
     },
     /** @type { GetCacheMap } */
-    touch: (key, expireAt = Date.now() + DEFAULT_EXPIRE_TIME) => {
+    touch: (key, expireAt = Date.now() + expireAfter) => {
       const cache = map.get(key)
       if (!cache) return
       cache.expireAt = expireAt

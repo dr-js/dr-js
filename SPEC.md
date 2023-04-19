@@ -66,7 +66,7 @@
 + 📄 [source/common/data/ArrayBuffer.js](source/common/data/ArrayBuffer.js)
   - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
 + 📄 [source/common/data/ArrayBufferPacket.js](source/common/data/ArrayBufferPacket.js)
-  - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
+  - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packArrayBufferPacket2`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseArrayBufferPacket2`, `parseChainArrayBufferPacket`
 + 📄 [source/common/data/B62.js](source/common/data/B62.js)
   - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
 + 📄 [source/common/data/B62S.js](source/common/data/B62S.js)
@@ -77,6 +77,8 @@
   - `decode`, `encode`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `createCache`, `createCacheMap`
++ 📄 [source/common/data/CacheMap2.js](source/common/data/CacheMap2.js)
+  - `createCacheMap2`
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
 + 📄 [source/common/data/F32.js](source/common/data/F32.js)
@@ -174,7 +176,7 @@
 + 📄 [source/common/module/TextEnDecoder.js](source/common/module/TextEnDecoder.js)
   - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
 + 📄 [source/common/module/TimedLookup.js](source/common/module/TimedLookup.js)
-  - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+  - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `packDataArrayBuffer2`, `parseCheckCode`, `parseDataArrayBuffer`, `parseDataArrayBuffer2`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
 + 📄 [source/common/module/TimerTag.js](source/common/module/TimerTag.js)
   - `calcDate`, `packTimerTag`, `parseTimerTag`
 + 📄 [source/common/module/TupleHasherDev.js](source/common/module/TupleHasherDev.js)
@@ -266,7 +268,7 @@
 + 📄 [source/node/module/Option/preset.js](source/node/module/Option/preset.js)
   - `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
 + 📄 [source/node/module/Software/bash.js](source/node/module/Software/bash.js)
-  - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`
+  - `catStringToFileCommand`, `catStringToVarCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`
 + 📄 [source/node/module/Software/docker.js](source/node/module/Software/docker.js)
   - `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`
 + 📄 [source/node/module/Software/git.js](source/node/module/Software/git.js)
@@ -405,7 +407,7 @@
     - **ArrayBuffer**
       - `calcSHA256ArrayBuffer`, `concatArrayBuffer`, `deconcatArrayBuffer`, `fromNodejsBuffer`, `fromU16String`, `isEqualArrayBuffer`, `toU16String`
     - **ArrayBufferPacket**
-      - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseChainArrayBufferPacket`
+      - `HEADER_BYTE_SIZE`, `MAX_PACKET_HEADER_SIZE`, `packArrayBufferHeader`, `packArrayBufferListPacket`, `packArrayBufferPacket`, `packArrayBufferPacket2`, `packChainArrayBufferPacket`, `parseArrayBufferHeader`, `parseArrayBufferListPacket`, `parseArrayBufferPacket`, `parseArrayBufferPacket2`, `parseChainArrayBufferPacket`
     - **B62**
       - `B62_MAX`, `B62_ZERO`, `decode`, `encode`
     - **B62S**
@@ -416,6 +418,8 @@
       - `decode`, `encode`
     - **CacheMap**
       - `createCache`, `createCacheMap`
+    - **CacheMap2**
+      - `createCacheMap2`
     - **DataUri**
       - `decode`, `encode`
     - **F32**
@@ -507,7 +511,7 @@
     - **TextEnDecoder**
       - `TextDecoder`, `TextEncoder`, `decodeUTF8`, `encodeUTF8`
     - **TimedLookup**
-      - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `parseCheckCode`, `parseDataArrayBuffer`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
+      - `generateCheckCode`, `generateLookupData`, `packCheckCode`, `packDataArrayBuffer`, `packDataArrayBuffer2`, `parseCheckCode`, `parseDataArrayBuffer`, `parseDataArrayBuffer2`, `verifyCheckCode`, `verifyOption`, `verifyParsedCheckCode`
     - **TimerTag**
       - `calcDate`, `packTimerTag`, `parseTimerTag`
     - **TupleHasherDev**
@@ -568,7 +572,7 @@
     - **Option**
       - `createOptionParser`, `Preset`, `createOptionGetter`, `getOptionalFormatFlag`, `getOptionalFormatValue`, `parseOptionMap`, `prepareOption`
     - **Software**
-      - `catStringToFileCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`, `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`
+      - `catStringToFileCommand`, `catStringToVarCommand`, `check`, `commonBashArgList`, `commonCommandList`, `commonSourceProfileCommandList`, `getArgs`, `gitCleanUpCommandList`, `gitFetchBranchCommandList`, `joinCommand`, `runBash`, `runBashCommand`, `runBashCommandSync`, `runBashStdout`, `runBashStdoutSync`, `runBashSync`, `setArgs`, `subShellCommandList`, `toHeredocNoMagic`, `verify`, `check`, `checkCompose`, `checkLocalImage`, `checkPullImage`, `getArgs`, `getArgsCompose`, `getContainerLsList`, `matchContainerLsList`, `patchContainerLsListStartedAt`, `pullImage`, `runCompose`, `runComposeStdout`, `runComposeStdoutSync`, `runComposeSync`, `runDocker`, `runDockerStdout`, `runDockerStdoutSync`, `runDockerSync`, `setArgs`, `setArgsCompose`, `verify`, `verifyCompose`, `check`, `getArgs`, `getGitBranch`, `getGitCommitHash`, `getGitCommitMessage`, `runGit`, `runGitStdout`, `runGitStdoutSync`, `runGitSync`, `setArgs`, `verify`, `COMMON_HOST_STATUS_COMMAND_LIST`, `getCommonHostStatus`, `fetchLikeRequestWithProxy`, `fetchWithJumpProxy`, `findUpPackageRoot`, `fromGlobalNodeModules`, `fromNpmNodeModules`, `getPathNpm`, `getPathNpmExecutable`, `getPathNpmGlobalRoot`, `getSudoArgs`, `hasRepoVersion`, `runNpm`, `runNpmStdout`, `runNpmStdoutSync`, `runNpmSync`, `runSudoNpm`, `runSudoNpmStdout`, `runSudoNpmStdoutSync`, `runSudoNpmSync`
     - **Auth**
       - `AUTH_FILE`, `AUTH_FILE_GROUP`, `AUTH_SKIP`, `DEFAULT_AUTH_KEY`, `configureAuth`, `configureAuthFile`, `configureAuthFileGroup`, `configureAuthSkip`, `describeAuthFile`, `generateAuthCheckCode`, `generateAuthFile`, `loadAuthFile`, `saveAuthFile`, `verifyAuthCheckCode`
     - **EntityTag**

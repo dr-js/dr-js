@@ -88,6 +88,8 @@ describe('Common.Format', () => {
 
     strictEqual(describeValue({}), '<Object> {}')
     strictEqual(describeValue({ '': [], 1: 1, a: 'a', ' a a ': '' }), '<Object> {"1","","a"," a a "}')
+
+    strictEqual(describeValue(new Error('some message')), '<Error> Error: some message')
   })
 
   it('percent()', () => {

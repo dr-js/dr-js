@@ -59,6 +59,9 @@ const toHeredocNoMagic = ( // return half command, no magic meaning no shell exp
 ) => `<< '${EOM}' ${extraPipeCommand}
 ${string}
 ${EOM}`
+const catStringToVarCommand = (
+  string
+) => `$(cat ${toHeredocNoMagic(string)}\n)`
 const catStringToFileCommand = (
   string,
   pathFile // NOTE: `pathFile` should be absolute path, or the path will be relative to cwd
@@ -95,7 +98,7 @@ export {
   commonCommandList,
   subShellCommandList,
 
-  toHeredocNoMagic, catStringToFileCommand,
+  toHeredocNoMagic, catStringToVarCommand, catStringToFileCommand,
   gitFetchBranchCommandList, gitCleanUpCommandList,
   commonSourceProfileCommandList
 }

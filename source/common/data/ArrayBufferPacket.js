@@ -1,4 +1,5 @@
 import { concatArrayBuffer, deconcatArrayBuffer, fromU16String, toU16String } from './ArrayBuffer.js'
+import { decodeUTF8, encodeUTF8 } from '../module/TextEnDecoder.js'
 /** @typedef { import("./ArrayBuffer.js").U16String } U16String */
 
 const MAX_PACKET_HEADER_SIZE = 0xffffffff // 4GiB
@@ -28,6 +29,19 @@ const parseArrayBufferHeader = (arrayBufferPair) => {
   ]
 }
 
+/** @type { (header: string, payload?: ArrayBuffer) => ArrayBuffer } */
+const packArrayBufferPacket2 = (headerString, payloadArrayBuffer = EMPTY_ARRAY_BUFFER) => concatArrayBuffer([
+  ...packArrayBufferHeader(encodeUTF8(headerString).buffer),
+  payloadArrayBuffer
+])
+
+/** @type { (v: ArrayBuffer) => [ header: U16String, payload: ArrayBuffer ] } */
+const parseArrayBufferPacket2 = (arrayBufferPacket) => {
+  const [ headerArrayBuffer, payloadOffset ] = parseArrayBufferHeader(arrayBufferPacket)
+  const headerString = decodeUTF8(headerArrayBuffer)
+  const payloadArrayBuffer = arrayBufferPacket.slice(payloadOffset)
+  return [ headerString, payloadArrayBuffer ]
+}
 // ## ArrayBufferPacket # for JSON header + single binary payload
 // basic structure:
 //     size_header    - 4 Byte
@@ -121,6 +135,8 @@ export {
   parseArrayBufferHeader,
   packArrayBufferPacket,
   parseArrayBufferPacket,
+  packArrayBufferPacket2,
+  parseArrayBufferPacket2,
   packChainArrayBufferPacket,
   parseChainArrayBufferPacket,
   packArrayBufferListPacket,

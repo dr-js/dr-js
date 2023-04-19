@@ -1,7 +1,7 @@
 import { getTimestamp } from 'source/common/time.js'
 import { getRandomArrayBuffer } from 'source/common/math/random.js'
 import { swapObfuscateString } from 'source/common/data/function.js'
-import { packArrayBufferPacket, parseArrayBufferPacket } from 'source/common/data/ArrayBufferPacket.js'
+import { packArrayBufferPacket, parseArrayBufferPacket, packArrayBufferPacket2, parseArrayBufferPacket2 } from 'source/common/data/ArrayBufferPacket.js'
 
 const CHECK_CODE_SEP = '-'
 
@@ -100,6 +100,17 @@ const parseDataArrayBuffer = (dataArrayBuffer) => {
   return { tag, size, tokenSize, timeGap, info, dataView: new DataView(payloadArrayBuffer) }
 }
 
+const packDataArrayBuffer2 = ({ tag, size, tokenSize, timeGap, info, dataView }) => packArrayBufferPacket2(
+  JSON.stringify([ tag, size, tokenSize, timeGap, info ]),
+  dataView.buffer
+)
+
+const parseDataArrayBuffer2 = (dataArrayBuffer) => {
+  const [ headerString, payloadArrayBuffer ] = parseArrayBufferPacket2(dataArrayBuffer)
+  const [ tag, size, tokenSize, timeGap, info = null ] = JSON.parse(headerString)
+  return { tag, size, tokenSize, timeGap, info, dataView: new DataView(payloadArrayBuffer) }
+}
+
 export {
   verifyOption,
   verifyCheckCode,
@@ -112,5 +123,7 @@ export {
   parseCheckCode,
 
   packDataArrayBuffer,
-  parseDataArrayBuffer
+  parseDataArrayBuffer,
+  packDataArrayBuffer2,
+  parseDataArrayBuffer2
 }

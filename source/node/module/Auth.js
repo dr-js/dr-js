@@ -102,12 +102,12 @@ const configureAuthFileGroup = async ({
   getFileNameForTag = authFileGroupKeySuffix ? (tag) => `${tag}${authFileGroupKeySuffix}` : (tag) => `${tag}.key`,
 
   authCacheExpireTime = AUTH_CACHE_EXPIRE_TIME,
-  authCacheMap = createCacheMap({ valueSizeSumMax: AUTH_CACHE_SIZE_SUM_MAX, eventHub: null })
+  authCacheMap = createCacheMap({ valueSizeSumMax: AUTH_CACHE_SIZE_SUM_MAX, expireAfter: authCacheExpireTime, eventHub: null })
 }) => {
   const getPath = createPathPrefixLock(authFileGroupPath)
   const getTimedLookupData = (tag) => authCacheMap.get(tag) || loadAuthFile(getPath(getFileNameForTag(tag))).then(
     (timedLookupData) => {
-      authCacheMap.set(tag, timedLookupData, timedLookupData.dataView.byteLength, Date.now() + authCacheExpireTime)
+      authCacheMap.set(tag, timedLookupData, timedLookupData.dataView.byteLength)
       log && log(`loaded auth file for tag: ${tag}`)
       return timedLookupData
     },
