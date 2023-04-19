@@ -8,7 +8,7 @@ import { createServer as createHttpsServer } from 'node:https'
 import { clock } from 'source/common/time.js'
 import { isNumber, isBasicArray, isBasicObject } from 'source/common/check.js'
 import { prettyStringifyConfigObject } from 'source/common/format.js'
-import { createCacheMap } from 'source/common/data/CacheMap.js'
+import { createCacheMap2 } from 'source/common/data/CacheMap2.js'
 import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
 import { objectFromEntries } from 'source/common/immutable/Object.js'
 import { responderEnd } from './Responder/Common.js'
@@ -21,10 +21,10 @@ const SESSION_CACHE_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
 const SESSION_TICKET_ROTATE_TIME = 4 * 60 * 60 * 1000 // in msec, 4hour
 
 const applyServerSessionCache = (server) => { // TODO: consider move to `ticketKeys`: https://nodejs.org/dist/latest-v12.x/docs/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
-  const sessionCacheMap = createCacheMap({ valueSizeSumMax: SESSION_CACHE_MAX, eventHub: null })
+  const sessionCacheMap = createCacheMap2({ sizeMax: SESSION_CACHE_MAX, expireAfter: SESSION_CACHE_EXPIRE_TIME })
   server.on('newSession', (sessionId, sessionData, next) => {
     __DEV__ && console.log('newSession', sessionId.toString('base64'))
-    sessionCacheMap.set(sessionId.toString('base64'), sessionData, 1, Date.now() + SESSION_CACHE_EXPIRE_TIME)
+    sessionCacheMap.set(sessionId.toString('base64'), sessionData)
     next()
   })
   server.on('resumeSession', (sessionId, next) => {

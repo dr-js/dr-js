@@ -77,6 +77,8 @@
   - `decode`, `encode`
 + 📄 [source/common/data/CacheMap.js](source/common/data/CacheMap.js)
   - `createCache`, `createCacheMap`
++ 📄 [source/common/data/CacheMap2.js](source/common/data/CacheMap2.js)
+  - `createCacheMap2`
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
 + 📄 [source/common/data/F32.js](source/common/data/F32.js)
@@ -416,6 +418,8 @@
       - `decode`, `encode`
     - **CacheMap**
       - `createCache`, `createCacheMap`
+    - **CacheMap2**
+      - `createCacheMap2`
     - **DataUri**
       - `decode`, `encode`
     - **F32**
