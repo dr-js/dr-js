@@ -284,7 +284,7 @@
 + 📄 [source/node/server/function.js](source/node/server/function.js)
   - `DR_BROWSER_FILE_PATH`, `DR_BROWSER_SCRIPT_TAG`, `autoTestServerPort`, `getRequestBuffer`, `getRequestJSON`, `getRequestParam`, `getUnusedPort`, `getWSProtocolListParam`, `isPrivateAddress`, `isRequestAborted`, `packWSProtocolListParam`, `parseCookieString`, `parseHostString`
 + 📄 [source/node/server/Feature/@/configure.js](source/node/server/Feature/@/configure.js)
-  - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupServerExotGroup`
+  - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupFeature`, `setupServer`, `setupServerExotGroup`, `startServerExotGroup`
 + 📄 [source/node/server/Feature/@/option.js](source/node/server/Feature/@/option.js)
   - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
 + 📄 [source/node/server/Feature/@/HTML/LoadingMask.js](source/node/server/Feature/@/HTML/LoadingMask.js)
@@ -612,7 +612,7 @@
           - **Modal**
             - `initModal`
         - **Configure**
-          - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupServerExotGroup`
+          - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupFeature`, `setupServer`, `setupServerExotGroup`, `startServerExotGroup`
         - **Option**
           - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
       - **ActionJSON**
