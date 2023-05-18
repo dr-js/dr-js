@@ -8,7 +8,7 @@ import { configurePid } from 'source/node/module/Pid.js'
 import { addExitListenerLossyOnce } from 'source/node/system/ExitListener.js'
 
 import { responderEnd, responderEndWithStatusCode, responderEndWithRedirect, createResponderLog, createResponderLogEnd } from 'source/node/server/Responder/Common.js'
-import { createResponderRouter, createRouteMap, createResponderRouteListHTML } from 'source/node/server/Responder/Router.js'
+import { createResponderRouter, createRouteMap, describeRouteMap, createResponderRouteListHTML } from 'source/node/server/Responder/Router.js'
 import { createResponderFavicon } from 'source/node/server/Responder/Send.js'
 import { createServerExot, createRequestListener, describeServerOption } from 'source/node/server/Server.js'
 import { enableWSServer, createUpgradeRequestListener } from 'source/node/server/WS/Server.js'
@@ -20,7 +20,7 @@ __DEV__ && console.log('SAMPLE_TLS_SNI_CONFIG: multi', {
   '1.domain.domain': { key: Buffer || String, cert: Buffer || String, ca: Buffer || String || undefined } // buffer or load from file
 })
 
-const configureServerExot = ({
+/** @deprecated */ const configureServerExot = ({
   protocol = 'http:', hostname = '127.0.0.1', port,
   TLSSNIConfig, TLSDHParam, // accept Buffer or String (absolute path)
   ...extraOption
@@ -44,9 +44,9 @@ const loadTLS = (
   const dhparam = TLSDHParam && autoLoadBuffer(TLSDHParam)
   const optionMap = objectMap(TLSSNIConfig, ({ key, cert, ca }) => ({
     // for Let'sEncrypt/CertBot cert config check: https://community.letsencrypt.org/t/node-js-configuration/5175
-    key: autoLoadBuffer(key),
-    cert: autoLoadBuffer(cert),
-    ca: ca && autoLoadBuffer(ca),
+    key: autoLoadBuffer(key), // Let'sEncrypt/CertBot cert: privkey.pem
+    cert: autoLoadBuffer(cert), // Let'sEncrypt/CertBot cert: fullchain.pem
+    ca: ca && autoLoadBuffer(ca), // Let'sEncrypt/CertBot cert: chain.pem
     dhparam
   }))
   const secureContextMap = objectMap(optionMap, (option) => createSecureContext(option)) // pre-create and later reuse secureContext
@@ -57,16 +57,34 @@ const loadTLS = (
 }
 const autoLoadBuffer = (bufferOrPath) => Buffer.isBuffer(bufferOrPath) ? bufferOrPath : readBufferSync(bufferOrPath)
 
-const configureFeature = ({
+const setupServer = ({
+  protocol = 'http:', hostname = '127.0.0.1', port,
+  TLSSNIConfig, TLSDHParam, // accept Buffer or String (absolute path)
+  ...extraOption // pid, log
+}) => {
+  configurePid(extraOption)
+  const { loggerExot } = configureLog(extraOption)
+  const serverExot = createServerExot({
+    protocol, hostname, port,
+    ...(protocol === 'https:' && loadTLS(TLSSNIConfig, TLSDHParam)),
+    ...extraOption
+  })
+  return { loggerExot, serverExot }
+}
+
+/** @deprecated */ const configureFeature = (option, featureList = []) => setupFeature(featureList, option)
+__DEV__ && console.log('SAMPLE: featureList', [ { name: 'feat:name', routeList: [], wsRouteList: [] } ])
+const setupFeature = (featureList = [], {
   serverExot, loggerExot,
   isRawServer = false, // set to skip route related configure
   isFavicon = true, isDebugRoute = false, rootRouteResponder,
   preResponderList = [],
   preRouteList = [],
   responderLogEnd = createResponderLogEnd({ loggerExot })
-}, featureList = []) => {
+}) => {
   serverExot.featureMap = new Map() // fill serverExot.featureMap
   serverExot.wsSet = undefined // may fill serverExot.wsSet
+  preRouteList = preRouteList.filter(Boolean)
 
   let featureUrl
   const featureRouteList = []
@@ -77,8 +95,8 @@ const configureFeature = ({
     if (serverExot.featureMap.has(feature.name)) throw new Error(`duplicate feature.name: ${feature.name}`)
     serverExot.featureMap.set(feature.name, feature)
     if (!featureUrl) featureUrl = feature.URL_HTML // NOTE: use the first URL
-    if (feature.routeList) featureRouteList.push(...feature.routeList)
-    if (feature.wsRouteList) featureWSRouteList.push(...feature.wsRouteList)
+    if (feature.routeList) featureRouteList.push(...feature.routeList.filter(Boolean))
+    if (feature.wsRouteList) featureWSRouteList.push(...feature.wsRouteList.filter(Boolean))
   })
 
   if (isRawServer) {
@@ -113,9 +131,7 @@ const configureFeature = ({
   }))
 
   if (featureWSRouteList.length !== 0) { // setup WS
-    const routeMap = createRouteMap([
-      ...featureWSRouteList
-    ].filter(Boolean))
+    const routeMap = createRouteMap(featureWSRouteList)
     serverExot.wsSet = enableWSServer(serverExot.server, {
       onUpgradeRequest: createUpgradeRequestListener({
         responderList: [
@@ -124,6 +140,10 @@ const configureFeature = ({
         ]
       })
     })
+  }
+  return { // for route listing
+    RouteList: describeRouteMap(routeMap),
+    RouteListWS: featureWSRouteList.length === 0 ? [] : describeRouteMap(createRouteMap(featureWSRouteList))
   }
 }
 
@@ -148,12 +168,11 @@ const setupServerExotGroup = ( // NOTE: this allow put 2 serverExot with shared 
   return serverExotGroup
 }
 
-const runServerExotGroup = async (pack) => {
-  const {
-    serverExot,
-    serverExotGroup = serverExot, // NOTE: also allow run serverExot
-    loggerExot, isMuteLog = !loggerExot || false // optional
-  } = pack
+const startServerExotGroup = async ({
+  loggerExot, serverExot,
+  serverExotGroup = loggerExot ? setupServerExotGroup(serverExot, loggerExot) : serverExot, // NOTE: also allow run serverExot
+  isMuteLog = !loggerExot || false // optional
+}) => {
   addExitListenerLossyOnce((eventPack) => {
     isMuteLog || loggerExot.add(`[SERVER] down... ${JSON.stringify(eventPack)}${eventPack.error ? ` ${eventPack.error.stack || eventPack.error}` : ''}`)
     return serverExotGroup.down()
@@ -162,18 +181,20 @@ const runServerExotGroup = async (pack) => {
   isMuteLog || loggerExot.add('[SERVER] up...')
   await serverExotGroup.up()
   isMuteLog || loggerExot.add('[SERVER] up')
+}
+
+/** @deprecated */ const runServerExotGroup = async (pack) => {
+  await startServerExotGroup(pack)
   return pack // pass down pack
 }
 
-const runServer = async (
+/** @deprecated */ const runServer = async (
   configureServer, // async () => {} // custom configure
   serverOption, // pid, log, host/port ...
   featureOption, // feature only
   serverInfoTitle = !featureOption.packageName ? undefined : `${featureOption.packageName}@${featureOption.packageVersion}`
 ) => {
-  configurePid(serverOption)
-  const { loggerExot } = configureLog(serverOption)
-  const serverExot = configureServerExot(serverOption)
+  const { loggerExot, serverExot } = setupServer(serverOption)
   const serverInfo = describeServerOption(serverExot.option, serverInfoTitle, featureOption)
 
   await configureServer({ serverExot, loggerExot, serverInfo, ...featureOption }) // do custom config here
@@ -186,8 +207,12 @@ const runServer = async (
 }
 
 export {
+  setupServer,
+  setupFeature,
+  setupServerExotGroup, startServerExotGroup,
+
   configureServerExot,
   configureFeature,
-  setupServerExotGroup, runServerExotGroup,
+  runServerExotGroup,
   runServer
 }
