@@ -286,7 +286,7 @@
 + 📄 [source/node/server/Feature/@/configure.js](source/node/server/Feature/@/configure.js)
   - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupFeature`, `setupServer`, `setupServerExotGroup`, `startServerExotGroup`
 + 📄 [source/node/server/Feature/@/option.js](source/node/server/Feature/@/option.js)
-  - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
+  - `LogFormatConfig`, `PidFormatConfig`, `ServerHostFormat`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
 + 📄 [source/node/server/Feature/@/HTML/LoadingMask.js](source/node/server/Feature/@/HTML/LoadingMask.js)
   - `initLoadingMask`
 + 📄 [source/node/server/Feature/@/HTML/Modal.js](source/node/server/Feature/@/HTML/Modal.js)
@@ -614,7 +614,7 @@
         - **Configure**
           - `configureFeature`, `configureServerExot`, `runServer`, `runServerExotGroup`, `setupFeature`, `setupServer`, `setupServerExotGroup`, `startServerExotGroup`
         - **Option**
-          - `LogFormatConfig`, `PidFormatConfig`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
+          - `LogFormatConfig`, `PidFormatConfig`, `ServerHostFormat`, `getLogOption`, `getPidOption`, `getServerExotFormatConfig`, `getServerExotOption`
       - **ActionJSON**
         - `actionJSON`, `PERMISSION_CHECK_ACTION_JSON`, `PERMISSION_CHECK_ACTION_JSON_PUBLIC`, `setup`
       - **Auth**

@@ -106,8 +106,10 @@ const readlineOfStreamAsync = (
   readlineInterface.on('error', doReject) // TODO: currently there's no 'error' event, check: https://github.com/nodejs/node/issues/30701
   readlineInterface.on('close', resolve)
   readlineInterface.on('line', (lineString) => {
-    __DEV__ && console.log(`[Readline] line: ${lineString}`)
-    onLineStringSync(lineString)
+    try {
+      __DEV__ && console.log(`[Readline] line: ${lineString}`)
+      onLineStringSync(lineString)
+    } catch (error) { doReject(error) } // redirect error
   })
 })
 
