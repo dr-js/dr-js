@@ -146,6 +146,15 @@ describe('Node.Data.Stream', () => {
     (lineString) => {} // drop lineString
   ).then(unexpectedResolve, expectError('incorrect header check')))
 
+  it('readlineOfStreamAsync error 2', async () => readlineOfStreamAsync(
+    setupStreamPipe(
+      createReadStream(FILE_NOT_GZIP),
+      createGzip(),
+      createGunzip()
+    ),
+    (lineString) => { throw new Error('test onLineStringSync throw') } // error here
+  ).then(unexpectedResolve, expectError('test onLineStringSync throw')))
+
   it('bufferToReadableStream + readableStreamToBufferAsync', async () => {
     const buffer = await readableStreamToBufferAsync(createReadStream(FILE_NOT_GZIP))
     const bufferGzip = await readableStreamToBufferAsync(setupStreamPipe(
