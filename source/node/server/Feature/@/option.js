@@ -6,7 +6,8 @@ import { parseHostString } from 'source/node/server/function.js'
 
 const { parseCompact, parseCompactList } = Preset
 
-const getServerExotFormatConfig = (extraList = []) => parseCompact('host,H/SS,O|set "hostname:port"', [
+const ServerHostFormat = 'host,H/SS,O|set "hostname:port"'
+const getServerExotFormatConfig = (extraList = []) => parseCompact(ServerHostFormat, [
   parseCompact(`TLS-SNI-config/SO,O|TLS SNI config map, set to enable https:\n${indentLineList([
     'multi config: { [hostname]: { key: pathOrBuffer, cert: pathOrBuffer, ca: pathOrBuffer } }, default to special hostname "default", or the first config',
     'single config: { key: pathOrBuffer, cert: pathOrBuffer, ca: pathOrBuffer }',
@@ -20,17 +21,14 @@ const getServerExotFormatConfig = (extraList = []) => parseCompact('host,H/SS,O|
 ])
 
 const getServerExotOption = ({ tryGet, tryGetFirst, pwd }, defaultHostname = '127.0.0.1') => {
-  const host = tryGetFirst('host') || ''
-  const { hostname, port } = parseHostString(host, defaultHostname)
+  const { hostname, port } = parseHostString(tryGetFirst('host') || '', defaultHostname)
   const pwdTLSSNIConfig = pwd('TLS-SNI-config') // should be the same for `TLS-dhparam`
-  const autoResolve = (value) => isString(value) ? resolve(pwdTLSSNIConfig, value) : value
   return {
-    protocol: tryGet('TLS-SNI-config') ? 'https:' : 'http:',
-    hostname, port,
-    ...(pwdTLSSNIConfig && {
-      TLSSNIConfig: objectMapDeep(tryGetFirst('TLS-SNI-config'), autoResolve),
-      TLSDHParam: autoResolve(tryGetFirst('TLS-dhparam'))
-    })
+    protocol: pwdTLSSNIConfig ? 'https:' : 'http:', hostname, port,
+    ...(pwdTLSSNIConfig && objectMapDeep({
+      TLSSNIConfig: tryGetFirst('TLS-SNI-config'),
+      TLSDHParam: tryGetFirst('TLS-dhparam')
+    }, (value) => isString(value) ? resolve(pwdTLSSNIConfig, value) : value))
   }
 }
 const objectMapDeep = (object, mapFunc) => {
@@ -56,7 +54,7 @@ const getPidOption = ({ tryGetFirst, getToggle }) => ({
 })
 
 export {
-  getServerExotFormatConfig, getServerExotOption,
+  ServerHostFormat, getServerExotFormatConfig, getServerExotOption,
 
   LogFormatConfig, getLogOption,
   PidFormatConfig, getPidOption
