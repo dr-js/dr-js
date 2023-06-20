@@ -70,6 +70,21 @@ const lossyAsync = (asyncFunc, onError = rethrowError) => {
   }
 }
 
+// for warping data-sync or bg-task functions, or simpler `lossyAsync`
+const loneAsync = (asyncFunc) => {
+  let runningPromise
+  const onEnd = () => { runningPromise = undefined }
+  return (...args) => {
+    if (runningPromise) return runningPromise
+    const result = asyncFunc.apply(null, args)
+    if (isPromiseAlike(result)) {
+      result.then(onEnd, onEnd)
+      runningPromise = result
+    }
+    return result
+  }
+}
+
 // getter, delay heavy/long init till first use
 const withCache = (func) => {
   let cache
@@ -228,7 +243,7 @@ export {
   debounce,
   throttle,
   once,
-  lossyAsync,
+  lossyAsync, loneAsync,
   withCache, withCacheAsync,
   withDelayArgvQueue,
   withRepeat, withRepeatAsync,
