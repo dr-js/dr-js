@@ -1,9 +1,9 @@
-import { doThrow, stringifyEqual, strictEqual, truthy } from 'source/common/verify.js'
+import { doThrow, stringifyEqual, strictEqual, truthy, doThrowAsync } from 'source/common/verify.js'
 import {
   debounce,
   throttle,
   // once,
-  lossyAsync,
+  lossyAsync, loneAsync,
   withCache, withCacheAsync,
   withDelayArgvQueue,
   withRepeat, withRepeatAsync,
@@ -166,6 +166,41 @@ describe('Common.Function', () => {
       !getRunningPromise() && reject(new Error('asyncFunc should be running'))
       await setTimeoutAsync(20)
       testValue !== 'DONE' && reject(new Error('asyncFunc should not be called during waiting'))
+    }
+
+    await test() // 1st try
+    await test() // 2nd try
+    resolve() // done
+    return promise
+  })
+
+  it('loneAsync()', async () => {
+    const { promise, resolve, reject } = createInsideOutPromise()
+
+    let testValue = null
+    const wrappedFunc = loneAsync(async (value) => {
+      if (value !== 'Good') throw new Error(`expect value === 'Good' but get: ${value}`)
+      testValue = value
+      await setTimeoutAsync(10)
+      testValue = `${value} DONE`
+      return testValue
+    })
+
+    const test = async () => {
+      testValue = null
+
+      const p1 = wrappedFunc('Good')
+      if (testValue !== 'Good') reject(new Error('loneAsync should trigger'))
+      const p2 = wrappedFunc('Skip')
+      if (testValue !== 'Good') reject(new Error('loneAsync should skip re-trigger'))
+      await setTimeoutAsync(20)
+      if (testValue !== 'Good DONE') reject(new Error('loneAsync internal value'))
+      if (await p1 !== 'Good DONE') reject(new Error('loneAsync return value'))
+      if (await p2 !== 'Good DONE') reject(new Error('loneAsync return skipped value'))
+
+      const p3 = wrappedFunc('Bad')
+      if (testValue === 'Bad') reject(new Error('loneAsync should trigger and throw'))
+      await doThrowAsync(() => p3, 'loneAsync should throw')
     }
 
     await test() // 1st try

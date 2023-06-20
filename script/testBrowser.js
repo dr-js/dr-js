@@ -10,6 +10,8 @@ import { withTestServer } from 'source/node/testServer.test.js'
 const NAME_TEST_BROWSER = 'test-browser'
 
 runKit(async (kit) => {
+  if (parseInt(process.versions.node) <= 14) return kit.padLog(`skip browser test for "node@${process.versions.node}"`) // TODO: puppeteer@20 dropped node@14 support
+
   const mode = 'production'
   const isWatch = false
   const { getCommonWebpackConfig } = await commonFlag({ mode, isWatch, kit })
