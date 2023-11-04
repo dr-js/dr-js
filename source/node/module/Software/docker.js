@@ -40,6 +40,16 @@ const runDockerSync = (argList = [], option) => runSync([ ...verify(), ...argLis
 const runDockerStdout = (argList = [], option) => runStdout([ ...verify(), ...argList ], option)
 const runDockerStdoutSync = (argList = [], option) => runStdoutSync([ ...verify(), ...argList ], option)
 
+// pick `[ 'ghcr.io/dr-js/debian', '11-node-0.3.5-dev.0' ]` from `ghcr.io/dr-js/debian:11-node-0.3.5-dev.0`
+const parseDockerImage = (image = '') => {
+  if (image.toLowerCase().includes('@sha256:')) throw new Error(`expect tag without digest: ${image}`) // https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier
+  const stubList = image.split(':')
+  if (stubList.length <= 1) throw new Error(`expect explicit tag: ${image}`)
+  const tag = stubList.pop()
+  if (!/^\w[\w-.]+$/.test(tag)) throw new Error(`invalid tag: ${image}`) // https://docs.docker.com/engine/reference/commandline/tag/#description // The tag must be valid ASCII and can contain lowercase and uppercase letters, digits, underscores, periods, and hyphens. It cannot start with a period or hyphen and must be no longer than 128 characters.
+  return [ stubList.join(':'), tag ] // [ imageRepo, imageTag ]
+}
+
 const checkLocalImage = async (imageRepo, imageTag) => {
   const stdoutString = String(await runDockerStdout([ 'image', 'ls', `${imageRepo}:${imageTag}` ]))
   return stdoutString.includes(imageRepo) && stdoutString.includes(imageTag)
@@ -106,6 +116,7 @@ export {
   runDocker, runDockerSync,
   runDockerStdout, runDockerStdoutSync,
 
+  parseDockerImage,
   checkLocalImage, pullImage, checkPullImage,
   getContainerLsList, patchContainerLsListStartedAt, matchContainerLsList,
 

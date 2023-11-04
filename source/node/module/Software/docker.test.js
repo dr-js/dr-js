@@ -1,4 +1,4 @@
-import { doThrow, truthy } from 'source/common/verify.js'
+import { doThrow, truthy, stringifyEqual } from 'source/common/verify.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 
 import {
@@ -6,6 +6,7 @@ import {
   runDocker, runDockerSync,
   runDockerStdout, runDockerStdoutSync,
 
+  parseDockerImage,
   // checkLocalImage, pullImage, checkPullImage,
   getContainerLsList, // patchContainerLsListStartedAt, matchContainerLsList,
 
@@ -62,4 +63,9 @@ describe('Node.Module.Software.Docker', () => {
     it('checkCompose()', () => truthy(!checkCompose()))
     it('verifyCompose()', () => doThrow(verifyCompose))
   }
+
+  it('parseDockerImage()', async () => {
+    stringifyEqual(parseDockerImage('ghcr.io/dr-js/debian:11-node-0.3.5-dev.0'), [ 'ghcr.io/dr-js/debian', '11-node-0.3.5-dev.0' ])
+    stringifyEqual(parseDockerImage('ghcr.io:443/dr-js/debian:11-node-0.3.5-dev.0'), [ 'ghcr.io:443/dr-js/debian', '11-node-0.3.5-dev.0' ])
+  })
 })
