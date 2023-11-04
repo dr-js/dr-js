@@ -8,7 +8,7 @@ runKit(async (kit) => {
     ...TYPE_CHECK_LIST,
     '--allowJs', '--checkJs', '--noEmit',
     '--baseUrl', './',
-    '--target', 'esnext'
+    '--target', 'esnext', '--module', 'nodenext'
   ])
 }, { title: 'typeCheck.js' })
 

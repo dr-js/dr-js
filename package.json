@@ -39,7 +39,7 @@
     "test-browser": "node -r @babel/register ./script/testBrowser production",
     "test-browser-dev": "node -r @babel/register ./script/testBrowser development",
     "test-bin": "node -r @babel/register ./script/testBin",
-    "type-check-dev": "tsc source/common/**/*.js source/type.d.ts --allowJs --checkJs --noEmit --target esnext --baseUrl ./",
+    "type-check-dev": "tsc source/common/**/*.js source/type.d.ts --allowJs --checkJs --noEmit --target esnext --module nodenext --baseUrl ./",
     "type-check": "node -r @babel/register script/typeCheck.js",
     "// =============================": "",
     "analyze-stat": "npx webpack-bundle-analyzer .temp-gitignore/profile-stat.json output-gitignore/library",
