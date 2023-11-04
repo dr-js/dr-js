@@ -9,10 +9,10 @@ const responderEnd = (store) => {
   store.response.end() // force end the response to prevent pending
 }
 
-const responderEndWithStatusCode = (store, { statusCode = 500, headerMap }) => {
+const responderEndWithStatusCode = (store, { statusCode = 500, headerMap, data }) => {
   if (store.response.finished) return
   !store.response.headersSent && store.response.writeHead(statusCode, headerMap)
-  store.response.end()
+  store.response.end(data)
 }
 
 const responderEndWithRedirect = (store, { statusCode = 302, redirectUrl }) => {
