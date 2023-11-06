@@ -9,7 +9,8 @@ import {
   withRepeat, withRepeatAsync,
   withRetry, withRetryAsync,
   withTimeoutAsync, withTimeoutPromise,
-  createInsideOutPromise
+  createInsideOutPromise,
+  runAsPromise
 } from './function.js'
 import { setTimeoutAsync } from './time.js'
 
@@ -623,5 +624,17 @@ describe('Common.Function', () => {
       (value) => { throw new Error(`should not resolve with value: ${value}`) },
       (error) => strictEqual(error.message, 'Good Error')
     )
+  })
+
+  it('runAsPromise()', async () => {
+    stringifyEqual(await runAsPromise(() => 1), 1)
+    stringifyEqual(await runAsPromise(async () => 1), 1)
+    stringifyEqual(await runAsPromise(() => Promise.resolve(1)), 1)
+
+    await doThrowAsync(async () => runAsPromise())
+    await doThrowAsync(async () => runAsPromise(42))
+    await doThrowAsync(async () => runAsPromise(() => { throw new Error() }))
+    await doThrowAsync(async () => runAsPromise(async () => { throw new Error() }))
+    await doThrowAsync(async () => runAsPromise(() => Promise.reject(new Error())))
   })
 })

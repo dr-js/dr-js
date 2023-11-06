@@ -272,6 +272,14 @@ const createInsideOutPromise = () => {
   }
 }
 
+const runAsPromise = (func) => {
+  try {
+    const result = func()
+    if (isPromiseAlike(result)) return result
+    return Promise.resolve(result)
+  } catch (error) { return Promise.reject(error) }
+}
+
 export {
   debounce, debounceT, debounceL,
   throttle, throttleT, throttleL,
@@ -282,5 +290,6 @@ export {
   withRepeat, withRepeatAsync,
   withRetry, withRetryAsync,
   withTimeoutAsync, withTimeoutPromise,
-  createInsideOutPromise
+  createInsideOutPromise,
+  runAsPromise
 }

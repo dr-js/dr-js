@@ -54,7 +54,7 @@
 + 📄 [source/common/format.js](source/common/format.js)
   - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
 + 📄 [source/common/function.js](source/common/function.js)
-  - `createInsideOutPromise`, `debounce`, `debounceL`, `debounceT`, `loneAsync`, `lossyAsync`, `once`, `throttle`, `throttleL`, `throttleT`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
+  - `createInsideOutPromise`, `debounce`, `debounceL`, `debounceT`, `loneAsync`, `lossyAsync`, `once`, `runAsPromise`, `throttle`, `throttleL`, `throttleT`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
 + 📄 [source/common/string.js](source/common/string.js)
   - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentLineList`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
 + 📄 [source/common/test.js](source/common/test.js)
@@ -530,7 +530,7 @@
   - **Format**
     - `binary`, `decimal`, `describe`, `mediaTime`, `padTable`, `percent`, `prettyStringifyConfigObject`, `prettyStringifyJSON`, `time`, `typeNameOf`
   - **Function**
-    - `createInsideOutPromise`, `debounce`, `debounceL`, `debounceT`, `loneAsync`, `lossyAsync`, `once`, `throttle`, `throttleL`, `throttleT`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
+    - `createInsideOutPromise`, `debounce`, `debounceL`, `debounceT`, `loneAsync`, `lossyAsync`, `once`, `runAsPromise`, `throttle`, `throttleL`, `throttleT`, `withCache`, `withCacheAsync`, `withDelayArgvQueue`, `withRepeat`, `withRepeatAsync`, `withRetry`, `withRetryAsync`, `withTimeoutAsync`, `withTimeoutPromise`
   - **String**
     - `autoEllipsis`, `createMarkReplacer`, `escapeHTML`, `escapeRegExp`, `filterJoin`, `forEachLine`, `forEachRegExpExec`, `indentLine`, `indentLineList`, `indentList`, `joinCamelCase`, `joinKebabCase`, `joinSnakeCase`, `lazyEncodeURI`, `removeInvalidCharXML`, `replaceAll`, `splitCamelCase`, `splitKebabCase`, `splitSnakeCase`, `unescapeHTML`
   - **Test**
