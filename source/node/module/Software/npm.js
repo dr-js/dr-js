@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
-import { statSync, realpathSync } from 'node:fs'
-import { tryRequire, tryRequireResolve } from 'source/env/tryRequire.js'
+import { statSync, realpathSync, existsSync } from 'node:fs'
+import { tryRequire } from 'source/env/tryRequire.js'
 import { compareSemVer } from 'source/common/module/SemVer.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 import { fetchLikeRequest, fetchWithJump } from 'source/node/net.js'
@@ -11,11 +11,23 @@ const findUpPackageRoot = (path = __dirname) => {
   path = resolve(path) // normalize
   let prevPath
   while (path !== prevPath) {
-    if (tryRequireResolve(resolve(path, 'package.json'))) return path
+    if (existsSync(resolve(path, 'package.json'))) return path
     prevPath = path
     path = resolve(path, '..')
   }
   return undefined // NOTE: no package.json is found
+}
+
+const findUpNpmrc = (path = __dirname) => {
+  path = resolve(path) // normalize
+  let prevPath
+  while (path !== prevPath) {
+    const npmrcPath = resolve(path, '.npmrc')
+    if (existsSync(npmrcPath)) return npmrcPath
+    prevPath = path
+    path = resolve(path, '..')
+  }
+  return undefined // NOTE: no .npmrc is found
 }
 
 // TODO: NOTE:
@@ -129,7 +141,7 @@ const fetchLikeRequestWithProxy = (url, option = {}) => {
 const fetchWithJumpProxy = (initialUrl, option) => fetchWithJump(initialUrl, { fetch: fetchLikeRequestWithProxy, ...option })
 
 export {
-  findUpPackageRoot,
+  findUpPackageRoot, findUpNpmrc,
 
   getPathNpmExecutable, getSudoArgs,
   runNpm, runNpmSync,
