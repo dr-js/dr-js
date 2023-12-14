@@ -1,12 +1,14 @@
 import { resolve } from 'node:path'
 import { strictEqual, doNotThrow, truthy } from 'source/common/verify.js'
+import { compareSemVer } from 'source/common/module/SemVer.js'
 
 import {
   findUpPackageRoot,
   getPathNpmExecutable, getSudoArgs,
   getPathNpmGlobalRoot, fromGlobalNodeModules,
   getPathNpm, fromNpmNodeModules,
-  hasRepoVersion
+  hasRepoVersion,
+  fetchWithJumpProxy
 } from './npm.js'
 
 const { describe, it, info = console.log } = globalThis
@@ -59,12 +61,17 @@ describe('Node.Module.Software.npm', () => {
     strictEqual(require(fromNpmNodeModules('semver/package.json')).name, 'semver')
     strictEqual(require(fromNpmNodeModules('tar/package.json')).name, 'tar')
 
-    strictEqual(require(fromNpmNodeModules('agent-base/package.json')).name, 'agent-base')
-    strictEqual(require(fromNpmNodeModules('http-proxy-agent/package.json')).name, 'http-proxy-agent')
-    strictEqual(require(fromNpmNodeModules('https-proxy-agent/package.json')).name, 'https-proxy-agent')
+    const npmVer = require(fromNpmNodeModules('../package.json')).version
+    if (compareSemVer(npmVer, '10.0.0') < 0) {
+      strictEqual(require(fromNpmNodeModules('agent-base/package.json')).name, 'agent-base')
+      strictEqual(require(fromNpmNodeModules('http-proxy-agent/package.json')).name, 'http-proxy-agent')
+      strictEqual(require(fromNpmNodeModules('https-proxy-agent/package.json')).name, 'https-proxy-agent')
 
-    // HACK: check can borrow `make-fetch-happen/agent.js` for lazy proxy agent
-    strictEqual(require(fromNpmNodeModules('make-fetch-happen/package.json')).name, 'make-fetch-happen')
+      // HACK: check can borrow `make-fetch-happen/agent.js` for lazy proxy agent
+      strictEqual(require(fromNpmNodeModules('make-fetch-happen/package.json')).name, 'make-fetch-happen')
+    } else {
+      strictEqual(require(fromNpmNodeModules('@npmcli/agent/package.json')).name, '@npmcli/agent')
+    }
 
     { // test sample usage: https://www.npmjs.com/package/semver
       const semver = require(fromNpmNodeModules('semver'))
@@ -78,5 +85,9 @@ describe('Node.Module.Software.npm', () => {
     truthy(await hasRepoVersion('@dr-js/core', '0.4.0'))
     truthy(!await hasRepoVersion('@dr-js/core', '0.4.0-version-should-not-exist'))
     truthy(!await hasRepoVersion('@dr-js/package-should-not-exist', '0.4.0'))
+  })
+
+  it('fetchWithJumpProxy', async () => {
+    truthy((await fetchWithJumpProxy('https://dr.run', { jumpMax: 4 })).ok)
   })
 })

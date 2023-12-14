@@ -104,18 +104,22 @@ const hasRepoVersion = async ( // NOTE: `npm view` can not return the pakument, 
 }
 
 const fetchLikeRequestWithProxy = (url, option = {}) => {
+  const npmVer = tryRequire(fromNpmNodeModules('../package.json')).version
   // NOTE: this is to support npm@6 which ship with agent-base@4, npm@7 do not need this
   tryRequire('node:https').request.__agent_base_https_request_patched__ = true // HACK: to counter HACK part1/2: https://github.com/TooTallNate/node-agent-base/commit/33af5450
   return fetchLikeRequest(url, {
     ...option,
-    agent: tryRequire(fromNpmNodeModules( // change from 7.16.0: https://github.com/npm/cli/commit/e92b5f2b
-      compareSemVer(tryRequire(fromNpmNodeModules('../package.json')).version, '7.16.0') < 0
-        // make-fetch-happen@5: https://github.com/npm/cli/blob/v6.14.14/node_modules/make-fetch-happen/index.js#L310
-        // make-fetch-happen@8: https://github.com/npm/cli/blob/v7.15.1/node_modules/make-fetch-happen/index.js#L267
-        ? 'make-fetch-happen/agent'
-        // make-fetch-happen@9: https://github.com/npm/cli/blob/v7.20.3/node_modules/make-fetch-happen/lib/remote.js#L31
-        : 'make-fetch-happen/lib/agent'
-    ))(url, {
+    agent: (compareSemVer(npmVer, '10.0.0') < 0 // change from npm@10.0.0/node@>=20: https://github.com/npm/cli/commit/e92b5f2b
+      ? tryRequire(fromNpmNodeModules( // change from npm@7.16.0/node@>=15: https://github.com/npm/cli/commit/e92b5f2b
+        compareSemVer(npmVer, '7.16.0') < 0
+          // make-fetch-happen@5: https://github.com/npm/cli/blob/v6.14.14/node_modules/make-fetch-happen/index.js#L310
+          // make-fetch-happen@8: https://github.com/npm/cli/blob/v7.15.1/node_modules/make-fetch-happen/index.js#L267
+          ? 'make-fetch-happen/agent'
+          // make-fetch-happen@9: https://github.com/npm/cli/blob/v7.20.3/node_modules/make-fetch-happen/lib/remote.js#L31
+          : 'make-fetch-happen/lib/agent'
+      ))
+      // make-fetch-happen@12: https://github.com/npm/cli/blob/v10.0.0/node_modules/make-fetch-happen/lib/remote.js#L37
+      : tryRequire(fromNpmNodeModules('@npmcli/agent/lib'))[ 'getAgent' ])(url, {
       dns: { ttl: 5 * 60 * 1000, lookup: tryRequire('node:dns').lookup }, // make-fetch-happen@10.1: https://github.com/npm/cli/blob/v8.6.0/node_modules/make-fetch-happen/lib/options.js#L31
       ...option
     }),
