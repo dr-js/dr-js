@@ -280,6 +280,37 @@ const runAsPromise = (func) => {
   } catch (error) { return Promise.reject(error) }
 }
 
+const runAsyncByLane = (
+  laneSize,
+  asyncFuncList = []
+) => {
+  laneSize = Math.min(laneSize, asyncFuncList.length)
+  if (laneSize === 0) return Promise.resolve()
+  const afList = [ ...asyncFuncList ] // dup list
+  const iop = createInsideOutPromise()
+  let isAbort = false
+  let activeTask = 0
+  const onResolve = () => {
+    if (isAbort) return
+    activeTask--
+    if (!afList.length && !activeTask) iop.resolve() // all done
+    else runMore()
+  }
+  const onReject = (error) => {
+    isAbort = true
+    iop.reject(error)
+  }
+  const runMore = () => {
+    if (isAbort) return
+    while (activeTask < laneSize && afList.length) {
+      activeTask++
+      runAsPromise(afList.shift()).then(onResolve, onReject)
+    }
+  }
+  runMore()
+  return iop.promise
+}
+
 export {
   debounce, debounceT, debounceL,
   throttle, throttleT, throttleL,
@@ -291,5 +322,6 @@ export {
   withRetry, withRetryAsync,
   withTimeoutAsync, withTimeoutPromise,
   createInsideOutPromise,
-  runAsPromise
+  runAsPromise,
+  runAsyncByLane
 }

@@ -10,7 +10,8 @@ import {
   withRetry, withRetryAsync,
   withTimeoutAsync, withTimeoutPromise,
   createInsideOutPromise,
-  runAsPromise
+  runAsPromise,
+  runAsyncByLane
 } from './function.js'
 import { setTimeoutAsync } from './time.js'
 
@@ -636,5 +637,43 @@ describe('Common.Function', () => {
     await doThrowAsync(async () => runAsPromise(() => { throw new Error() }))
     await doThrowAsync(async () => runAsPromise(async () => { throw new Error() }))
     await doThrowAsync(async () => runAsPromise(() => Promise.reject(new Error())))
+  })
+
+  it('runAsyncByLane()', async () => {
+    const tokenList = []
+    await runAsyncByLane(3, [
+      async () => {
+        tokenList.push('0S')
+        await setTimeoutAsync(8 * TIME_SCALE)
+        tokenList.push('0E +8')
+      },
+      async () => {
+        tokenList.push('1S')
+        await setTimeoutAsync(12 * TIME_SCALE)
+        tokenList.push('1E +12')
+      },
+      async () => {
+        tokenList.push('2S')
+        await setTimeoutAsync(4 * TIME_SCALE)
+        tokenList.push('2E +4')
+      },
+      async () => {
+        tokenList.push('3S')
+        await setTimeoutAsync(16 * TIME_SCALE)
+        tokenList.push('3E +16')
+      },
+      async () => {
+        tokenList.push('4S')
+        await setTimeoutAsync(10 * TIME_SCALE)
+        tokenList.push('4E +10')
+      }
+    ])
+    // console.log(tokenList)
+    stringifyEqual([
+      '0S', '1S', '2S',
+      '2E +4', '3S',
+      '0E +8', '4S',
+      '1E +12', '4E +10', '3E +16'
+    ], tokenList)
   })
 })
