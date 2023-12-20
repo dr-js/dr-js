@@ -7,7 +7,7 @@ import { withRetry } from 'source/common/function.js'
 import { runKit, argvFlag } from 'source/node/kit.js'
 
 const retryCount = (!process.env.IS_CI || process.platform === 'linux')
-  ? 1 // one chance should be enough for linux CI
+  ? 1 // 1 more chance for linux CI
   : 3 // 3 more chance for win32/darwin CI, since some net/fs test is still flaky
 const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
   try { return kit.RUN(`npm run ${name}`) } catch (error) {

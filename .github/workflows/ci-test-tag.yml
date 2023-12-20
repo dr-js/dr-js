@@ -17,8 +17,8 @@ jobs:
       fail-fast: false # allow all test to run to the end
       matrix:
         os: [ "ubuntu-latest", "windows-latest", "macos-latest" ]
-        node-version: [ "18.x" ]
-        include: [ { os: "ubuntu-latest", node-version: "14.x" } ]
+        node-version: [ "21.x" ] # latest version
+        include: [ { os: "ubuntu-latest", node-version: "16.x" }, { os: "ubuntu-latest", node-version: "14.x" } ] # min-support version
     runs-on: "${{ matrix.os }}"
     steps:
       - { uses: "actions/checkout@v3" } # https://github.com/actions/checkout
@@ -42,7 +42,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - { uses: "actions/checkout@v3" } # https://github.com/actions/checkout
-      - { uses: "actions/setup-node@v3", with: { node-version: "16.x" } } # https://github.com/actions/setup-node
+      - { uses: "actions/setup-node@v3", with: { node-version: "20.x" } } # LTS version # https://github.com/actions/setup-node
       # TODO: wait for npm fix # - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
       - run: npm i -g @dr-js/core@0.5 @dr-js/dev@0.5 @min-pack/npm@0.1 && dr-dev -eI .github/ci-patch.js
       - run: npm8 ci --omit=optional
