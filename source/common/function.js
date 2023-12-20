@@ -8,32 +8,65 @@ import { isPromiseAlike } from 'source/common/check.js'
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `isLeadingEdge` is set, trigger the function on the
 // leading edge, instead of the trailing.
-const debounce = (func, wait = 250, isLeadingEdge = false) => {
+
+// Stay inactive if called within `wait` time, will drop arguments during inactive time
+/** @deprecated */ const debounce = (func, wait = 250, isLeadingEdge = false) => (isLeadingEdge ? debounceL : debounceT)(func, wait)
+const debounceT = (func, wait = 250) => { // TrailingEdge
   let timeoutToken = null
   return (...args) => {
-    const isCallNow = isLeadingEdge && (timeoutToken === null)
     clearTimeout(timeoutToken)
     timeoutToken = setTimeout(() => {
       timeoutToken = null
-      !isLeadingEdge && func.apply(null, args)
+      func.apply(null, args)
     }, wait)
+  }
+}
+const debounceL = (func, wait = 250) => { // LeadingEdge
+  let timeoutToken = null
+  return (...args) => {
+    const isCallNow = timeoutToken === null
+    clearTimeout(timeoutToken)
+    timeoutToken = setTimeout(() => { timeoutToken = null }, wait)
     isCallNow && func.apply(null, args)
   }
 }
+// TODO: need `debounceLT`?
 
 // Inactive for `wait` time, will drop arguments during inactive time
-const throttle = (func, wait = 250, isLeadingEdge = false) => {
+/** @deprecated */ const throttle = (func, wait = 250, isLeadingEdge = false) => (isLeadingEdge ? throttleL : throttleTE)(func, wait)
+/** @deprecated */ const throttleTE = (func, wait = 250) => { // TrailingEdge, but use first received args
   let timeoutToken = null
   return (...args) => {
     if (timeoutToken) return // inactive
-    const isCallNow = isLeadingEdge && (timeoutToken === null)
     timeoutToken = setWeakTimeout(() => { // NOTE: use weak version, since the value is dropped either way
       timeoutToken = null
-      !isLeadingEdge && func.apply(null, args)
+      func.apply(null, args)
     }, wait)
+  }
+}
+const throttleT = (func, wait = 250) => { // TrailingEdge, use last received args
+  let timeoutToken = null
+  let lastArgs = null
+  return (...args) => {
+    lastArgs = args
+    if (timeoutToken) return // inactive
+    timeoutToken = setWeakTimeout(() => { // NOTE: use weak version, since the value is dropped either way
+      timeoutToken = null
+      func.apply(null, lastArgs)
+      lastArgs = null
+    }, wait)
+  }
+}
+const throttleL = (func, wait = 250) => { // LeadingEdge
+  let timeoutToken = null
+  return (...args) => {
+    if (timeoutToken) return // inactive
+    const isCallNow = timeoutToken === null
+    timeoutToken = setWeakTimeout(() => { timeoutToken = null }, wait) // NOTE: use weak version, since the value is dropped either way
     isCallNow && func.apply(null, args)
   }
 }
+// TODO: need `throttleLT`?
 
 const once = (func) => { // NOTE: also support asyncFunc
   let isCalled = false
@@ -240,8 +273,8 @@ const createInsideOutPromise = () => {
 }
 
 export {
-  debounce,
-  throttle,
+  debounce, debounceT, debounceL,
+  throttle, throttleT, throttleL,
   once,
   lossyAsync, loneAsync,
   withCache, withCacheAsync,
