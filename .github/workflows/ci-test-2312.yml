@@ -1,0 +1,40 @@
+name: "ci-test-2312"
+on: { push: { branches: [ "**" ], tags: [ "v*" ] } } # use `v0.0.0` tag pattern # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
+env: { "IS_CI": true }
+jobs:
+  "test-base": # job id
+    strategy:
+      matrix: { OS: [ "ubuntu-latest", "windows-latest", "macos-latest" ], NODE: [ "20.x" ] } # LTS version
+      fail-fast: false # allow all test to run to the end
+    runs-on: "${{ matrix.OS }}"
+    timeout-minutes: 15
+    steps:
+      - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v4", with: { node-version: "${{ matrix.NODE }}" } } # https://github.com/actions/setup-node
+      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: npm test
+
+  "test-extra": # job id
+    if: "github.ref_type == 'tag'" # only run on git tag push
+    strategy:
+      matrix: { OS: [ "ubuntu-latest", "windows-latest", "macos-latest" ], NODE: [ "21.x" ], include: [ { OS: "ubuntu-latest", NODE: "14.x" } ] } # latest version + min-support version
+      fail-fast: false # allow all test to run to the end
+    runs-on: "${{ matrix.OS }}"
+    timeout-minutes: 15
+    steps:
+      - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v4", with: { node-version: "${{ matrix.NODE }}" } } # https://github.com/actions/setup-node
+      - run: npm i -g @dr-js/core@0.5 @dr-js/dev@0.5 && dr-dev -eI .github/ci-patch.js # TODO: wait for npm fix # - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: npm test
+
+  "publish-tag": # job id
+    if: "github.ref_type == 'tag'" # only run on git tag push
+    needs: [ "test-base", "test-extra" ] # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idneeds
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 15
+    steps:
+      - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v4", with: { node-version: "20.x" } } # LTS version # https://github.com/actions/setup-node
+      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN_DR_JS }}" > .npmrc
+      - run: npm run script-publish
