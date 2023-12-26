@@ -7,7 +7,7 @@ import { createReadStream, createWriteStream } from 'node:fs'
 import { getEndianness } from 'source/env/function.js'
 
 import { binary, percent, time, prettyStringifyJSON } from 'source/common/format.js'
-import { throttle } from 'source/common/function.js'
+import { throttleT } from 'source/common/function.js'
 import { indentList } from 'source/common/string.js'
 import { setTimeoutAsync } from 'source/common/time.js'
 import { isBasicFunction } from 'source/common/check.js'
@@ -286,8 +286,8 @@ const runMode = async (optionData, modeName) => {
       const response = await fetchWithJumpProxy(initialUrl, {
         method, timeout, jumpMax, body,
         headers: { 'accept': '*/*', 'user-agent': `${packageName}/${packageVersion}` }, // patch for sites require a UA, like GitHub
-        onProgressUpload: throttle((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
-        onProgressDownload: throttle((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
+        onProgressUpload: throttleT((now, total) => isDone || log(`[fetch-upload] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
+        onProgressDownload: throttleT((now, total) => isDone || log(`[fetch-download] ${percent(now / total)} (${binary(now)}B / ${binary(total)}B)`), 1000),
         preFetch: (url, jumpCount, cookieList) => log(`[fetch] <${method}>${url}, jump: ${jumpCount}/${jumpMax}, timeout: ${timeout ? time(timeout) : 'none'}, cookie: ${cookieList.length}`)
       })
       if (!response.ok) throw new Error(`bad status: ${response.status}`)
