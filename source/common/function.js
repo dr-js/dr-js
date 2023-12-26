@@ -134,7 +134,7 @@ const withCacheAsync = (asyncFunc) => {
   }
 }
 
-const withDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
+/** @deprecated */ const withDelayArgvQueue = (func, delayWrapper = debounce, ...args) => {
   let argvQueue = []
   const delayFunc = delayWrapper(() => {
     const currentArgvQueue = argvQueue
