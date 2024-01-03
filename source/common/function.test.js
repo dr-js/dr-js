@@ -1,7 +1,7 @@
 import { doThrow, stringifyEqual, strictEqual, truthy, doThrowAsync } from 'source/common/verify.js'
 import {
-  debounce,
-  throttle,
+  debounce, debounceT, debounceL,
+  throttle, throttleT, throttleL,
   // once,
   lossyAsync, loneAsync,
   withCache, withCacheAsync,
@@ -9,16 +9,19 @@ import {
   withRepeat, withRepeatAsync,
   withRetry, withRetryAsync,
   withTimeoutAsync, withTimeoutPromise,
-  createInsideOutPromise
+  createInsideOutPromise,
+  runAsPromise,
+  runAsyncByLane
 } from './function.js'
 import { setTimeoutAsync } from './time.js'
 
 const { describe, it } = globalThis
 
 const TIME_WAIT_SCALE = process.platform !== 'darwin' ? 1 : 10 // TODO: NOTE: macos fs watcher event seems to be both batched and late than linux/win32, so just wait longer
+const TIME_SCALE = process.platform === 'linux' ? 1.5 : 40
 
 describe('Common.Function', () => {
-  it('debounce()', async () => {
+  it('debounce()', async () => { // TODO: DEPRECATE
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let debouncedValue = null
@@ -48,7 +51,7 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('debounce() isLeadingEdge', async () => {
+  it('debounce() isLeadingEdge', async () => { // TODO: DEPRECATE
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let debouncedValue = null
@@ -79,7 +82,84 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('throttle()', async () => {
+  it('debounceT()', async () => {
+    const test = async () => {
+      const iop = createInsideOutPromise()
+      let tick = 0
+      const func = debounceT((value) => {
+        value !== 'Good' && iop.reject(new Error(`bad value "${value}"`))
+        tick++
+      }, 10 * TIME_SCALE)
+      const check = (expect) => { tick !== expect && iop.reject(new Error(`bad tick "${tick}", expect "${expect}"`)) }
+      check(0)
+      func('Not 1')
+      check(0)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(0)
+      func('Not 2')
+      check(0)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(0)
+      func('Not 3')
+      check(0)
+      await setTimeoutAsync(4 * TIME_SCALE) // delay tick
+      check(0)
+      func('Good')
+      check(0)
+      await setTimeoutAsync(6 * TIME_SCALE)
+      check(0)
+      await setTimeoutAsync(6 * TIME_SCALE) // should tick
+      check(1)
+      func('Not 4')
+      check(1)
+      func('Good')
+      check(1)
+      await setTimeoutAsync(6 * TIME_SCALE)
+      check(1)
+      await setTimeoutAsync(6 * TIME_SCALE) // should tick
+      check(2)
+      iop.resolve() // done
+      return iop.promise
+    }
+    await Promise.all([ test(), test(), test() ])
+  })
+  it('debounceL()', async () => {
+    const test = async () => {
+      const iop = createInsideOutPromise()
+      let tick = 0
+      const func = debounceL((value) => {
+        value !== 'Good' && iop.reject(new Error(`bad value "${value}"`))
+        tick++
+      }, 10 * TIME_SCALE)
+      const check = (expect) => { tick !== expect && iop.reject(new Error(`bad tick "${tick}", expect "${expect}"`)) }
+      check(0)
+      func('Good') // should tick
+      check(1)
+      func('Not 1')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Not 2')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Not 3')
+      check(1)
+      await setTimeoutAsync(12 * TIME_SCALE)
+      check(1)
+      func('Good') // should tick
+      check(2)
+      func('Not 4')
+      check(2)
+      await setTimeoutAsync(12 * TIME_SCALE)
+      check(2)
+      iop.resolve() // done
+      return iop.promise
+    }
+    await Promise.all([ test(), test(), test() ])
+  })
+
+  it('throttle()', async () => { // TODO: DEPRECATE
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let throttledValue = null
@@ -110,7 +190,7 @@ describe('Common.Function', () => {
     return promise
   })
 
-  it('throttle() isLeadingEdge', async () => {
+  it('throttle() isLeadingEdge', async () => { // TODO: DEPRECATE
     const { promise, resolve, reject } = createInsideOutPromise()
 
     let throttledValue = null
@@ -139,6 +219,87 @@ describe('Common.Function', () => {
     await test() // 2nd try
     resolve() // done
     return promise
+  })
+
+  it('throttleT()', async () => {
+    const test = async () => {
+      const iop = createInsideOutPromise()
+      let tick = 0
+      const func = throttleT((value) => {
+        value !== 'Good' && iop.reject(new Error(`bad value "${value}"`))
+        tick++
+      }, 10 * TIME_SCALE)
+      const check = (expect) => { tick !== expect && iop.reject(new Error(`bad tick "${tick}", expect "${expect}"`)) }
+      check(0)
+      func('Not 1')
+      check(0)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(0)
+      func('Not 2')
+      check(0)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(0)
+      func('Good')
+      check(0)
+      await setTimeoutAsync(6 * TIME_SCALE) // should tick
+      check(1)
+      func('Not 3')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Not 4')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Good')
+      check(1)
+      await setTimeoutAsync(6 * TIME_SCALE) // should tick
+      check(2)
+      iop.resolve() // done
+      return iop.promise
+    }
+    await Promise.all([ test(), test(), test() ])
+  })
+  it('throttleL()', async () => {
+    const test = async () => {
+      const iop = createInsideOutPromise()
+      let tick = 0
+      const func = throttleL((value) => {
+        value !== 'Good' && iop.reject(new Error(`bad value "${value}"`))
+        tick++
+      }, 10 * TIME_SCALE)
+      const check = (expect) => { tick !== expect && iop.reject(new Error(`bad tick "${tick}", expect "${expect}"`)) }
+      check(0)
+      func('Good') // should tick
+      check(1)
+      func('Not 1')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Not 2')
+      check(1)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(1)
+      func('Not 3')
+      check(1)
+      await setTimeoutAsync(6 * TIME_SCALE)
+      check(1)
+      func('Good') // should tick
+      check(2)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(2)
+      func('Not 4')
+      check(2)
+      await setTimeoutAsync(4 * TIME_SCALE)
+      check(2)
+      func('Not 5')
+      check(2)
+      await setTimeoutAsync(6 * TIME_SCALE)
+      check(2)
+      iop.resolve() // done
+      return iop.promise
+    }
+    await Promise.all([ test(), test(), test() ])
   })
 
   it('lossyAsync()', async () => {
@@ -464,5 +625,55 @@ describe('Common.Function', () => {
       (value) => { throw new Error(`should not resolve with value: ${value}`) },
       (error) => strictEqual(error.message, 'Good Error')
     )
+  })
+
+  it('runAsPromise()', async () => {
+    stringifyEqual(await runAsPromise(() => 1), 1)
+    stringifyEqual(await runAsPromise(async () => 1), 1)
+    stringifyEqual(await runAsPromise(() => Promise.resolve(1)), 1)
+
+    await doThrowAsync(async () => runAsPromise())
+    await doThrowAsync(async () => runAsPromise(42))
+    await doThrowAsync(async () => runAsPromise(() => { throw new Error() }))
+    await doThrowAsync(async () => runAsPromise(async () => { throw new Error() }))
+    await doThrowAsync(async () => runAsPromise(() => Promise.reject(new Error())))
+  })
+
+  it('runAsyncByLane()', async () => {
+    const tokenList = []
+    await runAsyncByLane(3, [
+      async () => {
+        tokenList.push('0S')
+        await setTimeoutAsync(8 * TIME_SCALE)
+        tokenList.push('0E +8')
+      },
+      async () => {
+        tokenList.push('1S')
+        await setTimeoutAsync(12 * TIME_SCALE)
+        tokenList.push('1E +12')
+      },
+      async () => {
+        tokenList.push('2S')
+        await setTimeoutAsync(4 * TIME_SCALE)
+        tokenList.push('2E +4')
+      },
+      async () => {
+        tokenList.push('3S')
+        await setTimeoutAsync(16 * TIME_SCALE)
+        tokenList.push('3E +16')
+      },
+      async () => {
+        tokenList.push('4S')
+        await setTimeoutAsync(10 * TIME_SCALE)
+        tokenList.push('4E +10')
+      }
+    ])
+    // console.log(tokenList)
+    stringifyEqual([
+      '0S', '1S', '2S',
+      '2E +4', '3S',
+      '0E +8', '4S',
+      '1E +12', '4E +10', '3E +16'
+    ], tokenList)
   })
 })

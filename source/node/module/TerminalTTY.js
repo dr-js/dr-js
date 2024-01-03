@@ -1,5 +1,5 @@
 import { createInterface } from 'node:readline'
-import { throttle } from 'source/common/function.js'
+import { throttleT } from 'source/common/function.js'
 
 // AES = ANSI escape code
 // https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -82,7 +82,7 @@ const createStatusBar = ({
   }
 
   const tick = throttleWait
-    ? throttle(tickFunc, throttleWait)
+    ? throttleT(tickFunc, throttleWait)
     : tickFunc
 
   const update = (text) => {

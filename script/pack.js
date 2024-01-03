@@ -6,15 +6,14 @@ import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProce
 import { withRetry } from 'source/common/function.js'
 import { runKit, argvFlag } from 'source/node/kit.js'
 
-const retryCount = (!process.env.IS_CI || process.platform === 'linux')
-  ? 1 // one chance should be enough for linux CI
-  : 3 // 3 more chance for win32/darwin CI, since some net/fs test is still flaky
+const IS_CI_LITE = process.env.IS_CI && process.platform !== 'linux' // skip step for win32/darwin ci
+
 const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
   try { return kit.RUN(`npm run ${name}`) } catch (error) {
     console.error(`##[warning] [retry|${name}|${failed}/${maxRetry}]`, error) // https://github.com/actions/runner/blob/v2.278.0/src/Runner.Worker/ExecutionContext.cs#L1021-L1028
     throw error // retry
   }
-}, retryCount)
+}, IS_CI_LITE ? 3 : 0) // 3 more chance for win32/darwin CI, since some net/fs test is still flaky
 
 runKit(async (kit) => {
   const processOutput = async ({ kit }) => {
@@ -47,16 +46,16 @@ runKit(async (kit) => {
 
   await processOutput({ kit })
   const isTest = isPublish || argvFlag('test')
-  isTest && kit.padLog('lint source')
-  isTest && kit.RUN('npm run lint')
-  isTest && kit.RUN('npm run type-check')
+  isTest && !IS_CI_LITE && kit.padLog('lint source')
+  isTest && !IS_CI_LITE && kit.RUN('npm run lint')
+  isTest && !IS_CI_LITE && kit.RUN('npm run type-check')
   isTest && await processOutput({ kit }) // once more
   isTest && kit.padLog('test output')
   isTest && await retryNpmRunTest(kit, 'test-output-library')
-  isTest && await retryNpmRunTest(kit, 'test-output-module')
+  isTest && !IS_CI_LITE && await retryNpmRunTest(kit, 'test-output-module')
   isTest && await retryNpmRunTest(kit, 'test-output-bin')
-  isTest && kit.padLog('test browser')
-  isTest && await retryNpmRunTest(kit, 'test-browser')
+  isTest && !IS_CI_LITE && kit.padLog('test browser')
+  isTest && !IS_CI_LITE && await retryNpmRunTest(kit, 'test-browser')
   isTest && kit.padLog('test bin')
   isTest && kit.RUN('npm run test-bin')
   await clearOutput({ kit })

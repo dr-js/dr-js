@@ -1,6 +1,6 @@
 import { dirname } from 'node:path'
 import { watch, promises as fsAsync } from 'node:fs'
-import { throttle } from 'source/common/function.js'
+import { throttleT } from 'source/common/function.js'
 import { createHub } from 'source/common/module/Event.js'
 import { nearestExistPath } from './Path.js'
 
@@ -38,7 +38,7 @@ const createFileWatcherExot = ({
   let watcher
   let watcherUpper
 
-  const emitThrottled = throttle(async () => {
+  const emitThrottled = throttleT(async () => {
     // hasChange: true = path level change = create/delete(also for rename since this watches single node)
     // hasChange: false = content level change = path-change/file-content/directory-file-list
     const stat = await fsAsync.lstat(path).catch(EMPTY_FUNC)
