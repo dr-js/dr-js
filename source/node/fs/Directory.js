@@ -193,14 +193,14 @@ const withTempDirectorySync = (
 
 const getFileList = async (
   path,
-  fileCollector = DEFAULT_FILE_COLLECTOR // (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
+  fileCollector = async (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
 ) => {
   const fileList = []
   const pathStat = await getPathStat(path) // resolve symlink for the initial path
   const pathType = getPathTypeFromStat(pathStat)
   switch (pathType) {
     case PATH_TYPE.File:
-      fileCollector(fileList, { type: pathType, name: basename(path), path })
+      await fileCollector(fileList, { type: pathType, name: basename(path), path })
       break
     case PATH_TYPE.Directory:
       await walkDirInfoTree(
@@ -215,7 +215,7 @@ const getFileList = async (
 }
 const getFileListSync = (
   path,
-  fileCollector = DEFAULT_FILE_COLLECTOR // (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
+  fileCollector = (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
 ) => {
   const fileList = []
   const pathStat = getPathStatSync(path) // resolve symlink for the initial path
@@ -235,7 +235,6 @@ const getFileListSync = (
   }
   return fileList
 }
-const DEFAULT_FILE_COLLECTOR = (fileList, { path }) => { fileList.push(path) }
 
 export {
   getPathTypeFromDirent,
