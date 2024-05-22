@@ -3,7 +3,7 @@ import {
   symlinkSync, readlinkSync,
   renameSync, unlinkSync, accessSync,
   mkdirSync, rmdirSync, copyFileSync,
-  Stats, promises as fsAsync
+  /* Stats, */ promises as fsAsync
 } from 'node:fs'
 import { join, resolve, dirname, sep } from 'node:path'
 import { homedir } from 'node:os'
@@ -12,22 +12,28 @@ import { withFallbackResult, withFallbackResultAsync } from 'source/common/error
 
 // NOTE: default will not follow symlink, and some symlink may form a loop
 
-const STAT_ERROR = new Stats(
-  -1, // dev
-  -1, // mode
-  0, // nlink
-  -1, // uid
-  -1, // gid
-  -1, // rdev
-  0, // blksize
-  0, // ino
-  0, // size
-  0, // blocks
-  0, // atim_msec
-  0, // mtim_msec
-  0, // ctim_msec
-  0 // birthtim_msec
-)
+const STAT_ERROR = {
+  isSymbolicLink: () => false,
+  isDirectory: () => false,
+  isFile: () => false
+}
+
+// new Stats(
+//   -1, // dev
+//   -1, // mode
+//   0, // nlink
+//   -1, // uid
+//   -1, // gid
+//   -1, // rdev
+//   0, // blksize
+//   0, // ino
+//   0, // size
+//   0, // blocks
+//   0, // atim_msec
+//   0, // mtim_msec
+//   0, // ctim_msec
+//   0 // birthtim_msec
+// )
 
 const PATH_TYPE = {
   File: 'File',
