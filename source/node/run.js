@@ -3,6 +3,15 @@ import { spawn, spawnSync } from 'node:child_process'
 import { remessageError } from 'source/common/error.js'
 import { readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 
+// 2024/05 For security, node won't directly spawn ".cmd" or ".bat" files
+// Error: spawn EINVAL
+// https://github.com/nodejs/node/issues/52554#issuecomment-2065306579
+// https://github.com/nodejs/node/commit/69ffc6d5
+const patchWin32CmdBat = (command, argList) => {
+  if (/.\.(cmd|ext)$/.test(command)) return [ 'cmd.exe', [ '/C', command, ...argList ] ]
+  return [ command, argList ]
+}
+
 const getOption = (option, quiet) => ({
   stdio: quiet ? [ 'ignore', 'pipe', 'pipe' ] : 'inherit',
   // shell: false, // default // this is the only sane way to run something, else it's quoting soup
@@ -44,6 +53,7 @@ const run = ([ command, ...argList ], {
   describeError = quiet, // auto describe error, then output is collected
   ...option
 } = {}) => { // NOTE: describeError may await once more and alter stacktrace
+  if (process.platform === 'win32') [ command, argList ] = patchWin32CmdBat(command, argList)
   const subProcess = spawn(command, argList, getOption(option, quiet))
   const stdoutPromise = quiet ? readableStreamToBufferAsync(subProcess.stdout) : undefined
   const stderrPromise = quiet ? readableStreamToBufferAsync(subProcess.stderr) : undefined
@@ -61,6 +71,7 @@ const runSync = ([ command, ...argList ], {
   describeError = quiet, // auto describe error, then output is collected
   ...option
 } = {}) => {
+  if (process.platform === 'win32') [ command, argList ] = patchWin32CmdBat(command, argList)
   const { error, status: code, signal, stdout, stderr } = spawnSync(command, argList, getOption(option, quiet))
   const exitData = { code, signal, command, argList, stdout, stderr }
   if (code !== 0) {
@@ -76,6 +87,7 @@ const runDetached = ([ command, ...argList ], {
   stderrFd = (stderrFile && stderrFile !== stdoutFile) ? openSync(stderrFile, 'a') : stdoutFd,
   ...option
 } = {}) => {
+  if (process.platform === 'win32') [ command, argList ] = patchWin32CmdBat(command, argList)
   const subProcess = spawn(command, argList, {
     detached: true,
     stdio: stdoutFd ? [ 'ignore', stdoutFd, stderrFd ] : 'ignore',

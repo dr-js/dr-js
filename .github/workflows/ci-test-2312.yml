@@ -11,7 +11,7 @@ jobs:
     steps:
       - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
       - { uses: "actions/setup-node@v4", with: { node-version: "${{ matrix.NODE }}" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: npm i -g @dr-js/core@0.5.14-dev.0 @dr-js/dev@0.5.14-dev.0 && dr-dev -eI .github/ci-patch.js
       - run: npm test
 
   "test-extra": # job id
@@ -24,7 +24,7 @@ jobs:
     steps:
       - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
       - { uses: "actions/setup-node@v4", with: { node-version: "${{ matrix.NODE }}" } } # https://github.com/actions/setup-node
-      - run: npm i -g @dr-js/core@0.5 @dr-js/dev@0.5 && dr-dev -eI .github/ci-patch.js # TODO: wait for npm fix # - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: npm i -g @dr-js/core@0.5.14-dev.0 @dr-js/dev@0.5.14-dev.0 && dr-dev -eI .github/ci-patch.js # TODO: wait for npm fix # - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
       - run: npm test
 
   "publish-tag": # job id
@@ -35,6 +35,6 @@ jobs:
     steps:
       - { uses: "actions/checkout@v4" } # https://github.com/actions/checkout
       - { uses: "actions/setup-node@v4", with: { node-version: "20.x" } } # LTS version # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - run: npm i -g @dr-js/core@0.5.14-dev.0 @dr-js/dev@0.5.14-dev.0 && dr-dev -eI .github/ci-patch.js
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN_DR_JS }}" > .npmrc
       - run: npm run script-publish

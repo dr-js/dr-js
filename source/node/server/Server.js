@@ -11,7 +11,7 @@ import { prettyStringifyConfigObject } from 'source/common/format.js'
 import { createCacheMap2 } from 'source/common/data/CacheMap2.js'
 import { createStateStoreLite } from 'source/common/immutable/StateStore.js'
 import { objectFromEntries } from 'source/common/immutable/Object.js'
-import { responderEnd } from './Responder/Common.js'
+import { responderError, responderEnd } from './Responder/Common.js'
 
 // TODO: add HTTP2 or just skip to HTTP3?
 
@@ -117,7 +117,7 @@ const createServerExot = ({
   }
 }
 
-const DEFAULT_RESPONDER_ERROR = (store, error) => store.setState({ error })
+const DEFAULT_RESPONDER_ERROR = responderError
 const DEFAULT_RESPONDER_END = responderEnd
 
 const createRequestListener = ({

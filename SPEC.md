@@ -328,7 +328,7 @@
 + 📄 [source/node/server/Feature/ServerFetch/responder.js](source/node/server/Feature/ServerFetch/responder.js)
   - `responderServerFetch`
 + 📄 [source/node/server/Responder/Common.js](source/node/server/Responder/Common.js)
-  - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+  - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderError`, `responderSetHeaderCacheControlImmutable`
 + 📄 [source/node/server/Responder/Proxy.js](source/node/server/Responder/Proxy.js)
   - `createResponderHTTPRequestProxy`
 + 📄 [source/node/server/Responder/RateLimit.js](source/node/server/Responder/RateLimit.js)
@@ -638,7 +638,7 @@
         - `responderServerFetch`
     - **Responder**
       - **Common**
-        - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderSetHeaderCacheControlImmutable`
+        - `createResponderHostMapper`, `createResponderLog`, `createResponderLogEnd`, `createResponderSetHeaderHSTS`, `responderEnd`, `responderEndWithRedirect`, `responderEndWithStatusCode`, `responderError`, `responderSetHeaderCacheControlImmutable`
       - **Proxy**
         - `createResponderHTTPRequestProxy`
       - **RateLimit**
