@@ -26,6 +26,10 @@ const requestHttp = (
   const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, option, (response) => {
     request.off('error', onError)
     onTimeout && request.off('timeout', onTimeout)
+    request.on('error', (error) => { // for HTTPS `Error: read ECONNRESET at TLSWrap.onStreamRead`,check: https://github.com/nodejs/node/issues/42154
+      request.destroy()
+      response.emit('error', tagError(error))
+    })
     resolve(response)
   })
   request.on('error', onError)
