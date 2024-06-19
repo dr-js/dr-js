@@ -132,7 +132,7 @@
 + 📄 [source/common/math/easing.js](source/common/math/easing.js)
   - `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`
 + 📄 [source/common/math/random.js](source/common/math/random.js)
-  - `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomId62S`, `getRandomInt`, `getRandomIntList`
+  - `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomId62S`, `getRandomInt`, `getRandomIntList`, `getRandomWithinList`
 + 📄 [source/common/math/sample.js](source/common/math/sample.js)
   - `getSample`, `getSampleIterator`, `getSampleIteratorRange`, `getSampleIteratorRate`, `getSampleRange`, `getSampleRate`
 + 📄 [source/common/module/AsyncFuncQueue.js](source/common/module/AsyncFuncQueue.js)
@@ -468,7 +468,7 @@
       - `createEntryEnhancer`, `createStateStore`, `createStateStoreEnhanced`, `createStateStoreLite`, `createStoreStateSyncReducer`, `reducerFromMap`, `toReduxStore`
     - `isArrayShallowEqual`, `isCompactArrayShallowEqual`, `isObjectShallowEqual`, `transformCache`
   - **Math**
-    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomId62S`, `getRandomInt`, `getRandomIntList`, `getSample`, `getSampleIterator`, `getSampleIteratorRange`, `getSampleIteratorRate`, `getSampleRange`, `getSampleRate`
+    - `addAbs`, `clamp`, `euclideanModulo`, `lerp`, `roundFloat`, `smoothstep`, `easeInCirc`, `easeInCubic`, `easeInExpo`, `easeInOutCirc`, `easeInOutCubic`, `easeInOutExpo`, `easeInOutQuad`, `easeInOutQuart`, `easeInOutQuint`, `easeInOutSine`, `easeInQuad`, `easeInQuart`, `easeInQuint`, `easeInSine`, `easeOutCirc`, `easeOutCubic`, `easeOutExpo`, `easeOutQuad`, `easeOutQuart`, `easeOutQuint`, `easeOutSine`, `linear`, `getRandomArrayBuffer`, `getRandomId`, `getRandomId62`, `getRandomId62S`, `getRandomInt`, `getRandomIntList`, `getRandomWithinList`, `getSample`, `getSampleIterator`, `getSampleIteratorRange`, `getSampleIteratorRate`, `getSampleRange`, `getSampleRate`
   - **Module**
     - **AsyncFuncQueue**
       - `createAsyncFuncQueue`

@@ -1,7 +1,9 @@
+// @ts-check
+
 import { includes, strictEqual, truthy } from 'source/common/verify.js'
 import {
   getRandomInt,
-  getRandomIntList,
+  getRandomIntList, getRandomWithinList,
   getRandomId, getRandomId62, getRandomId62S,
   getRandomArrayBuffer
 } from './random.js'
@@ -22,6 +24,17 @@ describe('Common.Math.Random', () => {
     strictEqual(getRandomIntList(0, 10, 2).length, 2)
     strictEqual(getRandomIntList(0, 10, 4).length, 4)
     strictEqual(getRandomIntList(0, 10, 6).length, 6)
+  })
+
+  it('getRandomWithinList()', () => {
+    strictEqual(getRandomWithinList([], 10).length, [].length)
+    strictEqual(getRandomWithinList([ 1 ], 10).length, [ 1 ].length)
+    strictEqual(getRandomWithinList([ 1, 2 ], 10).length, [ 1, 2 ].length)
+    strictEqual(getRandomWithinList([ 1, 2, 3 ], 0).length, [].length)
+    strictEqual(getRandomWithinList([ 1, 2, 3 ], 1).length, [ 3 ].length)
+    strictEqual(getRandomWithinList([ 1, 2, 3 ], 2).length, [ 1, 2 ].length)
+    strictEqual(getRandomWithinList([ 1, 2, 3 ], 3).length, [ 1, 2, 3 ].length)
+    strictEqual(getRandomWithinList([ 1, 2, 3 ], -3).length, [].length)
   })
 
   it('getRandomId()', () => {
