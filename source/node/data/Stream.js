@@ -62,7 +62,7 @@ const isStreamWritable = (stream) => (
 // TODO: consider `Stream.pipeline` since node@>=10? (though the implementation make much more assumption)
 const setupStreamPipe = (...streamList) => { // the last stream is not handled, but will get error from all previous stream, so the pipe can be properly stopped
   if (streamList.length < 2) throw new Error('need at least 2 stream in streamList')
-  // TODO: no 'isReadableStream' check, promise may stall
+  if (!isStreamReadable(streamList[ 0 ])) throw new Error('first stream not readable') // TODO: for now close ReadableStream can setup pipe
   const lastStream = streamList[ streamList.length - 1 ]
   const passError = (error) => lastStream.emit('error', error)
   for (let index = streamList.length - 2; index >= 0; index--) { // reverse & skip last
@@ -74,8 +74,9 @@ const setupStreamPipe = (...streamList) => { // the last stream is not handled, 
 }
 
 // TODO: consider `Stream.finished` since node@>=10? (though the implementation make much more assumption)
-// TODO: no 'isReadableStream' check, promise may stall
 const waitStreamStopAsync = (stream) => new Promise((resolve, reject) => { // the stream is handled
+  if (!isStream(stream)) reject(new Error('expect stream'))
+  if (stream.destroyed) reject(new Error('stream already destroyed'))
   stream.on('error', reject)
   stream.on('close', () => reject(new Error('unexpected stream close'))) // for close before end, should already resolved for normal close
   stream.on('end', resolve) // for readableStream
@@ -89,8 +90,8 @@ const bufferToReadableStream = (buffer) => { // return stream not handled
   return readableStream
 }
 
-// TODO: no 'isReadableStream' check, promise may stall
 const readableStreamToBufferAsync = (readableStream) => new Promise((resolve, reject) => { // the stream is handled
+  if (!isStreamReadable(readableStream)) reject(new Error('expect stream is readable'))
   const data = []
   readableStream.on('error', reject)
   readableStream.on('close', () => reject(new Error('unexpected stream close'))) // for close before end, should already resolved for normal close
@@ -108,11 +109,11 @@ const writeBufferToStreamAsync = (writableStream, buffer) => new Promise((resolv
 })
 
 // TODO: not able to pause & resume the line-reading to run some async code // use async mode could do this
-// TODO: no 'isReadableStream' check, promise may stall
 const readlineOfStreamAsync = (
   readableStream, // the stream is handled
   onLineStringSync // should be sync function
 ) => new Promise((resolve, reject) => {
+  if (!isStreamReadable(readableStream)) reject(new Error('expect stream is readable'))
   const readlineInterface = createInterface({ input: readableStream, crlfDelay: Infinity })
   const doReject = (error) => {
     reject(error)
