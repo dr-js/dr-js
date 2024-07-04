@@ -52,7 +52,7 @@ const parseCookieString = (cookieString) => cookieString
     return o
   }, {})
 
-const isRequestAborted = (store) => Boolean(store.request.aborted) // client may already drop connection, for long-time queued task
+const isRequestAborted = (store) => Boolean(store.request.destroyed || store.request.aborted) // client may already drop connection, for long-time queued task // TODO: message.aborted is Deprecated since: v17.0.0, v16.12.0
 
 const getRequestParam = (store, key) => {
   const { headers } = store.request

@@ -56,6 +56,9 @@ const getRandomIntList = (a, b, count) => {
   return resultList
 }
 
+// random pick item in list, the result will keep src list order
+const getRandomWithinList = (list, count) => list.length && count >= 0 ? getRandomIntList(0, list.length - 1, count).map((i) => list[ i ]) : []
+
 const getRandomId = (prefix = '') => `${prefix}${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}` // mostly: 17char = 8 + 1 + 8
 const getRandomId62 = (prefix = '') => `${prefix}${encodeB62(Date.now())}${encodeB62(Math.floor(Math.random() * (62 ** 7)))}` // NOTE: use B62S to allow ASCII sort // mostly: 14char = 7 + 7, slightly higher random (62 ** 7 > 36 ** 8)
 const getRandomId62S = (prefix = '') => `${prefix}${encodeB62S(Date.now())}${encodeB62(Math.floor(Math.random() * (62 ** 7)))}` // mostly: 14char = 7 + 7, slightly higher random (62 ** 7 > 36 ** 8)
@@ -64,7 +67,7 @@ const getRandomArrayBuffer = tryGetRandomArrayBuffer() // (byteLength) => arrayB
 
 export {
   getRandomInt,
-  getRandomIntList,
+  getRandomIntList, getRandomWithinList,
   getRandomId, getRandomId62, getRandomId62S,
   getRandomArrayBuffer
 }

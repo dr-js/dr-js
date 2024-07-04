@@ -7,7 +7,7 @@ import { remessageError } from 'source/common/error.js'
 import { isString, isArrayBuffer } from 'source/common/check.js'
 import { createInsideOutPromise, withRetryAsync } from 'source/common/function.js'
 import { fromNodejsBuffer } from 'source/common/data/ArrayBuffer.js'
-import { isReadableStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
+import { isStream, setupStreamPipe, readableStreamToBufferAsync } from 'source/node/data/Stream.js'
 
 const requestHttp = (
   url, // URL/String
@@ -34,7 +34,7 @@ const requestHttp = (
   })
   request.on('error', onError)
   onTimeout && request.on('timeout', onTimeout)
-  if (isReadableStream(body)) setupStreamPipe(body, request)
+  if (isStream(body)) setupStreamPipe(body, request)
   else if (isArrayBuffer(body)) request.end(Buffer.from(body))
   else request.end(body) // Buffer/String/undefined
   return { url, request, promise, tagError }
@@ -81,7 +81,7 @@ const fetchLikeRequest = async (url, {
   const { request, promise, tagError } = requestHttp(url, option, body)
   const timeStart = clock()
   body && onProgressUpload && request.once('socket', (socket) => { // https://github.com/nodejs/help/issues/602
-    bodyLength = bodyLength || (isReadableStream(body) ? Infinity
+    bodyLength = bodyLength || (isStream(body) ? Infinity
       : isArrayBuffer(body) ? body.byteLength
         : isString(body) ? Buffer.byteLength(body)
           : body.length)

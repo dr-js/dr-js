@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream'
 import { createInterface } from 'node:readline'
 
-import { isObjectAlike, isBasicFunction } from 'source/common/check.js'
+import { isBoolean, isObjectAlike, isBasicFunction } from 'source/common/check.js'
 import { createInsideOutPromise } from 'source/common/function.js'
 import {
   END, SKIP, REDO,
@@ -12,17 +12,28 @@ import {
 } from 'source/common/module/Runlet.js'
 
 // edited from: https://github.com/sindresorhus/is-stream
-const isReadableStream = (stream) => (
+const isStream = (stream) => (
   isObjectAlike(stream) &&
-  stream.readable !== false &&
-  isBasicFunction(stream.pipe) &&
+  isBasicFunction(stream.pipe)
+)
+const isReadableStream = (stream) => (
+  isStream(stream) &&
+  isBoolean(stream.readable) &&
   isBasicFunction(stream._read)
+)
+const isStreamReadable = (stream) => (
+  isReadableStream(stream) &&
+  stream.readable !== false
 )
 
 const isWritableStream = (stream) => (
-  isObjectAlike(stream) &&
-  stream.writable !== false &&
+  isStream(stream) &&
+  isBoolean(stream.writable) &&
   isBasicFunction(stream._write)
+)
+const isStreamWritable = (stream) => (
+  isWritableStream(stream) &&
+  stream.writable !== false
 )
 
 // NOTE: consider not directly use `stream.pipe()` for long-running code
@@ -50,6 +61,8 @@ const isWritableStream = (stream) => (
 
 // TODO: consider `Stream.pipeline` since node@>=10? (though the implementation make much more assumption)
 const setupStreamPipe = (...streamList) => { // the last stream is not handled, but will get error from all previous stream, so the pipe can be properly stopped
+  if (streamList.length < 2) throw new Error('need at least 2 stream in streamList')
+  if (!isStreamReadable(streamList[ 0 ])) throw new Error('first stream not readable') // TODO: for now close ReadableStream can setup pipe
   const lastStream = streamList[ streamList.length - 1 ]
   const passError = (error) => lastStream.emit('error', error)
   for (let index = streamList.length - 2; index >= 0; index--) { // reverse & skip last
@@ -62,6 +75,8 @@ const setupStreamPipe = (...streamList) => { // the last stream is not handled, 
 
 // TODO: consider `Stream.finished` since node@>=10? (though the implementation make much more assumption)
 const waitStreamStopAsync = (stream) => new Promise((resolve, reject) => { // the stream is handled
+  if (!isStream(stream)) reject(new Error('expect stream'))
+  if (stream.destroyed) reject(new Error('stream already destroyed'))
   stream.on('error', reject)
   stream.on('close', () => reject(new Error('unexpected stream close'))) // for close before end, should already resolved for normal close
   stream.on('end', resolve) // for readableStream
@@ -76,6 +91,7 @@ const bufferToReadableStream = (buffer) => { // return stream not handled
 }
 
 const readableStreamToBufferAsync = (readableStream) => new Promise((resolve, reject) => { // the stream is handled
+  if (!isStreamReadable(readableStream)) reject(new Error('expect stream is readable'))
   const data = []
   readableStream.on('error', reject)
   readableStream.on('close', () => reject(new Error('unexpected stream close'))) // for close before end, should already resolved for normal close
@@ -97,6 +113,7 @@ const readlineOfStreamAsync = (
   readableStream, // the stream is handled
   onLineStringSync // should be sync function
 ) => new Promise((resolve, reject) => {
+  if (!isStreamReadable(readableStream)) reject(new Error('expect stream is readable'))
   const readlineInterface = createInterface({ input: readableStream, crlfDelay: Infinity })
   const doReject = (error) => {
     reject(error)
@@ -337,7 +354,7 @@ const quickRunletFromStream = (...streamList) => { // should be `readable-transf
 }
 
 export {
-  isReadableStream, isWritableStream,
+  isStream, isReadableStream, isStreamReadable, isWritableStream, isStreamWritable,
   setupStreamPipe,
   waitStreamStopAsync,
   bufferToReadableStream,
