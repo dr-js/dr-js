@@ -200,7 +200,7 @@
 + 📄 [source/node/data/BufferPacket.js](source/node/data/BufferPacket.js)
   - `packBufferPacket`, `parseBufferPacket`
 + 📄 [source/node/data/Stream.js](source/node/data/Stream.js)
-  - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
+  - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isStream`, `isStreamReadable`, `isStreamWritable`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
 + 📄 [source/node/data/Z64String.js](source/node/data/Z64String.js)
   - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
 + 📄 [source/node/fs/Checksum.js](source/node/fs/Checksum.js)
@@ -548,7 +548,7 @@
     - **BufferPacket**
       - `packBufferPacket`, `parseBufferPacket`
     - **Stream**
-      - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
+      - `bufferToReadableStream`, `createReadableStreamInputChip`, `createTransformStreamChip`, `createWritableStreamOutputChip`, `isReadableStream`, `isStream`, `isStreamReadable`, `isStreamWritable`, `isWritableStream`, `quickRunletFromStream`, `readableStreamToBufferAsync`, `readlineOfStreamAsync`, `setupStreamPipe`, `waitStreamStopAsync`, `writeBufferToStreamAsync`
     - **Z64String**
       - `packB64`, `packBr64`, `packGz64`, `unpackB64`, `unpackBr64`, `unpackGz64`
   - **Fs**
