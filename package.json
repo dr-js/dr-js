@@ -54,7 +54,7 @@
   "devDependencies": {
     "@dr-js/dev": "^0.5.14",
     "@dr-js/dev-web-puppeteer": "^0.5.14",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4"
   },
   "overrides": {
     "@dr-js/dev-web-puppeteer": {
