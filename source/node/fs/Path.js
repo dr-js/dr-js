@@ -11,12 +11,14 @@ import { homedir } from 'node:os'
 import { withFallbackResult, withFallbackResultAsync } from 'source/common/error.js'
 
 // NOTE: default will not follow symlink, and some symlink may form a loop
-
-const STAT_ERROR = {
+/** @import { Stats, BigIntStats } from 'node:fs' */
+/** @typedef { Stats | BigIntStats } FSStat */
+/** @type { FSStat } */
+const STAT_ERROR = /** @type { Stats } */ (/** @type { unknown } */ {
   isSymbolicLink: () => false,
   isDirectory: () => false,
   isFile: () => false
-}
+})
 
 // new Stats(
 //   -1, // dev
@@ -35,6 +37,9 @@ const STAT_ERROR = {
 //   0 // birthtim_msec
 // )
 
+/** @typedef { 'File' | 'Directory' | 'Symlink' | 'Other' | 'Error' } PathType */
+
+/** @type { Record<PathType, PathType> } */
 const PATH_TYPE = {
   File: 'File',
   Directory: 'Directory',
@@ -43,15 +48,20 @@ const PATH_TYPE = {
   Error: 'Error' // non exist
 }
 
+/** @type { (stat: FSStat) => PathType } */
 const getPathTypeFromStat = (stat) => stat.isSymbolicLink() ? PATH_TYPE.Symlink
   : stat.isDirectory() ? PATH_TYPE.Directory
     : stat.isFile() ? PATH_TYPE.File
       : stat === STAT_ERROR ? PATH_TYPE.Error
         : PATH_TYPE.Other
 
+/** @type { (path: string) => Promise<FSStat> } */
 const getPathLstat = async (path) => withFallbackResultAsync(STAT_ERROR, fsAsync.lstat, path)
+/** @type { (path: string) => FSStat } */
 const getPathLstatSync = (path) => withFallbackResult(STAT_ERROR, lstatSync, path)
+/** @type { (path: string) => Promise<FSStat> } */
 const getPathStat = async (path) => withFallbackResultAsync(STAT_ERROR, fsAsync.stat, path)
+/** @type { (path: string) => FSStat } */
 const getPathStatSync = (path) => withFallbackResult(STAT_ERROR, statSync, path)
 
 // NOT recursive operation

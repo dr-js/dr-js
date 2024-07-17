@@ -14,11 +14,14 @@ import {
   renamePath, renamePathSync,
   deletePath, deletePathSync
 } from './Path.js'
+/** @import { PathType } from './Path' */
 
 const getPathTypeFromDirent = (dirent) => dirent.isSymbolicLink() ? PATH_TYPE.Symlink // need stat again to get the target type
   : dirent.isDirectory() ? PATH_TYPE.Directory
     : dirent.isFile() ? PATH_TYPE.File
       : PATH_TYPE.Other
+
+/** @typedef { { type: PathType, name: string, path: string } } DirInfo */
 
 const getDirInfoList = async (path) => {
   const dirInfoList = []
@@ -143,15 +146,16 @@ const createDirectorySync = (path, pathStat) => {
   mkdirSync(path, { recursive: true }) // create directory
 }
 
-const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirInfoTree(await getDirInfoTree(pathFrom, pathStat), pathTo)
-const copyDirectorySync = (pathFrom, pathTo, pathStat) => copyDirInfoTreeSync(getDirInfoTreeSync(pathFrom, pathStat), pathTo)
+// TODO: drop `pathStat`
+const copyDirectory = async (pathFrom, pathTo, pathStat) => copyDirInfoTree(await getDirInfoTree(pathFrom), pathTo)
+const copyDirectorySync = (pathFrom, pathTo, pathStat) => copyDirInfoTreeSync(getDirInfoTreeSync(pathFrom), pathTo)
 
 const deleteDirectory = async (path, pathStat) => {
-  await deleteDirInfoTree(await getDirInfoTree(path, pathStat)) // delete all content
+  await deleteDirInfoTree(await getDirInfoTree(path)) // delete all content
   await deletePath(path, pathStat) // delete dir
 }
 const deleteDirectorySync = (path, pathStat) => {
-  deleteDirInfoTreeSync(getDirInfoTreeSync(path, pathStat)) // delete all content
+  deleteDirInfoTreeSync(getDirInfoTreeSync(path)) // delete all content
   deletePathSync(path, pathStat) // delete dir
 }
 
@@ -160,14 +164,14 @@ const resetDirectory = async (path, pathStat) => {
   if (!pathStat.isDirectory()) {
     pathStat !== STAT_ERROR && await deletePath(path, pathStat)
     await createDirectory(path)
-  } else await deleteDirInfoTree(await getDirInfoTree(path, pathStat)) // delete all content
+  } else await deleteDirInfoTree(await getDirInfoTree(path)) // delete all content
 }
 const resetDirectorySync = (path, pathStat) => {
   if (pathStat === undefined) pathStat = getPathStatSync(path) // resolve symlink for the initial path
   if (!pathStat.isDirectory()) {
     pathStat !== STAT_ERROR && deletePathSync(path, pathStat)
     createDirectorySync(path)
-  } else deleteDirInfoTreeSync(getDirInfoTreeSync(path, pathStat)) // delete all content
+  } else deleteDirInfoTreeSync(getDirInfoTreeSync(path)) // delete all content
 }
 
 const withTempDirectory = async (
@@ -180,6 +184,7 @@ const withTempDirectory = async (
   if (error) throw error
   return result
 }
+/** @type { <T> (syncFunc: (pathTemp: string) => T, pathTemp?: string) => T } */
 const withTempDirectorySync = (
   syncFunc, // = async (pathTemp) => {}
   pathTemp = join(tmpdir(), 'dr-js', getRandomId('temp-'))
@@ -191,6 +196,8 @@ const withTempDirectorySync = (
   return result
 }
 
+/** @typedef { (fileList: string[], dirInfo: DirInfo) => Promise<void> } FileCollectorAsync */
+/** @type { (path: string, fileCollector: FileCollectorAsync) => Promise<string[]> } */
 const getFileList = async (
   path,
   fileCollector = async (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
@@ -204,7 +211,7 @@ const getFileList = async (
       break
     case PATH_TYPE.Directory:
       await walkDirInfoTree(
-        await getDirInfoTree(path, pathStat),
+        await getDirInfoTree(path),
         (dirInfo) => dirInfo.type === PATH_TYPE.File && fileCollector(fileList, dirInfo)
       )
       break
@@ -213,6 +220,8 @@ const getFileList = async (
   }
   return fileList
 }
+/** @typedef { (fileList: string[], dirInfo: DirInfo) => void } FileCollector */
+/** @type { (path: string, fileCollector: FileCollector) => string[] } */
 const getFileListSync = (
   path,
   fileCollector = (fileList, { path }) => { fileList.push(path) } // TODO: NOTE: symlink will get skipped, return true will end search, is it needed or cause mostly error?
@@ -226,7 +235,7 @@ const getFileListSync = (
       break
     case PATH_TYPE.Directory:
       walkDirInfoTreeSync(
-        getDirInfoTreeSync(path, pathStat),
+        getDirInfoTreeSync(path),
         (dirInfo) => dirInfo.type === PATH_TYPE.File && fileCollector(fileList, dirInfo)
       )
       break

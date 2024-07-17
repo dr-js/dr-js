@@ -18,6 +18,7 @@ const generateArrayBuffer = (length = 256) => {
   return u8List.buffer
 }
 
+/** @type { [ note: string, arrayBuffer: ArrayBuffer, b64String: string ][] } */
 const SAMPLE_LIST = [ // from: https://github.com/niklasvh/base64-arraybuffer/blob/master/test/base64-arraybuffer_test.js
   // [ note, arrayBuffer, b64String ]
   [ 'Man', stringArrayBuffer('Man'), 'TWFu' ],

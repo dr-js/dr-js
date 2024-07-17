@@ -9,6 +9,7 @@ import {
 
 const { describe, it, info = console.log } = globalThis
 
+/** @type { [ uint: number, string: string ][] } */
 const TEST_LIST = [ // [ uint, string ]
   [ 0, '(' ],
   [ 9, '1' ],
@@ -37,18 +38,22 @@ const TEST_LIST = [ // [ uint, string ]
 
 describe('Common.Data.B86', () => {
   it('encode()', () => {
-    for (const [ uint, string ] of [
+    /** @type { [ uint: number, string: string ][] } */
+    const testList = [
       ...TEST_LIST,
       [ 5.5, 'undefined' ], // should not loop with float
       [ -2, '' ] // should not loop with negative
-    ]) strictEqual(encode(uint), string)
+    ]
+    for (const [ uint, string ] of testList) strictEqual(encode(uint), string)
   })
 
   it('decode()', () => {
-    for (const [ uint, string ] of [
+    /** @type { [ uint: number, string: string ][] } */
+    const testList = [
       ...TEST_LIST,
       [ 65, `${B86_ZERO}${B86_ZERO}${B86_ZERO}j` ] // should ignore leading zeros
-    ]) strictEqual(decode(string), uint)
+    ]
+    for (const [ uint, string ] of testList) strictEqual(decode(string), uint)
 
     strictEqual(decode(B86_ZERO), 0)
     strictEqual(decode(B86_MAX), 86 - 1)
@@ -56,6 +61,7 @@ describe('Common.Data.B86', () => {
 
   it('stress', () => {
     const STRESS_LOOP = __DEV__ ? 9999999 : 999999
+    /** @type { [ uint: number, stringB86: string, stringB36: string ][] } */
     const STRESS_TEST_LIST = TEST_LIST.map(([ v ]) => [ v, encode(v), v.toString(36) ])
     const stepper = createStepper()
 

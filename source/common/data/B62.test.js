@@ -8,6 +8,7 @@ import {
 
 const { describe, it, info = console.log } = globalThis
 
+/** @type { [ uint: number, string: string ][] } */
 const TEST_LIST = [ // [ uint, string ]
   [ 0, '0' ],
   [ 9, '9' ],
@@ -32,18 +33,22 @@ const TEST_LIST = [ // [ uint, string ]
 
 describe('Common.Data.B62', () => {
   it('encode()', () => {
-    for (const [ uint, string ] of [
+    /** @type { [ uint: number, string: string ][] } */
+    const testList = [
       ...TEST_LIST,
       [ 5.5, 'undefined' ], // should not loop with float
       [ -2, '' ] // should not loop with negative
-    ]) strictEqual(encode(uint), string)
+    ]
+    for (const [ uint, string ] of testList) strictEqual(encode(uint), string)
   })
 
   it('decode()', () => {
-    for (const [ uint, string ] of [
+    /** @type { [ uint: number, string: string ][] } */
+    const testList = [
       ...TEST_LIST,
       [ 65, '0013' ] // should ignore leading zeros
-    ]) strictEqual(decode(string), uint)
+    ]
+    for (const [ uint, string ] of testList) strictEqual(decode(string), uint)
 
     strictEqual(decode(B62_ZERO), 0)
     strictEqual(decode(B62_MAX), 62 - 1)
