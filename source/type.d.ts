@@ -12,3 +12,4 @@ type GetVoid = () => void
 type GetNumber = () => number
 
 type vJSON = null | boolean | number | string | [] | {} // value safe in JSON
+type vObj = { [ k: string ]: vJSON } // value safe in JSON

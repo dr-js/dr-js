@@ -1,7 +1,12 @@
 import { openSync, write, writeSync, closeSync } from 'node:fs'
 import { rethrowError } from 'source/common/error.js'
 
+/** @import { OpenMode, Mode } from 'node:fs' */
+
+/** @typedef { { pathOutputFile: string, flag?: OpenMode, mode?: Mode, fileDescriptor?: number, onError?: (error: Error) => never } } OptCreateSafeWriteStream */
+
 // async write normally, sync write on emergency
+/** @type { (opt: OptCreateSafeWriteStream) => { write: (string: string) => void, end: () => void } } } */
 const createSafeWriteStream = ({
   pathOutputFile, flag = 'w', mode = 0o666,
   fileDescriptor = openSync(pathOutputFile, flag, mode),

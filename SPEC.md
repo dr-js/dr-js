@@ -79,6 +79,8 @@
   - `createCache`, `createCacheMap`
 + 📄 [source/common/data/CacheMap2.js](source/common/data/CacheMap2.js)
   - `createCacheMap2`
++ 📄 [source/common/data/CountMap.js](source/common/data/CountMap.js)
+  - `tally`, `toCountMap`
 + 📄 [source/common/data/DataUri.js](source/common/data/DataUri.js)
   - `decode`, `encode`
 + 📄 [source/common/data/F32.js](source/common/data/F32.js)
@@ -420,6 +422,8 @@
       - `createCache`, `createCacheMap`
     - **CacheMap2**
       - `createCacheMap2`
+    - **CountMap**
+      - `tally`, `toCountMap`
     - **DataUri**
       - `decode`, `encode`
     - **F32**

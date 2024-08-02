@@ -31,7 +31,20 @@ const TYPE_CHECK_LIST = [
   'source/common/data/Toggle.js',
   'source/common/data/Tree.js',
 
+  'source/common/immutable/StateStore.js',
+
+  'source/common/module/Event.js',
+  'source/common/module/Exot.js',
+
+  'source/common/check.js',
+  'source/common/error.js',
   'source/common/verify.js',
 
-  'source/common/function.test.js'
+  'source/common/function.test.js',
+
+  'source/node/module/SafeWrite.js',
+  'source/node/module/Logger.js',
+
+  'source/node/server/Responder/Common.js',
+  'source/node/server/Server.js'
 ]

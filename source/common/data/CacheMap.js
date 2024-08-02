@@ -1,8 +1,7 @@
 import { createHub } from 'source/common/module/Event.js'
-/** @typedef { import("../module/Event.js").EventHub } EventHub */
-/** @typedef { import("../module/Event.js").EventHubListenerFunc } EventHubListenerFunc */
+/** @import { EventHub } from 'source/common/module/Event' */
 import { createDoublyLinkedList, createNode } from './LinkedList.js'
-/** @typedef { import("./LinkedList.js").LinkedListNode } LinkedListNode */
+/** @import { LinkedListNode } from './LinkedList' */
 
 /** @typedef { { key: vJSON, size: number, expireAt: number } & LinkedListNode } CacheMapCache */
 /** @type { (key: vJSON, value: vJSON, size: number, expireAt: number) => CacheMapCache } */
@@ -14,12 +13,12 @@ const createCache = (key, value, size, expireAt) => ({
 })
 
 // Time aware Least Recently Used (TLRU)
-/** @typedef { (key: vJSON, value: vJSON, size: number, expireAt: number) => void } SetCacheMap */
+/** @typedef { (key: vJSON, value: vJSON, size?: number, expireAt?: number) => void } SetCacheMap */
 /** @typedef { (key: vJSON, time: number) => vJSON | void } GetCacheMap */
 /** @typedef { (key: vJSON) => vJSON } DeleteCacheMap */
 /** @typedef { { value: vJSON, key: vJSON, size: number, expireAt: number } } CacheMapCacheSave */
 /** @typedef { {
- * hasEventHub: boolean, clearEventHub: GetVoid, subscribe: EventHubListenerFunc, unsubscribe: EventHubListenerFunc,
+ * hasEventHub: boolean, clearEventHub: EventHub['clear'], subscribe: EventHub['subscribe'], unsubscribe: EventHub['unsubscribe'],
  * clear: GetVoid,
  * getSize: GetNumber, getValueSizeSum: GetNumber,
  * set: SetCacheMap, get: GetCacheMap, touch: GetCacheMap, delete: DeleteCacheMap,

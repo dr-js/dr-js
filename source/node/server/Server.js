@@ -20,6 +20,11 @@ const SESSION_CACHE_MAX = 4 * 1024
 const SESSION_CACHE_EXPIRE_TIME = 10 * 60 * 1000 // in msec, 10min
 const SESSION_TICKET_ROTATE_TIME = 4 * 60 * 60 * 1000 // in msec, 4hour
 
+/** @typedef { import('node:net').Server | import('node:http').Server } ServerNonSecure */
+/** @typedef { import('node:tls').Server | import('node:https').Server } ServerSecure */
+/** @typedef { ServerNonSecure | ServerSecure } ServerBase */
+
+/** @type { (server: ServerSecure ) => void } */
 const applyServerSessionCache = (server) => { // TODO: consider move to `ticketKeys`: https://nodejs.org/dist/latest-v12.x/docs/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
   const sessionCacheMap = createCacheMap2({ sizeMax: SESSION_CACHE_MAX, expireAfter: SESSION_CACHE_EXPIRE_TIME })
   server.on('newSession', (sessionId, sessionData, next) => {
@@ -63,13 +68,12 @@ const createServerExot = ({
   }
   option.baseUrl = `${protocol}//${option.hostname}:${option.port}`
 
-  const server = protocol === 'tcp:' ? createTCPServer()
-    : protocol === 'tls:' ? createTLSServer(option)
-      : protocol === 'http:' ? createHttpServer()
-        : protocol === 'https:' ? createHttpsServer(option)
-          : null
+  /** @type { ServerSecure | undefined } */
+  const serverSec = isSecure ? (protocol === 'tls:' ? createTLSServer(option) : createHttpsServer(option)) : undefined
+  /** @type { ServerBase } */
+  const server = serverSec || (protocol === 'tcp:' ? createTCPServer() : createHttpServer())
 
-  isSecure && !skipSessionPatch && applyServerSessionCache(server)
+  serverSec && !skipSessionPatch && applyServerSessionCache(serverSec)
 
   const socketSet = new Set()
   server.on('connection', (socket) => {
@@ -89,12 +93,12 @@ const createServerExot = ({
       server.on('error', reject)
       server.listen(option.port, option.hostname.replace(/[[\]]/g, ''), () => {
         server.off('error', reject)
-        if (isSecure && !skipSessionPatch) {
+        if (serverSec && !skipSessionPatch) {
           // ## session ticket rotation patch
           // session ticket without rotation will still work, but is less safe
           // https://blog.filippo.io/we-need-to-talk-about-session-tickets/
           // https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/
-          const resetSessionTicketKey = () => server.setTicketKeys(randomBytes(48))
+          const resetSessionTicketKey = () => serverSec.setTicketKeys(randomBytes(48))
           sessionTicketRotateToken && clearInterval(sessionTicketRotateToken)
           sessionTicketRotateToken = setInterval(resetSessionTicketKey, SESSION_TICKET_ROTATE_TIME)
           resetSessionTicketKey()
@@ -120,16 +124,25 @@ const createServerExot = ({
 const DEFAULT_RESPONDER_ERROR = responderError
 const DEFAULT_RESPONDER_END = responderEnd
 
+/** @import { Socket } from 'node:net' */
+/** @import { IncomingMessage, ServerResponse } from 'node:http' */
+/** @typedef { Error & { status: number } } ErrorWithStatus */
+/** @typedef { { time: number, status: number, error: ErrorWithStatus | null } } ConnState */
+/** @typedef { { getState: () => ConnState, setState: (nextState: Partial<ConnState>) => ConnState, socket: Socket, request: IncomingMessage, response: ServerResponse } } ConnStore */
+/** @typedef { (store: ConnStore, ...ext: any[]) => any | Promise<any> } Responder */
+
+/** @type { (opt: { responderList: Responder[], responderError?: Responder, responderEnd?: Responder }) => (request: IncomingMessage, response: ServerResponse) => Promise<void> } */
 const createRequestListener = ({
   responderList = [],
   responderError = DEFAULT_RESPONDER_ERROR,
   responderEnd = DEFAULT_RESPONDER_END
 }) => async (request, response) => { // for listen the server `request` event: https://nodejs.org/api/http.html#http_event_request
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
-  const store = createStateStoreLite({
+  const store = /** @type { ConnStore } */ (/** @type { unknown } */ createStateStoreLite({
     time: clock(), // in msec, relative to process start
+    status: 500, // will send as status code in responderEnd, if header is still not sent
     error: null // populated by failed responder
-  })
+  }))
   store.socket = request.socket // should be same: `request.socket === response.socket` // net.Socket: https://nodejs.org/api/net.html#net_class_net_socket
   store.request = request // http.IncomingMessage: https://nodejs.org/api/http.html#http_class_http_incomingmessage
   store.response = response // http.ServerResponse: https://nodejs.org/api/http.html#http_class_http_serverresponse
@@ -149,7 +162,7 @@ const describeServerOption = (
   ...((hostname && hostname !== '0.0.0.0' && hostname !== '[::]') ? {} : objectFromEntries(
     Object.entries(networkInterfaces())
       .reduce((o, [ interfaceName, interfaceList ]) => {
-        interfaceList.forEach(({ address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
+        interfaceList.forEach((/** @type { (typeof interfaceList)[0] & { isIPv4?: boolean } } */ { address, family, isIPv4 = family === 'IPv4' }) => (hostname.startsWith('[') || isIPv4) && o.push([ isIPv4 ? address : `[${address}]`, interfaceName ]))
         return o
       }, [])
       .map(([ address, interfaceName ]) => [ `localUrl[${interfaceName}]`, `${protocol}//${address}:${port}` ])

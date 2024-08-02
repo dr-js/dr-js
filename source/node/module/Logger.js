@@ -1,10 +1,15 @@
 import { resolve } from 'node:path'
 import { createDirectory } from 'source/node/fs/Directory.js'
 import { createSafeWriteStream } from './SafeWrite.js'
+/** @import { OptCreateSafeWriteStream } from './SafeWrite' */
 
 const DEFAULT_QUEUE_LENGTH_THRESHOLD = __DEV__ ? 10 : 1024
 
 // support `add()` before `up()`
+/** @import { Exot } from 'source/common/module/Exot' */
+/** @typedef { Exot & { add: (logString: string) => void, save: () => void } } SimpleLoggerExot */
+/** @typedef { { id?: string, queueLengthThreshold?: number } & OptCreateSafeWriteStream } OptCreateSimpleLoggerExot */
+/** @type { (opt: OptCreateSimpleLoggerExot) => SimpleLoggerExot } */
 const createSimpleLoggerExot = ({
   id = 'exot:logger-simple',
   queueLengthThreshold = DEFAULT_QUEUE_LENGTH_THRESHOLD,
@@ -49,6 +54,9 @@ const SPLIT_INTERVAL = 24 * 60 * 60 * 1000 // in ms, 1day
 // support `add()` before `up()`
 // support multiple string `add()`
 // added timer for save & file split
+/** @typedef { SimpleLoggerExot & { add: (...args: string[]) => void, split: () => void } } LoggerExot */
+/** @typedef { { id?: string, pathLogDirectory: string, getLogFileName?: () => string, saveInterval?: number, splitInterval?: number } & OptCreateSimpleLoggerExot } OptCreateLoggerExot */
+/** @type { (opt: OptCreateLoggerExot) => LoggerExot } */
 const createLoggerExot = ({
   id = 'exot:logger',
   pathLogDirectory,

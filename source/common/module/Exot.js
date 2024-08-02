@@ -5,6 +5,8 @@ import { getRandomId62S } from 'source/common/math/random.js'
 // Exot is short for "Exot-ic", a pattern for wrapping external IO or Resource that require manual `up` and `down`.
 
 /** @typedef { Error & { exotId?: string } } ExotError */
+
+/** @type { (exotId: string, message: string) => ExotError } */
 const createExotError = (exotId, message) => { // error with exotId
   /** @type { ExotError } */
   const exotError = new Error(message)
@@ -12,18 +14,15 @@ const createExotError = (exotId, message) => { // error with exotId
   return exotError
 }
 
+/** @typedef { (error: ExotError) => void } OnExotError */
 /** @typedef { {
- *    id: string,
- *    up: (v?: (e: ExotError) => void) => Promise<void>,
- *    down: () => Promise<void>,
- *    isUp: () => boolean
- * } } Exot */
-/** @typedef { (option: {
- *    idPrefix?: string,
- *    id?: string,
- *    [extra: string]: *
- * }) => Exot } CreateExot */
-/** @type { CreateExot } */
+ id: string,
+ up: (onExotError: OnExotError) => Promise<void> | void,
+ down: () => Promise<void> | void,
+ isUp: () => boolean
+ } } Exot */
+
+/** @type { (opt?: { idPrefix?: string, id?: string, onUp?: Exot['up'], onDown?: Exot['down'] }) => Exot } */
 const createDummyExot = ({ // most Exot create func should be just sync, and move async things to up()
   // ## other option to config this Exot
   idPrefix = 'DUMMY-EXOT-',
@@ -59,7 +58,20 @@ const createDummyExot = ({ // most Exot create func should be just sync, and mov
   }
 }
 
-/** @type { CreateExot } */
+/** @typedef { Exot & {
+ upEach: Exot['up'], upBatch: Exot['up'],
+ downEach: Exot['down'], downBatch: Exot['down'],
+ getSize: () => number, set: (exot: Exot) => void, get: (exotId: string) => Exot | undefined, delete: (exotId: string) => Exot | undefined,
+ load: (exot: Exot, onExotError: OnExotError) => Promise<void>, drop: (exotId: string) => Promise<Exot>,
+ exotMap: ExotMap
+ } } ExotGroup */
+
+/** @type { (opt: {
+ idPrefix?: string, id?: string,
+ getOnExotError?: (exotGroup: ExotGroup) => OnExotError, onExotError?: OnExotError,
+ exotList?: Exot[], exotMap?: ExotMap,
+ isBatch?: boolean
+ }) => ExotGroup } */
 const createExotGroup = ({
   // ## other option to config this Exot
   idPrefix = 'EXOT-GROUP-',
@@ -121,6 +133,7 @@ const createExotGroup = ({
   return exotGroup
 }
 
+/** @type { (value: unknown) => value is Exot } */
 const isExot = (value) => isObjectAlike(value) &&
   isString(value.id) &&
   isBasicFunction(value.up) &&
@@ -128,7 +141,7 @@ const isExot = (value) => isObjectAlike(value) &&
   isBasicFunction(value.isUp)
 
 /** @typedef { Map<string, Exot> } ExotMap */
-/** @type { (...v: Exot[]) => ExotMap } */
+/** @type { (...exotList: Exot[]) => ExotMap } */
 const toExotMap = (...exotList) => {
   /** @type { ExotMap } */
   const exotMap = new Map()
@@ -136,14 +149,14 @@ const toExotMap = (...exotList) => {
   return exotMap
 }
 
-/** @type { <T>(v: ExotMap, c: (Exot) => T) => T[] } */
+/** @type { <T> (exotMap: ExotMap, func: (Exot) => T) => T[] } */
 const mapExotMapValue = (exotMap, func) => {
   const resultList = []
   for (const exot of exotMap.values()) resultList.push(func(exot))
   return resultList
 }
 
-/** @type { <T>(v: ExotMap, c: (Exot) => T) => T } */
+/** @type { <T> (exotMap: ExotMap, func: (Exot) => T) => T | undefined } */
 const findExotMapValue = (exotMap, func) => {
   for (const exot of exotMap.values()) {
     const result = func(exot)

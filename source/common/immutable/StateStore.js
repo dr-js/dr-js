@@ -21,6 +21,7 @@ const createStateStore = (state) => {
 }
 
 // for basic use, no merge check & listener for speed
+/** @type { <T extends Record<string, any>> (state: T) => { getState: () => T, setState: (nextState: Partial<T>) => T } } */
 const createStateStoreLite = (state) => ({
   getState: () => state,
   setState: (nextState) => (state = { ...state, ...nextState })

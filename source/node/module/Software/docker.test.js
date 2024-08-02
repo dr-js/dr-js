@@ -2,7 +2,7 @@ import { doThrow, truthy, stringifyEqual } from 'source/common/verify.js'
 import { resolveCommandName } from 'source/node/system/ResolveCommand.js'
 
 import {
-  check, verify,
+  getArgs, check, verify,
   runDocker, runDockerSync,
   runDockerStdout, runDockerStdoutSync,
 
@@ -10,7 +10,7 @@ import {
   // checkLocalImage, pullImage, checkPullImage,
   getContainerLsList, // patchContainerLsListStartedAt, matchContainerLsList,
 
-  checkCompose, verifyCompose,
+  getArgsCompose, checkCompose, verifyCompose,
   runCompose, runComposeSync,
   runComposeStdout, runComposeStdoutSync
 } from './docker.js'
@@ -24,8 +24,10 @@ describe('Node.Module.Software.Docker', () => {
   if (resolveCommandName('docker')) {
     it('check()', () => truthy(check()))
     it('verify()', verify)
+    it('getArgs()', () => info(getArgs()))
     it('checkCompose()', () => truthy(checkCompose())) // NOTE: often should have both
     it('verifyCompose()', verifyCompose) // NOTE: often should have both
+    it('getArgsCompose()', () => info(getArgsCompose()))
 
     it('runDocker()', async () => {
       const { promise, stdoutPromise } = runDocker([ 'version' ], { quiet: true })

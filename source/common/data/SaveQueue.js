@@ -2,7 +2,14 @@ import { catchAsync } from 'source/common/error.js'
 
 const EMPTY_FUNC = () => {}
 
-const createSaveQueue = ({
+/** @typedef { {
+ onError: (error: Error) => void,
+ doSave: (savingDataQueue: any[], setSavingState: Function) => void,
+ beforeSave?: () => void,
+ afterSave?: () => void
+ } } OptCreateSaveQueue */
+
+const createSaveQueue = (/** @type { OptCreateSaveQueue } */ {
   onError,
   doSave,
   beforeSave = EMPTY_FUNC,
