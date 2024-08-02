@@ -33,7 +33,7 @@ const { getArgs, setArgs, check, verify } = createArgListPack(
   () => probeSync([ 'docker', 'version' ], 'Server:') ? [ 'docker' ]
     : probeSync([ 'sudo', 'docker', 'version' ], 'Server:') ? [ 'sudo', 'docker' ]
       : undefined,
-  'expect "docker" in PATH, with server up'
+  'expect "docker" in PATH, with dockerd up'
 )
 const runDocker = (argList = [], option) => run([ ...verify(), ...argList ], option)
 const runDockerSync = (argList = [], option) => runSync([ ...verify(), ...argList ], option)
@@ -93,6 +93,8 @@ const matchContainerLsList = (
   })
 }
 
+// $ docker compose version
+// Docker Compose version v2.28.1
 // $ docker-compose version
 // Docker Compose version v2.2.1
 // $ docker-compose version
@@ -101,10 +103,12 @@ const matchContainerLsList = (
 const { getArgs: getArgsCompose, setArgs: setArgsCompose, check: checkCompose, verify: verifyCompose } = createArgListPack(
   () => {
     if (!check()) return undefined // expect docker command available
+    const argsListP = [ ...getArgs(), 'compose' ] // as plugin
+    if (probeSync([ ...argsListP, 'version' ], 'ompose version')) return argsListP
     const argsList = [ ...getArgs().slice(0, -1), 'docker-compose' ]
     if (probeSync([ ...argsList, 'version' ], 'ompose version')) return argsList
   },
-  'expect both "docker-compose" and "docker" in PATH, with server up'
+  'expect both "docker" and "docker compose|docker-compose" in PATH, with dockerd up'
 )
 const runCompose = (argList = [], option) => run([ ...verifyCompose(), ...argList ], option)
 const runComposeSync = (argList = [], option) => runSync([ ...verifyCompose(), ...argList ], option)
