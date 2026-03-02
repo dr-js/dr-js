@@ -9,12 +9,18 @@ const prefixTime = ({ add, ...loggerExot }) => ({
 // support `add()` before `up()`
 const configureLog = ({
   pathLogDirectory,
-  logFilePrefix = ''
+  logFilePrefix = '',
+  isSingleFile = false
 } = {}) => ({
   loggerExot: prefixTime(pathLogDirectory
     ? createLoggerExot({
       pathLogDirectory,
-      getLogFileName: () => `${logFilePrefix}${(new Date().toISOString()).replace(/\W/g, '-')}.log`,
+      ...(isSingleFile ? {
+        getLogFileName: () => logFilePrefix || 'log',
+        splitInterval: 0 // no split
+      } : {
+        getLogFileName: () => `${logFilePrefix}${(new Date().toISOString()).replace(/\W/g, '-')}.log`
+      }),
       flags: 'a' // append, not reset file if exist
     })
     : createDummyExot({

@@ -38,11 +38,13 @@ const objectMapDeep = (object, mapFunc) => {
 }
 
 const LogFormatConfig = parseCompact('log-path/SP,O', parseCompactList(
-  'log-file-prefix/SS,O'
+  'log-file-prefix/SS,O',
+  'log-single-file/T' // output to single log file at: {log-path}/{log-file-prefix||"log"} (for `logrotate`)
 ))
-const getLogOption = ({ tryGetFirst }) => ({
+const getLogOption = ({ tryGetFirst, getToggle }) => ({
   pathLogDirectory: tryGetFirst('log-path'),
-  logFilePrefix: tryGetFirst('log-file-prefix')
+  logFilePrefix: tryGetFirst('log-file-prefix'),
+  isSingleFile: getToggle('log-single-file')
 })
 
 const PidFormatConfig = parseCompact('pid-file/SP,O', parseCompactList(
