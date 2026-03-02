@@ -10,6 +10,7 @@ import { BASIC_EXTENSION_MAP } from 'source/common/module/MIME.js'
 import { COMMON_LAYOUT, COMMON_STYLE } from 'source/common/module/HTML.js'
 
 import { responderSendBufferCompress, prepareBufferData } from './Send.js'
+import { responderEndWithStatusCode } from './Common.js'
 
 const METHOD_MAP = {
   GET: '/GET',
@@ -43,18 +44,19 @@ const createRouteMap = (configList, routePrefix) => configList.reduce((o, [ rout
 const createResponderRouter = ({
   routeMap,
   serverExot,
+  responderMissing = (store) => responderEndWithStatusCode(store, { statusCode: 404 }), // default return 404
   baseUrl = serverExot ? serverExot.option.baseUrl : '',
   getMethodUrl = createGetMethodUrl(new URL(baseUrl))
 }) => (store) => {
   const { method, url } = getMethodUrl(store)
   const methodTag = METHOD_MAP[ method ]
-  if (methodTag === undefined) return // throw new Error(`invalid method [${method}] from: ${url.href}`)
+  if (methodTag === undefined) return responderMissing(store) // throw new Error(`invalid method [${method}] from: ${url.href}`)
 
   const routeData = findRouteFromMap(routeMap, url.pathname)
-  if (routeData === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
+  if (routeData === undefined) return responderMissing(store) // throw new Error(`no method [${method}] for: ${url.pathname}`)
 
   const { routeNode, paramValueList } = routeData
-  if (routeNode[ methodTag ] === undefined) return // throw new Error(`no method [${method}] for: ${url.pathname}`)
+  if (routeNode[ methodTag ] === undefined) return responderMissing(store) // throw new Error(`no method [${method}] for: ${url.pathname}`)
 
   const { route, paramNameList, routeResponder } = routeNode[ methodTag ]
   const paramMap = paramNameList.reduce((o, paramName, index) => {

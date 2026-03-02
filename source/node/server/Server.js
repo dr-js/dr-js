@@ -127,7 +127,7 @@ const DEFAULT_RESPONDER_END = responderEnd
 /** @import { Socket } from 'node:net' */
 /** @import { IncomingMessage, ServerResponse } from 'node:http' */
 /** @typedef { Error & { status: number } } ErrorWithStatus */
-/** @typedef { { time: number, status: number, error: ErrorWithStatus | null } } ConnState */
+/** @typedef { { time: number, error: ErrorWithStatus | null } } ConnState */
 /** @typedef { { getState: () => ConnState, setState: (nextState: Partial<ConnState>) => ConnState, socket: Socket, request: IncomingMessage, response: ServerResponse } } ConnStore */
 /** @typedef { (store: ConnStore, ...ext: any[]) => any | Promise<any> } Responder */
 
@@ -140,7 +140,6 @@ const createRequestListener = ({
   __DEV__ && console.log(`[request] ${request.method}: ${request.url}`)
   const store = /** @type { ConnStore } */ (/** @type { unknown } */ createStateStoreLite({
     time: clock(), // in msec, relative to process start
-    status: 500, // will send as status code in responderEnd, if header is still not sent
     error: null // populated by failed responder
   }))
   store.socket = request.socket // should be same: `request.socket === response.socket` // net.Socket: https://nodejs.org/api/net.html#net_class_net_socket

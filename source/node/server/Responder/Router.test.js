@@ -73,19 +73,20 @@ describe('Node.Server.Responder.Router', () => {
       [ [ '/', '/test/' ], [ 'GET', 'HEAD' ], (store, state) => ({ ...state, tag: 'E' }) ],
       [ '/test', [ 'POST', 'HEAD' ], (store, state) => ({ ...state, tag: 'F' }) ]
     ]),
-    getMethodUrl: (store) => store.getState()
+    getMethodUrl: (store) => store.getState(),
+    responderMissing: (store) => 'RESP_MISSING'
   })
 
   it('createResponderRouter()', () => {
-    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') })), undefined, 'should skip: no method "POST" for route')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') })), undefined, 'should skip: wrong route')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') })), undefined, 'should skip: too much param 0')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') })), undefined, 'should skip: too much param 1')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') })), undefined, 'should skip: too few param 0')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') })), undefined, 'should skip: too few param 1')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') })), undefined, 'should skip: wrong frag')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') })), undefined, 'should skip: wrong method route pair 0')
-    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') })), undefined, 'should skip: wrong method route pair 1')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test-basic') })), 'RESP_MISSING', 'should skip: no method "POST" for route')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/a/test-param-any/a/b/c/d/e?f#g') })), 'RESP_MISSING', 'should skip: wrong route')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-a/aaa/bbb') })), 'RESP_MISSING', 'should skip: too much param 0')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/eee/f') })), 'RESP_MISSING', 'should skip: too much param 1')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/aaa') })), 'RESP_MISSING', 'should skip: too few param 0')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/') })), 'RESP_MISSING', 'should skip: too few param 1')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-param-b/b/c/d/ee') })), 'RESP_MISSING', 'should skip: wrong frag')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'GET', url: new URL('aa://B/test') })), 'RESP_MISSING', 'should skip: wrong method route pair 0')
+    strictEqual(responderRouter(createStateStoreLite({ method: 'POST', url: new URL('aa://B/test/') })), 'RESP_MISSING', 'should skip: wrong method route pair 1')
 
     {
       const store = createStateStoreLite({ method: 'GET', url: new URL('aa://B/test-basic') })

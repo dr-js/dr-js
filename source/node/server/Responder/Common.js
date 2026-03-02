@@ -11,7 +11,7 @@ const responderError = (store, error) => { store.setState({ error }) }
 const responderEnd = (store) => {
   if (store.response.writableEnded) return // NOTE: normally this should be it, the request is handled and response ended
   const { error } = store.getState()
-  !store.response.headersSent && store.response.writeHead(error ? (error.status || 400) : 500)
+  !store.response.headersSent && store.response.writeHead(error?.status || 500)
   store.response.end() // force end the response to prevent pending
 }
 
