@@ -129,15 +129,22 @@ const getSystemInfo = () => {
 }
 
 // NOTE: reserved space in heap that cannot be used to save JS data,
+// this value directly relates to max-semi-space-size: `3 * Math.pow(2, Math.ceil(Math.log2(MaxSemiSpaceSize)))`
+// related issue: https://github.com/nodejs/node/issues/55487
+// The default `max-semi-space-size` relates to system memory, but different versions of Node.js calc differently.
+// for `node@20`: (with 2-step max-semi-space-size)
 //   48MiB for device with >=2GiB mem,
 //   24MiB for device with <2GiB mem
+// for `node@24+` there's more steps for `max-semi-space-size`
 // the value comes from test code like:
-//   node --max-old-space-size=8 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8"
-//   node --max-old-space-size=64 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 64"
+//   node --max-old-space-size=8 --max-semi-space-size=1 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8"
+//   node --max-old-space-size=8 --max-semi-space-size=5 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8"
+//   node --max-old-space-size=8 --max-semi-space-size=10 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8"
+//   node --max-old-space-size=64 --max-semi-space-size=10 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 64"
 //   node --max-old-space-size=512 -p "v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 512"
-const V8_HEAP_RESERVED_SIZE = (totalmem() < 2 * 1024 * 1024 * 1024 ? 24 : 48) * 1024 * 1024
+/** @deprecated no longer accurate for node@24+ */ const V8_HEAP_RESERVED_SIZE = (totalmem() < 2 * 1024 * 1024 * 1024 ? 24 : 48) * 1024 * 1024
 
-const getV8HeapStatus = () => {
+/** @deprecated no longer accurate for node@24+ */ const getV8HeapStatus = () => {
   const { // https://nodejs.org/api/v8.html#v8getheapcodestatistics
     used_heap_size: v8HeapUsed, // similar to MemUsed
     heap_size_limit: v8HeapMax // similar to MemTotal

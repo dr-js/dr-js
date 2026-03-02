@@ -17,7 +17,8 @@ describe('Node.System.Status', () => {
     info(JSON.stringify(getSystemInfo(), null, 2))
   })
 
-  it('check "V8_HEAP_RESERVED_SIZE"', () => {
+  // Only test on node@20
+  process.versions.node.startsWith('20.') && it('check "V8_HEAP_RESERVED_SIZE"', () => {
     strictEqual(parseInt(runStdoutSync([ process.execPath, '--max-old-space-size=8', '-p', 'v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 8' ])), V8_HEAP_RESERVED_SIZE / 1024 / 1024)
     strictEqual(parseInt(runStdoutSync([ process.execPath, '--max-old-space-size=64', '-p', 'v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 64' ])), V8_HEAP_RESERVED_SIZE / 1024 / 1024)
     strictEqual(parseInt(runStdoutSync([ process.execPath, '--max-old-space-size=512', '-p', 'v8.getHeapStatistics().heap_size_limit / 1024 / 1024 - 512' ])), V8_HEAP_RESERVED_SIZE / 1024 / 1024)
