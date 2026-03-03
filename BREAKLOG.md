@@ -19,7 +19,6 @@ keep list of notable break & big code change
     - consider also publish as `dr-js@24`, since there's no planned `@dr-js/dev-*` package
   - MOVE: re-order structure
   - DEL: non-necessary JS patch, or obsolete code
-  - DEL: drop `SPEC.md`
   - CHG: switch to npm trusted publishing (OIDC)
 
 - `0.6.0-pre`

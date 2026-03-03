@@ -26,7 +26,7 @@ A collection of strange functions
 - 📁 [example/](example/)
   - some example (unsorted tests)
 - 📄 [SPEC.md](SPEC.md)
-  - list of all directly accessible codes, sort of API lockfile
+  - list all cli options
 
 Most of the code should be self explainable by the naming,
   though there are some truly weird ones.

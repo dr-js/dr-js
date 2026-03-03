@@ -1,8 +1,6 @@
-import { sep } from 'node:path'
-
 import { collectSourceJsRouteMap } from '@dr-js/dev/module/node/export/parsePreset.js'
-import { generateExportInfo, generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
-import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink, renderMarkdownExportPath, renderMarkdownExportTree } from '@dr-js/dev/module/node/export/renderMarkdown.js'
+import { generateIndexScript } from '@dr-js/dev/module/node/export/generate.js'
+import { getMarkdownFileLink, renderMarkdownBlockQuote, renderMarkdownAutoAppendHeaderLink } from '@dr-js/dev/module/node/export/renderMarkdown.js'
 
 import { readJSON, writeJSON, writeText } from 'source/node/fs/File.js'
 import { existPathSync } from 'source/node/fs/Path.js'
@@ -12,23 +10,11 @@ import { runKit } from 'source/node/kit.js'
 import { formatUsage } from 'source-bin/option.js'
 
 require.main === module && runKit(async (kit) => {
-  kit.padLog('generate exportInfoMap')
-  const sourceRouteMap = await collectSourceJsRouteMap({ pathRootList: [ kit.fromRoot('source') ], kit })
-  const exportInfoMap = generateExportInfo({ sourceRouteMap })
-
   kit.padLog('output: SPEC.md')
-  const initRouteList = kit.fromRoot('source').split(sep)
-
   await writeText(kit.fromRoot('SPEC.md'), [
     '# Specification',
     '',
     ...renderMarkdownAutoAppendHeaderLink(
-      '#### Export Path',
-      ...renderMarkdownExportPath({ exportInfoMap, rootPath: kit.fromRoot() }),
-      '',
-      '#### Export Tree',
-      ...renderMarkdownExportTree({ exportInfo: exportInfoMap[ initRouteList.join('/') ], routeList: initRouteList }),
-      '',
       '#### Bin Option Format',
       getMarkdownFileLink('source-bin/option.js'),
       ...renderMarkdownBlockQuote(formatUsage())
