@@ -1,0 +1,24 @@
+{
+  "// some sample exec command in package.json": "",
+  "devExecCommands": {
+    "// command": "",
+    "test00": { "command": [ "node", "-p", "process.version" ] },
+    "test01": { "command": "node -p process.version" },
+    "// env": "",
+    "test10": { "command": [ "node", "-p", "process.env" ], "env": "a=1&b=2&c=ccccc" },
+    "test11": { "command": [ "node", "-p", "process.env" ], "env": { "a": "1", "b": "2", "c": "ccccc" } },
+    "// cwd": "",
+    "test20": { "command": [ "node", "-p", "process.cwd()" ] },
+    "test21": { "command": [ "node", "-p", "process.cwd()" ], "cwd": "." },
+    "test22": { "command": [ "node", "-p", "process.cwd()" ], "cwd": "../../" },
+    "// argv": "",
+    "test30": { "command": [ "node", "-p", "process.argv" ] },
+    "test31": { "command": "node -p process.argv" },
+    "// error": "",
+    "test40": { "command": [ "node", "-p", "throw new Error('test')" ] },
+    "test41": { "command": [ "node", "-p", "process.exitCode = 123" ] },
+    "// common program": "",
+    "test90": { "command": [ "npm", "-v" ] },
+    "test91": { "command": "git --version" }
+  }
+}

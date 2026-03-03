@@ -10,13 +10,14 @@ import { binary, percent, time, prettyStringifyJSON } from 'source/common/format
 import { throttleT } from 'source/common/function.js'
 import { indentList } from 'source/common/string.js'
 import { setTimeoutAsync } from 'source/common/time.js'
-import { isBasicFunction } from 'source/common/check.js'
+import { isNumber, isBasicFunction } from 'source/common/check.js'
 import { prettyStringifyTreeNode } from 'source/common/data/Tree.js'
+import { versionBumpByGitBranch, versionBumpLastNumber, versionBumpToIdentifier, versionBumpToLocal } from 'source/common/module/SemVer.js'
 
 import { quickRunletFromStream } from 'source/node/data/Stream.js'
 import { packB64, unpackB64, packGz64, unpackGz64, packBr64, unpackBr64 } from 'source/node/data/Z64String.js'
 import { PATH_TYPE } from 'source/node/fs/Path.js'
-import { readText, writeText, appendText, editTextSync, readJSON, readBuffer } from 'source/node/fs/File.js'
+import { readText, writeText, appendText, editTextSync, readJSON, readJSONSync, readBuffer } from 'source/node/fs/File.js'
 import { createDirectory, getDirInfoList, getDirInfoTree, getFileList } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { autoTestServerPort, parseHostString } from 'source/node/server/function.js'
@@ -30,6 +31,7 @@ import { getSystemStatus, describeSystemStatus } from 'source/node/system/Status
 import { compressAutoAsync, extractAutoAsync } from 'source/node/module/Archive/archive.js'
 import { runDocker, runCompose } from 'source/node/module/Software/docker.js'
 import { fetchWithJumpProxy } from 'source/node/module/Software/npm.js'
+import { getGitBranch } from 'source/node/module/Software/git.js'
 import { pingRaceUrlList, pingStatUrlList } from 'source/node/module/PingRace.js'
 import { describeAuthFile, generateAuthFile, generateAuthCheckCode, verifyAuthCheckCode } from 'source/node/module/Auth.js'
 
@@ -37,6 +39,16 @@ import { commonServerUp, commonServerDown, configure as configureServerTestConne
 import { configure as configureServerServeStatic } from './server/serveStatic.js'
 import { configure as configureServerWebSocketGroup } from './server/websocketGroup.js'
 import { configure as configureServerHttpRequestProxy } from './server/httpRequestProxy.js'
+
+import { doCheckOutdated } from './mode/checkOutdated.js'
+import { doTest } from './mode/test.js'
+import { doExec } from './mode/exec.js'
+import { doVersionBump, getCommonVersionBump, doVersionBumpCheckWIP } from './mode/versionBump.js'
+import { doPackageTrimNodeModules, doPackageTrimRubyGem } from './mode/packageTrim.js'
+import { doShellAlias } from './mode/shellAlias.js'
+import { resetBashCombo } from './mode/bashCombo.js'
+
+import { wrapJoinBashArgs, warpBashSubShell, parsePackageScript } from 'source/dev/node/npm/parseScript.js'
 
 import { logAuto, sharedOption, sharedMode } from './function.js'
 import { MODE_NAME_LIST, parseOption, formatUsage } from './option.js'
@@ -55,9 +67,11 @@ const getVersion = () => ({
 
 const runMode = async (optionData, modeName) => {
   const sharedPack = sharedOption(optionData, modeName)
-  const { getFirst, tryGetFirst, getToggle } = optionData
+  const { tryGet, getFirst, tryGetFirst, getToggle } = optionData
   const { argumentList, log, inputFile, outputFile, outputValueAuto, outputStream } = sharedPack
 
+  const isDebug = getToggle('debug')
+  const isGitCommit = getToggle('git-commit')
   const isOutputJSON = getToggle('json')
   const root = tryGetFirst('root') || process.cwd()
   const logTaskResult = (task, path) => task(path).then(
@@ -79,6 +93,16 @@ const runMode = async (optionData, modeName) => {
     commonServerDown(serverExot, log)
     return commonServerUp({ serverExot, log, routePrefix, ...configureFunc({ serverExot, log, routePrefix, ...option }) })
   }
+
+  const commonVersionBump = getCommonVersionBump(tryGetFirst('root'), isGitCommit, isDebug, log)
+  const runShellAlias = async (aliasName, ...aliasArgList) => doShellAlias({ aliasName, aliasArgList, log }).catch((error) => {
+    if (isNumber(error.code) && error.code > 0) process.exit(error.code) // pass through command exit code & be less noisy
+    if (error.signal === 'SIGPIPE') process.exit(1) // convert common `SIGPIPE` to exit 1 (from `git-log-oneline`)
+    else throw error
+  })
+  const tabLog = isDebug
+    ? (level, ...args) => log(`${'  '.repeat(level)}${args.join(' ')}`)
+    : () => {}
 
   switch (modeName) {
     case 'wait': {
@@ -298,6 +322,77 @@ const runMode = async (optionData, modeName) => {
       isDone = true
       return log('\n[fetch] done')
     }
+
+    // new mode (no short commands for now to avoid conflict)
+    case 'reset-bash-combo':
+      return resetBashCombo()
+    case 'shell-alias':
+      return runShellAlias(...argumentList)
+
+    case 'version-bump-git-branch':
+      return doVersionBump(await commonVersionBump(versionBumpByGitBranch, {
+        gitBranch: getGitBranch(),
+        getIsMajorBranch: (gitBranch) => `master,main,major,${(process.env.GIT_MAJOR_BRANCH || '')}`.split(',').map((v) => v.trim()).filter(Boolean).includes(gitBranch)
+      }))
+    case 'version-bump-last-number':
+      return doVersionBump(await commonVersionBump(versionBumpLastNumber))
+    case 'version-bump-to-identifier':
+      return doVersionBump(await commonVersionBump(versionBumpToIdentifier, { identifier: argumentList[ 0 ] || 'dev' }))
+    case 'version-bump-to-local':
+      return doVersionBump(await commonVersionBump(versionBumpToLocal))
+    case 'version-bump-to-major':
+      return doVersionBump(await commonVersionBump(versionBumpByGitBranch, { isMajorBranch: true }))
+    case 'version-bump-push-check':
+      doVersionBumpCheckWIP()
+      return isGitCommit && runShellAlias('quick-git-push-combo')
+    case 'package-trim-node-modules':
+      return doPackageTrimNodeModules({ pathList: argumentList, log })
+    case 'package-trim-ruby-gem':
+      return doPackageTrimRubyGem({ pathList: argumentList, log })
+
+    // keep mode
+    case 'test':
+      return doTest({
+        testRootList: argumentList || [ process.cwd() ],
+        testFileSuffixList: tryGet('test-file-suffix') || [ '.js' ],
+        testRequireList: tryGet('test-require') || [],
+        testTimeout: tryGet('test-timeout') || 42 * 1000
+      })
+
+    case 'parse-script':
+    case 'parse-script-list':
+    case 'run-script':
+    case 'run-script-list': {
+      const packageJSON = readJSONSync('package.json') // TODO: NOTE: relative to cwd
+      let command
+      if (modeName.endsWith('-list')) {
+        command = warpBashSubShell(argumentList
+          .map((scriptName) => parsePackageScript(packageJSON, scriptName, '', 0, tabLog))
+          .join('\n')
+        )
+      } else {
+        const [ scriptName, ...extraArgs ] = argumentList
+        command = parsePackageScript(packageJSON, scriptName, wrapJoinBashArgs(extraArgs), 0, tabLog)
+      }
+      if (modeName.startsWith('parse-script')) return console.log(command)
+      // try exec:
+      //   bash -c "false ; echo PASS" # will not stop on error
+      //   bash -ec "false ; echo PASS" # will stop on error
+      return run([ 'bash', '-ec', command ]).promise // TODO: inline `set -e`, or join command with `&&`?
+    }
+
+    case 'check-outdated' :
+      return doCheckOutdated({
+        pathInput: argumentList[ 0 ] || tryGetFirst('root') || './package.json',
+        pathTemp: tryGetFirst('path-temp'),
+        isWriteBack: getToggle('write-back'),
+        isBuggyTag: getToggle('buggy-tag')
+      })
+    case 'exec': // TODO: support run z64string?
+      return doExec(argumentList, {
+        env: tryGetFirst('exec-env'),
+        cwd: tryGetFirst('exec-cwd') // TODO: naming
+      })
 
     default:
       return sharedMode(sharedPack)

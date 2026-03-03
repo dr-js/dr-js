@@ -12,9 +12,11 @@ const COMMON_FORMAT_LIST = Preset.parseCompactList(
 
   'host,H/SS,O|common option: $0=hostname:port (hostname default to 0.0.0.0)',
   'route-prefix,RP/SS,O|common option: $0=routePrefix (default to "", set like "/prefix")',
-  'root,R/SP,O|common option: $0=path/cwd',
+  'root,R/SP,O|common option, may be path to repo folder, or "package.json" file: $0=path/cwd',
   'timeout,T/SI,O|common option, 0 for unlimited: $0=msec/undefined',
+  'git-commit,G/T|common option, mostly for version marking',
 
+  'debug,D/T|more debug log, mute by "quiet"',
   'json,J/T|output JSON, if supported'
 )
 
@@ -83,7 +85,46 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'server-test-connection-simple,stcs/O|connection test server, just log all & json back: -H=hostname:port',
   'server-test-connection-simple-payload,stcsp/O|connection test server, just log all & json back with payload-base64: -H=hostname:port',
   'server-tcp-proxy,stp/O/1-|tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...',
-  'server-http-request-proxy,shrp/AS,O/1-|HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false'
+  'server-http-request-proxy,shrp/AS,O/1-|HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false',
+
+  // new mode (no short commands for now to avoid conflict)
+  'reset-bash-combo,RBC/T|setup bashrc & alias',
+  'shell-alias,SA,A/AS,O|run shell alias: $@=aliasName,...aliasArgList',
+
+  // version-bump
+  'version-bump-git-branch,VBGB/T|bump package version by git branch: -G=isGitCommit, -D=isDevCommit, $GIT_MAJOR_BRANCH=master,main,major,...',
+  'version-bump-last-number,VBLN/T|bump the last number found in package version: -G, -D',
+  'version-bump-to-identifier,VBTI/AS,O/0-1|bump package version to identifier: -G, -D, $0=labelIdentifier/dev',
+  'version-bump-to-local,VBTL/T|bump package version to append identifier "local", for local testing: -G, -D',
+  'version-bump-to-major,VBTM/T|bump package version and drop label: -G, -D',
+  'version-bump-push-check,VBPC/T|check "WIP" message in dev commit, optionally run "quick-git-push-combo" shell-alias: -G=isRunQGPC',
+
+  // trim
+  'package-trim-node-modules,PTNM/AP,O|trim common doc/test/config in "node_modules/": $@=...pathList',
+  'package-trim-ruby-gem,PTRG/AP,O|trim common doc/test/config in "lib/ruby/gems/*/gems/": $@=...pathList',
+
+  // keep mode
+  [ 'test,T/AP,O|list of path to look test file from, default to "."', Preset.parseCompactList(
+    'test-file-suffix,TFS/AS,O|pattern for test file, default to ".js"',
+    'test-require,TR/AS,O|module or file to require before test files, mostly for "@babel/register"',
+    'test-timeout,TT/SI,O|timeout for each test, in msec, default to 42*1000 (42sec)' // TODO: move to "timeout"
+  ) ],
+
+  'parse-script,ps/AS,O|parse and echo: $@=scriptName,...extraArgs',
+  'parse-script-list,psl/AS,O|combine multi-script, but no extraArgs: $@=...scriptNameList',
+  'run-script,rs/AS,O|parse and run: $@=scriptName,...extraArgs',
+  'run-script-list,rsl/AS,O|combine multi-script, but no extraArgs: $@=...scriptNameList',
+
+  [ 'check-outdated,C/AP,O/0-1|check dependency version from "package.json", or all under the folder: $0/-R=checkPath/"./package.json"', Preset.parseCompactList( // TODO: get path from this option
+    'buggy-tag,bt/T',
+    'write-back,wb/T',
+    'path-temp/SP,O|use "AUTO" for os temp,set will disable in-place check for single "package.json"'
+  ) ],
+
+  [ 'exec,E/AS,O|exec command, allow set env and cwd: $@=command, ...argList', Preset.parseCompactList(
+    'exec-env,EE/O/0-1|use URLSearchParams format String, or key-value Object', // TODO: "&" will cause command split in win32
+    'exec-cwd,EC/P,O/0-1|reset cwd to path'
+  ) ]
 )
 const MODE_NAME_LIST = MODE_FORMAT_LIST.map(({ name }) => name)
 
