@@ -6,7 +6,7 @@ import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProce
 import { withRetry } from 'source/common/function.js'
 import { runKit, argvFlag } from 'source/node/kit.js'
 
-const IS_CI_LITE = process.env.IS_CI && process.platform !== 'linux' // skip step for win32/darwin ci
+const IS_CI_LITE = process.env.IS_CI_LITE || (process.env.IS_CI && process.platform !== 'linux') // skip step for win32/darwin ci
 
 const retryNpmRunTest = (kit, name) => withRetry((failed, maxRetry) => {
   try { return kit.RUN(`npm run ${name}`) } catch (error) {
