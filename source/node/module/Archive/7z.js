@@ -4,9 +4,9 @@ import {
   createArgListPack
 } from '../function.js'
 
+// NOTE: after 2023 the official `7z` starts to replace `p7zip` on Linux, but `7z` do not have symlink support like `p7zip`
 // NOTE: require 7z@>=16.00 for `-bs` switch
-// TODO: NOTE:
-//   using p7zip pack/unpack to `.tar` do not preserve file permission, but with `.7z|.zip` do, check: https://sourceforge.net/p/p7zip/discussion/383044/thread/d9d522d2/
+// NOTE: using p7zip pack/unpack to `.tar` do not preserve file permission, but with `.7z|.zip` do, check: https://sourceforge.net/p/p7zip/discussion/383044/thread/d9d522d2/
 
 // $ 7z
 //   7-Zip 18.06 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2018-12-30

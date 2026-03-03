@@ -16,7 +16,7 @@ const { describe, it, before, after, info = console.log } = globalThis
 const TEST_TEMP = fromRoot(`test-${basename(__filename)}`)
 const fromTemp = (...args) => resolve(TEST_TEMP, ...args)
 
-before(async () => setupRoot('skip-mode-600'))
+before(async () => setupRoot({ isSkipMode600: true }))
 after(clearRoot)
 
 describe('Node.Module.Archive.Fsp', () => {
@@ -34,8 +34,8 @@ describe('Node.Module.Archive.Fsp', () => {
     await extractAsync(fromTemp('compressAsync/test.fsp.gz'), fromTemp('extractAsync/test.fsp.gz-extract/'))
     await extractAsync(fromTemp('compressAsync/test.fsp.br'), fromTemp('extractAsync/test.fsp.br-extract/'))
     info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp-extract/'), 'skip-mode-600')
-    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp.gz-extract/'), 'skip-mode-600')
-    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp.br-extract/'), 'skip-mode-600')
+    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp-extract/'), { isSkipMode600: true })
+    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp.gz-extract/'), { isSkipMode600: true })
+    await verifyOutputDirectory(fromTemp('extractAsync/test.fsp.br-extract/'), { isSkipMode600: true })
   })
 })

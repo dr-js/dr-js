@@ -13,7 +13,7 @@ const { describe, it, before, after, info = console.log } = globalThis
 const TEST_TEMP = fromRoot(`test-${basename(__filename)}`)
 const fromTemp = (...args) => resolve(TEST_TEMP, ...args)
 
-before(setupRoot)
+before(async () => setupRoot({ isSkipSymlink: true }))
 after(clearRoot)
 
 describe('Node.Module.Archive.7z', () => {
@@ -32,7 +32,7 @@ describe('Node.Module.Archive.7z', () => {
       run(extractArgs(fromTemp('compressArgs/test.zip'), fromTemp('extractArgs/test.zip-extract/'))).promise
     ])
     info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractArgs/test.7z-extract/'))
-    await verifyOutputDirectory(fromTemp('extractArgs/test.zip-extract/'))
+    await verifyOutputDirectory(fromTemp('extractArgs/test.7z-extract/'), { isSkipSymlink: true })
+    await verifyOutputDirectory(fromTemp('extractArgs/test.zip-extract/'), { isSkipSymlink: true })
   })
 })

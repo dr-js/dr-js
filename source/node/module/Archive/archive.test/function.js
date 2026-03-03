@@ -18,7 +18,7 @@ process.umask(PROCESS_UMASK) // restore umask
 
 // For file type and mode, check: https://man7.org/linux/man-pages/man7/inode.7.html
 
-const setupRoot = async (isSkipMode600 = false) => {
+const setupRoot = async ({ isSkipMode600 = false, isSkipSymlink = false } = {}) => {
   await resetDirectory(TEST_ROOT)
 
   await createDirectory(fromRoot(SOURCE_DIRECTORY, '1/2/3/4/5'))
@@ -31,10 +31,10 @@ const setupRoot = async (isSkipMode600 = false) => {
     await fsAsync.writeFile(fromRoot(SOURCE_DIRECTORY, 'file-mode-755'), '', { mode: 0o755 })
 
     // symlink don't have a permission itself, it's read and set to the target file
-    !isSkipMode600 && await fsAsync.symlink('./file-mode-600', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-600'))
-    await fsAsync.symlink('./file-mode-644', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-644'))
-    await fsAsync.symlink('./file-mode-755', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-755'))
-    await fsAsync.symlink('./noop', fromRoot(SOURCE_DIRECTORY, 'link-noop'))
+    !isSkipSymlink && !isSkipMode600 && await fsAsync.symlink('./file-mode-600', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-600'))
+    !isSkipSymlink && await fsAsync.symlink('./file-mode-644', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-644'))
+    !isSkipSymlink && await fsAsync.symlink('./file-mode-755', fromRoot(SOURCE_DIRECTORY, 'link-to-file-mode-755'))
+    !isSkipSymlink && await fsAsync.symlink('./noop', fromRoot(SOURCE_DIRECTORY, 'link-noop'))
   }
 }
 
@@ -43,7 +43,7 @@ const clearRoot = async () => {
 }
 
 const EXPECT_FILE_CONTENT = 'console.log([ { 1: 2 } ])\n'.repeat(64)
-const verifyOutputDirectory = async (path, isSkipMode600 = false) => {
+const verifyOutputDirectory = async (path, { isSkipMode600 = false, isSkipSymlink = false } = {}) => {
   const EXPECT_INFO_LIST = [
     [ '', [
       { name: '1', type: 'Directory' },
@@ -55,10 +55,10 @@ const verifyOutputDirectory = async (path, isSkipMode600 = false) => {
           { name: 'file-mode-644', type: 'File', size: 0, mode: 0o100644 },
           { name: 'file-mode-755', type: 'File', size: 0, mode: 0o100755 },
 
-          { name: 'link-noop', type: 'Symlink' },
-          !isSkipMode600 && { name: 'link-to-file-mode-600', type: 'Symlink' },
-          { name: 'link-to-file-mode-644', type: 'Symlink' },
-          { name: 'link-to-file-mode-755', type: 'Symlink' }
+          !isSkipSymlink && { name: 'link-noop', type: 'Symlink' },
+          !isSkipSymlink && !isSkipMode600 && { name: 'link-to-file-mode-600', type: 'Symlink' },
+          !isSkipSymlink && { name: 'link-to-file-mode-644', type: 'Symlink' },
+          !isSkipSymlink && { name: 'link-to-file-mode-755', type: 'Symlink' }
         ].filter(Boolean))
     ].sort((a, b) => compareString(a.name, b.name)) ],
     [ '1', [ { name: '2', type: 'Directory' } ] ],
@@ -86,15 +86,15 @@ const verifyOutputDirectory = async (path, isSkipMode600 = false) => {
   }
 
   if (process.platform !== 'win32') {
-    !isSkipMode600 && strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-600'))).mode.toString(8), 0o100600.toString(8))
-    strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-644'))).mode.toString(8), 0o100644.toString(8))
-    strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-755'))).mode.toString(8), 0o100755.toString(8))
+    !isSkipSymlink && !isSkipMode600 && strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-600'))).mode.toString(8), 0o100600.toString(8))
+    !isSkipSymlink && strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-644'))).mode.toString(8), 0o100644.toString(8))
+    !isSkipSymlink && strictEqual((await fsAsync.stat(fromRoot(path, 'link-to-file-mode-755'))).mode.toString(8), 0o100755.toString(8))
 
     // TODO: NOTE: don't check file mode, currently it's 777 for ubuntu, and 755 for darwin
-    !isSkipMode600 && truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-600'))).isSymbolicLink())
-    truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-644'))).isSymbolicLink())
-    truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-755'))).isSymbolicLink())
-    truthy((await fsAsync.lstat(fromRoot(path, 'link-noop'))).isSymbolicLink())
+    !isSkipSymlink && !isSkipMode600 && truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-600'))).isSymbolicLink())
+    !isSkipSymlink && truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-644'))).isSymbolicLink())
+    !isSkipSymlink && truthy((await fsAsync.lstat(fromRoot(path, 'link-to-file-mode-755'))).isSymbolicLink())
+    !isSkipSymlink && truthy((await fsAsync.lstat(fromRoot(path, 'link-noop'))).isSymbolicLink())
   }
 }
 

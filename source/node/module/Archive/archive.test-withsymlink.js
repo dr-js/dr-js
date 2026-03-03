@@ -1,11 +1,7 @@
 import { resolve, basename } from 'node:path'
-import { truthy } from 'source/common/verify.js'
 import { fromRoot, setupRoot, clearRoot, SOURCE_DIRECTORY, verifyOutputDirectory } from './archive.test/function.js'
 
 import {
-  check, verify,
-  // compress7zAsync, extract7zAsync,
-  compressT7zAsync, extractT7zAsync,
   compressAutoAsync, extractAutoAsync,
   repackAsync, repackTarAsync
 } from './archive.js'
@@ -15,29 +11,12 @@ const { describe, it, before, after, info = console.log } = globalThis
 const TEST_TEMP = fromRoot(`test-${basename(__filename)}`)
 const fromTemp = (...args) => resolve(TEST_TEMP, ...args)
 
-before(async () => setupRoot({ isSkipSymlink: true }))
+before(setupRoot)
 after(clearRoot)
 
-describe('Node.Module.Archive.Archive', () => {
-  it('check()', () => truthy(check()))
-  it('verify()', verify)
-
-  it('compressT7zAsync() & extractT7zAsync()', async () => {
-    info('compressT7zAsync')
-    await compressT7zAsync(SOURCE_DIRECTORY, fromTemp('compressT7zAsync/test.t7z'))
-    await compressT7zAsync(SOURCE_DIRECTORY, fromTemp('compressT7zAsync/test.tar.7z'))
-    info('extractT7zAsync')
-    await extractT7zAsync(fromTemp('compressT7zAsync/test.t7z'), fromTemp('extractT7zAsync/test.t7z-extract/'))
-    await extractT7zAsync(fromTemp('compressT7zAsync/test.tar.7z'), fromTemp('extractT7zAsync/test.tar.7z-extract/'))
-    info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractT7zAsync/test.t7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractT7zAsync/test.tar.7z-extract/'), { isSkipSymlink: true })
-  })
-
+describe('Node.Module.Archive.Archive(with-symlink)', () => {
   it('compressAutoAsync() & extractAutoAsync()', async () => {
     info('compressAutoAsync')
-    await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.7z'))
-    await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.zip'))
     await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.tar'))
     await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.tgz'))
     await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.tar.gz'))
@@ -48,8 +27,6 @@ describe('Node.Module.Archive.Archive', () => {
     await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.txz'))
     await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('compressAutoAsync/test.tar.xz'))
     info('extractAutoAsync')
-    await extractAutoAsync(fromTemp('compressAutoAsync/test.7z'), fromTemp('extractAutoAsync/test.7z-extract/'))
-    await extractAutoAsync(fromTemp('compressAutoAsync/test.zip'), fromTemp('extractAutoAsync/test.zip-extract/'))
     await extractAutoAsync(fromTemp('compressAutoAsync/test.tar'), fromTemp('extractAutoAsync/test.tar-extract/'))
     await extractAutoAsync(fromTemp('compressAutoAsync/test.tgz'), fromTemp('extractAutoAsync/test.tgz-extract/'))
     await extractAutoAsync(fromTemp('compressAutoAsync/test.tar.gz'), fromTemp('extractAutoAsync/test.tar.gz-extract/'))
@@ -60,27 +37,23 @@ describe('Node.Module.Archive.Archive', () => {
     await extractAutoAsync(fromTemp('compressAutoAsync/test.txz'), fromTemp('extractAutoAsync/test.txz-extract/'))
     await extractAutoAsync(fromTemp('compressAutoAsync/test.tar.xz'), fromTemp('extractAutoAsync/test.tar.xz-extract/'))
     info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.zip-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tgz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.gz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tbr-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.br-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.t7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.txz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.xz-extract/'), { isSkipSymlink: true })
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tgz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.gz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tbr-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.br-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.t7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.txz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractAutoAsync/test.tar.xz-extract/'))
   })
 
   it('repackAsync()', async () => {
     info('pack source')
-    await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('repackAsync/test.7z')) // source archive
+    await compressAutoAsync(SOURCE_DIRECTORY, fromTemp('repackAsync/test-init.tar')) // source archive
     info('repackAsync')
-    await repackAsync(fromTemp('repackAsync/test.7z'), fromTemp('repackAsync/test-same.7z')) // same type, waste CPU?
-    await repackAsync(fromTemp('repackAsync/test.7z'), fromTemp('repackAsync/test.zip'))
-    await repackAsync(fromTemp('repackAsync/test.zip'), fromTemp('repackAsync/test.tar'))
-    await repackAsync(fromTemp('repackAsync/test.tar'), fromTemp('repackAsync/test.tgz'))
+    await repackAsync(fromTemp('repackAsync/test-init.tar'), fromTemp('repackAsync/test-same.tar')) // same type, waste CPU?
+    await repackAsync(fromTemp('repackAsync/test-init.tar'), fromTemp('repackAsync/test.tgz'))
     await repackAsync(fromTemp('repackAsync/test.tgz'), fromTemp('repackAsync/test.tar.gz'))
     await repackAsync(fromTemp('repackAsync/test.tar.gz'), fromTemp('repackAsync/test.tbr'))
     await repackAsync(fromTemp('repackAsync/test.tbr'), fromTemp('repackAsync/test.tar.br'))
@@ -88,11 +61,9 @@ describe('Node.Module.Archive.Archive', () => {
     await repackAsync(fromTemp('repackAsync/test.t7z'), fromTemp('repackAsync/test.tar.7z'))
     await repackAsync(fromTemp('repackAsync/test.tar.7z'), fromTemp('repackAsync/test.txz'))
     await repackAsync(fromTemp('repackAsync/test.txz'), fromTemp('repackAsync/test.tar.xz'))
-    await repackAsync(fromTemp('repackAsync/test.tar.xz'), fromTemp('repackAsync/test-back.7z'))
+    await repackAsync(fromTemp('repackAsync/test.tar.xz'), fromTemp('repackAsync/test-back.tar'))
     info('extract repack')
-    await extractAutoAsync(fromTemp('repackAsync/test-same.7z'), fromTemp('extractRepack/test-same.7z-extract/'))
-    await extractAutoAsync(fromTemp('repackAsync/test.zip'), fromTemp('extractRepack/test.zip-extract/'))
-    await extractAutoAsync(fromTemp('repackAsync/test.tar'), fromTemp('extractRepack/test.tar-extract/'))
+    await extractAutoAsync(fromTemp('repackAsync/test-same.tar'), fromTemp('extractRepack/test-same.tar-extract/'))
     await extractAutoAsync(fromTemp('repackAsync/test.tgz'), fromTemp('extractRepack/test.tgz-extract/'))
     await extractAutoAsync(fromTemp('repackAsync/test.tar.gz'), fromTemp('extractRepack/test.tar.gz-extract/'))
     await extractAutoAsync(fromTemp('repackAsync/test.tbr'), fromTemp('extractRepack/test.tbr-extract/'))
@@ -101,20 +72,18 @@ describe('Node.Module.Archive.Archive', () => {
     await extractAutoAsync(fromTemp('repackAsync/test.tar.7z'), fromTemp('extractRepack/test.tar.7z-extract/'))
     await extractAutoAsync(fromTemp('repackAsync/test.txz'), fromTemp('extractRepack/test.txz-extract/'))
     await extractAutoAsync(fromTemp('repackAsync/test.tar.xz'), fromTemp('extractRepack/test.tar.xz-extract/'))
-    await extractAutoAsync(fromTemp('repackAsync/test-back.7z'), fromTemp('extractRepack/test-back.7z-extract/'))
+    await extractAutoAsync(fromTemp('repackAsync/test-back.tar'), fromTemp('extractRepack/test-back.tar-extract/'))
     info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractRepack/test-same.7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.zip-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tar-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tgz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.gz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tbr-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.br-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.t7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.txz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.xz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepack/test-back.7z-extract/'), { isSkipSymlink: true })
+    await verifyOutputDirectory(fromTemp('extractRepack/test-same.tar-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tgz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.gz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tbr-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.br-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.t7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.txz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test.tar.xz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepack/test-back.tar-extract/'))
   })
 
   it('repackTarAsync()', async () => {
@@ -141,14 +110,14 @@ describe('Node.Module.Archive.Archive', () => {
     await extractAutoAsync(fromTemp('repackTarAsync/test.tar.xz'), fromTemp('extractRepackTar/test.tar.xz-extract/'))
     await extractAutoAsync(fromTemp('repackTarAsync/test-back.tgz'), fromTemp('extractRepackTar/test-back.tgz-extract/'))
     info('verifyOutputDirectory')
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tgz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.gz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tbr-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.br-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.t7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.7z-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.txz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.xz-extract/'), { isSkipSymlink: true })
-    await verifyOutputDirectory(fromTemp('extractRepackTar/test-back.tgz-extract/'), { isSkipSymlink: true })
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tgz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.gz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tbr-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.br-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.t7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.7z-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.txz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test.tar.xz-extract/'))
+    await verifyOutputDirectory(fromTemp('extractRepackTar/test-back.tgz-extract/'))
   })
 })
