@@ -65,14 +65,14 @@ const test = async ({
 const doTest = async ({
   testRootList = [ process.cwd() ],
   testFileSuffixList = [ '.js' ],
-  testRequireList = [],
+  testLoadList = [],
   testTimeout = 42 * 1000
 }) => {
   const testFilePairList = []
   for (const testRoot of testRootList) {
     testFilePairList.push(...await getTestFilePairList({ testRoot, testFileSuffixList }))
   }
-  for (const testRequire of testRequireList) { // load pre require, mostly `@babel/register`
+  for (const testRequire of testLoadList) { // load pre require, mostly `@babel/register`
     const target = /^[./]/.test(testRequire) ? resolve(testRequire) // script file, like `./a.js`, or `/b/c/d.js`
       : testRequire // module name, like `@dr-js/core`
     try { require(target) } catch (error) {

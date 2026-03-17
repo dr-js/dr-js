@@ -355,8 +355,8 @@ const runMode = async (optionData, modeName) => {
       return doTest({
         testRootList: argumentList || [ process.cwd() ],
         testFileSuffixList: tryGet('test-file-suffix') || [ '.js' ],
-        testRequireList: tryGet('test-require') || [],
-        testTimeout: tryGet('test-timeout') || 42 * 1000
+        testLoadList: tryGet('test-load') || [],
+        testTimeout: tryGetFirst('timeout') || 42 * 1000
       })
 
     case 'parse-script':

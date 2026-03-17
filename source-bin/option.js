@@ -104,14 +104,13 @@ const MODE_FORMAT_LIST = Preset.parseCompactList(
   'package-trim-ruby-gem,PTRG/AP,O|trim common doc/test/config in "lib/ruby/gems/*/gems/": $@=...pathList',
 
   // keep mode
-  [ 'test,T/AP,O|list of path to look test file from, default to "."', Preset.parseCompactList(
+  [ 'test/AP,O|list of path to look test file from, default to ".": $@=...pathList, -T=timeoutForEachTest/42000', Preset.parseCompactList(
     'test-file-suffix,TFS/AS,O|pattern for test file, default to ".js"',
-    'test-require,TR/AS,O|module or file to require before test files, mostly for "@babel/register"',
-    'test-timeout,TT/SI,O|timeout for each test, in msec, default to 42*1000 (42sec)' // TODO: move to "timeout"
+    'test-load,TL/AS,O|module or file to (import/require) before test files, mostly for patching "globalThis"'
   ) ],
 
-  'parse-script,ps/AS,O|parse and echo: $@=scriptName,...extraArgs',
-  'parse-script-list,psl/AS,O|combine multi-script, but no extraArgs: $@=...scriptNameList',
+  'parse-script/AS,O|parse and echo: $@=scriptName,...extraArgs',
+  'parse-script-list/AS,O|combine multi-script, but no extraArgs: $@=...scriptNameList',
   'run-script,rs/AS,O|parse and run: $@=scriptName,...extraArgs',
   'run-script-list,rsl/AS,O|combine multi-script, but no extraArgs: $@=...scriptNameList',
 
