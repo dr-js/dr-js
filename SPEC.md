@@ -30,9 +30,13 @@
 >   --route-prefix --RP [OPTIONAL] [ARGUMENT=1]
 >       common option: $0=routePrefix (default to "", set like "/prefix")
 >   --root --R -R [OPTIONAL] [ARGUMENT=1]
->       common option: $0=path/cwd
+>       common option, may be path to repo folder, or "package.json" file: $0=path/cwd
 >   --timeout --T -T [OPTIONAL] [ARGUMENT=1]
 >       common option, 0 for unlimited: $0=msec/undefined
+>   --git-commit --G -G [OPTIONAL] [ARGUMENT=0-1]
+>       common option, mostly for version marking
+>   --debug --D -D [OPTIONAL] [ARGUMENT=0-1]
+>       more debug log, mute by "quiet"
 >   --json --J -J [OPTIONAL] [ARGUMENT=0-1]
 >       output JSON, if supported
 >   --eval --e -e [OPTIONAL] [ARGUMENT=0+]
@@ -135,6 +139,54 @@
 >       tcp proxy server: -H=hostname:port, $@=toHostname:toPort,toHostname:toPort,...
 >   --server-http-request-proxy --shrp [OPTIONAL] [ARGUMENT=1+]
 >       HTTP per-request proxy server: -H=hostname:port, -T=timeout/42000, $0=toOrigin, $1=isSetXForward/false
+>   --reset-bash-combo --RBC [OPTIONAL] [ARGUMENT=0-1]
+>       setup bashrc & alias
+>   --shell-alias --SA --A -A [OPTIONAL] [ARGUMENT=1+]
+>       run shell alias: $@=aliasName,...aliasArgList
+>   --version-bump-git-branch --VBGB [OPTIONAL] [ARGUMENT=0-1]
+>       bump package version by git branch: -G=isGitCommit, -D=isDevCommit, $GIT_MAJOR_BRANCH=master,main,major,...
+>   --version-bump-last-number --VBLN [OPTIONAL] [ARGUMENT=0-1]
+>       bump the last number found in package version: -G, -D
+>   --version-bump-to-identifier --VBTI [OPTIONAL] [ARGUMENT=0-1]
+>       bump package version to identifier: -G, -D, $0=labelIdentifier/dev
+>   --version-bump-to-local --VBTL [OPTIONAL] [ARGUMENT=0-1]
+>       bump package version to append identifier "local", for local testing: -G, -D
+>   --version-bump-to-major --VBTM [OPTIONAL] [ARGUMENT=0-1]
+>       bump package version and drop label: -G, -D
+>   --version-bump-push-check --VBPC [OPTIONAL] [ARGUMENT=0-1]
+>       check "WIP" message in dev commit, optionally run "quick-git-push-combo" shell-alias: -G=isRunQGPC
+>   --package-trim-node-modules --PTNM [OPTIONAL] [ARGUMENT=1+]
+>       trim common doc/test/config in "node_modules/": $@=...pathList
+>   --package-trim-ruby-gem --PTRG [OPTIONAL] [ARGUMENT=1+]
+>       trim common doc/test/config in "lib/ruby/gems/*/gems/": $@=...pathList
+>   --test [OPTIONAL] [ARGUMENT=1+]
+>       list of path to look test file from, default to ".": $@=...pathList, -T=timeoutForEachTest/42000
+>     --test-file-suffix --TFS [ARGUMENT=1+]
+>         pattern for test file, default to ".js"
+>     --test-load --TL [ARGUMENT=1+]
+>         module or file to (import/require) before test files, mostly for patching "globalThis"
+>   --parse-script [OPTIONAL] [ARGUMENT=1+]
+>       parse and echo: $@=scriptName,...extraArgs
+>   --parse-script-list [OPTIONAL] [ARGUMENT=1+]
+>       combine multi-script, but no extraArgs: $@=...scriptNameList
+>   --run-script --rs [OPTIONAL] [ARGUMENT=1+]
+>       parse and run: $@=scriptName,...extraArgs
+>   --run-script-list --rsl [OPTIONAL] [ARGUMENT=1+]
+>       combine multi-script, but no extraArgs: $@=...scriptNameList
+>   --check-outdated --C -C [OPTIONAL] [ARGUMENT=0-1]
+>       check dependency version from "package.json", or all under the folder: $0/-R=checkPath/"./package.json"
+>     --buggy-tag --bt [ARGUMENT=0-1]
+>         set to ANY value to enable, except "false/no/n/0"
+>     --write-back --wb [ARGUMENT=0-1]
+>         set to ANY value to enable, except "false/no/n/0"
+>     --path-temp [ARGUMENT=1]
+>         use "AUTO" for os temp,set will disable in-place check for single "package.json"
+>   --exec --E -E [OPTIONAL] [ARGUMENT=1+]
+>       exec command, allow set env and cwd: $@=command, ...argList
+>     --exec-env --EE [ARGUMENT=0-1]
+>         use URLSearchParams format String, or key-value Object
+>     --exec-cwd --EC [ARGUMENT=0-1]
+>         reset cwd to path
 > ENV Usage:
 >   "
 >     #!/usr/bin/env bash
@@ -150,6 +202,8 @@
 >     export DR_JS_ROUTE_PREFIX="[OPTIONAL] [ARGUMENT=1] [ALIAS=DR_JS_RP]"
 >     export DR_JS_ROOT="[OPTIONAL] [ARGUMENT=1]"
 >     export DR_JS_TIMEOUT="[OPTIONAL] [ARGUMENT=1]"
+>     export DR_JS_GIT_COMMIT="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_DEBUG="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_JSON="[OPTIONAL] [ARGUMENT=0-1]"
 >     export DR_JS_EVAL="[OPTIONAL] [ARGUMENT=0+]"
 >     export DR_JS_REPL="[OPTIONAL] [ARGUMENT=0-1]"
@@ -203,6 +257,30 @@
 >     export DR_JS_SERVER_TEST_CONNECTION_SIMPLE_PAYLOAD="[OPTIONAL] [ALIAS=DR_JS_STCSP]"
 >     export DR_JS_SERVER_TCP_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_STP]"
 >     export DR_JS_SERVER_HTTP_REQUEST_PROXY="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_SHRP]"
+>     export DR_JS_RESET_BASH_COMBO="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_RBC]"
+>     export DR_JS_SHELL_ALIAS="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_SA]"
+>     export DR_JS_VERSION_BUMP_GIT_BRANCH="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBGB]"
+>     export DR_JS_VERSION_BUMP_LAST_NUMBER="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBLN]"
+>     export DR_JS_VERSION_BUMP_TO_IDENTIFIER="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBTI]"
+>     export DR_JS_VERSION_BUMP_TO_LOCAL="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBTL]"
+>     export DR_JS_VERSION_BUMP_TO_MAJOR="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBTM]"
+>     export DR_JS_VERSION_BUMP_PUSH_CHECK="[OPTIONAL] [ARGUMENT=0-1] [ALIAS=DR_JS_VBPC]"
+>     export DR_JS_PACKAGE_TRIM_NODE_MODULES="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_PTNM]"
+>     export DR_JS_PACKAGE_TRIM_RUBY_GEM="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_PTRG]"
+>     export DR_JS_TEST="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_TEST_FILE_SUFFIX="[ARGUMENT=1+] [ALIAS=DR_JS_TFS]"
+>     export DR_JS_TEST_LOAD="[ARGUMENT=1+] [ALIAS=DR_JS_TL]"
+>     export DR_JS_PARSE_SCRIPT="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_PARSE_SCRIPT_LIST="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_RUN_SCRIPT="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_RS]"
+>     export DR_JS_RUN_SCRIPT_LIST="[OPTIONAL] [ARGUMENT=1+] [ALIAS=DR_JS_RSL]"
+>     export DR_JS_CHECK_OUTDATED="[OPTIONAL] [ARGUMENT=0-1]"
+>     export DR_JS_BUGGY_TAG="[ARGUMENT=0-1] [ALIAS=DR_JS_BT]"
+>     export DR_JS_WRITE_BACK="[ARGUMENT=0-1] [ALIAS=DR_JS_WB]"
+>     export DR_JS_PATH_TEMP="[ARGUMENT=1]"
+>     export DR_JS_EXEC="[OPTIONAL] [ARGUMENT=1+]"
+>     export DR_JS_EXEC_ENV="[ARGUMENT=0-1] [ALIAS=DR_JS_EE]"
+>     export DR_JS_EXEC_CWD="[ARGUMENT=0-1] [ALIAS=DR_JS_EC]"
 >   "
 > CONFIG Usage:
 >   {
@@ -218,6 +296,8 @@
 >     "routePrefix": [ "[OPTIONAL] [ARGUMENT=1] [ALIAS=RP]" ],
 >     "root": [ "[OPTIONAL] [ARGUMENT=1]" ],
 >     "timeout": [ "[OPTIONAL] [ARGUMENT=1]" ],
+>     "gitCommit": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "debug": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "json": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
 >     "eval": [ "[OPTIONAL] [ARGUMENT=0+]" ],
 >     "repl": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
@@ -271,5 +351,29 @@
 >     "serverTestConnectionSimplePayload": [ "[OPTIONAL] [ALIAS=stcsp]" ],
 >     "serverTcpProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=stp]" ],
 >     "serverHttpRequestProxy": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=shrp]" ],
+>     "resetBashCombo": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=RBC]" ],
+>     "shellAlias": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=SA]" ],
+>     "versionBumpGitBranch": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBGB]" ],
+>     "versionBumpLastNumber": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBLN]" ],
+>     "versionBumpToIdentifier": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBTI]" ],
+>     "versionBumpToLocal": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBTL]" ],
+>     "versionBumpToMajor": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBTM]" ],
+>     "versionBumpPushCheck": [ "[OPTIONAL] [ARGUMENT=0-1] [ALIAS=VBPC]" ],
+>     "packageTrimNodeModules": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=PTNM]" ],
+>     "packageTrimRubyGem": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=PTRG]" ],
+>     "test": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "testFileSuffix": [ "[ARGUMENT=1+] [ALIAS=TFS]" ],
+>     "testLoad": [ "[ARGUMENT=1+] [ALIAS=TL]" ],
+>     "parseScript": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "parseScriptList": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "runScript": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=rs]" ],
+>     "runScriptList": [ "[OPTIONAL] [ARGUMENT=1+] [ALIAS=rsl]" ],
+>     "checkOutdated": [ "[OPTIONAL] [ARGUMENT=0-1]" ],
+>     "buggyTag": [ "[ARGUMENT=0-1] [ALIAS=bt]" ],
+>     "writeBack": [ "[ARGUMENT=0-1] [ALIAS=wb]" ],
+>     "pathTemp": [ "[ARGUMENT=1]" ],
+>     "exec": [ "[OPTIONAL] [ARGUMENT=1+]" ],
+>     "execEnv": [ "[ARGUMENT=0-1] [ALIAS=EE]" ],
+>     "execCwd": [ "[ARGUMENT=0-1] [ALIAS=EC]" ],
 >   }
 > ```
