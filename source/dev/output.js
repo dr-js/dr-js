@@ -4,7 +4,7 @@ import { binary, describe } from 'source/common/format.js'
 import { indentLineList } from 'source/common/string.js'
 import { getFirstBinPath, toPackageTgzName } from 'source/common/module/PackageJSON.js'
 import { parseSemVer } from 'source/common/module/SemVer.js'
-import { readTextSync, writeTextSync, writeJSONSync } from 'source/node/fs/File.js'
+import { readTextSync, writeTextSync, readJSONSync, writeJSONSync } from 'source/node/fs/File.js'
 import { getFileList, resetDirectory } from 'source/node/fs/Directory.js'
 import { modifyCopy, modifyRename, modifyDelete } from 'source/node/fs/Modify.js'
 import { runStdout } from 'source/node/run.js'
@@ -34,7 +34,7 @@ const initOutput = async ({
   await resetDirectory(fromOutput())
 
   kitLogger.padLog('init output package.json')
-  const packageJSON = require(fromRoot('package.json'))
+  const packageJSON = readJSONSync(fromRoot('package.json'))
   for (const deleteKey of [ ...deleteKeyList, ...extraDeleteKeyList ]) {
     kitLogger.log(`dropped key: ${deleteKey}`)
     delete packageJSON[ deleteKey ]
@@ -77,7 +77,7 @@ const packOutput = async ({
   fromRoot = (kit && kit.fromRoot) || fromOutput, // OPTIONAL, for move output .tgz file to root
 
   cwd = fromOutput(),
-  packageJSON = require(fromOutput('package.json'))
+  packageJSON = readJSONSync(fromOutput('package.json'))
 }) => {
   kitLogger.padLog('run pack output')
   await runNpm([ '--no-update-notifier', 'pack' ], { cwd, quiet: !kitLogger.isVerbose }).promise

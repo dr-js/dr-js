@@ -1,7 +1,7 @@
-import { getSourceJsFileListFromPathList } from '@dr-js/dev/module/node/filePreset.js'
-import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, verifyPackageVersionStrict, publishPackage } from '@dr-js/dev/module/output.js'
-import { getTerserOption, minifyFileListWithTerser } from '@dr-js/dev/module/minify.js'
-import { processFileList, fileProcessorBabel } from '@dr-js/dev/module/fileProcessor.js'
+import { getSourceJsFileListFromPathList } from 'source/dev/node/filePreset.js'
+import { initOutput, packOutput, clearOutput, verifyNoGitignore, verifyGitStatusClean, verifyOutputBin, verifyPackageVersionStrict, publishPackage } from 'source/dev/output.js'
+import { getTerserOption, minifyFileListWithTerser } from 'source/dev/minify.js'
+import { processFileList, fileProcessorBabel } from 'source/dev/fileProcessor.js'
 
 import { withRetry } from 'source/common/function.js'
 import { runKit, argvFlag } from 'source/node/kit.js'
