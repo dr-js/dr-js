@@ -6,6 +6,7 @@
   "author": "dr-js",
   "license": "MIT",
   "repository": "github:dr-js/dr-js",
+  "type": "module",
   "bin": {
     "dr-js": "bin/index.js",
     "DR": "bin/index.js"
