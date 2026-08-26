@@ -34,7 +34,8 @@ const outdatedJSON = async ({
     const outdatedMap = {} // { [name-spec]: { latest: '0.0.0' } }
     await runAsyncByLane(clamp(cpus().length || 0, 2, 8), Object.entries(dependencyMap).map(([ name, versionSpec ]) => async () => {
       const realName = REGEXP_ALIAS_VER_SPEC.test(versionSpec) ? REGEXP_ALIAS_VER_SPEC.exec(versionSpec)[ 1 ] : name
-      const { versions = [] } = await _npmJSON([ 'view', realName ], packageRoot)
+      const resJson = await _npmJSON([ 'view', realName ], packageRoot)
+      const { versions = [] } = Array.isArray(resJson) ? resJson.pop() : resJson // npm view --json now always returns an array # https://github.com/npm/cli/releases/tag/v12.0.0
       const biggestVersion = versions.filter((v) => !isVersionSpecComplex(v) && !parseSemVer(v).label).sort(compareSemVer).pop() // smaller first, pick biggest version
       outdatedMap[ name ] = { latest: biggestVersion }
     }))
