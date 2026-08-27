@@ -2,11 +2,12 @@
 
 keep list of notable break & big code change
 
-- planned change in `0.6.0-pre`:
+- planned change in `0.26.0-pre`:
+  - BREAK: publish as `dr-js@0.26`
   - BREAK: downgrade/drop `win32`, `macos` support
   - BREAK: browser: target `chrome64 firefox78 safari14 edge79`
-  - BREAK: node: require `nodejs@24.14`
-  - BREAK: node: require `npm@11.9`
+  - BREAK: node: require `nodejs@24.18`
+  - BREAK: node: require `npm@11.10`
   - BREAK: build: code in `source/` is ES module with TSDoc, direct copy to `esm/` as output
     - no `babel` to `module/` and `library/`
     - no `webpack` to `Dr.browser.js`
@@ -16,7 +17,6 @@ keep list of notable break & big code change
   - ADD: qjs-ng: target `quickjs-ng@0.12`
   - ADD: typing with TSDoc, add `jsconfig.json` & use `"checkJs": true, "strict": true`
   - ADD: inline code from `dr-dev`
-    - consider also publish as `dr-js@24`, since there's no planned `@dr-js/dev-*` package
   - MOVE: re-order structure
   - DEL: non-necessary JS patch, or obsolete code
   - CHG: switch to npm trusted publishing (OIDC)

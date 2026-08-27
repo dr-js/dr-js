@@ -1,16 +1,14 @@
-# Editor configuration
-/.idea
-/.vscode
-
-# Ignore local or CI ".npmrc"
-.npmrc
-
-# Dependency directory
-node_modules
-
-# Output of `npm pack`
-/*.tgz
-
-# Ignore folder of file with `-gitignore`
+# ignore folder of file with `-gitignore`
 **/*-gitignore/**
 **/*-gitignore*
+
+# editor
+/.vscode
+/.idea
+
+# nodejs, npm, npm tarballs
+node_modules
+.npmrc
+/*.tgz
+
+# create your own `~/.config/git/ignore` config if you need more, see https://docs.github.com/get-started/git-basics/ignoring-files

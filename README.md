@@ -17,19 +17,33 @@ A collection of strange functions
 
 [//]: # (NON_PACKAGE_CONTENT)
 
-- 📁 [source/](source/)
-  - main source code, in output package will be:
-    - `@dr-js/core/library`: for direct use, use `require() / exports.*=` and has `Dr.browser.js`
-    - `@dr-js/core/module`: for re-pack, keep `import / export` and readability
-- 📁 [source-bin/](source-bin/)
-  - bin source code, in output package will be `@dr-js/core/bin`
+- 📁 [esm/](esm/)
+  - main source code, in output package will be: `dr-js/esm/`
+- 📁 [bin/](bin/)
+  - bin source code, in output package will be: `dr-js/bin/`
 - 📁 [example/](example/)
   - some example (unsorted tests)
 - 📄 [SPEC.md](SPEC.md)
   - list all cli options
 
+All source code use `.js` suffix, and target ES2021 with ES module.  
+The source code should be directly runnable, no compiler/bundler magic.  
+All test code use `.test.js` suffix or under `*.test/` dir, and run in target JS runtime.  
+
+Under `esm/`, the layout matches the target JS runtime:
+- `base/`: baseline, pure ES2021 with ES module, no import from other top-level dir
+- `node/`: with Node.js-specific API (like `node:fs`..) and some npm wrapper, target `node24.18 npm11.10`, can import from `base/`
+- `qjs/`: with QuickJS-specific API (like `std`, `os`), target `quickjs@2026-06-04`, can import from `base/`
+- `web/`: with browser-specific API (like DOM, CSS, Canvas..), target `chrome80 firefox80 safari14.1 edge80`, can import from `base/`
+
+Some inner layouts:
+- `base/env/`: code to detect current JS runtime
+- `node/server/`: code to build Node.js server
+- `node/dev/`: code to manage repo & ci
+- `*/lib/`: code for specific topic
+
 Most of the code should be self explainable by the naming,
-  though there are some truly weird ones.
+  though there are some truly weird ones.  
 And there's a few document files scattered in the source,
   along with many comments & TODOs,
   feel free to find & read them.

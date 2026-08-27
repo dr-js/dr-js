@@ -35,6 +35,8 @@
     "test-bin": "node ./script/testBin",
     "// =============================": "",
     "test": "dr-dev --EE TEST_SANITY=true -E -- npm run script-pack-test",
+    "pptr-install": "npx @puppeteer/browsers install chrome-headless-shell --path ./.pptr-gitignore/",
+    "pptr-list": "npx @puppeteer/browsers list --path ./.pptr-gitignore/",
     "// tooling ===============": "",
     "check-all": "npm run lint && npm run type-check",
     "lint": "oxlint",

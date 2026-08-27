@@ -7,9 +7,9 @@ jobs:
     runs-on: "${{ matrix.OS }}" # https://docs.github.com/en/actions/reference/runners/github-hosted-runners#standard-github-hosted-runners-for--private-repositories
     timeout-minutes: 15
     steps:
-      - { uses: "actions/checkout@v6" } # https://github.com/actions/checkout
-      - { uses: "actions/setup-node@v6", with: { node-version: "lts/*" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - { uses: "actions/checkout@v7" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v7", with: { node-version: "24" } } # https://github.com/actions/setup-node
+      - run: npm ci --ignore-scripts
       - run: npm test
 
   "test-extra": # job id
@@ -18,9 +18,9 @@ jobs:
     runs-on: "${{ matrix.OS }}"
     timeout-minutes: 15
     steps:
-      - { uses: "actions/checkout@v6" } # https://github.com/actions/checkout
-      - { uses: "actions/setup-node@v6", with: { node-version:  "lts/*" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - { uses: "actions/checkout@v7" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v7", with: { node-version:  "24" } } # https://github.com/actions/setup-node
+      - run: npm ci --ignore-scripts
       - run: npm test
         env: { "IS_CI_LITE": true }
 
@@ -30,8 +30,8 @@ jobs:
     runs-on: "ubuntu-24.04"
     timeout-minutes: 15
     steps:
-      - { uses: "actions/checkout@v6" } # https://github.com/actions/checkout
-      - { uses: "actions/setup-node@v6", with: { node-version: "lts/*" } } # https://github.com/actions/setup-node
-      - run: npx @dr-js/dev@0.5 -eI .github/ci-patch.js
+      - { uses: "actions/checkout@v7" } # https://github.com/actions/checkout
+      - { uses: "actions/setup-node@v7", with: { node-version: "24" } } # https://github.com/actions/setup-node
+      - run: npm ci --ignore-scripts
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN_DR_JS }}" > .npmrc # TODO: need change to npm trusted publishing: https://docs.npmjs.com/trusted-publishers
       - run: npm run script-publish

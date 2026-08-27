@@ -55,6 +55,7 @@ runKit(async (kit) => {
   isTest && !IS_CI_LITE && await retryNpmRunTest(kit, 'test-output-module')
   isTest && await retryNpmRunTest(kit, 'test-output-bin')
   isTest && !IS_CI_LITE && kit.padLog('test browser')
+  isTest && !IS_CI_LITE && kit.RUN('npm run pptr-install')
   isTest && !IS_CI_LITE && await retryNpmRunTest(kit, 'test-browser')
   isTest && kit.padLog('test bin')
   isTest && kit.RUN('npm run test-bin')
